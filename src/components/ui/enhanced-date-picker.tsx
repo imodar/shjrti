@@ -94,6 +94,28 @@ export function EnhancedDatePicker({
   const [open, setOpen] = React.useState(false);
   const { datePreference, setDatePreference } = useDatePreference();
   const [hijriDate, setHijriDate] = React.useState(() => value ? toHijri(value) : null);
+  const contentRef = React.useRef<HTMLDivElement>(null);
+
+  // Force center positioning after Radix applies its styles
+  React.useEffect(() => {
+    if (open && contentRef.current) {
+      const applyStyles = () => {
+        if (contentRef.current) {
+          contentRef.current.style.position = 'fixed';
+          contentRef.current.style.left = '50%';
+          contentRef.current.style.top = '50%';
+          contentRef.current.style.transform = 'translate(-50%, -50%)';
+          contentRef.current.style.margin = '0';
+          contentRef.current.style.inset = 'auto';
+        }
+      };
+      
+      // Apply immediately and after a small delay to override Radix
+      applyStyles();
+      setTimeout(applyStyles, 0);
+      setTimeout(applyStyles, 10);
+    }
+  }, [open]);
 
   const handleSelect = (date: Date | undefined) => {
     if (date) {
@@ -139,7 +161,11 @@ export function EnhancedDatePicker({
         </Button>
       </PopoverTrigger>
       <PopoverContent 
-        className="p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in bg-white dark:bg-gray-800 [&[data-state=open]]:!fixed [&[data-state=open]]:!left-[50%] [&[data-state=open]]:!top-[50%] [&[data-state=open]]:!translate-x-[-50%] [&[data-state=open]]:!translate-y-[-50%] [&[data-state=open]]:!w-auto [&[data-state=open]]:!max-w-[min(95vw,400px)] [&[data-state=open]]:!max-h-[90vh] [&[data-state=open]]:!overflow-auto [&[data-state=open]]:!m-0 [&[data-state=open]]:!inset-auto" 
+        ref={contentRef}
+        align="center"
+        side="top"
+        sideOffset={0}
+        className="p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in bg-white dark:bg-gray-800 !z-[9999] !fixed !left-[50%] !top-[50%] !-translate-x-1/2 !-translate-y-1/2 !w-auto !max-w-[min(95vw,400px)] !max-h-[90vh] !overflow-auto !m-0 !pointer-events-auto" 
         avoidCollisions={false}
         onOpenAutoFocus={(e) => e.preventDefault()}
       >
