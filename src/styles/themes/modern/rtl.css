@@ -41,3 +41,28 @@
 [dir="rtl"] .justify-between {
   justify-content: space-between;
 }
+
+/* RTL Support for Select Components */
+[dir="rtl"] [role="combobox"] {
+  text-align: right;
+}
+
+[dir="rtl"] [data-radix-select-trigger] {
+  text-align: right;
+}
+
+/* RTL Support for all text inputs and selects */
+[dir="rtl"] input[type="text"],
+[dir="rtl"] input[type="email"],
+[dir="rtl"] input[type="password"],
+[dir="rtl"] input[type="search"],
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+  text-align: right;
+}
+
+/* RTL Support for Select Label */
+[dir="rtl"] [data-radix-collection-item] {
+  padding-left: 0.5rem;
+  padding-right: 2rem;
+}
