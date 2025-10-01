@@ -98,3 +98,12 @@
   padding-left: 0.5rem;
   padding-right: 2rem;
 }
+
+/* Professional RTL Support for Select Item Text */
+[dir="rtl"] [data-radix-select-item] {
+  text-align: right;
+}
+
+[dir="rtl"] [data-radix-select-item] > span:not(.absolute) {
+  text-align: right;
+}
