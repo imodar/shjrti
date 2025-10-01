@@ -768,7 +768,7 @@ const Dashboard = () => {
                               >
                                 <Button className="w-full h-11 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 group-hover/btn:scale-[1.02]">
                                   <Edit className="h-4 w-4 ml-2" />
-                                  <span className="font-medium">{t('manage', 'إدارة')}</span>
+                                  <span className="font-medium">{t('manage', 'إدارة الأعضاء')}</span>
                                 </Button>
                               </Link>
                               
@@ -784,19 +784,9 @@ const Dashboard = () => {
                               >
                                 <Button variant="outline" className="w-full h-11 border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 hover:text-emerald-800 dark:hover:text-emerald-200 rounded-xl transition-all duration-300 group-hover/btn:scale-[1.02]">
                                   <Eye className="h-4 w-4 ml-2" />
-                                  <span className="font-medium">{t('view', 'عرض')}</span>
+                                  <span className="font-medium">{t('view', 'عرض الشجرة')}</span>
                                 </Button>
                               </Link>
-                              
-                              {/* Delete Button - Compact */}
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="w-10 h-11 p-0 text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all duration-300 group/btn"
-                                onClick={() => handleDeleteTreeClick(tree.id, tree.name)}
-                              >
-                                <Trash2 className="h-4 w-4 group-hover/btn:scale-110 transition-transform duration-200" />
-                              </Button>
                             </div>
                           </CardContent>
                           
