@@ -139,20 +139,20 @@ export function EnhancedDatePicker({
         </Button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-auto p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in z-[10020] max-w-[95vw] bg-white dark:bg-gray-800 !fixed !left-1/2 !top-1/2 !-translate-x-1/2 !-translate-y-1/2" 
-        align="center" 
-        sideOffset={0}
+        className="p-0 shadow-2xl border-2 border-amber-200/50 dark:border-amber-700/50 animate-scale-in bg-white dark:bg-gray-800" 
         avoidCollisions={false}
         onOpenAutoFocus={(e) => e.preventDefault()}
         style={{ 
-          position: 'fixed', 
-          left: '50%', 
-          top: '50%', 
+          position: 'fixed',
+          left: '50%',
+          top: '50%',
           transform: 'translate(-50%, -50%)',
           zIndex: 10020,
-          margin: 0
+          margin: 0,
+          maxWidth: 'min(95vw, 400px)',
+          maxHeight: '90vh',
+          overflow: 'auto'
         }}
-
       >
         {/* Enhanced Header */}
         <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-4 rounded-t-lg">
