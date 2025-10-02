@@ -386,9 +386,9 @@ const PublicTreeView = () => {
                       </h1>
                     </div>
                     {familyData?.description && (
-                      <p 
+                      <div 
                         className="text-muted-foreground mb-2"
-                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(familyData.description) }}
+                        dangerouslySetInnerHTML={{ __html: familyData.description }}
                       />
                     )}
                     <p className="text-gray-500 dark:text-gray-400 text-sm">
