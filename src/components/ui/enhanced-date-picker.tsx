@@ -134,10 +134,10 @@ export function EnhancedDatePicker({
             className
           )}
         >
-          <CalendarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
           <span className="text-sm mr-2 flex-1 text-right truncate min-w-0">
             {value ? (datePreference === 'hijri' ? formatHijriDate(value) : format(value, "dd/MM/yyyy", { locale: ar })) : placeholder}
           </span>
+          <CalendarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
         </Button>
       </DialogTrigger>
       <DialogContent 
