@@ -134,7 +134,7 @@ export function EnhancedDatePicker({
             className
           )}
         >
-          <span className="text-sm mr-2">
+          <span className="text-sm mr-2 text-right flex-1">
             {value ? (datePreference === 'hijri' ? formatHijriDate(value) : format(value, "dd/MM/yyyy", { locale: ar })) : placeholder}
           </span>
           <CalendarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
