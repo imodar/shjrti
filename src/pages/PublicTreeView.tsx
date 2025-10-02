@@ -21,6 +21,7 @@ import { GlobalHeader } from "@/components/GlobalHeader";
 import { OrganizationalChart } from "@/components/OrganizationalChart";
 import { supabase } from "@/integrations/supabase/client";
 import PasswordModal from "@/components/PasswordModal";
+import { sanitizeHtml } from "@/lib/security";
 
 const PublicTreeView = () => {
   const [searchParams] = useSearchParams();
@@ -385,9 +386,10 @@ const PublicTreeView = () => {
                       </h1>
                     </div>
                     {familyData?.description && (
-                      <p className="text-muted-foreground mb-2">
-                        {familyData.description}
-                      </p>
+                      <p 
+                        className="text-muted-foreground mb-2"
+                        dangerouslySetInnerHTML={{ __html: sanitizeHtml(familyData.description) }}
+                      />
                     )}
                     <p className="text-gray-500 dark:text-gray-400 text-sm">
                       عرض عام لشجرة العائلة - {familyTree.length} جيل
