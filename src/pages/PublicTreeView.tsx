@@ -435,7 +435,13 @@ const PublicTreeView = () => {
                   <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 min-h-[600px] overflow-auto shadow-xl">
                     <OrganizationalChart 
                       familyUnits={familyUnits} 
-                      zoomLevel={zoomLevel} 
+                      zoomLevel={zoomLevel}
+                      isPublicView={true}
+                      onSuggestEdit={(memberId, memberName) => {
+                        setSelectedMemberId(memberId);
+                        setSelectedMemberName(memberName);
+                        setSuggestEditOpen(true);
+                      }}
                     />
                   </div>
                 </TabsContent>

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, HeartCrack, Users, Crown, UserRound } from "lucide-react";
+import { Heart, HeartCrack, Users, Crown, UserRound, Edit3 } from "lucide-react";
 
 interface FamilyUnit {
   id: string;
@@ -16,6 +17,8 @@ interface FamilyUnit {
 interface OrganizationalChartProps {
   familyUnits: Map<string, FamilyUnit>;
   zoomLevel: number;
+  isPublicView?: boolean;
+  onSuggestEdit?: (memberId: string, memberName: string) => void;
 }
 
 interface Position {
@@ -26,7 +29,9 @@ interface Position {
 
 export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   familyUnits,
-  zoomLevel
+  zoomLevel,
+  isPublicView = false,
+  onSuggestEdit
 }) => {
   const UNIT_WIDTH = 380;
   const UNIT_HEIGHT = 180;
@@ -283,8 +288,23 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               </Badge>
             </div>
             
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden" 
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden relative" 
                   style={{ height: `${UNIT_HEIGHT}px` }}>
+              {/* Suggest Edit Button - Shows on hover for public view */}
+              {isPublicView && onSuggestEdit && husband && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity h-8 px-2 bg-background/80 hover:bg-background shadow-sm z-20"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSuggestEdit(husband.id, husband.name);
+                  }}
+                >
+                  <Edit3 className="h-3 w-3 ml-1" />
+                  <span className="text-xs">اقتراح تعديل</span>
+                </Button>
+              )}
               <CardContent className="p-4 h-full flex flex-col justify-center">
                 {isFounder && (
                   <div className="flex justify-center mb-3">
@@ -578,8 +598,23 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             width: `${UNIT_WIDTH}px`
           }}
         >
-          <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden"
+          <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden relative"
                 style={{ height: `${UNIT_HEIGHT}px` }}>
+            {/* Suggest Edit Button - Shows on hover for public view */}
+            {isPublicView && onSuggestEdit && (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity h-8 px-2 bg-background/80 hover:bg-background shadow-sm z-20"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSuggestEdit(member.id, member.name);
+                }}
+              >
+                <Edit3 className="h-3 w-3 ml-1" />
+                <span className="text-xs">اقتراح تعديل</span>
+              </Button>
+            )}
             <CardContent className="p-4 h-full flex flex-col justify-between">
                 {isFounder && (
                   <div className="flex justify-center mb-3">
