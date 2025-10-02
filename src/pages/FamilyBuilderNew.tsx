@@ -2904,9 +2904,9 @@ const FamilyBuilderNew = () => {
 
         {/* Main Content */}
         <div className="container mx-auto px-4 pt-2 pb-6">
-          <div className={cn("grid gap-6", isMobile ? "grid-cols-1" : "grid-cols-12")}>
+          <div className={cn("grid gap-6 items-stretch", isMobile ? "grid-cols-1" : "grid-cols-12")}>
             {/* Form Panel - Right Side on Desktop */}
-            <div className={cn("space-y-6", isMobile ? "order-2" : "col-span-8 order-2")}>
+            <div className={cn("space-y-6 h-full min-h-0", isMobile ? "order-2" : "col-span-8 order-2")}>
                <Card className="h-fit relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border-white/30 dark:border-gray-600/30 shadow-xl">
                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-500/10 dark:to-gray-500/5 rounded-lg"></div>
                   <CardHeader className={cn("relative", (formMode === 'view' || formMode === 'profile' || formMode === 'tree-settings') && "hidden")}>
@@ -3590,7 +3590,7 @@ const FamilyBuilderNew = () => {
             </div>
 
             {/* Member List - Left Side on Desktop */}
-            <div className={cn("space-y-4", isMobile ? "order-1" : "col-span-4 order-1")}>
+            <div className={cn("space-y-4 h-full min-h-0", isMobile ? "order-1" : "col-span-4 order-1")}>
               {isMobile ? <Drawer open={isMemberListOpen} onOpenChange={setIsMemberListOpen}>
                   <DrawerTrigger asChild>
                     <Button variant="outline" className="w-full flex items-center gap-2">
@@ -3603,7 +3603,7 @@ const FamilyBuilderNew = () => {
                         <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={packageData} />
                     </div>
                   </DrawerContent>
-                </Drawer> : <Card className="bg-white backdrop-blur-xl border-white/30 shadow-xl sticky top-6 h-[calc(100vh-8rem)] flex flex-col">
+                </Drawer> : <Card className="bg-white backdrop-blur-xl border-white/30 shadow-xl h-full min-h-0 flex flex-col">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-lg"></div>
                   <CardHeader className="pb-4 relative shrink-0">
                     <CardTitle className="flex items-center gap-2">
@@ -3613,7 +3613,7 @@ const FamilyBuilderNew = () => {
                        </span>
                      </CardTitle>
                   </CardHeader>
-                  <CardContent className="relative overflow-y-auto flex-1">
+                  <CardContent className="relative overflow-y-auto flex-1 min-h-0">
                       <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={packageData} />
                   </CardContent>
                 </Card>}
