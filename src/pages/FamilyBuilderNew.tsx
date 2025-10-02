@@ -3971,7 +3971,7 @@ const MemberList = ({
   onAddMember,
   packageData
 }: any) => {
-  return <div className="space-y-4">
+  return <div className="space-y-4 h-full min-h-0 flex flex-col">
       {/* Search and Filter on the same row */}
       <div className="flex gap-3">
         <div className="relative flex-1">
@@ -4021,7 +4021,7 @@ const MemberList = ({
         </TooltipProvider>}
 
       {/* Member List */}
-      <div className="space-y-3 max-h-[calc(100vh-20rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
+      <div className="space-y-3 overflow-y-auto flex-1 min-h-0 scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
         {memberListLoading ?
       // Loading skeletons
       Array.from({
