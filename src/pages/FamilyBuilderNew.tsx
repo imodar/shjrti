@@ -3971,7 +3971,7 @@ const MemberList = ({
   onAddMember,
   packageData
 }: any) => {
-  return <div className="space-y-4">
+  return <div className="space-y-4 h-full min-h-0 flex flex-col">
       {/* Search and Filter on the same row */}
       <div className="flex gap-3">
         <div className="relative flex-1">
