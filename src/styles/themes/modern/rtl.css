@@ -84,3 +84,9 @@
 [dir="rtl"] .date-text {
   text-align: right;
 }
+
+/* RTL support for select trigger */
+[dir="rtl"] .select-trigger-rtl {
+  flex-direction: row-reverse;
+  text-align: right;
+}
