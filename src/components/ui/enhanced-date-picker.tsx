@@ -129,12 +129,12 @@ export function EnhancedDatePicker({
           variant="outline"
           disabled={disabled}
           className={cn(
-            "h-9 text-sm border-2 border-gray-200/50 dark:border-gray-700/50 justify-between font-normal w-full hover:border-amber-500 focus:ring-4 focus:ring-amber-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-4",
+            "h-9 text-sm border-2 border-gray-200/50 dark:border-gray-700/50 justify-between font-normal w-full hover:border-amber-500 focus:ring-4 focus:ring-amber-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-4 pl-4 date-trigger",
             !value && "text-gray-500 dark:text-gray-400",
             className
           )}
         >
-          <span className="text-sm mr-2 flex-1 text-right truncate min-w-0">
+          <span className="text-sm flex-1 truncate min-w-0 date-text">
             {value ? (datePreference === 'hijri' ? formatHijriDate(value) : format(value, "dd/MM/yyyy", { locale: ar })) : placeholder}
           </span>
           <CalendarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />

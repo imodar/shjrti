@@ -75,3 +75,12 @@
 [dir="rtl"] [data-radix-select-item] > span:not(.absolute) {
   text-align: right;
 }
+
+/* RTL support for date picker trigger */
+[dir="rtl"] .date-trigger {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .date-text {
+  text-align: right;
+}
