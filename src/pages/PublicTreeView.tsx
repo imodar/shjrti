@@ -385,7 +385,7 @@ const PublicTreeView = () => {
                       </h1>
                     </div>
                     {familyData?.description && (
-                      <p className="text-gray-600 dark:text-gray-300 mb-2">
+                      <p className="text-muted-foreground mb-2">
                         {familyData.description}
                       </p>
                     )}
