@@ -55,3 +55,12 @@ verify_jwt = true
 
 [functions.cleanup-old-invoices]
 verify_jwt = true
+
+[functions.submit-edit-suggestion]
+verify_jwt = false
+
+[functions.verify-edit-suggestion]
+verify_jwt = false
+
+[functions.notify-suggestion-status]
+verify_jwt = true

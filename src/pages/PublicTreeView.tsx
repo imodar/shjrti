@@ -22,6 +22,7 @@ import { OrganizationalChart } from "@/components/OrganizationalChart";
 import { supabase } from "@/integrations/supabase/client";
 import PasswordModal from "@/components/PasswordModal";
 import { sanitizeHtml } from "@/lib/security";
+import { SuggestEditDialog } from "@/components/SuggestEditDialog";
 
 const PublicTreeView = () => {
   const [searchParams] = useSearchParams();
@@ -34,6 +35,11 @@ const PublicTreeView = () => {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [isPasswordCorrect, setIsPasswordCorrect] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
+  
+  // Suggest Edit Dialog state
+  const [suggestEditOpen, setSuggestEditOpen] = useState(false);
+  const [selectedMemberId, setSelectedMemberId] = useState<string>("");
+  const [selectedMemberName, setSelectedMemberName] = useState<string>("");
   
   // Get family ID from URL parameters
   const familyId = searchParams.get('familyId');
@@ -440,6 +446,14 @@ const PublicTreeView = () => {
       </main>
       
       <GlobalFooter />
+
+      <SuggestEditDialog
+        isOpen={suggestEditOpen}
+        onClose={() => setSuggestEditOpen(false)}
+        familyId={familyId}
+        memberId={selectedMemberId}
+        memberName={selectedMemberName}
+      />
     </div>
   );
 };

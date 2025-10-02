@@ -936,6 +936,81 @@ export type Database = {
           },
         ]
       }
+      tree_edit_suggestions: {
+        Row: {
+          admin_notes: string | null
+          created_at: string | null
+          family_id: string
+          id: string
+          is_email_verified: boolean | null
+          member_id: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submitter_email: string
+          submitter_name: string
+          suggested_changes: Json | null
+          suggestion_text: string
+          suggestion_type: string
+          updated_at: string | null
+          verification_code: string | null
+          verification_code_expires_at: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string | null
+          family_id: string
+          id?: string
+          is_email_verified?: boolean | null
+          member_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitter_email: string
+          submitter_name: string
+          suggested_changes?: Json | null
+          suggestion_text: string
+          suggestion_type: string
+          updated_at?: string | null
+          verification_code?: string | null
+          verification_code_expires_at?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string | null
+          family_id?: string
+          id?: string
+          is_email_verified?: boolean | null
+          member_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitter_email?: string
+          submitter_name?: string
+          suggested_changes?: Json | null
+          suggestion_text?: string
+          suggestion_type?: string
+          updated_at?: string | null
+          verification_code?: string | null
+          verification_code_expires_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tree_edit_suggestions_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tree_edit_suggestions_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "family_tree_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_status: {
         Row: {
           created_at: string
