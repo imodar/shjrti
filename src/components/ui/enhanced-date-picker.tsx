@@ -18,7 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDatePreference } from "@/contexts/DatePreferenceContext";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 // Hijri calendar conversion utilities
 const HIJRI_MONTHS = [
@@ -94,7 +93,6 @@ export function EnhancedDatePicker({
 }: EnhancedDatePickerProps) {
   const [open, setOpen] = React.useState(false);
   const { datePreference, setDatePreference } = useDatePreference();
-  const { direction } = useLanguage();
   const [hijriDate, setHijriDate] = React.useState(() => value ? toHijri(value) : null);
   
 
@@ -136,10 +134,7 @@ export function EnhancedDatePicker({
             className
           )}
         >
-          <span
-            dir={direction}
-            className={cn("text-sm mr-2 flex-1", direction === 'rtl' ? 'text-right' : 'text-left')}
-          >
+          <span className="text-sm mr-2 flex-1 text-right">
             {value ? (datePreference === 'hijri' ? formatHijriDate(value) : format(value, "dd/MM/yyyy", { locale: ar })) : placeholder}
           </span>
           <CalendarIcon className="h-4 w-4 text-amber-500 flex-shrink-0" />
