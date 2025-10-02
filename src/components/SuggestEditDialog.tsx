@@ -74,14 +74,21 @@ export function SuggestEditDialog({
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Edge function error:", error);
+        throw new Error(error.message || "Failed to submit suggestion");
+      }
+
+      if (!data || !data.suggestionId) {
+        throw new Error("Invalid response from server");
+      }
 
       setSuggestionId(data.suggestionId);
       setStep("verify");
       toast.success("Verification code sent to your email!");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Submit error:", error);
-      toast.error("Failed to submit suggestion. Please try again.");
+      toast.error(error.message || "Failed to submit suggestion. The feature may not be deployed yet. Please try again later.");
     } finally {
       setLoading(false);
     }
