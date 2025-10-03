@@ -274,11 +274,19 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   };
   
   const getFather = () => {
-    return familyMembers.find(m => m.id === member.father_id);
+    console.log('Member data:', member);
+    console.log('Looking for father with father_id:', member.father_id, 'or fatherId:', member.fatherId);
+    console.log('All family members:', familyMembers);
+    const father = familyMembers.find(m => m.id === member.father_id || m.id === member.fatherId);
+    console.log('Found father:', father);
+    return father;
   };
   
   const getMother = () => {
-    return familyMembers.find(m => m.id === member.mother_id);
+    console.log('Looking for mother with mother_id:', member.mother_id, 'or motherId:', member.motherId);
+    const mother = familyMembers.find(m => m.id === member.mother_id || m.id === member.motherId);
+    console.log('Found mother:', mother);
+    return mother;
   };
 
   // Get lineage display according to the updated rules
