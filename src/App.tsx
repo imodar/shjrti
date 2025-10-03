@@ -25,6 +25,7 @@ import FamilyBuilderNew from "./pages/FamilyBuilderNew";
 
 import FamilyTreeView from "./pages/FamilyTreeView";
 import FamilyStatistics from "./pages/FamilyStatistics";
+import FamilyGallery from "./pages/FamilyGallery";
 import Profile from "./pages/Profile";
 import Payments from "./pages/Payments";
 import PlanSelection from "./pages/PlanSelection";
@@ -103,6 +104,11 @@ const App = () => (
                   <Route path="/family-statistics" element={
                     <ProtectedRoute>
                       <FamilyStatistics />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/family-gallery" element={
+                    <ProtectedRoute>
+                      <FamilyGallery />
                     </ProtectedRoute>
                   } />
                   <Route path="/profile" element={
