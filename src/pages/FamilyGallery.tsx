@@ -419,7 +419,7 @@ const FamilyGallery = () => {
 
       {/* Memory Detail Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-3xl" dir="rtl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
               <span>{selectedMemory?.original_filename}</span>
