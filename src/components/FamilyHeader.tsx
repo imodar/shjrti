@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { TreePine, Star, Settings, Users, UserIcon, UserRoundIcon, Crown } from "lucide-react";
+import { TreePine, Star, Settings, Users, UserIcon, UserRoundIcon, Crown, Image } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 interface FamilyHeaderProps {
   familyData?: {
@@ -29,6 +29,7 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
   // Determine which page is currently active
   const isTreeBuilderActive = location.pathname.includes('/family-builder-new');
   const isTreeViewActive = location.pathname.includes('/family-tree-view');
+  const isGalleryActive = location.pathname.includes('/family-gallery');
   const isStatisticsActive = location.pathname.includes('/family-statistics');
   return <section className="py-2 relative">
       <div className="mb-2 relative">
@@ -82,6 +83,14 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
                      <span className={`hidden sm:inline ${isTreeViewActive ? 'relative z-10' : ''}`}>عرض الشجرة</span>
                      {isTreeViewActive && <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300"></div>}
                      {!isTreeViewActive && <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>}
+                   </button>
+                   
+                   <button onClick={() => navigate(`/family-gallery?family=${familyId}`)} className={`group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ${isGalleryActive ? "text-white bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 overflow-hidden" : "text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 backdrop-blur-sm"}`}>
+                     {isGalleryActive && <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>}
+                     <Image className={`h-4 w-4 ${isGalleryActive ? 'relative z-10' : 'text-purple-500 group-hover:text-purple-600 transition-colors duration-300'}`} />
+                     <span className={`hidden sm:inline ${isGalleryActive ? 'relative z-10' : ''}`}>ألبوم العائلة</span>
+                     {isGalleryActive && <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300"></div>}
+                     {!isGalleryActive && <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>}
                    </button>
                    
                     <button onClick={() => navigate(`/family-statistics?family=${familyId}`)} className={`group relative flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ${isStatisticsActive ? "text-white bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 overflow-hidden" : "text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 backdrop-blur-sm"}`}>
