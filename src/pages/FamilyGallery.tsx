@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   ArrowLeft, 
   Upload, 
@@ -44,6 +45,8 @@ const FamilyGallery = () => {
   const [selectedMemory, setSelectedMemory] = useState<FamilyMemory | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [editedCaption, setEditedCaption] = useState<string>("");
+  const [isSavingCaption, setIsSavingCaption] = useState(false);
 
   // Load memories
   const loadMemories = useCallback(async () => {
@@ -257,6 +260,45 @@ const FamilyGallery = () => {
     }
   };
 
+  // Save caption
+  const saveCaption = async (memory: FamilyMemory) => {
+    try {
+      setIsSavingCaption(true);
+
+      const { error } = await supabase
+        .from('family_memories')
+        .update({ caption: editedCaption })
+        .eq('id', memory.id);
+
+      if (error) throw error;
+
+      toast({
+        title: "نجاح",
+        description: "تم حفظ الوصف بنجاح",
+      });
+
+      await loadMemories();
+      
+      // Update selected memory
+      if (selectedMemory) {
+        setSelectedMemory({
+          ...selectedMemory,
+          caption: editedCaption
+        });
+      }
+
+    } catch (error) {
+      console.error('Save caption error:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل حفظ الوصف",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSavingCaption(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir="rtl">
@@ -372,6 +414,7 @@ const FamilyGallery = () => {
                       className="group relative overflow-hidden bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-200/30 dark:border-purple-700/30 shadow-lg hover:shadow-xl transition-all cursor-pointer"
                       onClick={() => {
                         setSelectedMemory(memory);
+                        setEditedCaption(memory.caption || "");
                         setIsModalOpen(true);
                       }}
                     >
@@ -452,13 +495,18 @@ const FamilyGallery = () => {
                 </div>
               </div>
 
-              {selectedMemory.caption && (
-                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    {selectedMemory.caption}
-                  </p>
-                </div>
-              )}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  وصف الصورة
+                </label>
+                <Textarea
+                  value={editedCaption}
+                  onChange={(e) => setEditedCaption(e.target.value)}
+                  placeholder="أضف وصفاً للصورة..."
+                  className="min-h-[100px] resize-none"
+                  dir="rtl"
+                />
+              </div>
 
               <div className="flex gap-2">
                 <Button
@@ -467,6 +515,20 @@ const FamilyGallery = () => {
                   className="flex-1"
                 >
                   إغلاق
+                </Button>
+                <Button
+                  onClick={() => saveCaption(selectedMemory)}
+                  disabled={isSavingCaption}
+                  className="flex-1"
+                >
+                  {isSavingCaption ? (
+                    <>
+                      <Loader2 className="h-4 w-4 ml-2 animate-spin" />
+                      جاري الحفظ...
+                    </>
+                  ) : (
+                    "حفظ الوصف"
+                  )}
                 </Button>
                 <Button
                   variant="destructive"
