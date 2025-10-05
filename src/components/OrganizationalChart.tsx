@@ -255,9 +255,9 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
         const rootCenterX = rootPosition.x + UNIT_WIDTH / 2;
         const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
         
-        // Calculate offset to center the root in the viewport
+        // Calculate offset to position the root at the top of the viewport
         const offsetX = (containerWidth / 2) - rootCenterX;
-        const offsetY = (containerHeight / 2) - rootCenterY;
+        const offsetY = 150 - rootCenterY;
         
         setPanOffset({ x: offsetX, y: offsetY });
         setHasInitialized(true);
