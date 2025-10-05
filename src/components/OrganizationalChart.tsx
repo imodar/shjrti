@@ -338,58 +338,21 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                         الزوجة
                       </Badge>
                       {(() => {
-                        try {
-                          const wife = wives[0];
-                          // Find wife's single unit to determine parents (display units)
-                          const wifeSingleUnit = Array.from(displayUnits.values()).find((u: any) =>
-                            u.type !== 'married' && (u as any).members?.[0]?.id === wife.id
-                          ) as any | undefined;
-                          const wParent: any = wifeSingleUnit?.parentUnitId ? displayUnits.get(wifeSingleUnit.parentUnitId) : undefined;
-                          const candidates = wParent && wParent.type === 'married' ? (wParent.members || []).filter((m: any) => m?.gender === 'female') : [];
-                          let hasMulti = (candidates?.length || 0) >= 2;
-                          let mId: string | undefined = (wife as any).motherId || (wife as any).mother_id || (wife as any).motherID || (wife as any)?.mother?.id;
-                          if (!mId && wParent) {
-                            const siblingUnits = (wParent.childUnits || [])
-                              .map((id: string) => displayUnits.get(id))
-                              .filter(Boolean) as any[];
-                            const inferred = siblingUnits
-                              .map((u: any) => (u as any).members?.[0])
-                              .find((s: any) => s && s.id !== wife.id && (s.motherId || s.mother_id));
-                            mId = inferred?.motherId || inferred?.mother_id;
-                          }
-                          let mName: string | undefined;
-                          if (mId) {
-                            const found = candidates.find((w: any) => w?.id === mId);
-                            mName = found?.name;
-                          }
-                          // Fallback: resolve via original (familyUnits) even if no single display unit exists
-                          if (!mName) {
-                            const wifeSingleOriginal = Array.from(familyUnits.values()).find((u: any) =>
-                              u.type !== 'married' && (u as any).members?.[0]?.id === wife.id
-                            ) as any | undefined;
-                            const parentOriginal: any = wifeSingleOriginal?.parentUnitId ? familyUnits.get(wifeSingleOriginal.parentUnitId) : undefined;
-                            if (parentOriginal) {
-                              const father = (parentOriginal.members || []).find((m: any) => m?.gender === 'male');
-                              const mother = (parentOriginal.members || []).find((m: any) => m?.gender === 'female');
-                              const fatherMarriedUnits = Array.from(familyUnits.values()).filter((u: any) =>
-                                u.type === 'married' && (u.members || []).some((m: any) => m?.id === father?.id && m?.gender === 'male')
-                              );
-                              const wivesCount = fatherMarriedUnits.reduce((acc: number, u: any) => acc + (u.members || []).filter((m: any) => m?.gender === 'female').length, 0);
-                              if (wivesCount >= 2) hasMulti = true;
-                              if (!mName) mName = mother?.name;
-                            }
-                          }
-                          if (hasMulti && mName) {
-                            return (
-                              <Badge variant="outline" className="text-xs mt-1 border-pink-200 text-pink-700 dark:text-pink-300">
-                                والدتها {mName}
-                              </Badge>
-                            );
-                          }
-                        } catch (e) {
-                          // no-op
-                        }
-                        return null;
+                        const wife = wives[0];
+                        const fatherId = (wife as any).father_id || (wife as any).fatherId || (wife as any)?.father?.id;
+                        const motherId = (wife as any).mother_id || (wife as any).motherId || (wife as any)?.mother?.id;
+                        if (!fatherId || !motherId) return null;
+                        const fatherMarriages = (marriages || []).filter((m: any) => m.husband_id === fatherId && (m.is_active !== false));
+                        const uniqueWives = new Set(fatherMarriages.map((m: any) => m.wife_id));
+                        if (uniqueWives.size < 2) return null;
+                        const motherMember = (members || []).find((m: any) => m.id === motherId);
+                        const motherName = motherMember?.name as string | undefined;
+                        if (!motherName) return null;
+                        return (
+                          <Badge variant="outline" className="text-xs mt-1 border-pink-200 text-pink-700 dark:text-pink-300">
+                            والدتها {motherName}
+                          </Badge>
+                        );
                       })()}
                     </div>
 
