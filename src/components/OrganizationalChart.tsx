@@ -506,84 +506,21 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       const member = unit.members[0];
       const isFounder = member.is_founder;
       
-      // Determine mother when father has 2+ wives (robust)
+      // Get mother information directly from member data
       const parentUnit = unit.parentUnitId ? displayUnits.get(unit.parentUnitId) : undefined;
       const wives = parentUnit && (parentUnit as any).type === 'married'
         ? (parentUnit as any).members.filter((m: any) => m?.gender === 'female')
         : [];
       const fatherHasMultipleWives = wives.length >= 2;
 
-      // Debug logging for specific members
-      if (member.name === 'شهد' || member.name === 'أحمد') {
-        console.log(`=== DEBUG ${member.name} ===`);
-        console.log('Member:', member);
-        console.log('Parent unit:', parentUnit);
-        console.log('Wives:', wives);
-        console.log('Father has multiple wives:', fatherHasMultipleWives);
-      }
-
-      let motherId: string | undefined =
-        (member as any).motherId ||
-        (member as any).mother_id ||
-        (member as any).motherID ||
-        (member as any)?.mother?.id;
-
-      if (member.name === 'شهد' || member.name === 'أحمد') {
-        console.log('Initial motherId:', motherId);
-      }
-
-      // Try to infer from siblings if missing
-      if (!motherId && parentUnit) {
-        const siblingUnits = ((parentUnit as any).childUnits || [])
-          .map((id: string) => displayUnits.get(id))
-          .filter(Boolean) as FamilyUnit[];
-        const inferred = siblingUnits
-          .map((u: FamilyUnit) => (u as any).members?.[0])
-          .find((s: any) => s && s.id !== (member as any).id && (s.motherId || s.mother_id));
-        const inferredMotherId = inferred?.motherId || inferred?.mother_id;
-        if (inferredMotherId) motherId = inferredMotherId;
-        
-        if (member.name === 'شهد' || member.name === 'أحمد') {
-          console.log('Sibling units:', siblingUnits);
-          console.log('Inferred motherId:', inferredMotherId);
-          console.log('Final motherId after sibling inference:', motherId);
-        }
-      }
-
-      // Match mother by id within wives
+      // Read mother_id directly from member
+      const motherId = (member as any).mother_id;
+      
+      // Find mother name from wives if mother_id exists
       let motherName: string | undefined;
-      let motherInUnit = motherId ? wives.find((w: any) => (w?.id === motherId)) : undefined;
-      motherName = (motherInUnit?.name as string | undefined);
-
-      if (member.name === 'شهد' || member.name === 'أحمد') {
-        console.log('Mother in unit:', motherInUnit);
-        console.log('Mother name from ID match:', motherName);
-      }
-
-      // Last resort: map via original married units (per-wife child mapping)
-      if (!motherName && parentUnit && (parentUnit as any).originalUnitIds) {
-        const originalIds = ((parentUnit as any).originalUnitIds as string[]) || [];
-        if (member.name === 'شهد' || member.name === 'أحمد') {
-          console.log('Original unit IDs:', originalIds);
-        }
-        
-        for (const oid of originalIds) {
-          const original = familyUnits.get(oid) as any;
-          if (!original) continue;
-          const wife = (original.members || []).find((m: any) => m?.gender === 'female');
-          if ((original.childUnits || []).includes(unit.id)) {
-            motherName = wife?.name;
-            if (member.name === 'شهد' || member.name === 'أحمد') {
-              console.log('Found mother via original unit:', original, 'Wife:', wife, 'Mother name:', motherName);
-            }
-            break;
-          }
-        }
-      }
-
-      if (member.name === 'شهد' || member.name === 'أحمد') {
-        console.log('Final mother name:', motherName);
-        console.log('=== END DEBUG ===');
+      if (motherId && fatherHasMultipleWives) {
+        const motherInUnit = wives.find((w: any) => w?.id === motherId);
+        motherName = motherInUnit?.name;
       }
 
       const motherLabel = (member.gender === 'female' ? 'والدتها ' : 'والدته ');
