@@ -3,10 +3,10 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Users, BarChart3, ZoomIn, ZoomOut, Maximize, Minimize, TreePine, Heart, HeartCrack, Star, Gem, Calendar } from "lucide-react";
+import { ArrowLeft, Users, BarChart3, ZoomIn, ZoomOut, Maximize, Minimize, TreePine, Heart, HeartCrack, Star, Sparkles, Crown, Gem, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
@@ -37,25 +37,32 @@ const FamilyTreeView = () => {
   const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>("all");
 
   const traditionalRef = useRef<HTMLDivElement>(null);
+  const diagramRef = useRef<HTMLDivElement>(null);
 
   // Reset zoom and center when filter changes
   const handleRootMarriageChange = (value: string) => {
     setSelectedRootMarriage(value);
     setZoomLevel(1); // Reset zoom to default
-    // Center container on next tick
+    // Center both containers on next tick
     setTimeout(() => {
       if (traditionalRef.current) {
         const el = traditionalRef.current;
         el.scrollLeft = Math.max(0, (el.scrollWidth - el.clientWidth) / 2);
         el.scrollTop = 0;
       }
+      if (diagramRef.current) {
+        const el = diagramRef.current;
+        el.scrollLeft = Math.max(0, (el.scrollWidth - el.clientWidth) / 2);
+        el.scrollTop = 0;
+      }
     }, 0);
   };
 
+  const [activeTab, setActiveTab] = useState<string>("traditional");
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const handleToggleFullscreen = () => {
-    const el = traditionalRef.current;
+    const el = (activeTab === 'traditional' ? traditionalRef.current : diagramRef.current);
     if (!el) return;
     if (document.fullscreenElement) {
       document.exitFullscreen?.();
@@ -628,6 +635,20 @@ const FamilyTreeView = () => {
               {/* شجرة العائلة */}
               <div className={hasAIFeatures ? "lg:col-span-3" : "col-span-1"}>
                 {/* Tree Container */}
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-8 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
+                <TabsTrigger value="traditional" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+                  <TreePine className="ml-2 h-4 w-4" />
+                  العرض التقليدي
+                </TabsTrigger>
+                <TabsTrigger value="diagram" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+                  <Sparkles className="ml-2 h-4 w-4" />
+                  العرض التخطيطي
+                </TabsTrigger>
+              </TabsList>
+              
+              {/* Traditional Tree View - Organizational Chart Style */}
+              <TabsContent value="traditional">
                 <div ref={traditionalRef} className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-xl shadow-lg overflow-hidden">
                   {/* Filter Bar at Top */}
                   <div className="flex items-center justify-between p-4 border-b border-white/40 dark:border-gray-600/40 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10">
@@ -686,6 +707,161 @@ const FamilyTreeView = () => {
                     />
                   </div>
                 </div>
+              </TabsContent>
+
+              {/* Diagram Tree View - Enhanced for Cousin Visualization */}
+              <TabsContent value="diagram">
+                <div ref={diagramRef} className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 min-h-[600px] overflow-auto shadow-xl relative">
+                  {/* Zoom Controls */}
+                  <div className="absolute top-4 right-4 z-10">
+                    <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
+                      <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                        <ZoomOut className="h-4 w-4" />
+                      </Button>
+                      <span className="text-sm min-w-[3rem] text-center font-medium">
+                        {Math.round(zoomLevel * 100)}%
+                      </span>
+                      <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                        <ZoomIn className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={handleToggleFullscreen} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                        {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="transition-transform duration-300 relative" style={{
+                      transform: `scale(${zoomLevel})`,
+                      transformOrigin: 'top center'
+                    }}>
+                     {familyTree.length > 0 ? <div className="relative min-h-[700px] flex flex-col items-center justify-center pt-8 space-y-24">
+                        {familyTree.map(([generation, siblingGroups], genIndex) => <div key={generation} className="relative w-full">
+                            {/* Generation Header */}
+                            <div className="text-center mb-16">
+                              <div className="relative inline-block">
+                                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full blur-xl"></div>
+                                <Badge className="relative text-lg px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg border-0">
+                                  <Crown className="h-5 w-5 mr-2" />
+                                  الجيل {generation}
+                                </Badge>
+                              </div>
+                            </div>
+
+                            {/* All Cousin Groups in Same Row */}
+                            <div className="flex justify-center items-start gap-20 flex-wrap min-w-max">
+                              {siblingGroups.map((siblingGroup, groupIndex) => <div key={groupIndex} className="relative">
+                                  {/* Family Group Container */}
+                                  <div className="relative bg-gradient-to-br from-white/40 to-emerald-50/40 dark:from-gray-800/40 dark:to-emerald-900/40 backdrop-blur-sm rounded-2xl p-6 border-2 border-emerald-200/50 dark:border-emerald-600/50 shadow-lg">
+                                     {/* Family Group Label */}
+                                     <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                                       <Badge className="bg-gradient-to-r from-emerald-400 to-teal-400 text-white text-xs px-3 py-1 shadow-md">
+                                         {(() => {
+                                      // Get parent family name based on the first unit's parent
+                                      if (siblingGroup.length > 0 && siblingGroup[0].parentUnitId) {
+                                        const parentUnit = familyUnits.get(siblingGroup[0].parentUnitId);
+                                        if (parentUnit) {
+                                          if (parentUnit.type === 'married' && parentUnit.members.length === 2) {
+                                            const [husband, wife] = parentUnit.members;
+                                            return `عائلة ${husband.name}`;
+                                          } else if (parentUnit.members.length === 1) {
+                                            return `عائلة ${parentUnit.members[0].name}`;
+                                          }
+                                        }
+                                      }
+                                      return `عائلة ${groupIndex + 1}`;
+                                    })()}
+                                       </Badge>
+                                     </div>
+
+                                    {/* Connection Line from Parent */}
+                                    {generation > 1 && <div className="absolute -top-12 left-1/2 w-1 h-8 bg-gradient-to-b from-emerald-400 to-transparent rounded-full transform -translate-x-1/2"></div>}
+
+                                    {/* Siblings Row */}
+                                    <div className="flex gap-8 items-center justify-center pt-4">
+                                      {siblingGroup.map((unit: FamilyUnit, unitIndex) => <div key={unit.id} className="relative">
+                                          {unit.type === 'married' && unit.members.length === 2 ?
+                                    // Married Couple Display
+                                    <div className="relative">
+                                              <div className="flex items-center justify-center w-72 h-36 rounded-2xl border-3 border-pink-300/60 bg-gradient-to-r from-pink-100/80 to-rose-100/80 dark:from-pink-900/40 dark:to-rose-900/40 backdrop-blur-xl shadow-2xl">
+                                                <div className="flex items-center gap-4">
+                                                  <div className="text-center">
+                                                    <Avatar className="h-16 w-16 mx-auto mb-2 ring-3 ring-pink-300/50">
+                                                      {unit.members[0].image_url ? <AvatarImage src={unit.members[0].image_url} alt={unit.members[0].name} /> : <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white text-lg font-bold">
+                                                          {unit.members[0].name.slice(0, 2)}
+                                                        </AvatarFallback>}
+                                                    </Avatar>
+                                                    <h3 className="font-bold text-xs text-emerald-700 dark:text-emerald-300">{unit.members[0].name}</h3>
+                                                  </div>
+                                                  <Heart className="h-6 w-6 text-pink-500" />
+                                                  <div className="text-center">
+                                                    <Avatar className="h-16 w-16 mx-auto mb-2 ring-3 ring-teal-300/50">
+                                                      {unit.members[1].image_url ? <AvatarImage src={unit.members[1].image_url} alt={unit.members[1].name} /> : <AvatarFallback className="bg-gradient-to-br from-teal-500 to-emerald-500 text-white text-lg font-bold">
+                                                          {unit.members[1].name.slice(0, 2)}
+                                                        </AvatarFallback>}
+                                                    </Avatar>
+                                                    <h3 className="font-bold text-xs text-teal-700 dark:text-teal-300">{unit.members[1].name}</h3>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </div> :
+                                    // Single Person Display
+                                    <div className="relative">
+                                              <div className="flex items-center justify-center w-40 h-36 rounded-2xl border-3 border-accent/60 bg-gradient-to-br from-accent/20 to-secondary/20 backdrop-blur-xl shadow-2xl">
+                                                <div className="text-center">
+                                                  <Avatar className="h-20 w-20 mx-auto mb-3 ring-3 ring-accent/50">
+                                                    {unit.members[0].image_url ? <AvatarImage src={unit.members[0].image_url} alt={unit.members[0].name} /> : <AvatarFallback className="bg-gradient-to-br from-accent to-secondary text-white text-xl font-bold">
+                                                        {unit.members[0].name.slice(0, 2)}
+                                                      </AvatarFallback>}
+                                                  </Avatar>
+                                                  <h3 className="font-bold text-sm text-accent dark:text-accent">{unit.members[0].name}</h3>
+                                                  <Badge variant="outline" className="text-xs mt-1">
+                                                    {unit.members[0].gender === 'male' ? 'ذكر' : 'أنثى'}
+                                                  </Badge>
+                                                </div>
+                                              </div>
+                                            </div>}
+
+                                          {/* Horizontal Connector Between Siblings */}
+                                          {unitIndex < siblingGroup.length - 1 && <div className="absolute top-1/2 -right-4 w-8 h-0.5 bg-gradient-to-r from-emerald-400 to-emerald-300 transform -translate-y-1/2"></div>}
+                                        </div>)}
+                                    </div>
+                                  </div>
+
+                                  {/* Connector Between Family Groups */}
+                                  {groupIndex < siblingGroups.length - 1 && <div className="absolute top-1/2 -right-10 w-20 h-1 bg-gradient-to-r from-teal-300 via-emerald-300 to-teal-300 rounded-full transform -translate-y-1/2 opacity-60"></div>}
+                                </div>)}
+                            </div>
+
+                            {/* Connection to Next Generation */}
+                            {genIndex < familyTree.length - 1 && <div className="flex justify-center mt-16">
+                                <div className="w-2 h-20 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full shadow-lg"></div>
+                              </div>}
+                          </div>)}
+                      </div> : <div className="text-center py-24">
+                        <div className="relative max-w-md mx-auto">
+                          <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
+                          
+                          <div className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-12 px-8 shadow-xl">
+                            <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
+                              <Sparkles className="h-12 w-12 text-white" />
+                            </div>
+                            <h3 className="text-2xl font-bold text-gray-700 dark:text-gray-200 mb-4">
+                              لا توجد شجرة عائلة بعد
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-300 mb-8">
+                              ابدأ ببناء شجرة عائلتك لرؤية العرض التخطيطي الجميل!
+                            </p>
+                            <Button onClick={() => navigate('/family-builder')} className="gap-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg">
+                              <Sparkles className="h-5 w-5" />
+                              بناء العائلة
+                            </Button>
+                          </div>
+                        </div>
+                      </div>}
+                  </div>
+                </div>
+                </TabsContent>
+
+                </Tabs>
               </div>
             </div>
 
