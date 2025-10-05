@@ -381,6 +381,22 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                         <Badge variant="outline" className="text-xs mt-1 border-blue-200 text-blue-700 dark:text-blue-300">
                           الزوج
                         </Badge>
+                        {(() => {
+                          const fatherId = (husband as any).father_id || (husband as any).fatherId || (husband as any)?.father?.id;
+                          const motherId = (husband as any).mother_id || (husband as any).motherId || (husband as any)?.mother?.id;
+                          if (!fatherId || !motherId) return null;
+                          const fatherMarriages = (marriages || []).filter((m: any) => m.husband_id === fatherId && (m.is_active !== false));
+                          const uniqueWives = new Set(fatherMarriages.map((m: any) => m.wife_id));
+                          if (uniqueWives.size < 2) return null;
+                          const motherMember = (members || []).find((m: any) => m.id === motherId);
+                          const motherName = motherMember?.name as string | undefined;
+                          if (!motherName) return null;
+                          return (
+                            <Badge variant="outline" className="text-xs mt-1 border-blue-200 text-blue-700 dark:text-blue-300">
+                              والدته {motherName}
+                            </Badge>
+                          );
+                        })()}
                       </div>
                     )}
                   </div>
@@ -400,6 +416,22 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                           )}
                         </Avatar>
                         <h4 className="font-semibold text-xs text-foreground text-center break-words leading-tight mb-0.5">{husband.name}</h4>
+                        {(() => {
+                          const fatherId = (husband as any).father_id || (husband as any).fatherId || (husband as any)?.father?.id;
+                          const motherId = (husband as any).mother_id || (husband as any).motherId || (husband as any)?.mother?.id;
+                          if (!fatherId || !motherId) return null;
+                          const fatherMarriages = (marriages || []).filter((m: any) => m.husband_id === fatherId && (m.is_active !== false));
+                          const uniqueWives = new Set(fatherMarriages.map((m: any) => m.wife_id));
+                          if (uniqueWives.size < 2) return null;
+                          const motherMember = (members || []).find((m: any) => m.id === motherId);
+                          const motherName = motherMember?.name as string | undefined;
+                          if (!motherName) return null;
+                          return (
+                            <Badge variant="outline" className="text-[8px] border-blue-200 text-blue-700 dark:text-blue-300 px-0.5 py-0 mt-0.5">
+                              والدته {motherName}
+                            </Badge>
+                          );
+                        })()}
                       </div>
                     )}
                     
