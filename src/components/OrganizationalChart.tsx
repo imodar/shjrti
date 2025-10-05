@@ -510,16 +510,22 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       const member = unit.members[0];
       const isFounder = member.is_founder;
       
-      // Robust mother badge logic using original data
+      // Robust mother badge logic using original data with fallback to unit composition
       const fatherId = (member as any).father_id || (member as any).fatherId || (member as any)?.father?.id;
       const motherId = (member as any).mother_id || (member as any).motherId || (member as any)?.mother?.id;
+
+      // Parent unit wives count (fallback when marriages data is incomplete)
+      const parentUnit = unit.parentUnitId ? displayUnits.get(unit.parentUnitId) : undefined;
+      const parentWivesCount = parentUnit && (parentUnit as any).type === 'married'
+        ? ((parentUnit as any).members || []).filter((m: any) => m?.gender === 'female').length
+        : 0;
       
       // Count unique wives from marriages data
       const fatherMarriages = fatherId
         ? marriages.filter((m: any) => m.husband_id === fatherId)
         : [];
       const uniqueWives = new Set(fatherMarriages.map((m: any) => m.wife_id));
-      const fatherHasMultipleWives = uniqueWives.size >= 2;
+      const fatherHasMultipleWives = uniqueWives.size >= 2 || parentWivesCount >= 2;
       
       // Resolve mother name from global members
       let motherName: string | undefined;
@@ -535,6 +541,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           fatherId,
           marriagesCount: fatherMarriages.length,
           uniqueWives: Array.from(uniqueWives),
+          parentWivesCount,
           fatherHasMultipleWives,
           motherId,
           motherName,
