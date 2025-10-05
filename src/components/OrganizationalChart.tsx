@@ -335,19 +335,24 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                       </Avatar>
                       <h4 className="font-semibold text-sm text-foreground text-center break-words">{wives[0].name}</h4>
                       <Badge variant="outline" className="text-xs mt-1 border-pink-200 text-pink-700 dark:text-pink-300">
-                        {(() => {
-                          const husbandId = husband?.id;
-                          if (!husbandId) return 'الزوجة';
-                          const husbandMarriedUnits = Array.from(displayUnits.values()).filter(unit =>
-                            unit.type === 'married' &&
-                            unit.members.some(m => m?.id === husbandId && m?.gender === 'male')
-                          );
-                          const totalWives = husbandMarriedUnits.reduce((count, unit) =>
-                            count + unit.members.filter(m => m?.gender === 'female').length, 0
-                          );
-                          return totalWives > 1 ? `الزوجة (أم ${wives[0].name})` : 'الزوجة';
-                        })()}
+                        الزوجة
                       </Badge>
+                      {(() => {
+                        const husbandId = husband?.id;
+                        if (!husbandId) return null;
+                        const uniqueWives = new Set((marriages || []).filter((m: any) => m.husband_id === husbandId).map((m: any) => m.wife_id));
+                        const hasMulti = uniqueWives.size >= 2;
+                        if (!hasMulti) return null;
+                        const children = (members || []).filter((m: any) => m.father_id === husbandId && m.mother_id === wives[0].id);
+                        if (!children.length) return null;
+                        const first = children[0].name as string;
+                        const extra = children.length > 1 ? ` +${children.length - 1}` : '';
+                        return (
+                          <Badge variant="outline" className="text-[10px] mt-1 border-emerald-200 text-emerald-700 dark:text-emerald-300">
+                            {`أم ${first}${extra}`}
+                          </Badge>
+                        );
+                      })()}
                       {(() => {
                         try {
                           const wife = wives[0];
@@ -490,6 +495,21 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                                    }}>
                               {wife.marital_status === 'divorced' ? 'زوجة سابقة' : 'زوجة'}
                             </Badge>
+                            {(() => {
+                              const husbandId = husband?.id;
+                              if (!husbandId) return null;
+                              const uniqueWives = new Set((marriages || []).filter((m: any) => m.husband_id === husbandId).map((m: any) => m.wife_id));
+                              if (uniqueWives.size < 2) return null;
+                              const children = (members || []).filter((m: any) => m.father_id === husbandId && m.mother_id === wife.id);
+                              if (!children.length) return null;
+                              const first = children[0].name as string;
+                              const extra = children.length > 1 ? ` +${children.length - 1}` : '';
+                              return (
+                                <Badge variant="outline" className="text-[8px] border-emerald-200 text-emerald-700 dark:text-emerald-300 px-0.5 py-0 mt-0.5">
+                                  {`أم ${first}${extra}`}
+                                </Badge>
+                              );
+                            })()}
                             {wife.birth_date && wives.length <= 6 && (
                               <div className="text-xs text-muted-foreground mt-0.5" style={{ fontSize: '7px' }}>
                                 {new Date(wife.birth_date).getFullYear()}
