@@ -362,98 +362,199 @@ const FamilyGallery = () => {
               </div>
             </div>
 
-            {/* Upload Area */}
-            <div className="max-w-5xl mx-auto mb-8">
-              <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-200/30 dark:border-purple-700/30 shadow-xl">
-                <CardContent className="p-6">
-                  <div
-                    {...getRootProps()}
-                    className={`
-                      border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all
-                      ${isDragActive || dragActive
-                        ? 'border-purple-500 bg-purple-50/50 dark:bg-purple-900/20'
-                        : 'border-gray-300 dark:border-gray-600 hover:border-purple-400 hover:bg-gray-50/50 dark:hover:bg-gray-800/50'
-                      }
-                      ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}
-                    `}
-                  >
-                    <input {...getInputProps()} />
-                    
-                    {isUploading ? (
-                      <div className="flex flex-col items-center gap-3">
-                        <Loader2 className="h-12 w-12 animate-spin text-purple-500" />
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                          جاري رفع الصورة...
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-3">
-                        <Upload className="h-12 w-12 text-purple-500" />
-                        <div>
-                          <p className="text-lg font-semibold text-gray-700 dark:text-gray-200">
-                            اسحب الصور هنا أو انقر للاختيار
-                          </p>
-                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                            PNG, JPG, GIF حتى 5MB
-                          </p>
+            {/* Main Content Grid - Upload & Gallery */}
+            <div className="max-w-7xl mx-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                {/* Upload Section - Sticky Sidebar */}
+                <div className="lg:col-span-4">
+                  <div className="lg:sticky lg:top-24 space-y-4">
+                    <Card className="bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-rose-500/10 dark:from-purple-900/30 dark:via-pink-900/30 dark:to-rose-900/30 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-2xl overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-white/30 dark:from-gray-800/50 dark:to-gray-900/30 backdrop-blur-sm"></div>
+                      
+                      <CardContent className="relative p-6 space-y-4">
+                        {/* Upload Stats */}
+                        <div className="flex items-center justify-between pb-4 border-b border-purple-200/30 dark:border-purple-700/30">
+                          <div>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">إجمالي الصور</p>
+                            <p className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                              {memories.length}
+                            </p>
+                          </div>
+                          <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
+                            <ImageIcon className="h-7 w-7 text-white" />
+                          </div>
                         </div>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
 
-            {/* Memories Grid */}
-            {memories.length > 0 ? (
-              <div className="max-w-7xl mx-auto">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {memories.map((memory) => (
-                    <Card 
-                      key={memory.id}
-                      className="group relative overflow-hidden bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-200/30 dark:border-purple-700/30 shadow-lg hover:shadow-xl transition-all cursor-pointer"
-                      onClick={() => {
-                        setSelectedMemory(memory);
-                        setEditedCaption(memory.caption || "");
-                        setIsModalOpen(true);
-                      }}
-                    >
-                      <div className="aspect-square overflow-hidden">
-                        <img
-                          src={memory.url}
-                          alt={memory.original_filename}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                        />
-                      </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                        <div className="absolute bottom-0 left-0 right-0 p-4">
-                          <p className="text-white text-sm font-medium line-clamp-1">
-                            {memory.original_filename}
-                          </p>
-                          <p className="text-white/70 text-xs mt-1">
-                            {format(new Date(memory.uploaded_at), 'dd MMM yyyy', { locale: ar })}
+                        {/* Upload Dropzone */}
+                        <div>
+                          <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3">
+                            رفع صورة جديدة
+                          </h3>
+                          <div
+                            {...getRootProps()}
+                            className={`
+                              relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 overflow-hidden
+                              ${isDragActive || dragActive
+                                ? 'border-purple-500 bg-purple-100/50 dark:bg-purple-900/30 scale-105'
+                                : 'border-purple-300 dark:border-purple-600 hover:border-purple-500 hover:bg-purple-50/30 dark:hover:bg-purple-900/20'
+                              }
+                              ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}
+                            `}
+                          >
+                            <input {...getInputProps()} />
+                            
+                            {/* Animated Background */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-purple-400/5 via-pink-400/5 to-rose-400/5 animate-pulse"></div>
+                            
+                            <div className="relative">
+                              {isUploading ? (
+                                <div className="flex flex-col items-center gap-3">
+                                  <div className="relative">
+                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 opacity-20 animate-ping absolute"></div>
+                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center relative">
+                                      <Loader2 className="h-8 w-8 animate-spin text-white" />
+                                    </div>
+                                  </div>
+                                  <p className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                                    جاري رفع الصورة...
+                                  </p>
+                                </div>
+                              ) : (
+                                <div className="flex flex-col items-center gap-3">
+                                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+                                    <Upload className="h-8 w-8 text-white" />
+                                  </div>
+                                  <div>
+                                    <p className="text-base font-bold text-gray-800 dark:text-gray-100">
+                                      اسحب الصور هنا
+                                    </p>
+                                    <p className="text-sm text-purple-600 dark:text-purple-400 font-medium mt-1">
+                                      أو انقر للاختيار
+                                    </p>
+                                  </div>
+                                  <div className="mt-2 px-4 py-2 bg-white/50 dark:bg-gray-800/50 rounded-full">
+                                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                                      PNG, JPG, GIF • حتى 5MB
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Upload Tips */}
+                        <div className="bg-gradient-to-r from-purple-100/50 to-pink-100/50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-4 border border-purple-200/30 dark:border-purple-700/30">
+                          <h4 className="text-xs font-semibold text-purple-800 dark:text-purple-300 mb-2">
+                            💡 نصائح للرفع
+                          </h4>
+                          <ul className="text-xs text-gray-700 dark:text-gray-300 space-y-1">
+                            <li>• استخدم صور عالية الجودة</li>
+                            <li>• أضف وصفاً لكل صورة</li>
+                            <li>• رتب الصور حسب التاريخ</li>
+                          </ul>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+
+                {/* Gallery Section - Main Content */}
+                <div className="lg:col-span-8">
+                  {memories.length > 0 ? (
+                    <div className="space-y-4">
+                      {/* Gallery Header */}
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                            معرض الصور
+                          </h2>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            {memories.length} صورة في المعرض
                           </p>
                         </div>
                       </div>
+
+                      {/* Masonry Grid */}
+                      <div className="columns-1 sm:columns-2 xl:columns-3 gap-4 space-y-4">
+                        {memories.map((memory) => (
+                          <Card 
+                            key={memory.id}
+                            className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer break-inside-avoid mb-4 hover:scale-[1.02]"
+                            onClick={() => {
+                              setSelectedMemory(memory);
+                              setEditedCaption(memory.caption || "");
+                              setIsModalOpen(true);
+                            }}
+                          >
+                            {/* Image */}
+                            <div className="relative overflow-hidden">
+                              <img
+                                src={memory.url}
+                                alt={memory.original_filename}
+                                className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-110"
+                                loading="lazy"
+                              />
+                              
+                              {/* Overlay Gradient */}
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                  <p className="text-white text-sm font-bold line-clamp-2 mb-1">
+                                    {memory.caption || memory.original_filename}
+                                  </p>
+                                  <div className="flex items-center gap-2 text-white/80 text-xs">
+                                    <Calendar className="h-3 w-3" />
+                                    <span>
+                                      {format(new Date(memory.uploaded_at), 'dd MMM yyyy', { locale: ar })}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Corner Badge */}
+                              <div className="absolute top-3 left-3 w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <ImageIcon className="h-4 w-4 text-white" />
+                              </div>
+                            </div>
+
+                            {/* Caption Preview (when not hovering) */}
+                            {memory.caption && (
+                              <div className="p-3 bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:from-purple-900/20 dark:to-pink-900/20 group-hover:opacity-0 transition-opacity duration-300">
+                                <p className="text-xs text-gray-700 dark:text-gray-300 line-clamp-2">
+                                  {memory.caption}
+                                </p>
+                              </div>
+                            )}
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-200/30 dark:border-purple-700/30 shadow-xl">
+                      <CardContent className="p-16 text-center">
+                        <div className="max-w-md mx-auto">
+                          <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 flex items-center justify-center">
+                            <ImageIcon className="h-12 w-12 text-purple-500" />
+                          </div>
+                          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">
+                            لا توجد صور بعد
+                          </h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                            ابدأ برفع صور العائلة لإنشاء أرشيف جميل من الذكريات
+                          </p>
+                          <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full text-sm font-medium">
+                            <Upload className="h-4 w-4" />
+                            استخدم منطقة الرفع على اليسار
+                          </div>
+                        </div>
+                      </CardContent>
                     </Card>
-                  ))}
+                  )}
                 </div>
+
               </div>
-            ) : (
-              <div className="max-w-5xl mx-auto">
-                <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-gray-200/30 dark:border-gray-700/30 shadow-xl">
-                  <CardContent className="p-12 text-center">
-                    <ImageIcon className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">
-                      لا توجد صور بعد
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      ابدأ برفع أول صورة لأرشيف العائلة
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
+            </div>
           </div>
         </section>
       </main>
