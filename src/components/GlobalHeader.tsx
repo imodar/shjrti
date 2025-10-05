@@ -240,7 +240,7 @@ export const GlobalHeader = () => {
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.help', 'المساعدة')}</p>
-                            <p className="text-xs text-gray-400">{t('nav.help.desc', 'الدعم والتوجيه')}</p>
+                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors">{t('nav.help.desc', 'الدعم والتوجيه')}</p>
                           </div>
                         </div>
                       </DropdownMenuItem>
