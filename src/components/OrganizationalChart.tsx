@@ -510,21 +510,35 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       const member = unit.members[0];
       const isFounder = member.is_founder;
       
-      // Get mother information using original data for accuracy
-      const fatherId = (member as any).father_id;
-      const motherId = (member as any).mother_id;
+      // Robust mother badge logic using original data
+      const fatherId = (member as any).father_id || (member as any).fatherId || (member as any)?.father?.id;
+      const motherId = (member as any).mother_id || (member as any).motherId || (member as any)?.mother?.id;
       
-      // Check if father has multiple wives using marriages data
-      const fatherMarriages = fatherId 
+      // Count unique wives from marriages data
+      const fatherMarriages = fatherId
         ? marriages.filter((m: any) => m.husband_id === fatherId)
         : [];
-      const fatherHasMultipleWives = fatherMarriages.length >= 2;
+      const uniqueWives = new Set(fatherMarriages.map((m: any) => m.wife_id));
+      const fatherHasMultipleWives = uniqueWives.size >= 2;
       
-      // Get mother name from members data
+      // Resolve mother name from global members
       let motherName: string | undefined;
       if (motherId && fatherHasMultipleWives) {
         const motherMember = members.find((m: any) => m.id === motherId);
         motherName = motherMember?.name;
+      }
+
+      // Targeted debug for the reported case
+      if ((member?.name || '').includes('شهد')) {
+        console.log('[MotherBadgeDebug]', {
+          child: member?.name,
+          fatherId,
+          marriagesCount: fatherMarriages.length,
+          uniqueWives: Array.from(uniqueWives),
+          fatherHasMultipleWives,
+          motherId,
+          motherName,
+        });
       }
 
       const motherLabel = (member.gender === 'female' ? 'والدتها ' : 'والدته ');
