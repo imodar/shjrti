@@ -19,6 +19,8 @@ interface OrganizationalChartProps {
   zoomLevel: number;
   isPublicView?: boolean;
   onSuggestEdit?: (memberId: string, memberName: string) => void;
+  marriages?: any[];
+  members?: any[];
 }
 
 interface Position {
@@ -31,7 +33,9 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   familyUnits,
   zoomLevel,
   isPublicView = false,
-  onSuggestEdit
+  onSuggestEdit,
+  marriages = [],
+  members = []
 }) => {
   const UNIT_WIDTH = 380;
   const UNIT_HEIGHT = 180;
@@ -506,21 +510,21 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       const member = unit.members[0];
       const isFounder = member.is_founder;
       
-      // Get mother information directly from member data
-      const parentUnit = unit.parentUnitId ? displayUnits.get(unit.parentUnitId) : undefined;
-      const wives = parentUnit && (parentUnit as any).type === 'married'
-        ? (parentUnit as any).members.filter((m: any) => m?.gender === 'female')
-        : [];
-      const fatherHasMultipleWives = wives.length >= 2;
-
-      // Read mother_id directly from member
+      // Get mother information using original data for accuracy
+      const fatherId = (member as any).father_id;
       const motherId = (member as any).mother_id;
       
-      // Find mother name from wives if mother_id exists
+      // Check if father has multiple wives using marriages data
+      const fatherMarriages = fatherId 
+        ? marriages.filter((m: any) => m.husband_id === fatherId)
+        : [];
+      const fatherHasMultipleWives = fatherMarriages.length >= 2;
+      
+      // Get mother name from members data
       let motherName: string | undefined;
       if (motherId && fatherHasMultipleWives) {
-        const motherInUnit = wives.find((w: any) => w?.id === motherId);
-        motherName = motherInUnit?.name;
+        const motherMember = members.find((m: any) => m.id === motherId);
+        motherName = motherMember?.name;
       }
 
       const motherLabel = (member.gender === 'female' ? 'والدتها ' : 'والدته ');

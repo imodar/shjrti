@@ -699,7 +699,12 @@ const FamilyTreeView = () => {
                   
                   {/* Tree Content Area */}
                   <div className="p-4 min-h-[600px] overflow-auto">
-                    <OrganizationalChart familyUnits={familyUnits} zoomLevel={zoomLevel} />
+                    <OrganizationalChart 
+                      familyUnits={familyUnits} 
+                      zoomLevel={zoomLevel}
+                      marriages={familyMarriages}
+                      members={familyMembers}
+                    />
                   </div>
                 </div>
               </TabsContent>
