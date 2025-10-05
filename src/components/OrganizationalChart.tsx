@@ -338,22 +338,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                         الزوجة
                       </Badge>
                       {(() => {
-                        const husbandId = husband?.id;
-                        if (!husbandId) return null;
-                        const uniqueWives = new Set((marriages || []).filter((m: any) => m.husband_id === husbandId).map((m: any) => m.wife_id));
-                        const hasMulti = uniqueWives.size >= 2;
-                        if (!hasMulti) return null;
-                        const children = (members || []).filter((m: any) => m.father_id === husbandId && m.mother_id === wives[0].id);
-                        if (!children.length) return null;
-                        const first = children[0].name as string;
-                        const extra = children.length > 1 ? ` +${children.length - 1}` : '';
-                        return (
-                          <Badge variant="outline" className="text-[10px] mt-1 border-emerald-200 text-emerald-700 dark:text-emerald-300">
-                            {`أم ${first}${extra}`}
-                          </Badge>
-                        );
-                      })()}
-                      {(() => {
                         try {
                           const wife = wives[0];
                           // Find wife's single unit to determine parents (display units)
@@ -495,21 +479,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                                    }}>
                               {wife.marital_status === 'divorced' ? 'زوجة سابقة' : 'زوجة'}
                             </Badge>
-                            {(() => {
-                              const husbandId = husband?.id;
-                              if (!husbandId) return null;
-                              const uniqueWives = new Set((marriages || []).filter((m: any) => m.husband_id === husbandId).map((m: any) => m.wife_id));
-                              if (uniqueWives.size < 2) return null;
-                              const children = (members || []).filter((m: any) => m.father_id === husbandId && m.mother_id === wife.id);
-                              if (!children.length) return null;
-                              const first = children[0].name as string;
-                              const extra = children.length > 1 ? ` +${children.length - 1}` : '';
-                              return (
-                                <Badge variant="outline" className="text-[8px] border-emerald-200 text-emerald-700 dark:text-emerald-300 px-0.5 py-0 mt-0.5">
-                                  {`أم ${first}${extra}`}
-                                </Badge>
-                              );
-                            })()}
                             {wife.birth_date && wives.length <= 6 && (
                               <div className="text-xs text-muted-foreground mt-0.5" style={{ fontSize: '7px' }}>
                                 {new Date(wife.birth_date).getFullYear()}
@@ -554,17 +523,23 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
         motherName = motherMember?.name;
       }
 
-      // Targeted debug for the reported case
-      if ((member?.name || '').includes('شهد')) {
-        console.log('[MotherBadgeDebug]', {
-          child: member?.name,
+      // Enhanced debug for شهد case
+      if ((member?.name || '').includes('شهد') || member?.id === '7e280f45-571b-4eba-be6c-93da2558522b') {
+        console.log('=== [شهد Debug] ===', {
+          memberName: member?.name,
+          memberId: member?.id,
           fatherId,
-          marriagesCount: fatherMarriages.length,
-          uniqueWives: Array.from(uniqueWives),
+          motherId,
+          marriagesTotal: marriages.length,
+          fatherMarriages,
+          uniqueWivesArray: Array.from(uniqueWives),
+          uniqueWivesCount: uniqueWives.size,
           parentWivesCount,
           fatherHasMultipleWives,
-          motherId,
+          membersTotal: members.length,
+          motherMember: members.find((m: any) => m.id === motherId),
           motherName,
+          willShowBadge: fatherHasMultipleWives && motherName ? 'YES' : 'NO'
         });
       }
 
