@@ -17,12 +17,14 @@ import { useDatePreference } from "@/contexts/DatePreferenceContext";
 import { useDateFormat } from "@/hooks/useDateFormat";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Profile() {
   const { user } = useAuth();
   const { datePreference: globalDatePreference, setDatePreference: setGlobalDatePreference } = useDatePreference();
   const { format } = useDateFormat();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
 
   // Helper function to format date with specific preference
@@ -142,7 +144,7 @@ export default function Profile() {
       if (subError) {
         console.log('No active subscription found:', subError);
         setCurrentPackage({
-          name: "الباقة المجانية",
+          name: t('profile.no_active_package'),
           status: "active"
         });
         return;
@@ -177,7 +179,7 @@ export default function Profile() {
     } catch (error) {
       console.error('Error fetching current package:', error);
       setCurrentPackage({
-        name: "الباقة المجانية",
+        name: t('profile.no_active_package'),
         status: "active"
       });
     }
@@ -250,8 +252,8 @@ export default function Profile() {
       if (error && error.code !== 'PGRST116') { // PGRST116 means no rows returned
         console.error('Error fetching profile:', error);
         toast({
-          title: "خطأ في التحميل",
-          description: "حدث خطأ أثناء تحميل البيانات",
+          title: t('profile.profile_update_error'),
+          description: t('profile.profile_update_error'),
           variant: "destructive"
         });
         return;
@@ -275,8 +277,8 @@ export default function Profile() {
     } catch (error) {
       console.error('Error in fetchProfileData:', error);
       toast({
-        title: "خطأ في التحميل",
-        description: "حدث خطأ أثناء تحميل البيانات",
+        title: t('profile.profile_update_error'),
+        description: t('profile.profile_update_error'),
         variant: "destructive"
       });
     } finally {
@@ -339,8 +341,8 @@ export default function Profile() {
       if (error) {
         console.error('Error saving profile:', error);
         toast({
-          title: "خطأ في الحفظ",
-          description: "حدث خطأ أثناء حفظ البيانات",
+          title: t('profile.profile_update_error'),
+          description: t('profile.profile_update_error'),
           variant: "destructive"
         });
         return;
@@ -349,8 +351,8 @@ export default function Profile() {
       console.log('Profile saved successfully');
       setIsEditing(false);
       toast({
-        title: "تم الحفظ",
-        description: "تم حفظ معلوماتك الشخصية بنجاح"
+        title: t('profile.save'),
+        description: t('profile.profile_updated')
       });
 
       // Refresh profile data from database
@@ -359,8 +361,8 @@ export default function Profile() {
     } catch (error) {
       console.error('Error in handleSave:', error);
       toast({
-        title: "خطأ في الحفظ",
-        description: "حدث خطأ أثناء حفظ البيانات",
+        title: t('profile.profile_update_error'),
+        description: t('profile.profile_update_error'),
         variant: "destructive"
       });
     } finally {
@@ -451,19 +453,19 @@ export default function Profile() {
                     <div>
                       <h1 className="text-3xl font-bold mb-2">
                         <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                          الملف الشخصي
+                          {t('profile.page_title')}
                         </span>
                       </h1>
                       <p className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
                         <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                        إدارة معلوماتك الشخصية والحساب
+                        {t('profile.welcome_back')}
                       </p>
                     </div>
                   </div>
                   
                   {/* Package Status - Match Dashboard Logic */}
                   <div className="flex flex-col items-start gap-2">
-                    {currentPackage && currentPackage.name !== "الباقة المجانية" && currentPackage.status === "active" ? (
+                    {currentPackage && currentPackage.name !== t('profile.no_active_package') && currentPackage.status === "active" ? (
                       <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-2 rounded-full shadow-lg">
                         <Crown className="h-4 w-4" />
                         <span className="text-sm font-bold">{currentPackage.name}</span>
@@ -472,18 +474,18 @@ export default function Profile() {
                       <div className="flex flex-col items-center gap-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl p-3 border border-amber-200/50 dark:border-amber-700/50 shadow-lg">
                         <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
                           <Gem className="h-4 w-4" />
-                          <span className="text-sm font-medium">{currentPackage?.name || "الباقة المجانية"}</span>
+                          <span className="text-sm font-medium">{currentPackage?.name || t('profile.no_active_package')}</span>
                         </div>
                         <Link to="/plan-selection">
                           <Button size="sm" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs px-2 py-1 rounded-full border-0">
-                            طوّر حسابك
+                            {t('profile.manage_subscription')}
                           </Button>
                         </Link>
                       </div>
                     )}
                     <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
                       <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
-                      <span>نشط منذ {profileData.joinDate}</span>
+                      <span>{profileData.joinDate}</span>
                     </div>
                   </div>
                 </div>
@@ -507,7 +509,7 @@ export default function Profile() {
                         <Users className="h-5 w-5 text-white" />
                       </div>
                       <CardTitle className="text-lg bg-gradient-to-r from-teal-600 to-amber-600 bg-clip-text text-transparent">
-                        إحصائيات الحساب
+                        {t('profile.account_statistics')}
                       </CardTitle>
                     </div>
                   </CardHeader>
@@ -516,7 +518,7 @@ export default function Profile() {
                       <div className="bg-emerald-50 dark:bg-emerald-950/30 p-4 rounded-lg border border-emerald-200/50 dark:border-emerald-700/50">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">الأشجار المنشأة</p>
+                            <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">{t('profile.families_created')}</p>
                             <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{stats.familiesCreated}</p>
                           </div>
                           <TreePine className="h-8 w-8 text-emerald-500" />
@@ -526,7 +528,7 @@ export default function Profile() {
                       <div className="bg-teal-50 dark:bg-teal-950/30 p-4 rounded-lg border border-teal-200/50 dark:border-teal-700/50">
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-sm text-teal-600 dark:text-teal-400 font-medium">إجمالي الأفراد</p>
+                            <p className="text-sm text-teal-600 dark:text-teal-400 font-medium">{t('profile.total_members')}</p>
                             <p className="text-2xl font-bold text-teal-700 dark:text-teal-300">{stats.totalMembers}</p>
                           </div>
                           <Users className="h-8 w-8 text-teal-500" />
@@ -558,10 +560,10 @@ export default function Profile() {
                         </div>
                         <div>
                           <CardTitle className="text-xl bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                            المعلومات الشخصية
+                            {t('profile.personal_information')}
                           </CardTitle>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            تحديث بياناتك الأساسية
+                            {t('profile.welcome_back')}
                           </p>
                         </div>
                       </div>
@@ -575,12 +577,12 @@ export default function Profile() {
                         {isEditing ? (
                           <>
                             <X className="h-4 w-4" />
-                            إلغاء
+                            {t('profile.cancel')}
                           </>
                         ) : (
                           <>
                             <Edit className="h-4 w-4" />
-                            تعديل
+                            {t('profile.edit')}
                           </>
                         )}
                       </Button>
@@ -590,47 +592,47 @@ export default function Profile() {
                   <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label className="text-gray-700 dark:text-gray-300 font-medium">الاسم الأول</Label>
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">{t('profile.first_name')}</Label>
                         <Input
                           value={profileData.firstName}
                           onChange={(e) => setProfileData(prev => ({...prev, firstName: e.target.value}))}
                           disabled={!isEditing}
                           className="bg-white/50 dark:bg-gray-900/50 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 dark:focus:border-emerald-400"
-                          placeholder="اكتب اسمك الأول"
+                          placeholder={t('profile.first_name')}
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-gray-700 dark:text-gray-300 font-medium">اسم العائلة</Label>
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">{t('profile.last_name')}</Label>
                         <Input
                           value={profileData.lastName}
                           onChange={(e) => setProfileData(prev => ({...prev, lastName: e.target.value}))}
                           disabled={!isEditing}
                           className="bg-white/50 dark:bg-gray-900/50 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 dark:focus:border-emerald-400"
-                          placeholder="اكتب اسم العائلة"
+                          placeholder={t('profile.last_name')}
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-gray-700 dark:text-gray-300 font-medium">البريد الإلكتروني</Label>
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">{t('profile.email')}</Label>
                         <Input
                           value={profileData.email}
                           onChange={(e) => setProfileData(prev => ({...prev, email: e.target.value}))}
                           disabled={!isEditing}
                           className="bg-white/50 dark:bg-gray-900/50 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 dark:focus:border-emerald-400"
-                          placeholder="البريد الإلكتروني"
+                          placeholder={t('profile.email')}
                           type="email"
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-gray-700 dark:text-gray-300 font-medium">رقم الهاتف</Label>
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">{t('profile.phone')}</Label>
                         <Input
                           value={profileData.phone}
                           onChange={(e) => setProfileData(prev => ({...prev, phone: e.target.value}))}
                           disabled={!isEditing}
                           className="bg-white/50 dark:bg-gray-900/50 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 dark:focus:border-emerald-400"
-                          placeholder="رقم الهاتف (اختياري)"
+                          placeholder={t('profile.phone')}
                           type="tel"
                         />
                       </div>
@@ -648,14 +650,14 @@ export default function Profile() {
                           ) : (
                             <Save className="h-4 w-4" />
                           )}
-                          {saving ? "جاري الحفظ..." : "حفظ التغييرات"}
+                          {saving ? t('profile.save') : t('profile.save')}
                         </Button>
                         <Button
                           onClick={handleCancel}
                           variant="outline"
                           className="border-gray-300 text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-800"
                         >
-                          إلغاء
+                          {t('profile.cancel')}
                         </Button>
                       </div>
                     )}
@@ -682,10 +684,10 @@ export default function Profile() {
                         </div>
                         <div>
                           <CardTitle className="text-xl bg-gradient-to-r from-amber-600 via-orange-600 to-pink-600 bg-clip-text text-transparent font-bold">
-                            إجراءات سريعة
+                            {t('profile.quick_actions')}
                           </CardTitle>
                           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            الوصول السريع للخدمات المهمة
+                            {t('profile.welcome_back')}
                           </p>
                         </div>
                       </div>
@@ -704,10 +706,10 @@ export default function Profile() {
                           </div>
                           <div>
                             <h3 className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                              نوع التقويم المفضل
+                              {t('profile.date_format')}
                             </h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                              اختر نوع التقويم الذي تفضل عرض التواريخ به
+                              {t('profile.date_format')}
                             </p>
                           </div>
                         </div>
