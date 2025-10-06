@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
@@ -719,6 +719,7 @@ export type Database = {
           is_active: boolean
           meta_description: Json | null
           meta_keywords: Json | null
+          quick_info: Json | null
           slug: string
           title: Json
           updated_at: string
@@ -731,6 +732,7 @@ export type Database = {
           is_active?: boolean
           meta_description?: Json | null
           meta_keywords?: Json | null
+          quick_info?: Json | null
           slug: string
           title?: Json
           updated_at?: string
@@ -743,6 +745,7 @@ export type Database = {
           is_active?: boolean
           meta_description?: Json | null
           meta_keywords?: Json | null
+          quick_info?: Json | null
           slug?: string
           title?: Json
           updated_at?: string
@@ -1283,7 +1286,7 @@ export type Database = {
       }
       l2_normalize: {
         Args: { "": string } | { "": unknown } | { "": unknown }
-        Returns: string
+        Returns: unknown
       }
       sparsevec_out: {
         Args: { "": unknown }

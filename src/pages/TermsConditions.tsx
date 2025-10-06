@@ -15,6 +15,7 @@ interface PageData {
   content: any;
   meta_description: any;
   meta_keywords: any;
+  quick_info: any;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -67,6 +68,18 @@ export default function TermsConditions() {
 
   const title = pageData ? getLocalizedText(pageData.title, currentLanguage, 'Terms and Conditions') : 'Terms and Conditions';
   const content = pageData ? getLocalizedText(pageData.content, currentLanguage, '') : '';
+  
+  // Get quick info texts
+  const quickInfo = pageData?.quick_info || {};
+  const quickInfoTitle = getLocalizedText(quickInfo.quick_info_title, currentLanguage, 'Quick Information');
+  const lastUpdatedLabel = getLocalizedText(quickInfo.last_updated_label, currentLanguage, 'Last Updated');
+  const appliesToLabel = getLocalizedText(quickInfo.applies_to_label, currentLanguage, 'Applies To');
+  const appliesToValue = getLocalizedText(quickInfo.applies_to_value, currentLanguage, 'All Users');
+  const privacyLabel = getLocalizedText(quickInfo.privacy_label, currentLanguage, 'Privacy');
+  const privacyValue = getLocalizedText(quickInfo.privacy_value, currentLanguage, 'Fully Protected');
+  const contactLabel = getLocalizedText(quickInfo.contact_label, currentLanguage, 'For Inquiries');
+  const contactValue = getLocalizedText(quickInfo.contact_value, currentLanguage, 'support@familytree.com');
+  const introText = getLocalizedText(quickInfo.intro_text, currentLanguage, 'Welcome to the Family Tree platform. Please read these terms and conditions carefully before using our services.');
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
@@ -86,13 +99,13 @@ export default function TermsConditions() {
             <div className="lg:col-span-1">
               <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm sticky top-8">
                 <CardHeader>
-                  <CardTitle className="text-primary">Quick Information</CardTitle>
+                  <CardTitle className="text-primary">{quickInfoTitle}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-3 text-sm">
                     <Calendar className="h-4 w-4 text-primary" />
                     <div>
-                      <p className="font-medium">Last Updated</p>
+                      <p className="font-medium">{lastUpdatedLabel}</p>
                       <p className="text-muted-foreground">
                         {pageData ? new Date(pageData.updated_at).toLocaleDateString() : 'January 15, 2024'}
                       </p>
@@ -101,22 +114,22 @@ export default function TermsConditions() {
                   <div className="flex items-center gap-3 text-sm">
                     <Users className="h-4 w-4 text-primary" />
                     <div>
-                      <p className="font-medium">Applies To</p>
-                      <p className="text-muted-foreground">All Users</p>
+                      <p className="font-medium">{appliesToLabel}</p>
+                      <p className="text-muted-foreground">{appliesToValue}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <Shield className="h-4 w-4 text-primary" />
                     <div>
-                      <p className="font-medium">Privacy</p>
-                      <p className="text-muted-foreground">Fully Protected</p>
+                      <p className="font-medium">{privacyLabel}</p>
+                      <p className="text-muted-foreground">{privacyValue}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
                     <Mail className="h-4 w-4 text-primary" />
                     <div>
-                      <p className="font-medium">For Inquiries</p>
-                      <p className="text-muted-foreground">support@familytree.com</p>
+                      <p className="font-medium">{contactLabel}</p>
+                      <p className="text-muted-foreground">{contactValue}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -131,7 +144,7 @@ export default function TermsConditions() {
                     {title}
                   </CardTitle>
                   <p className="text-muted-foreground">
-                    Welcome to the Family Tree platform. Please read these terms and conditions carefully before using our services.
+                    {introText}
                   </p>
                 </CardHeader>
                 <CardContent>
