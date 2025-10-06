@@ -128,7 +128,7 @@ export const GlobalHeader = () => {
                     className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-300 hover:text-emerald-300 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300 border border-white/10 hover:border-emerald-400/30 group"
                   >
                     <Home className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                    <span>حسابي</span>
+                    <span>{t('nav.my_account', 'حسابي')}</span>
                   </Link>
 
 
