@@ -189,6 +189,7 @@ export default function TermsConditions() {
                   <ScrollArea className="h-[800px] pr-4">
                     <div 
                       className="prose prose-lg max-w-none dark:prose-invert"
+                      dir={currentLanguage === 'ar' ? 'rtl' : 'ltr'}
                       dangerouslySetInnerHTML={{ __html: content }}
                     />
                   </ScrollArea>
