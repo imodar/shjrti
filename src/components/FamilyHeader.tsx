@@ -116,7 +116,7 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
                  <div className="flex flex-col items-center gap-1 sm:gap-2 md:gap-3">
                    <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
-                     <div className="flex items-center justify-center gap-1">
+                     <div className="hidden md:flex items-center justify-center gap-1">
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full text-xs cursor-help">
