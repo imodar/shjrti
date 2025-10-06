@@ -456,10 +456,10 @@ export default function Profile() {
                           {t('profile.page_title')}
                         </span>
                       </h1>
-                      <p className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                      <div className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
                         <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                         {t('profile.welcome_back')}
-                      </p>
+                      </div>
                     </div>
                   </div>
                   
@@ -716,7 +716,7 @@ export default function Profile() {
                         
                         <div className="space-y-3">
                           <Label htmlFor="datePreference" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            نوع التقويم
+                            {t('profile.calendar_type')}
                           </Label>
                           {isEditing ? (
                             <Select
@@ -724,25 +724,25 @@ export default function Profile() {
                               onValueChange={(value) => setProfileData({...profileData, datePreference: value as DatePreference})}
                             >
                               <SelectTrigger className="w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 hover:border-blue-300 dark:hover:border-blue-600 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-200">
-                                <SelectValue placeholder="اختر نوع التقويم" />
+                                <SelectValue placeholder={t('profile.choose_calendar')} />
                               </SelectTrigger>
                                <SelectContent className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50">
                                  <SelectItem value="gregorian" className="hover:bg-blue-50 dark:hover:bg-blue-950">
                                    <div className="flex items-center gap-2">
                                      <span>📅</span>
-                                     <span>التقويم الميلادي (يناير، فبراير...)</span>
+                                     <span>{t('profile.gregorian_calendar')}</span>
                                    </div>
                                  </SelectItem>
                                  <SelectItem value="gregorian-levantine" className="hover:bg-purple-50 dark:hover:bg-purple-950">
                                    <div className="flex items-center gap-2">
                                      <span>🗓️</span>
-                                     <span>التقويم الشامي (كانون الثاني، شباط...)</span>
+                                     <span>{t('profile.levantine_calendar')}</span>
                                    </div>
                                  </SelectItem>
                                  <SelectItem value="hijri" className="hover:bg-emerald-50 dark:hover:bg-emerald-950">
                                    <div className="flex items-center gap-2">
                                      <span>🌙</span>
-                                     <span>التقويم الهجري (الإسلامي)</span>
+                                     <span>{t('profile.hijri_calendar')}</span>
                                    </div>
                                  </SelectItem>
                               </SelectContent>
@@ -761,46 +761,46 @@ export default function Profile() {
                                    newPreference = 'gregorian';
                                  }
                                  
-                                 try {
-                                   await setGlobalDatePreference(newPreference);
-                                   let description = '';
-                                   if (newPreference === 'gregorian') {
-                                     description = 'تم تغيير تفضيل التقويم إلى الميلادي (يناير، فبراير...)';
-                                   } else if (newPreference === 'gregorian-levantine') {
-                                     description = 'تم تغيير تفضيل التقويم إلى الشامي (كانون الثاني، شباط...)';
-                                   } else {
-                                     description = 'تم تغيير تفضيل التقويم إلى الهجري';
-                                   }
-                                   
-                                   toast({
-                                     title: "تم التحديث",
-                                     description
-                                   });
-                                 } catch (error) {
-                                   toast({
-                                     title: "خطأ",
-                                     description: "حدث خطأ أثناء تحديث تفضيل التقويم",
-                                     variant: "destructive"
-                                   });
-                                 }
+                                  try {
+                                    await setGlobalDatePreference(newPreference);
+                                    let description = '';
+                                    if (newPreference === 'gregorian') {
+                                      description = t('profile.calendar_changed_gregorian');
+                                    } else if (newPreference === 'gregorian-levantine') {
+                                      description = t('profile.calendar_changed_levantine');
+                                    } else {
+                                      description = t('profile.calendar_changed_hijri');
+                                    }
+                                    
+                                    toast({
+                                      title: t('profile.updated'),
+                                      description
+                                    });
+                                  } catch (error) {
+                                    toast({
+                                      title: t('profile.error'),
+                                      description: t('profile.calendar_update_error'),
+                                      variant: "destructive"
+                                    });
+                                  }
                                }}
                              >
-                               <div className="flex items-center justify-between">
-                                 <div className="flex items-center gap-2">
-                                   <span>
-                                     {profileData.datePreference === 'hijri' ? '🌙' : 
-                                      profileData.datePreference === 'gregorian-levantine' ? '🗓️' : '📅'}
-                                   </span>
-                                   <span className="text-gray-700 dark:text-gray-300">
-                                     {profileData.datePreference === 'hijri' ? 'التقويم الهجري (الإسلامي)' :
-                                      profileData.datePreference === 'gregorian-levantine' ? 'التقويم الشامي (كانون الثاني، شباط...)' :
-                                      'التقويم الميلادي (يناير، فبراير...)'}
-                                   </span>
-                                 </div>
-                                 <span className="text-xs text-blue-600 dark:text-blue-400 opacity-70">
-                                   انقر للتبديل
-                                 </span>
-                               </div>
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <span>
+                                      {profileData.datePreference === 'hijri' ? '🌙' : 
+                                       profileData.datePreference === 'gregorian-levantine' ? '🗓️' : '📅'}
+                                    </span>
+                                    <span className="text-gray-700 dark:text-gray-300">
+                                      {profileData.datePreference === 'hijri' ? t('profile.hijri_calendar') :
+                                       profileData.datePreference === 'gregorian-levantine' ? t('profile.levantine_calendar') :
+                                       t('profile.gregorian_calendar')}
+                                    </span>
+                                  </div>
+                                  <span className="text-xs text-blue-600 dark:text-blue-400 opacity-70">
+                                    {t('profile.click_to_switch')}
+                                  </span>
+                                </div>
                              </div>
                           )}
                         </div>
@@ -812,7 +812,7 @@ export default function Profile() {
                             <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
                               <Crown className="h-4 w-4 text-white group-hover:animate-pulse" />
                             </div>
-                            <span className="font-medium">إدارة الاشتراك</span>
+                            <span className="font-medium">{t('profile.manage_subscription')}</span>
                           </Button>
                         </Link>
                         
@@ -821,7 +821,7 @@ export default function Profile() {
                             <div className="w-8 h-8 bg-gradient-to-br from-gray-500 to-slate-500 rounded-lg flex items-center justify-center">
                               <Shield className="h-4 w-4 text-white group-hover:animate-pulse" />
                             </div>
-                            <span className="font-medium">تغيير كلمة المرور</span>
+                            <span className="font-medium">{t('profile.change_password')}</span>
                           </Button>
                         </Link>
                       </div>
