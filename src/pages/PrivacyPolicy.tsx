@@ -56,9 +56,47 @@ export default function PrivacyPolicy() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
         <GlobalHeader />
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="container mx-auto px-4 py-8 pt-24">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Quick Info Skeleton */}
+            <div className="lg:col-span-1">
+              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm sticky top-8">
+                <CardHeader>
+                  <div className="h-6 bg-muted animate-pulse rounded"></div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="flex items-center gap-3">
+                      <div className="h-4 w-4 bg-muted animate-pulse rounded"></div>
+                      <div className="flex-1 space-y-2">
+                        <div className="h-4 bg-muted animate-pulse rounded w-3/4"></div>
+                        <div className="h-3 bg-muted animate-pulse rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Content Skeleton */}
+            <div className="lg:col-span-3">
+              <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+                <CardHeader>
+                  <div className="h-8 bg-muted animate-pulse rounded w-1/3"></div>
+                  <div className="h-4 bg-muted animate-pulse rounded w-2/3 mt-2"></div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                      <div key={i} className="space-y-2">
+                        <div className="h-4 bg-muted animate-pulse rounded"></div>
+                        <div className="h-4 bg-muted animate-pulse rounded w-5/6"></div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
         <GlobalFooter />
