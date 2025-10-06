@@ -496,7 +496,7 @@ const PlanSelection = () => {
             </div>
           )}
         {/* Plans grid with smaller, elegant design */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className={`grid grid-cols-1 gap-6 max-w-5xl mx-auto ${packages.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
           {packages.map((pkg, index) => {
             const PackageIcon = getPackageIcon(index);
             const packagePrice = getPackagePrice(pkg);
