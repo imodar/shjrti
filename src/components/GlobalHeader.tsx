@@ -204,7 +204,7 @@ export const GlobalHeader = () => {
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.dashboard', 'حسابي')}</p>
-                            <p className="text-xs text-gray-400">{t('nav.dashboard.desc', 'إدارة شجرة العائلة')}</p>
+                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors">{t('nav.dashboard.desc', 'إدارة شجرة العائلة')}</p>
                           </div>
                         </Link>
                       </DropdownMenuItem>
@@ -216,7 +216,7 @@ export const GlobalHeader = () => {
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.settings', 'الإعدادات')}</p>
-                            <p className="text-xs text-gray-400">{t('nav.settings.desc', 'تخصيص الحساب')}</p>
+                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors">{t('nav.settings.desc', 'تخصيص الحساب')}</p>
                           </div>
                         </Link>
                       </DropdownMenuItem>
@@ -228,7 +228,7 @@ export const GlobalHeader = () => {
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.billing', 'الفواتير')}</p>
-                            <p className="text-xs text-gray-400">{t('nav.billing.desc', 'إدارة الاشتراكات')}</p>
+                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors">{t('nav.billing.desc', 'إدارة الاشتراكات')}</p>
                           </div>
                         </Link>
                       </DropdownMenuItem>
@@ -258,7 +258,7 @@ export const GlobalHeader = () => {
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.logout', 'تسجيل الخروج')}</p>
-                            <p className="text-xs text-gray-400">{t('nav.logout.desc', 'إنهاء الجلسة')}</p>
+                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors">{t('nav.logout.desc', 'إنهاء الجلسة')}</p>
                           </div>
                         </div>
                       </DropdownMenuItem>
