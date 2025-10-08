@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { TreePine, User, LogIn, LogOut, Settings, CreditCard, HelpCircle, Sparkles, Mail, Home, Globe, ChevronDown, Crown, Menu, X, Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -67,7 +68,7 @@ export const GlobalHeader = () => {
         <div className="max-w-7xl mx-auto px-4 py-2">
           <div className="flex items-center justify-between h-16">
             {/* Creative Logo Section */}
-            <Link to="/" className={`flex items-center gap-4 group ${direction === 'rtl' ? 'font-arabic' : ''}`}>
+            <Link to="/" className={`flex items-center gap-3 group ${direction === 'rtl' ? 'font-arabic' : ''}`}>
               <div className="relative">
                 {/* Multiple animated background layers */}
                 <div className="absolute inset-0 w-16 h-16 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl blur-xl opacity-40 group-hover:opacity-70 animate-pulse transition-all duration-700"></div>
@@ -103,6 +104,11 @@ export const GlobalHeader = () => {
                   {t('site.tagline', 'منصة إدارة الأنساب')}
                 </p>
               </div>
+
+              {/* Beta Badge */}
+              <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-red-500/50 border border-red-400/50 animate-pulse hover:scale-110 transition-transform duration-300">
+                {t('badge.beta', 'إطلاق تجريبي')}
+              </Badge>
             </Link>
 
             {/* Desktop Navigation and Auth Section */}
