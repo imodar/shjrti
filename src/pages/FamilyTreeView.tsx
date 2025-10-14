@@ -660,7 +660,7 @@ const FamilyTreeView = () => {
                         <SelectTrigger className="w-full bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-emerald-200/50 dark:border-emerald-600/50">
                           <SelectValue placeholder="اختر الزواج كجذر للشجرة" />
                         </SelectTrigger>
-                        <SelectContent className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-emerald-200/50 dark:border-emerald-600/50">
+                        <SelectContent searchable searchPlaceholder="ابحث عن العائلة..." className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-emerald-200/50 dark:border-emerald-600/50">
                           <SelectItem value="all">عرض الشجرة كاملة</SelectItem>
                           {familyMarriages
                             .filter(marriage => marriage.is_active)
