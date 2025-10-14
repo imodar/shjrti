@@ -619,10 +619,10 @@ const FamilyTreeView = () => {
               </div>
             </div>
 
-            {/* البحث الذكي */}
-            <div className="mb-8 max-w-3xl mx-auto">
-              <SmartSearchBar familyId={familyMembers[0]?.family_id || ''} onResultSelect={handleSearchResultSelect} placeholder="ابحث في شجرة العائلة..." />
-            </div>
+            {/* البحث الذكي - يظهر فقط إذا كانت ميزات الـ AI مفعلة */}
+            {hasAIFeatures && <div className="mb-8 max-w-3xl mx-auto">
+                <SmartSearchBar familyId={familyMembers[0]?.family_id || ''} onResultSelect={handleSearchResultSelect} placeholder="ابحث في شجرة العائلة... (مثال: ابن عم أحمد من ناحية الأب)" />
+              </div>}
 
 
             {/* الشريط الجانبي والمحتوى الرئيسي */}
