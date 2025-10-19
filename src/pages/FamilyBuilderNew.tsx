@@ -124,11 +124,17 @@ const FamilyBuilderNew = () => {
       }
     }
   };
-  const handleDeleteImage = () => {
+  const handleDeleteImage = async () => {
     // Clean up preview URL
     if (croppedImage && croppedImage.startsWith('blob:')) {
       URL.revokeObjectURL(croppedImage);
     }
+    
+    // Delete from storage if editing existing member
+    if (editingMember?.image && !editingMember.image.startsWith('data:image/') && !editingMember.image.startsWith('blob:')) {
+      await deleteMemberImage(editingMember.image);
+    }
+    
     setCroppedImage(null);
     setSelectedImage(null);
     setImageChanged(true);
@@ -138,8 +144,13 @@ const FamilyBuilderNew = () => {
     }
   };
   const handleEditImage = () => {
+    // If we have the original image, show crop dialog
     if (selectedImage) {
       setShowCropDialog(true);
+    } 
+    // If editing existing image, trigger file upload
+    else if (croppedImage || (editingMember && editingMember.image)) {
+      fileInputRef.current?.click();
     }
   };
 
