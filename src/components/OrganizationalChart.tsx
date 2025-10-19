@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Heart, HeartCrack, Users, Crown, UserRound, Edit3 } from "lucide-react";
 import { useResolvedImageUrl } from "@/utils/useResolvedImageUrl";
 
-// Helper component to resolve member images
+// Helper component to resolve member images with lazy loading
 const MemberAvatar: React.FC<{
   member: any;
   size?: string;
@@ -16,7 +16,7 @@ const MemberAvatar: React.FC<{
   fallbackText?: string;
   textSize?: string;
 }> = ({ member, size = "h-14 w-14", borderColor = "border-primary/30", ringColor = "ring-primary/10", fallbackBg = "from-primary/20 to-primary/30", fallbackText = "text-primary", textSize = "text-lg" }) => {
-  const imageSrc = useResolvedImageUrl(member?.image_url || member?.image);
+  const imageSrc = useResolvedImageUrl(member?.image_url || member?.image, true);
   
   return (
     <Avatar className={`${size} mx-auto border-2 ${borderColor} ring-2 ${ringColor}`}>
