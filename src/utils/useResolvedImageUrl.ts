@@ -16,6 +16,7 @@ export const useResolvedImageUrl = (
 ): string | null => {
   const [resolvedUrl, setResolvedUrl] = useState<string | null>(null);
   const [shouldFetch, setShouldFetch] = useState(!lazy);
+  const [attempt, setAttempt] = useState(0);
 
   // Delay fetching if lazy loading is enabled
   useEffect(() => {
@@ -25,12 +26,20 @@ export const useResolvedImageUrl = (
     }
   }, [lazy]);
 
+  // Reset retry attempts when image path changes
+  useEffect(() => {
+    setAttempt(0);
+  }, [imagePath]);
+
   useEffect(() => {
     if (!shouldFetch) return;
 
+    let isCancelled = false;
+    let retryTimer: number | undefined;
+
     const resolveUrl = async () => {
       if (!imagePath) {
-        setResolvedUrl(null);
+        if (!isCancelled) setResolvedUrl(null);
         return;
       }
 
@@ -41,14 +50,14 @@ export const useResolvedImageUrl = (
         imagePath.startsWith('http://') ||
         imagePath.startsWith('https://')
       ) {
-        setResolvedUrl(imagePath);
+        if (!isCancelled) setResolvedUrl(imagePath);
         return;
       }
 
       // Check cache first
       const cached = urlCache.get(imagePath);
       if (cached && cached.expiresAt > Date.now()) {
-        setResolvedUrl(cached.url);
+        if (!isCancelled) setResolvedUrl(cached.url);
         return;
       }
 
@@ -61,18 +70,35 @@ export const useResolvedImageUrl = (
             url: signedUrl,
             expiresAt: Date.now() + 3600000
           });
-          setResolvedUrl(signedUrl);
+          if (!isCancelled) setResolvedUrl(signedUrl);
         } else {
-          setResolvedUrl(null);
+          if (attempt < 3) {
+            const delay = 500 * Math.pow(2, attempt);
+            retryTimer = window.setTimeout(() => setAttempt((a) => a + 1), delay);
+          } else {
+            if (!isCancelled) setResolvedUrl(null);
+          }
         }
       } catch (error) {
         console.error('Failed to resolve image URL:', error);
-        setResolvedUrl(null);
+        if (attempt < 3) {
+          const delay = 500 * Math.pow(2, attempt);
+          retryTimer = window.setTimeout(() => setAttempt((a) => a + 1), delay);
+        } else {
+          if (!isCancelled) setResolvedUrl(null);
+        }
       }
     };
 
     resolveUrl();
-  }, [imagePath, shouldFetch]);
+
+    return () => {
+      isCancelled = true;
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+      }
+    };
+  }, [imagePath, shouldFetch, attempt]);
 
   return resolvedUrl;
 };
