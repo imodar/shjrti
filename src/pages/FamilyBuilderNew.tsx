@@ -353,7 +353,9 @@ const FamilyBuilderNew = () => {
       const {
         data: members,
         error: membersError
-      } = await supabase.from('family_tree_members').select('*').eq('family_id', familyToUse.id);
+      } = await supabase.from('family_tree_members')
+        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, related_person_id, is_founder, gender, birth_date, is_alive, death_date, marital_status')
+        .eq('family_id', familyToUse.id);
       if (membersError) throw membersError;
       
       // Transform members data (declare at function scope for use in marriages)
@@ -373,8 +375,8 @@ const FamilyBuilderNew = () => {
           birthDate: member.birth_date || '',
           isAlive: member.is_alive,
           deathDate: member.death_date || null,
-          image: member.image_url || null,
-          bio: member.biography || '',
+          image: null,
+          bio: '',
           marital_status: member.marital_status || 'single',
           relation: ""
         }));
