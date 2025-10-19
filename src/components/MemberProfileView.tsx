@@ -589,9 +589,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
                     )}
                     <Avatar className="relative h-32 w-32 sm:h-36 sm:w-36 lg:h-40 lg:w-40 border-4 border-white shadow-2xl flex-shrink-0">
-                      {(member.image_url || member.image) ? (
+                      {memberImageSrc ? (
                         <AvatarImage 
-                          src={member.image_url || member.image} 
+                          src={memberImageSrc} 
                           alt={member.name} 
                           className="object-cover w-full h-full"
                         />
