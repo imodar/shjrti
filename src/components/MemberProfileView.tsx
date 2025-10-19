@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { MemberMemories } from '@/components/MemberMemories';
+import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { 
   Edit, 
   Trash2, 
@@ -65,6 +66,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [showAllInfo, setShowAllInfo] = useState(false);
+
+  // Resolve member image to signed URL
+  const memberImageSrc = useResolvedImageUrl(member?.image_url || (member as any)?.image);
 
   useEffect(() => {
     setIsVisible(true);

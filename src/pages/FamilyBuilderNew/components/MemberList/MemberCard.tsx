@@ -6,6 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { User, UserIcon, Crown, Skull, Edit2, Trash2, Calendar } from "lucide-react";
 import { DateDisplay } from "@/components/DateDisplay";
 import { Member, Marriage } from "../../types/family.types";
+import { useResolvedImageUrl } from "@/utils/useResolvedImageUrl";
 interface MemberCardProps {
   member: Member;
   familyMembers: Member[];
@@ -28,6 +29,9 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   checkIfMemberIsSpouse,
   getGenderColor
 }) => {
+  // Resolve member image to signed URL
+  const memberImageSrc = useResolvedImageUrl((member as any).image || member.image_url);
+
   const generateMemberDisplayName = () => {
     // Check if this member is married into the family (actual spouse from outside)
     const marriage = marriages?.find(m => m.husband_id === member.id || m.wife_id === member.id);
@@ -192,7 +196,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         <div className="flex items-center justify-between gap-3 min-h-[80px]">
           <div className="flex items-start gap-3 flex-1">
             <Avatar className="h-12 w-12 flex-shrink-0">
-              <AvatarImage src={(member as any).image} />
+              <AvatarImage src={memberImageSrc || undefined} />
               <AvatarFallback className={getGenderColor(member.gender)}>
                 {((member as any).name || member.first_name || "؟").charAt(0)}
               </AvatarFallback>

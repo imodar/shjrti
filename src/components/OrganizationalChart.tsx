@@ -4,6 +4,32 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Heart, HeartCrack, Users, Crown, UserRound, Edit3 } from "lucide-react";
+import { useResolvedImageUrl } from "@/utils/useResolvedImageUrl";
+
+// Helper component to resolve member images
+const MemberAvatar: React.FC<{
+  member: any;
+  size?: string;
+  borderColor?: string;
+  ringColor?: string;
+  fallbackBg?: string;
+  fallbackText?: string;
+  textSize?: string;
+}> = ({ member, size = "h-14 w-14", borderColor = "border-primary/30", ringColor = "ring-primary/10", fallbackBg = "from-primary/20 to-primary/30", fallbackText = "text-primary", textSize = "text-lg" }) => {
+  const imageSrc = useResolvedImageUrl(member?.image_url || member?.image);
+  
+  return (
+    <Avatar className={`${size} mx-auto border-2 ${borderColor} ring-2 ${ringColor}`}>
+      {imageSrc ? (
+        <AvatarImage src={imageSrc} alt={member?.name || ""} />
+      ) : (
+        <AvatarFallback className={`bg-gradient-to-br ${fallbackBg} ${fallbackText} font-semibold ${textSize}`}>
+          {(member?.name || "؟").slice(0, 2)}
+        </AvatarFallback>
+      )}
+    </Avatar>
+  );
+};
 
 interface FamilyUnit {
   id: string;
@@ -324,16 +350,15 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                   <div className="flex items-center justify-between gap-4">
                     {/* Wife */}
                     <div className="flex-1 text-center">
-                      <Avatar className="h-14 w-14 mx-auto mb-2 border-2 border-pink-300 ring-2 ring-pink-100 dark:ring-pink-900">
-                        {wives[0].image_url ? (
-                          <AvatarImage src={wives[0].image_url} alt={wives[0].name} />
-                        ) : (
-                          <AvatarFallback className="bg-gradient-to-br from-pink-400/30 to-rose-500/30 text-pink-700 dark:text-pink-300 font-semibold">
-                            {wives[0].name.slice(0, 2)}
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                      <h4 className="font-semibold text-sm text-foreground text-center break-words">{wives[0].name}</h4>
+                      <MemberAvatar 
+                        member={wives[0]} 
+                        size="h-14 w-14"
+                        borderColor="border-pink-300"
+                        ringColor="ring-pink-100 dark:ring-pink-900"
+                        fallbackBg="from-pink-400/30 to-rose-500/30"
+                        fallbackText="text-pink-700 dark:text-pink-300"
+                      />
+                      <h4 className="font-semibold text-sm text-foreground text-center break-words mt-2">{wives[0].name}</h4>
                       <Badge variant="outline" className="text-xs mt-1 border-pink-200 text-pink-700 dark:text-pink-300">
                         الزوجة
                       </Badge>
@@ -368,16 +393,15 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                     {/* Husband */}
                     {husband && (
                       <div className="flex-1 text-center">
-                        <Avatar className="h-14 w-14 mx-auto mb-2 border-2 border-blue-300 ring-2 ring-blue-100 dark:ring-blue-900">
-                          {husband.image_url ? (
-                            <AvatarImage src={husband.image_url} alt={husband.name} />
-                          ) : (
-                            <AvatarFallback className="bg-gradient-to-br from-blue-400/30 to-cyan-500/30 text-blue-700 dark:text-blue-300 font-semibold">
-                              {husband.name.slice(0, 2)}
-                            </AvatarFallback>
-                          )}
-                        </Avatar>
-                        <h4 className="font-semibold text-sm text-foreground text-center break-words">{husband.name}</h4>
+                        <MemberAvatar 
+                          member={husband} 
+                          size="h-14 w-14"
+                          borderColor="border-blue-300"
+                          ringColor="ring-blue-100 dark:ring-blue-900"
+                          fallbackBg="from-blue-400/30 to-cyan-500/30"
+                          fallbackText="text-blue-700 dark:text-blue-300"
+                        />
+                        <h4 className="font-semibold text-sm text-foreground text-center break-words mt-2">{husband.name}</h4>
                         <Badge variant="outline" className="text-xs mt-1 border-blue-200 text-blue-700 dark:text-blue-300">
                           الزوج
                         </Badge>
@@ -406,16 +430,16 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                     {/* Husband section - extra compact */}
                     {husband && (
                       <div className="text-center mb-0.5">
-                        <Avatar className="h-8 w-8 mx-auto mb-0.5 border-2 border-blue-300 ring-1 ring-blue-100 dark:ring-blue-900">
-                          {husband.image_url ? (
-                            <AvatarImage src={husband.image_url} alt={husband.name} />
-                          ) : (
-                            <AvatarFallback className="bg-gradient-to-br from-blue-400/30 to-cyan-500/30 text-blue-700 dark:text-blue-300 font-semibold text-xs">
-                              {husband.name.slice(0, 2)}
-                            </AvatarFallback>
-                          )}
-                        </Avatar>
-                        <h4 className="font-semibold text-xs text-foreground text-center break-words leading-tight mb-0.5">{husband.name}</h4>
+                        <MemberAvatar 
+                          member={husband} 
+                          size="h-8 w-8"
+                          borderColor="border-blue-300"
+                          ringColor="ring-blue-100 dark:ring-blue-900"
+                          fallbackBg="from-blue-400/30 to-cyan-500/30"
+                          fallbackText="text-blue-700 dark:text-blue-300"
+                          textSize="text-xs"
+                        />
+                        <h4 className="font-semibold text-xs text-foreground text-center break-words leading-tight mb-0.5 mt-0.5">{husband.name}</h4>
                         {(() => {
                           const fatherId = (husband as any).father_id || (husband as any).fatherId || (husband as any)?.father?.id;
                           const motherId = (husband as any).mother_id || (husband as any).motherId || (husband as any)?.mother?.id;
@@ -449,19 +473,16 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                       }}>
                         {wives.map((wife, index) => (
                           <div key={wife.id} className="text-center py-0.5 px-0.5">
-                            <Avatar className={`mx-auto mb-0.5 border border-pink-300 ring-1 ring-pink-100 dark:ring-pink-900 ${
-                              wives.length <= 4 ? 'h-9 w-9' : 
-                              wives.length <= 6 ? 'h-8 w-8' : 'h-7 w-7'
-                            }`}>
-                              {wife.image_url ? (
-                                <AvatarImage src={wife.image_url} alt={wife.name} />
-                              ) : (
-                                <AvatarFallback className="bg-gradient-to-br from-pink-400/30 to-rose-500/30 text-pink-700 dark:text-pink-300 font-semibold text-xs">
-                                  {wife.name.slice(0, 2)}
-                                </AvatarFallback>
-                              )}
-                            </Avatar>
-                            <h5 className="font-medium text-xs text-foreground text-center break-words leading-tight mb-0.5" 
+                            <MemberAvatar 
+                              member={wife} 
+                              size={wives.length <= 4 ? 'h-9 w-9' : wives.length <= 6 ? 'h-8 w-8' : 'h-7 w-7'}
+                              borderColor="border-pink-300"
+                              ringColor="ring-pink-100 dark:ring-pink-900"
+                              fallbackBg="from-pink-400/30 to-rose-500/30"
+                              fallbackText="text-pink-700 dark:text-pink-300"
+                              textSize="text-xs"
+                            />
+                            <h5 className="font-medium text-xs text-foreground text-center break-words leading-tight mb-0.5 mt-0.5"
                                 style={{ 
                                   fontSize: wives.length <= 4 ? '11px' : wives.length <= 6 ? '10px' : '9px', 
                                   lineHeight: '1.1' 
@@ -578,16 +599,16 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                 )}
                 
                 <div className="text-center">
-                  <Avatar className="h-16 w-16 mx-auto mb-3 border-2 border-primary/30 ring-2 ring-primary/10">
-                    {member.image_url ? (
-                      <AvatarImage src={member.image_url} alt={member.name} />
-                    ) : (
-                      <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/30 text-primary font-semibold text-lg">
-                        {member.name.slice(0, 2)}
-                      </AvatarFallback>
-                    )}
-                  </Avatar>
-                  <h3 className="font-bold text-lg text-foreground mb-2">{member.name}</h3>
+                  <MemberAvatar 
+                    member={member} 
+                    size="h-16 w-16"
+                    borderColor="border-primary/30"
+                    ringColor="ring-primary/10"
+                    fallbackBg="from-primary/20 to-primary/30"
+                    fallbackText="text-primary"
+                    textSize="text-lg"
+                  />
+                  <h3 className="font-bold text-lg text-foreground mb-2 mt-3">{member.name}</h3>
                   
                   <div className="flex justify-center gap-2 flex-wrap">
                     <Badge variant="outline" className="text-xs">

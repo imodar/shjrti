@@ -87,13 +87,33 @@ const FamilyBuilderNew = () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
-    ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
+
+    // Calculate scale factor to keep image under max size (1200px)
+    const MAX_SIZE = 1200;
+    const scale = Math.min(MAX_SIZE / pixelCrop.width, MAX_SIZE / pixelCrop.height, 1);
+    
+    // Set canvas dimensions based on scaled size
+    canvas.width = pixelCrop.width * scale;
+    canvas.height = pixelCrop.height * scale;
+
+    // Draw image with scaling
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    // Compress to JPEG with quality 0.8
     return new Promise<Blob | null>(resolve => {
       canvas.toBlob(blob => {
         resolve(blob);
-      }, 'image/jpeg', 0.95);
+      }, 'image/jpeg', 0.8); // Lower quality for smaller file size
     });
   };
   const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
@@ -2351,10 +2371,13 @@ const FamilyBuilderNew = () => {
         husband: submissionData.gender === "female" && husband ? husband : null
       };
 
-      // Handle image state properly for edits:
-      // - If imageChanged is true, upload new image to storage
-      // - If imageChanged is false, keep existing storage path
+      // Handle image uploads with safer flow:
+      // 1. Upload new image first (if provided)
+      // 2. Update DB with new image_url
+      // 3. Delete old image only after successful DB update
       let finalImageUrl;
+      let oldImagePath = null;
+      
       if (formMode === 'edit' && editingMember) {
         console.log('🚨 Image preservation check:', {
           imageChanged,
@@ -2362,17 +2385,40 @@ const FamilyBuilderNew = () => {
           existingImage: editingMember.image,
           editingMember: editingMember
         });
+        
         if (imageChanged) {
-          // Delete old image from storage if exists
-          if (editingMember.image && !editingMember.image.startsWith('data:image/')) {
-            await deleteMemberImage(editingMember.image);
+          // Store old image path for later deletion
+          if (editingMember.image && !editingMember.image.startsWith('data:image/') && !editingMember.image.startsWith('blob:')) {
+            oldImagePath = editingMember.image;
           }
           
-          // Upload new image to storage if provided
+          // Upload new image FIRST before updating DB
           const croppedBlob = (window as any).__croppedImageBlob;
           if (croppedBlob) {
-            finalImageUrl = await uploadMemberImage(croppedBlob, editingMember.id);
-            console.log('✅ Image uploaded to storage (edit):', finalImageUrl);
+            try {
+              finalImageUrl = await uploadMemberImage(croppedBlob, editingMember.id);
+              console.log('✅ Image uploaded to storage (edit):', finalImageUrl);
+              
+              if (!finalImageUrl) {
+                // Upload failed - keep existing image
+                toast({
+                  title: "تحذير",
+                  description: "فشل رفع الصورة. تم الاحتفاظ بالصورة القديمة.",
+                  variant: "destructive"
+                });
+                finalImageUrl = editingMember.image || null;
+                oldImagePath = null; // Don't delete old image
+              }
+            } catch (error) {
+              console.error('Image upload error:', error);
+              toast({
+                title: "خطأ في رفع الصورة",
+                description: "حجم الصورة كبير جداً. تم الاحتفاظ بالصورة القديمة.",
+                variant: "destructive"
+              });
+              finalImageUrl = editingMember.image || null;
+              oldImagePath = null; // Don't delete old image
+            }
           } else {
             finalImageUrl = null;
           }
@@ -2381,8 +2427,8 @@ const FamilyBuilderNew = () => {
           finalImageUrl = editingMember.image || null;
         }
       } else {
-        // Add mode - already handled in the insert section
-        finalImageUrl = submissionData.croppedImage || null;
+        // Add mode - will be handled below
+        finalImageUrl = null;
       }
 
       // Call the existing submission logic (same as modal)
@@ -2465,15 +2511,7 @@ const FamilyBuilderNew = () => {
         // Ensure name field is properly constructed
         const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName;
         
-        // Upload image to storage if a new image was cropped
-        let imageStoragePath = null;
-        const croppedBlob = (window as any).__croppedImageBlob;
-        if (croppedBlob && imageChanged) {
-          const tempMemberId = `temp-${Date.now()}`;
-          imageStoragePath = await uploadMemberImage(croppedBlob, tempMemberId);
-          console.log('✅ Image uploaded to storage:', imageStoragePath);
-        }
-        
+        // Insert member first WITHOUT image
         const {
           data: newMember,
           error: memberError
@@ -2486,7 +2524,7 @@ const FamilyBuilderNew = () => {
           is_alive: submissionData.isAlive,
           death_date: !submissionData.isAlive ? formatDateForDatabase(submissionData.deathDate) : null,
           biography: submissionData.bio || null,
-          image_url: imageStoragePath,
+          image_url: null, // Will be updated below if image exists
           father_id: fatherId,
           mother_id: motherId,
           related_person_id: relatedPersonId,
@@ -2495,11 +2533,45 @@ const FamilyBuilderNew = () => {
           is_founder: submissionData.isFounder || false,
           marital_status: finalData.maritalStatus || 'single'
         }).select().single();
+        
         if (memberError) {
           console.error('Error adding family member:', memberError);
           throw memberError;
         }
+        
         memberData = newMember;
+        
+        // Now upload image using the real member ID
+        const croppedBlob = (window as any).__croppedImageBlob;
+        if (croppedBlob && imageChanged) {
+          try {
+            const imageStoragePath = await uploadMemberImage(croppedBlob, memberData.id);
+            console.log('✅ Image uploaded to storage:', imageStoragePath);
+            
+            if (imageStoragePath) {
+              // Update member with image path
+              const { error: imageUpdateError } = await supabase
+                .from('family_tree_members')
+                .update({ image_url: imageStoragePath })
+                .eq('id', memberData.id);
+                
+              if (imageUpdateError) {
+                console.error('Error updating member with image:', imageUpdateError);
+              } else {
+                // Update memberData with the image path
+                memberData.image_url = imageStoragePath;
+                finalImageUrl = imageStoragePath;
+              }
+            }
+          } catch (error) {
+            console.error('Image upload error:', error);
+            toast({
+              title: "تحذير",
+              description: "فشل رفع الصورة. تم حفظ العضو بدون صورة.",
+              variant: "default"
+            });
+          }
+        }
       }
 
       // Track successful marriages for toast message
