@@ -44,14 +44,39 @@ export const uploadMemberImage = async (
  */
 export const getMemberImageUrl = async (filePath: string): Promise<string | null> => {
   try {
-    // If it's a Base64 string (legacy data), return as-is
-    if (filePath.startsWith('data:image/')) {
+    if (!filePath) return null;
+
+    // If it's a Base64/blob/http URL (legacy or direct), return as-is
+    if (
+      filePath.startsWith('data:image/') ||
+      filePath.startsWith('blob:') ||
+      filePath.startsWith('http://') ||
+      filePath.startsWith('https://')
+    ) {
+      // If it's a Supabase storage HTTP URL, try to re-sign it for private buckets
+      if (filePath.includes('/storage/v1/object/') && filePath.includes('member-memories')) {
+        const bucketMarker = 'member-memories/';
+        const idx = filePath.indexOf(bucketMarker);
+        const relative = idx !== -1 ? filePath.substring(idx + bucketMarker.length) : filePath;
+        const { data } = await supabase.storage
+          .from('member-memories')
+          .createSignedUrl(relative.replace(/^\/+/, ''), 60 * 60);
+        return data?.signedUrl || filePath;
+      }
       return filePath;
+    }
+
+    // Normalize storage-relative paths that might include bucket prefix
+    let relativePath = filePath.replace(/^\/+/, '');
+    const bucketMarker = 'member-memories/';
+    const idx = relativePath.indexOf(bucketMarker);
+    if (idx !== -1) {
+      relativePath = relativePath.substring(idx + bucketMarker.length);
     }
 
     const { data } = await supabase.storage
       .from('member-memories')
-      .createSignedUrl(filePath, 60 * 60); // 1 hour
+      .createSignedUrl(relativePath, 60 * 60); // 1 hour
     
     return data?.signedUrl || null;
   } catch (error) {

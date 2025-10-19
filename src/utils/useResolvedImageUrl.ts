@@ -43,19 +43,32 @@ export const useResolvedImageUrl = (
         return;
       }
 
-      // If it's already a data URI, blob URL, or HTTP URL, use as-is
-      if (
-        imagePath.startsWith('data:image/') ||
-        imagePath.startsWith('blob:') ||
-        imagePath.startsWith('http://') ||
-        imagePath.startsWith('https://')
-      ) {
+      // Handle known URL types and Supabase storage URLs
+      const isHttp = imagePath.startsWith('http://') || imagePath.startsWith('https://');
+      const isSupabaseStorageHttp = isHttp && imagePath.includes('/storage/v1/object/') && imagePath.includes('member-memories');
+
+      // Data URIs and blobs: use as-is
+      if (imagePath.startsWith('data:image/') || imagePath.startsWith('blob:')) {
         if (!isCancelled) setResolvedUrl(imagePath);
         return;
       }
 
+      // Non-Supabase HTTP URLs: use as-is
+      if (isHttp && !isSupabaseStorageHttp) {
+        if (!isCancelled) setResolvedUrl(imagePath);
+        return;
+      }
+
+      // Normalize storage path (handles raw paths and supabase storage URLs)
+      let normalizedPath = imagePath.replace(/^\/+/, '');
+      const bucketMarker = 'member-memories/';
+      const markerIndex = normalizedPath.indexOf(bucketMarker);
+      if (markerIndex !== -1) {
+        normalizedPath = normalizedPath.substring(markerIndex + bucketMarker.length);
+      }
+
       // Check cache first
-      const cached = urlCache.get(imagePath);
+      const cached = urlCache.get(normalizedPath);
       if (cached && cached.expiresAt > Date.now()) {
         if (!isCancelled) setResolvedUrl(cached.url);
         return;
@@ -63,10 +76,10 @@ export const useResolvedImageUrl = (
 
       // It's a storage path, fetch signed URL
       try {
-        const signedUrl = await getMemberImageUrl(imagePath);
+        const signedUrl = await getMemberImageUrl(normalizedPath);
         if (signedUrl) {
           // Cache for 1 hour (3600000ms)
-          urlCache.set(imagePath, {
+          urlCache.set(normalizedPath, {
             url: signedUrl,
             expiresAt: Date.now() + 3600000
           });
