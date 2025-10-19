@@ -436,7 +436,7 @@ const FamilyBuilderNew = () => {
         data: members,
         error: membersError
       } = await supabase.from('family_tree_members')
-        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, related_person_id, is_founder, gender, birth_date, is_alive, death_date, marital_status')
+        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, related_person_id, is_founder, gender, birth_date, is_alive, death_date, marital_status, image_url')
         .eq('family_id', familyToUse.id);
       if (membersError) throw membersError;
       
@@ -457,12 +457,13 @@ const FamilyBuilderNew = () => {
           birthDate: member.birth_date || '',
           isAlive: member.is_alive,
           deathDate: member.death_date || null,
-          image: null,
+          image: member.image_url || null,
           bio: '',
           marital_status: member.marital_status || 'single',
           relation: ""
         }));
         setFamilyMembers(transformedMembers);
+        console.log(`✅ Members loaded with images: ${transformedMembers.filter(m => m.image).length}/${transformedMembers.length}`);
       }
       const {
         data: marriages,
