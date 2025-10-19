@@ -60,46 +60,6 @@ const FamilyBuilderNew = () => {
     hasAIFeatures
   } = useSubscription();
   const isMobile = useIsMobile();
-  const getGenerationStats = () => {
-    if (familyMembers.length === 0) return [];
-    const generationMap = new Map();
-
-    // Step 1: Assign generation 1 to founders and members without parents
-    familyMembers.forEach(member => {
-      if (member.isFounder || !member.fatherId && !member.motherId) {
-        generationMap.set(member.id, 1);
-      }
-    });
-
-    // Step 2: Calculate generations based on parent-child relationships
-    let changed = true;
-    let maxIterations = familyMembers.length * 2;
-    let iterations = 0;
-    while (changed && iterations < maxIterations) {
-      changed = false;
-      iterations++;
-      familyMembers.forEach(member => {
-        if (generationMap.has(member.id)) return;
-        if (!member.fatherId && !member.motherId) {
-          generationMap.set(member.id, 1);
-          changed = true;
-          return;
-        }
-        const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : null;
-        const motherGeneration = member.motherId ? generationMap.get(member.motherId) : null;
-        if (fatherGeneration !== undefined || motherGeneration !== undefined) {
-          const parentGeneration = Math.max(fatherGeneration || 0, motherGeneration || 0);
-          generationMap.set(member.id, parentGeneration + 1);
-          changed = true;
-        }
-      });
-    }
-    const generationCounts = new Map();
-    generationMap.forEach(generation => {
-      generationCounts.set(generation, (generationCounts.get(generation) || 0) + 1);
-    });
-    return Array.from(generationCounts.entries()).sort((a, b) => a[0] - b[0]);
-  };
 
   // Image Upload and Crop Component (consolidated states)
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -282,6 +242,48 @@ const FamilyBuilderNew = () => {
   }, [familyMembers, familyMarriages, loading]);
   const calculateGenerationCount = () => generationCount;
 
+  // Memoized generation stats calculation to prevent re-computation on every render
+  const getGenerationStats = useMemo(() => {
+    if (familyMembers.length === 0) return [];
+    const generationMap = new Map();
+
+    // Step 1: Assign generation 1 to founders and members without parents
+    familyMembers.forEach(member => {
+      if (member.isFounder || !member.fatherId && !member.motherId) {
+        generationMap.set(member.id, 1);
+      }
+    });
+
+    // Step 2: Calculate generations based on parent-child relationships
+    let changed = true;
+    let maxIterations = familyMembers.length * 2;
+    let iterations = 0;
+    while (changed && iterations < maxIterations) {
+      changed = false;
+      iterations++;
+      familyMembers.forEach(member => {
+        if (generationMap.has(member.id)) return;
+        if (!member.fatherId && !member.motherId) {
+          generationMap.set(member.id, 1);
+          changed = true;
+          return;
+        }
+        const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : null;
+        const motherGeneration = member.motherId ? generationMap.get(member.motherId) : null;
+        if (fatherGeneration !== undefined || motherGeneration !== undefined) {
+          const parentGeneration = Math.max(fatherGeneration || 0, motherGeneration || 0);
+          generationMap.set(member.id, parentGeneration + 1);
+          changed = true;
+        }
+      });
+    }
+    const generationCounts = new Map();
+    generationMap.forEach(generation => {
+      generationCounts.set(generation, (generationCounts.get(generation) || 0) + 1);
+    });
+    return Array.from(generationCounts.entries()).sort((a, b) => a[0] - b[0]);
+  }, [familyMembers]);
+
   // Form panel states
   const [formMode, setFormMode] = useState<'view' | 'add' | 'edit' | 'profile' | 'tree-settings'>(() => {
     // Check if settings parameter is present in URL
@@ -297,6 +299,9 @@ const FamilyBuilderNew = () => {
   // Mobile drawer state
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
   const fetchFamilyData = async () => {
+    const startTime = performance.now();
+    console.log('🚀 Starting family data fetch...');
+    
     try {
       setLoading(true);
       const {
@@ -350,8 +355,11 @@ const FamilyBuilderNew = () => {
         error: membersError
       } = await supabase.from('family_tree_members').select('*').eq('family_id', familyToUse.id);
       if (membersError) throw membersError;
+      
+      // Transform members data (declare at function scope for use in marriages)
+      let transformedMembers = [];
       if (members) {
-        const transformedMembers = members.map(member => ({
+        transformedMembers = members.map(member => ({
           id: member.id,
           name: member.name,
           first_name: member.first_name,
@@ -384,22 +392,56 @@ const FamilyBuilderNew = () => {
         `).eq('family_id', familyToUse.id).eq('is_active', true);
       if (marriagesError) throw marriagesError;
 
-      // Get detailed marriage data with member info
+      // ✨ OPTIMIZED: Match marriages with already-fetched members (NO extra queries!)
       let marriagesWithMembers = [];
-      if (marriages) {
-        marriagesWithMembers = await Promise.all(marriages.map(async marriage => {
-          const [husbandResult, wifeResult] = await Promise.all([supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(), supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()]);
+      if (marriages && transformedMembers.length > 0) {
+        marriagesWithMembers = marriages.map(marriage => {
+          const husband = transformedMembers.find(m => m.id === marriage.husband_id);
+          const wife = transformedMembers.find(m => m.id === marriage.wife_id);
           return {
             ...marriage,
-            husband: husbandResult.data,
-            wife: wifeResult.data
+            husband: husband ? {
+              id: husband.id,
+              name: husband.name,
+              first_name: husband.first_name,
+              last_name: husband.last_name,
+              father_id: husband.fatherId,
+              mother_id: husband.motherId,
+              gender: husband.gender,
+              birth_date: husband.birthDate,
+              is_alive: husband.isAlive,
+              death_date: husband.deathDate,
+              image_url: husband.image,
+              biography: husband.bio,
+              marital_status: husband.marital_status
+            } : null,
+            wife: wife ? {
+              id: wife.id,
+              name: wife.name,
+              first_name: wife.first_name,
+              last_name: wife.last_name,
+              father_id: wife.fatherId,
+              mother_id: wife.motherId,
+              gender: wife.gender,
+              birth_date: wife.birthDate,
+              is_alive: wife.isAlive,
+              death_date: wife.deathDate,
+              image_url: wife.image,
+              biography: wife.bio,
+              marital_status: wife.marital_status
+            } : null
           };
-        }));
+        });
       }
-      if (marriagesError) throw marriagesError;
+      
       if (marriagesWithMembers) {
         setFamilyMarriages(marriagesWithMembers);
       }
+      
+      const endTime = performance.now();
+      console.log(`✅ Family data loaded in ${(endTime - startTime).toFixed(0)}ms`);
+      console.log(`📊 Stats: ${transformedMembers.length} members, ${marriagesWithMembers.length} marriages`);
+
     } catch (error) {
       console.error('Error fetching family data:', error);
       toast({
