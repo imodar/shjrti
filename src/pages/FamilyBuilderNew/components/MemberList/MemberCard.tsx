@@ -196,13 +196,10 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         <div className="flex items-center justify-between gap-3 min-h-[80px]">
           <div className="flex items-start gap-3 flex-1">
             <Avatar className="h-12 w-12 flex-shrink-0">
-              {memberImageSrc ? (
-                <AvatarImage src={memberImageSrc} alt={member.name} />
-              ) : (
-                <AvatarFallback className={getGenderColor(member.gender)}>
-                  {((member as any).name || member.first_name || "؟").charAt(0)}
-                </AvatarFallback>
-              )}
+              {memberImageSrc && <AvatarImage src={memberImageSrc} alt={member.name} />}
+              <AvatarFallback className={getGenderColor(member.gender)}>
+                {((member as any).name || member.first_name || "؟").charAt(0)}
+              </AvatarFallback>
             </Avatar>
             
             <div className="flex-1 min-w-0 space-y-1">
