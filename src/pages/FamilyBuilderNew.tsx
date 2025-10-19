@@ -67,6 +67,7 @@ const FamilyBuilderNew = () => {
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [showCropDialog, setShowCropDialog] = useState(false);
   const [imageChanged, setImageChanged] = useState(false);
+  const [editingMemberImageUrl, setEditingMemberImageUrl] = useState<string | null>(null);
   const [crop, setCrop] = useState({
     x: 0,
     y: 0
@@ -192,7 +193,7 @@ const FamilyBuilderNew = () => {
       setShowCropDialog(true);
     } 
     // If editing existing image, trigger file upload
-    else if (croppedImage || (editingMember && editingMember.image)) {
+    else if (croppedImage || editingMemberImageUrl) {
       fileInputRef.current?.click();
     }
   };
@@ -565,18 +566,14 @@ const FamilyBuilderNew = () => {
         fatherId: member.father_id,
         motherId: member.mother_id,
         spouseId: null,
-        // Will be filled from marriages
         relatedPersonId: null,
         isFounder: member.is_founder,
         gender: member.gender,
-        birthDate: "",
-        // Will be loaded when profile is viewed
-        isAlive: true,
-        deathDate: null,
-        image: null,
-        // Will be loaded when profile is viewed
-        bio: "",
-        // Will be loaded when profile is viewed
+        birthDate: member.birth_date || "",
+        isAlive: member.is_alive !== false,
+        deathDate: member.death_date || null,
+        image: member.image_url || null,
+        bio: member.biography || "",
         marital_status: member.marital_status || 'single',
         relation: ""
       }));
@@ -647,6 +644,22 @@ const FamilyBuilderNew = () => {
       loadExistingSpouses(editingMember);
     }
   }, [editingMember?.id, familyMarriages?.length, familyMembers?.length]);
+
+  // Load signed URL for editing member's image if it's a storage path
+  useEffect(() => {
+    const loadEditingMemberImage = async () => {
+      if (editingMember?.image && !editingMember.image.startsWith('data:image/') && !editingMember.image.startsWith('blob:')) {
+        // It's a storage path, fetch signed URL
+        const signedUrl = await getMemberImageUrl(editingMember.image);
+        setEditingMemberImageUrl(signedUrl);
+      } else {
+        // It's Base64 or blob URL, use directly
+        setEditingMemberImageUrl(editingMember?.image || null);
+      }
+    };
+    
+    loadEditingMemberImage();
+  }, [editingMember?.image]);
 
   // Search and filter states
   const [selectedMember, setSelectedMember] = useState<any>(null);
@@ -1870,6 +1883,7 @@ const FamilyBuilderNew = () => {
     setCroppedImage(null);
     setSelectedImage(null);
     setImageChanged(false);
+    setEditingMemberImageUrl(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -3392,12 +3406,12 @@ const FamilyBuilderNew = () => {
                                    الصورة الشخصية
                                  </Label>
                               
-                              {croppedImage || editingMember && editingMember.image ? <div className="space-y-3">
-                                  <div className="relative group flex justify-center">
-                                    <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3">
-                                       <img src={croppedImage || editingMember && editingMember.image} alt="صورة العضو" className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg" />
-                                    </div>
-                                  </div>
+                               {croppedImage || editingMemberImageUrl ? <div className="space-y-3">
+                                   <div className="relative group flex justify-center">
+                                     <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3">
+                                        <img src={croppedImage || editingMemberImageUrl} alt="صورة العضو" className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg" />
+                                     </div>
+                                   </div>
                                   
                                    {isImageUploadEnabled && <div className="flex justify-center gap-2">
                                      <Button type="button" size="sm" variant="secondary" onClick={handleEditImage} className="h-8 px-3">
