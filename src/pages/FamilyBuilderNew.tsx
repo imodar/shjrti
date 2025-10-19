@@ -125,24 +125,67 @@ const FamilyBuilderNew = () => {
     }
   };
   const handleDeleteImage = async () => {
-    // Clean up preview URL
-    if (croppedImage && croppedImage.startsWith('blob:')) {
-      URL.revokeObjectURL(croppedImage);
-    }
-    
-    // Delete from storage if editing existing member
-    if (editingMember?.image && !editingMember.image.startsWith('data:image/') && !editingMember.image.startsWith('blob:')) {
-      await deleteMemberImage(editingMember.image);
-    }
-    
-    setCroppedImage(null);
-    setSelectedImage(null);
-    setImageChanged(true);
-    (window as any).__croppedImageBlob = null;
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+    try {
+      // 1) Determine current image path
+      let currentPath: string | null = editingMember?.image || null;
+      if (!currentPath && editingMember?.id) {
+        const { data } = await supabase
+          .from('family_tree_members')
+          .select('image_url')
+          .eq('id', editingMember.id)
+          .maybeSingle();
+        currentPath = data?.image_url ?? null;
+      }
+
+      // 2) Delete preview URL if exists
+      if (croppedImage && croppedImage.startsWith('blob:')) {
+        URL.revokeObjectURL(croppedImage);
+      }
+
+      // 3) Remove from storage if it's a storage path
+      if (currentPath && !currentPath.startsWith('data:image/') && !currentPath.startsWith('blob:')) {
+        await deleteMemberImage(currentPath);
+      }
+
+      // 4) Update DB to null image_url if editing an existing member
+      if (editingMember?.id) {
+        await supabase
+          .from('family_tree_members')
+          .update({ image_url: null, updated_at: new Date().toISOString() })
+          .eq('id', editingMember.id);
+      }
+
+      // 5) Update local state to reflect deletion immediately
+      setCroppedImage(null);
+      setSelectedImage(null);
+      setImageChanged(true);
+      (window as any).__croppedImageBlob = null;
+
+      if (editingMember) {
+        setEditingMember({ ...editingMember, image: null });
+      }
+      setFamilyMembers(prev => prev.map((m: any) => m.id === editingMember?.id ? { ...m, image: null } : m));
+
+      // 6) Reset file input to allow re-upload
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+
+      // 7) Toast
+      toast({
+        title: 'تم حذف الصورة',
+        description: 'تم حذف صورة العضو بنجاح',
+      });
+    } catch (err) {
+      console.error('Failed to delete image', err);
+      toast({
+        title: 'فشل حذف الصورة',
+        description: 'حدث خطأ أثناء حذف الصورة. حاول مجددًا.',
+        variant: 'destructive',
+      });
     }
   };
+
   const handleEditImage = () => {
     // If we have the original image, show crop dialog
     if (selectedImage) {
