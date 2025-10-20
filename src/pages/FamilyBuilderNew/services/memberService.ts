@@ -34,9 +34,23 @@ export const memberService = {
   },
 
   async createMember(memberData: Partial<Member>): Promise<Member> {
+    if (!memberData.family_id) {
+      throw new Error('family_id is required');
+    }
+    
+    // Compute name if not provided
+    const name = memberData.name || 
+                 `${memberData.first_name || ''} ${memberData.last_name || ''}`.trim() ||
+                 memberData.first_name || 
+                 'غير معروف';
+    
     const { data, error } = await supabase
       .from('family_tree_members')
-      .insert([memberData])
+      .insert([{
+        ...memberData,
+        name,
+        family_id: memberData.family_id
+      }])
       .select()
       .single();
 

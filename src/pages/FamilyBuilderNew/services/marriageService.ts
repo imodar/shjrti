@@ -17,9 +17,20 @@ export const marriageService = {
   },
 
   async createMarriage(marriageData: Partial<Marriage>): Promise<Marriage> {
+    if (!marriageData.family_id || !marriageData.husband_id || !marriageData.wife_id) {
+      throw new Error('family_id, husband_id, and wife_id are required');
+    }
+    
     const { data, error } = await supabase
       .from('marriages')
-      .insert([marriageData])
+      .insert([{
+        family_id: marriageData.family_id,
+        husband_id: marriageData.husband_id,
+        wife_id: marriageData.wife_id,
+        marriage_date: marriageData.marriage_date,
+        marriage_place: marriageData.marriage_place,
+        divorce_date: marriageData.divorce_date
+      }])
       .select()
       .single();
 

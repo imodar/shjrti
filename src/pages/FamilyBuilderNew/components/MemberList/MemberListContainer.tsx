@@ -14,6 +14,8 @@ interface MemberListContainerProps {
   onMemberDelete: (memberId: string) => void;
   onAddMember: () => void;
   packageData: any;
+  checkIfMemberIsSpouse: (member: Member) => boolean;
+  getGenderColor: (gender: string) => string;
 }
 
 export const MemberListContainer = React.memo(({
@@ -24,7 +26,9 @@ export const MemberListContainer = React.memo(({
   onMemberEdit,
   onMemberDelete,
   onAddMember,
-  packageData
+  packageData,
+  checkIfMemberIsSpouse,
+  getGenderColor
 }: MemberListContainerProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [generationFilter, setGenerationFilter] = useState("all");
@@ -63,9 +67,14 @@ export const MemberListContainer = React.memo(({
           <MemberCard
             key={member.id}
             member={member}
-            onClick={() => onMemberClick(member)}
-            onEdit={() => onMemberEdit(member)}
-            onDelete={() => onMemberDelete(member.id)}
+            familyMembers={members}
+            marriages={marriages}
+            onViewMember={onMemberClick}
+            onEditMember={onMemberEdit}
+            onDeleteMember={(m) => onMemberDelete(m.id)}
+            onSpouseEditAttempt={onMemberEdit}
+            checkIfMemberIsSpouse={checkIfMemberIsSpouse}
+            getGenderColor={getGenderColor}
           />
         ))}
         

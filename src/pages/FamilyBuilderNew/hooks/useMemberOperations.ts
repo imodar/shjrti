@@ -10,10 +10,17 @@ export const useMemberOperations = () => {
 
   const addMember = useCallback(async (memberData: Partial<Member>, familyId: string, creatorId: string) => {
     try {
+      // Compute name from first_name and last_name if not provided
+      const name = memberData.name || 
+                   `${memberData.first_name || ''} ${memberData.last_name || ''}`.trim() ||
+                   memberData.first_name || 
+                   'غير معروف';
+      
       const { data, error } = await supabase
         .from('family_tree_members')
         .insert([{
           ...memberData,
+          name,
           family_id: familyId,
           created_by: creatorId,
         }])
