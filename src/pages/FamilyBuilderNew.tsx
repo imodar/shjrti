@@ -3823,7 +3823,7 @@ const FamilyBuilderNew = () => {
                        </span>
                      </CardTitle>
                   </CardHeader>
-                  <CardContent className="relative overflow-y-auto flex-1 min-h-0">
+                  <CardContent className="relative overflow-y-auto flex-1 min-h-0 pt-2">
                       <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={subscription?.package_name} />
                   </CardContent>
                 </Card>}
