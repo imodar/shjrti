@@ -11,6 +11,7 @@ import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { uploadMemberImage } from '@/utils/imageUpload';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { ImageUploadModal } from '@/components/ImageUploadModal';
 import { 
   Edit,
   Trash2, 
@@ -70,7 +71,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const [activeTab, setActiveTab] = useState('overview');
   const [showAllInfo, setShowAllInfo] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const [showImageUploadModal, setShowImageUploadModal] = useState(false);
   const { toast } = useToast();
 
   // Resolve member image to signed URL
@@ -80,35 +81,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     setIsVisible(true);
   }, []);
 
-  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      toast({
-        title: "خطأ",
-        description: "يرجى اختيار ملف صورة صحيح",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast({
-        title: "خطأ",
-        description: "حجم الصورة يجب أن يكون أقل من 5 ميجابايت",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const handleImageSave = async (croppedImageBlob: Blob) => {
     setIsUploadingImage(true);
 
     try {
       // Upload image to storage
-      const filePath = await uploadMemberImage(file, member.id);
+      const filePath = await uploadMemberImage(croppedImageBlob, member.id);
       
       if (!filePath) {
         throw new Error('فشل رفع الصورة');
@@ -133,7 +111,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       });
 
       // Reload the page to show new image
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error('Error uploading image:', error);
       toast({
@@ -143,10 +123,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       });
     } finally {
       setIsUploadingImage(false);
-      // Reset input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
     }
   };
 
@@ -682,7 +658,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        fileInputRef.current?.click();
+                        setShowImageUploadModal(true);
                       }}
                       disabled={isUploadingImage}
                       className="absolute bottom-2 right-2 bg-primary hover:bg-primary/90 text-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -694,15 +670,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <Camera className="h-4 w-4" />
                       )}
                     </button>
-                    
-                    {/* Hidden File Input */}
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="hidden"
-                    />
                   </div>
 
                   {/* Basic Info - Name and Stats after picture */}
@@ -1292,6 +1259,14 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           </Button>
         </div>
       </div>
+
+      {/* Image Upload Modal */}
+      <ImageUploadModal
+        isOpen={showImageUploadModal}
+        onClose={() => setShowImageUploadModal(false)}
+        onSave={handleImageSave}
+        title="تحديث الصورة الشخصية"
+      />
     </div>
   );
 };
