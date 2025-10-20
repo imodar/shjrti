@@ -67,6 +67,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   const [isValidatingDomain, setIsValidatingDomain] = useState(false);
   const [domainValidationError, setDomainValidationError] = useState("");
   const [hasCustomDomainFeature, setHasCustomDomainFeature] = useState(false);
+  const [hasImageUploadFeature, setHasImageUploadFeature] = useState(false);
   const [checkingFeature, setCheckingFeature] = useState(true);
   
   // Share Modal state
@@ -88,9 +89,9 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   const shareableLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
   const publicShareableLink = `${window.location.origin}/tree?familyId=${familyData?.id}`;
   
-  // Check if user's package has custom domains enabled
+  // Check if user's package has custom domains and image upload enabled
   useEffect(() => {
-    const checkCustomDomainFeature = async () => {
+    const checkPackageFeatures = async () => {
       setCheckingFeature(true);
       try {
         const { data: userSub, error: subError } = await supabase
@@ -99,6 +100,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
             *,
             packages(
               custom_domains_enabled,
+              image_upload_enabled,
               name
             )
           `)
@@ -108,18 +110,21 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
           
         if (userSub && userSub.packages && !subError) {
           setHasCustomDomainFeature(userSub.packages.custom_domains_enabled);
+          setHasImageUploadFeature(userSub.packages.image_upload_enabled);
         } else {
           setHasCustomDomainFeature(false);
+          setHasImageUploadFeature(false);
         }
       } catch (error) {
-        console.error('Error checking custom domain feature:', error);
+        console.error('Error checking package features:', error);
         setHasCustomDomainFeature(false);
+        setHasImageUploadFeature(false);
       } finally {
         setCheckingFeature(false);
       }
     };
 
-    checkCustomDomainFeature();
+    checkPackageFeatures();
   }, []);
   
   const handleCopyLink = () => {
@@ -604,7 +609,41 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                 <Label className="text-base font-semibold">مشاركة ألبوم صور العائلة</Label>
               </div>
               
-              <div className={`p-4 rounded-lg border ${shareGallery ? 'bg-green-50 dark:bg-green-900/20 border-green-200' : 'bg-gray-50 dark:bg-gray-900/20 border-gray-200'}`}>
+              {checkingFeature ? (
+                <div className="flex items-center justify-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              ) : !hasImageUploadFeature ? (
+                // حالة: الميزة غير متاحة (باقة مجانية)
+                <div 
+                  className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border-2 border-dashed border-amber-300 cursor-pointer hover:border-amber-400 transition-colors"
+                  onClick={() => setShowUpgradeModal(true)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
+                        <Images className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold">مشاركة ألبوم الصور</span>
+                          <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs">
+                            👑 Premium
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          اسمح للزوار بمشاهدة ألبوم صور العائلة
+                        </p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      ترقية الآن
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                // حالة: الميزة متاحة
+                <div className={`p-4 rounded-lg border ${shareGallery ? 'bg-green-50 dark:bg-green-900/20 border-green-200' : 'bg-gray-50 dark:bg-gray-900/20 border-gray-200'}`}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <Images className={`h-5 w-5 ${shareGallery ? 'text-green-600' : 'text-gray-400'}`} />
@@ -671,7 +710,8 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                     </div>
                   </div>
                 )}
-              </div>
+                </div>
+              )}
             </div>
 
             <Separator />
