@@ -1,85 +1,58 @@
-// Core data types for family builder
+export interface Family {
+  id: string;
+  name: string;
+  description?: string;
+  custom_domain?: string;
+  share_password?: string;
+  creator_id: string;
+  is_archived?: boolean;
+  archived_at?: string;
+  created_at: string;
+  updated_at: string;
+}
 
 export interface Member {
   id: string;
   name: string;
   first_name?: string;
   last_name?: string;
-  father_id?: string | null;
-  mother_id?: string | null;
   gender: string;
-  birth_date?: string | null;
-  birth_place?: string | null;
-  death_date?: string | null;
-  death_place?: string | null;
-  is_alive?: boolean;
-  is_founder?: boolean;
-  marital_status?: string;
-  image_url?: string | null;
-  biography?: string | null;
+  birth_date?: string;
+  death_date?: string;
+  birth_place?: string;
+  death_place?: string;
+  biography?: string;
+  image_url?: string;
+  father_id?: string;
+  mother_id?: string;
   family_id: string;
-  spouse_id?: string | null;
-  related_person_id?: string | null;
+  is_founder?: boolean;
+  is_alive?: boolean;
+  marital_status?: string;
+  spouse_id?: string;
+  related_person_id?: string;
   created_by?: string;
-  created_at?: string;
-  updated_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Marriage {
   id: string;
-  family_id: string;
   husband_id: string;
   wife_id: string;
-  marriage_date?: string | null;
-  marriage_place?: string | null;
-  divorce_date?: string | null;
-  is_active?: boolean;
-  marital_status?: string;
-  created_at?: string;
-  updated_at?: string;
+  marriage_date?: string;
+  marriage_place?: string;
+  divorce_date?: string;
+  family_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface Family {
+export interface Package {
   id: string;
   name: string;
-  description?: string | null;
-  creator_id: string;
-  custom_domain?: string | null;
-  share_password?: string | null;
-  is_archived?: boolean;
-  created_at?: string;
-  updated_at?: string;
-}
-
-export interface MemberFormData {
-  name?: string;
-  first_name: string;
-  last_name?: string;
-  relation?: string;
-  relatedPersonId?: string | null;
-  selectedParent?: string | null;
-  gender: string;
-  birthDate?: Date | null;
-  isAlive?: boolean;
-  deathDate?: Date | null;
-  bio?: string;
-  imageUrl?: string | null;
-  croppedImage?: string | null;
-  isFounder?: boolean;
-}
-
-export interface SpouseData {
-  id?: string;
-  firstName: string;
-  lastName?: string;
-  name: string;
-  isAlive: boolean;
-  birthDate?: Date | null;
-  deathDate?: Date | null;
-  maritalStatus: string;
-  isFamilyMember: boolean;
-  existingFamilyMemberId?: string;
-  croppedImage?: string | null;
-  biography?: string;
-  isSaved?: boolean;
+  max_family_members: number;
+  custom_domains_enabled: boolean;
+  price: number;
+  features: string[];
 }
