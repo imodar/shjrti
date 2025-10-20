@@ -203,50 +203,50 @@ export const GlobalHeader = () => {
                       <DropdownMenuSeparator className="bg-white/10" />
                       
                       {/* Enhanced Menu Items */}
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-emerald-400/20" asChild>
+                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/10 transition-all duration-100 cursor-pointer border border-transparent hover:border-emerald-400/20" asChild>
                         <Link to="/dashboard" className={`flex items-center gap-4 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-emerald-400/20 rounded-xl group-hover:bg-emerald-400/30 transition-colors border border-emerald-400/30">
+                          <div className="p-3 bg-emerald-400/20 rounded-xl group-hover:bg-emerald-400/30 transition-all duration-100 border border-emerald-400/30">
                             <TreePine className="h-5 w-5 text-emerald-300" />
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.dashboard', 'حسابي')}</p>
-                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors">{t('nav.dashboard.desc', 'إدارة شجرة العائلة')}</p>
+                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors duration-100">{t('nav.dashboard.desc', 'إدارة شجرة العائلة')}</p>
                           </div>
                         </Link>
                       </DropdownMenuItem>
                       
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-teal-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-teal-400/20" asChild>
+                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-teal-400/10 transition-all duration-100 cursor-pointer border border-transparent hover:border-teal-400/20" asChild>
                         <Link to="/profile" className={`flex items-center gap-4 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-teal-400/20 rounded-xl group-hover:bg-teal-400/30 transition-colors border border-teal-400/30">
+                          <div className="p-3 bg-teal-400/20 rounded-xl group-hover:bg-teal-400/30 transition-all duration-100 border border-teal-400/30">
                             <Settings className="h-5 w-5 text-teal-300" />
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.settings', 'الإعدادات')}</p>
-                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors">{t('nav.settings.desc', 'تخصيص الحساب')}</p>
+                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors duration-100">{t('nav.settings.desc', 'تخصيص الحساب')}</p>
                           </div>
                         </Link>
                       </DropdownMenuItem>
                       
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-amber-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-400/20" asChild>
+                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-amber-400/10 transition-all duration-100 cursor-pointer border border-transparent hover:border-amber-400/20" asChild>
                         <Link to="/payments" className={`flex items-center gap-4 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-amber-400/20 rounded-xl group-hover:bg-amber-400/30 transition-colors border border-amber-400/30">
+                          <div className="p-3 bg-amber-400/20 rounded-xl group-hover:bg-amber-400/30 transition-all duration-100 border border-amber-400/30">
                             <CreditCard className="h-5 w-5 text-amber-300" />
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.billing', 'الفواتير')}</p>
-                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors">{t('nav.billing.desc', 'إدارة الاشتراكات')}</p>
+                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors duration-100">{t('nav.billing.desc', 'إدارة الاشتراكات')}</p>
                           </div>
                         </Link>
                       </DropdownMenuItem>
                       
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-emerald-400/30">
+                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/20 transition-all duration-100 cursor-pointer border border-transparent hover:border-emerald-400/30">
                          <div className={`flex items-center gap-4 w-full ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-emerald-400/20 rounded-xl group-hover:bg-emerald-400/30 transition-colors border border-emerald-400/30">
+                          <div className="p-3 bg-emerald-400/20 rounded-xl group-hover:bg-emerald-400/30 transition-all duration-100 border border-emerald-400/30">
                             <HelpCircle className="h-5 w-5 text-emerald-300" />
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.help', 'المساعدة')}</p>
-                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors">{t('nav.help.desc', 'الدعم والتوجيه')}</p>
+                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors duration-100">{t('nav.help.desc', 'الدعم والتوجيه')}</p>
                           </div>
                         </div>
                       </DropdownMenuItem>
@@ -255,16 +255,16 @@ export const GlobalHeader = () => {
                       
                       {/* Logout */}
                       <DropdownMenuItem 
-                        className="group p-4 rounded-xl hover:bg-red-500/20 transition-all duration-300 cursor-pointer text-red-400 focus:text-red-300 border border-transparent hover:border-red-500/30"
+                        className="group p-4 rounded-xl hover:bg-red-500/20 transition-all duration-100 cursor-pointer text-red-400 focus:text-red-300 border border-transparent hover:border-red-500/30"
                         onClick={signOut}
                       >
                         <div className={`flex items-center gap-4 w-full ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-red-500/20 rounded-xl group-hover:bg-red-500/30 transition-colors border border-red-500/30">
+                          <div className="p-3 bg-red-500/20 rounded-xl group-hover:bg-red-500/30 transition-all duration-100 border border-red-500/30">
                             <LogOut className="h-5 w-5 text-red-400" />
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.logout', 'تسجيل الخروج')}</p>
-                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors">{t('nav.logout.desc', 'إنهاء الجلسة')}</p>
+                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors duration-100">{t('nav.logout.desc', 'إنهاء الجلسة')}</p>
                           </div>
                         </div>
                       </DropdownMenuItem>
