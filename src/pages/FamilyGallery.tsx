@@ -32,8 +32,6 @@ import {
   User,
   Grid,
   List,
-  ZoomIn,
-  RotateCw,
   AlertCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -44,7 +42,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDropzone } from "react-dropzone";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import Cropper from 'react-easy-crop';
 import { TimelineView } from "./FamilyGallery/TimelineView";
 
 interface FamilyMemory {
@@ -80,17 +77,11 @@ const FamilyGallery = () => {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [rotation, setRotation] = useState(0);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
 
   // Upload Form Data
   const [uploadForm, setUploadForm] = useState({
     caption: "",
-    photoDate: new Date(),
-    tags: [] as string[],
-    linkedMemberId: null as string | null
+    photoDate: new Date()
   });
 
   // View Mode State
@@ -243,62 +234,6 @@ const FamilyGallery = () => {
     fetchFamilyData();
   }, [familyId, navigate, toast, loadMemories, calculateStorageUsage, loadFamilyMembers]);
 
-  // Image cropping helpers
-  const createImage = (url: string): Promise<HTMLImageElement> =>
-    new Promise((resolve, reject) => {
-      const image = new Image();
-      image.addEventListener('load', () => resolve(image));
-      image.addEventListener('error', (error) => reject(error));
-      image.setAttribute('crossOrigin', 'anonymous');
-      image.src = url;
-    });
-
-  const getCroppedImg = async (
-    imageSrc: string,
-    pixelCrop: any,
-    rotation = 0
-  ): Promise<Blob> => {
-    const image = await createImage(imageSrc);
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-
-    if (!ctx) {
-      throw new Error('No 2d context');
-    }
-
-    const maxSize = Math.max(image.width, image.height);
-    const safeArea = 2 * ((maxSize / 2) * Math.sqrt(2));
-
-    canvas.width = safeArea;
-    canvas.height = safeArea;
-
-    ctx.translate(safeArea / 2, safeArea / 2);
-    ctx.rotate((rotation * Math.PI) / 180);
-    ctx.translate(-safeArea / 2, -safeArea / 2);
-
-    ctx.drawImage(
-      image,
-      safeArea / 2 - image.width * 0.5,
-      safeArea / 2 - image.height * 0.5
-    );
-
-    const data = ctx.getImageData(0, 0, safeArea, safeArea);
-
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
-
-    ctx.putImageData(
-      data,
-      Math.round(0 - safeArea / 2 + image.width * 0.5 - pixelCrop.x),
-      Math.round(0 - safeArea / 2 + image.height * 0.5 - pixelCrop.y)
-    );
-
-    return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        if (blob) resolve(blob);
-      }, 'image/jpeg', 0.9);
-    });
-  };
 
   // Handle file upload - Open dialog instead of direct upload
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -336,26 +271,17 @@ const FamilyGallery = () => {
     // Reset form
     setUploadForm({
       caption: "",
-      photoDate: new Date(),
-      tags: [],
-      linkedMemberId: null
+      photoDate: new Date()
     });
-    setCrop({ x: 0, y: 0 });
-    setZoom(1);
-    setRotation(0);
   }, [toast]);
 
-  // Crop complete handler
-  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
 
-  // Handle confirm upload with cropped image
+  // Handle confirm upload
   const handleConfirmUpload = async () => {
-    if (!selectedFile || !croppedAreaPixels) {
+    if (!selectedFile) {
       toast({
         title: "خطأ",
-        description: "يرجى قص الصورة أولاً",
+        description: "يرجى اختيار صورة أولاً",
         variant: "destructive"
       });
       return;
@@ -367,27 +293,20 @@ const FamilyGallery = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // 1. قص الصورة
-      const croppedBlob = await getCroppedImg(
-        previewUrl,
-        croppedAreaPixels,
-        rotation
-      );
-
-      // 2. رفع الصورة المقصوصة
+      // رفع الصورة مباشرة بدون قص
       const fileExt = selectedFile.name.split('.').pop();
       const fileName = `${familyId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('family-memories')
-        .upload(fileName, croppedBlob, {
+        .upload(fileName, selectedFile, {
           contentType: selectedFile.type,
           upsert: false
         });
 
       if (uploadError) throw uploadError;
 
-      // 3. حفظ Metadata في قاعدة البيانات
+      // حفظ Metadata في قاعدة البيانات
       const { error: dbError } = await supabase
         .from('family_memories')
         .insert({
@@ -395,19 +314,17 @@ const FamilyGallery = () => {
           file_path: fileName,
           original_filename: selectedFile.name,
           content_type: selectedFile.type,
-          file_size: croppedBlob.size,
+          file_size: selectedFile.size,
           uploaded_by: user.id,
           caption: uploadForm.caption || null,
-          photo_date: uploadForm.photoDate.toISOString(),
-          tags: uploadForm.tags.length > 0 ? uploadForm.tags : null,
-          linked_member_id: uploadForm.linkedMemberId || null
+          photo_date: uploadForm.photoDate.toISOString()
         });
 
       if (dbError) throw dbError;
 
       toast({
         title: "نجاح",
-        description: "تم رفع الصورة بنجاح مع جميع التفاصيل",
+        description: "تم رفع الصورة بنجاح",
       });
 
       // Reset & Close
@@ -968,159 +885,65 @@ const FamilyGallery = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Upload Dialog with Cropper */}
+      {/* Upload Dialog - Simplified */}
       <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" dir="rtl">
+        <DialogContent className="max-w-2xl" dir="rtl">
           <DialogHeader>
             <DialogTitle>رفع صورة جديدة</DialogTitle>
           </DialogHeader>
           
-          <div className="space-y-6">
-            {/* 1. Crop Area */}
-            <div className="relative h-[400px] bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
-              {previewUrl && (
-                <Cropper
-                  image={previewUrl}
-                  crop={crop}
-                  zoom={zoom}
-                  rotation={rotation}
-                  aspect={4 / 3}
-                  onCropChange={setCrop}
-                  onZoomChange={setZoom}
-                  onRotationChange={setRotation}
-                  onCropComplete={onCropComplete}
+          <div className="space-y-4">
+            {/* Image Preview */}
+            {previewUrl && (
+              <div className="relative rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+                <img
+                  src={previewUrl}
+                  alt="معاينة"
+                  className="w-full h-auto max-h-[400px] object-contain"
                 />
-              )}
-            </div>
+              </div>
+            )}
             
-            {/* 2. Controls */}
+            {/* Form Fields Side by Side */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Zoom Slider */}
+              {/* Caption */}
               <div className="space-y-2">
-                <Label className="flex items-center gap-2">
-                  <ZoomIn className="h-4 w-4" />
-                  تكبير/تصغير
-                </Label>
-                <Slider 
-                  value={[zoom]} 
-                  min={1} 
-                  max={3} 
-                  step={0.1}
-                  onValueChange={(val) => setZoom(val[0])}
-                  className="w-full"
+                <Label htmlFor="caption">الوصف</Label>
+                <Textarea 
+                  id="caption"
+                  placeholder="أضف وصفاً للصورة..."
+                  value={uploadForm.caption}
+                  onChange={(e) => setUploadForm({...uploadForm, caption: e.target.value})}
+                  rows={3}
+                  className="resize-none"
                 />
               </div>
               
-              {/* Rotation Slider */}
+              {/* Date Picker */}
               <div className="space-y-2">
-                <Label className="flex items-center gap-2">
-                  <RotateCw className="h-4 w-4" />
-                  الدوران
-                </Label>
-                <Slider 
-                  value={[rotation]} 
-                  min={0} 
-                  max={360} 
-                  step={1}
-                  onValueChange={(val) => setRotation(val[0])}
-                  className="w-full"
-                />
-              </div>
-            </div>
-            
-            {/* 3. Caption */}
-            <div className="space-y-2">
-              <Label htmlFor="caption">الوصف</Label>
-              <Textarea 
-                id="caption"
-                placeholder="أضف وصفاً للصورة..."
-                value={uploadForm.caption}
-                onChange={(e) => setUploadForm({...uploadForm, caption: e.target.value})}
-                rows={3}
-              />
-            </div>
-            
-            {/* 4. Date Picker */}
-            <div className="space-y-2">
-              <Label>تاريخ الصورة</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" className="w-full justify-start text-right">
-                    <Calendar className="ml-2 h-4 w-4" />
-                    {format(uploadForm.photoDate, "PPP", { locale: ar })}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <CalendarComponent
-                    mode="single"
-                    selected={uploadForm.photoDate}
-                    onSelect={(date) => date && setUploadForm({...uploadForm, photoDate: date})}
-                    initialFocus
-                    locale={ar}
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            
-            {/* 5. Tags Input */}
-            <div className="space-y-2">
-              <Label htmlFor="tags">التاجات (Tags)</Label>
-              <Input 
-                id="tags"
-                placeholder="أضف تاج واضغط Enter..."
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    const val = e.currentTarget.value.trim();
-                    if (val && !uploadForm.tags.includes(val)) {
-                      setUploadForm({
-                        ...uploadForm, 
-                        tags: [...uploadForm.tags, val]
-                      });
-                      e.currentTarget.value = "";
-                    }
-                  }
-                }}
-              />
-              <div className="flex flex-wrap gap-2 mt-2">
-                {uploadForm.tags.map((tag, i) => (
-                  <Badge key={i} variant="secondary" className="flex items-center gap-1">
-                    {tag}
-                    <X 
-                      className="h-3 w-3 cursor-pointer hover:text-destructive" 
-                      onClick={() => setUploadForm({
-                        ...uploadForm,
-                        tags: uploadForm.tags.filter((_, idx) => idx !== i)
-                      })}
+                <Label>تاريخ الصورة</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" className="w-full justify-start text-right">
+                      <Calendar className="ml-2 h-4 w-4" />
+                      {format(uploadForm.photoDate, "PPP", { locale: ar })}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <CalendarComponent
+                      mode="single"
+                      selected={uploadForm.photoDate}
+                      onSelect={(date) => date && setUploadForm({...uploadForm, photoDate: date})}
+                      initialFocus
+                      locale={ar}
                     />
-                  </Badge>
-                ))}
+                  </PopoverContent>
+                </Popover>
               </div>
-            </div>
-            
-            {/* 6. Link to Member */}
-            <div className="space-y-2">
-              <Label htmlFor="member">ربط بعضو من العائلة</Label>
-              <Select 
-                value={uploadForm.linkedMemberId || undefined}
-                onValueChange={(val) => setUploadForm({...uploadForm, linkedMemberId: val === "none" ? null : val})}
-              >
-                <SelectTrigger id="member">
-                  <SelectValue placeholder="اختر عضو (اختياري)..." />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">بدون ربط</SelectItem>
-                  {familyMembers.map(member => (
-                    <SelectItem key={member.id} value={member.id}>
-                      {member.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
             
             {/* Buttons */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 pt-2">
               <Button 
                 onClick={handleCancelUpload} 
                 variant="outline"
