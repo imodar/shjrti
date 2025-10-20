@@ -102,18 +102,20 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         throw updateError;
       }
 
-      // Update local member object
+      // Update local member object - this will trigger re-render
       member.image_url = filePath;
+      (member as any).image = filePath;
 
       toast({
         title: "تم التحديث بنجاح",
         description: "تم تحديث صورة العضو بنجاح",
       });
 
-      // Reload the page to show new image
+      // Force component re-render by toggling visibility
+      setIsVisible(false);
       setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+        setIsVisible(true);
+      }, 0);
     } catch (error) {
       console.error('Error uploading image:', error);
       toast({
