@@ -12,6 +12,7 @@ import { DirectionWrapper } from "@/components/DirectionWrapper";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ProtectedFamilyRoute } from "@/components/ProtectedFamilyRoute";
 import { MaintenanceModeGuard } from "@/components/MaintenanceModeGuard";
+import { SkeletonLayoutForBuilder } from "@/components/SkeletonLayoutForBuilder";
 import ScrollToTop from "@/components/ScrollToTop";
 import CustomScriptInjector from "@/components/CustomScriptInjector";
 import Index from "./pages/Index";
@@ -90,8 +91,8 @@ const App = () => (
             </ProtectedRoute>
           } />
           <Route path="/family-builder-new" element={
-            <ProtectedRoute requireActiveSubscription={true}>
-              <ProtectedFamilyRoute>
+            <ProtectedRoute>
+              <ProtectedFamilyRoute loadingFallback={<SkeletonLayoutForBuilder />}>
                 <FamilyBuilderNew />
               </ProtectedFamilyRoute>
             </ProtectedRoute>
