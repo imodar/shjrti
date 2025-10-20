@@ -573,15 +573,15 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                     <Button size="sm" onClick={() => setIsShareModalOpen(true)}>
                       <Share2 className="h-4 w-4" />
                     </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setIsDomainModalOpen(true)}
+                      className="text-xs"
+                    >
+                      تعديل
+                    </Button>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => setIsDomainModalOpen(true)}
-                    className="text-xs"
-                  >
-                    تعديل الرابط
-                  </Button>
                 </div>
               )}
             </div>
