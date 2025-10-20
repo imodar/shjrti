@@ -8,8 +8,11 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { MemberMemories } from '@/components/MemberMemories';
 import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
+import { uploadMemberImage } from '@/utils/imageUpload';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import { 
-  Edit, 
+  Edit,
   Trash2, 
   Heart, 
   Users, 
@@ -66,6 +69,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [showAllInfo, setShowAllInfo] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   // Resolve member image to signed URL
   const memberImageSrc = useResolvedImageUrl(member?.image_url || (member as any)?.image);
@@ -73,6 +79,76 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "خطأ",
+        description: "يرجى اختيار ملف صورة صحيح",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "خطأ",
+        description: "حجم الصورة يجب أن يكون أقل من 5 ميجابايت",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploadingImage(true);
+
+    try {
+      // Upload image to storage
+      const filePath = await uploadMemberImage(file, member.id);
+      
+      if (!filePath) {
+        throw new Error('فشل رفع الصورة');
+      }
+
+      // Update member's image_url in database
+      const { error: updateError } = await supabase
+        .from('family_tree_members')
+        .update({ image_url: filePath })
+        .eq('id', member.id);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      // Update local member object
+      member.image_url = filePath;
+
+      toast({
+        title: "تم التحديث بنجاح",
+        description: "تم تحديث صورة العضو بنجاح",
+      });
+
+      // Reload the page to show new image
+      window.location.reload();
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل تحديث الصورة، يرجى المحاولة مرة أخرى",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingImage(false);
+      // Reset input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   if (!member) return null;
 
@@ -583,7 +659,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
                 <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 lg:gap-6 flex-1 min-w-0">
                   {/* Profile Avatar - Now first in DOM */}
-                  <div className="relative mx-auto sm:mx-0 flex-shrink-0">
+                  <div className="relative mx-auto sm:mx-0 flex-shrink-0 group">
                     {/* Show gradient background only when there's no profile picture */}
                     {!member.image_url && !member.image && (
                       <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
@@ -601,6 +677,32 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         </AvatarFallback>
                       )}
                     </Avatar>
+                    
+                    {/* Camera Icon for Quick Image Upload */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        fileInputRef.current?.click();
+                      }}
+                      disabled={isUploadingImage}
+                      className="absolute bottom-2 right-2 bg-primary hover:bg-primary/90 text-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="تغيير الصورة"
+                    >
+                      {isUploadingImage ? (
+                        <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <Camera className="h-4 w-4" />
+                      )}
+                    </button>
+                    
+                    {/* Hidden File Input */}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
                   </div>
 
                   {/* Basic Info - Name and Stats after picture */}
