@@ -3114,10 +3114,10 @@ const FamilyBuilderNew = () => {
 
         {/* Main Content */}
         <div className="container mx-auto px-4 pt-2 pb-6">
-          <div className={cn("grid gap-6 items-stretch min-h-[600px] max-h-[calc(100vh-300px)]", isMobile ? "grid-cols-1" : "grid-cols-12")}>
+          <div className={cn("grid gap-6 items-start", isMobile ? "grid-cols-1" : "grid-cols-12")}>
             {/* Form Panel - Right Side on Desktop */}
-            <div className={cn("space-y-6 h-full min-h-0 flex flex-col", isMobile ? "order-2" : "col-span-8 order-2")}>
-               <Card className="flex-1 min-h-0 flex flex-col overflow-hidden relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border-white/30 dark:border-gray-600/30 shadow-xl">
+            <div className={cn("space-y-6", isMobile ? "order-2" : "col-span-8 order-2")}>
+               <Card className="relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border-white/30 dark:border-gray-600/30 shadow-xl">
                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-500/10 dark:to-gray-500/5 rounded-lg"></div>
                   <CardHeader className={cn("relative", (formMode === 'view' || formMode === 'profile' || formMode === 'tree-settings') && "hidden")}>
                        <CardTitle className="flex items-center justify-between flex-row-reverse">
@@ -3156,7 +3156,7 @@ const FamilyBuilderNew = () => {
                       </CardTitle>
 
                   </CardHeader>
-                <CardContent className="relative p-2 sm:p-4 md:p-6 flex-1 min-h-0 overflow-y-auto bg-white scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
+                <CardContent className="relative p-2 sm:p-4 md:p-6 bg-white">
                   {formMode === 'view' ? <div className="py-8 px-6">
                        {/* Family Overview Header - Redesigned */}
                           
