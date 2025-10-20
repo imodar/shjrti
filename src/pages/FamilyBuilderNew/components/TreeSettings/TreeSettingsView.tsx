@@ -22,7 +22,8 @@ import {
   Globe,
   Shield,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  Pencil
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/contexts/SubscriptionContext";
@@ -568,10 +569,12 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       className="flex-1 bg-white dark:bg-gray-800 font-mono text-sm"
                     />
                     <Button variant="outline" size="sm" onClick={handleCopyCustomDomain}>
-                      <Copy className="h-4 w-4" />
+                      <Copy className="h-4 w-4 ml-1" />
+                      نسخ
                     </Button>
                     <Button size="sm" onClick={() => setIsShareModalOpen(true)}>
-                      <Share2 className="h-4 w-4" />
+                      <Share2 className="h-4 w-4 ml-1" />
+                      مشاركة
                     </Button>
                     <Button 
                       variant="outline" 
@@ -579,6 +582,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       onClick={() => setIsDomainModalOpen(true)}
                       className="text-xs"
                     >
+                      <Pencil className="h-4 w-4 ml-1" />
                       تعديل
                     </Button>
                   </div>
