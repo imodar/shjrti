@@ -3823,7 +3823,7 @@ const FamilyBuilderNew = () => {
                        </span>
                      </CardTitle>
                   </CardHeader>
-                  <CardContent className="relative overflow-y-auto flex-1 min-h-0 pt-2">
+                  <CardContent className="relative flex-1 min-h-0 pt-2 overflow-hidden">
                       <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={subscription?.package_name} />
                   </CardContent>
                 </Card>}
@@ -4182,9 +4182,9 @@ const MemberList = ({
   onAddMember,
   packageData
 }: any) => {
-  return <div className="flex flex-col max-h-[calc(100vh-400px)] overflow-hidden gap-4">
+  return <div className="flex flex-col h-full overflow-hidden gap-4">
       {/* Search and Filter on the same row */}
-      <div className="flex gap-3">
+      <div className="flex gap-3 shrink-0">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="ابحث عن عضو..." value={searchTerm} onChange={e => onSearchChange(e.target.value)} className="pl-10" />
@@ -4210,7 +4210,7 @@ const MemberList = ({
       {formMode === 'view' && <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button onClick={onAddMember} className="w-full flex items-center gap-2">
+              <Button onClick={onAddMember} className="w-full flex items-center gap-2 shrink-0">
                 <Plus className="h-4 w-4" />
                 {packageData && familyMembers.length >= packageData.max_family_members ? `تم الوصول للحد الأقصى (${packageData.max_family_members} أعضاء)` : 'إضافة عضو جديد'}
               </Button>
