@@ -4182,7 +4182,54 @@ const MemberList = ({
   onAddMember,
   packageData
 }: any) => {
-  return <div className="flex flex-col max-h-[calc(100vh-400px)] overflow-hidden gap-4">
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [maxHeight, setMaxHeight] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateHeight = () => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      // Get parent CardContent height
+      const parent = container.closest('.relative.overflow-y-auto');
+      if (!parent) return;
+
+      const parentHeight = parent.clientHeight;
+      
+      // Calculate heights of other elements (search row + button + gaps)
+      const searchRow = container.querySelector('.flex.gap-3');
+      const addButton = container.querySelector('button');
+      
+      const searchHeight = searchRow?.clientHeight || 0;
+      const buttonHeight = formMode === 'view' ? (addButton?.clientHeight || 0) : 0;
+      const gaps = formMode === 'view' ? 32 : 16; // gap-4 = 1rem = 16px
+      
+      const availableHeight = parentHeight - searchHeight - buttonHeight - gaps;
+      setMaxHeight(availableHeight > 0 ? availableHeight : null);
+    };
+
+    // Initial calculation
+    updateHeight();
+
+    // Watch for resize
+    const resizeObserver = new ResizeObserver(updateHeight);
+    const parent = containerRef.current.closest('.relative.overflow-y-auto');
+    if (parent) {
+      resizeObserver.observe(parent);
+    }
+
+    // Watch for window resize
+    window.addEventListener('resize', updateHeight);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', updateHeight);
+    };
+  }, [formMode]);
+
+  return <div ref={containerRef} className="flex flex-col overflow-hidden gap-4" style={maxHeight ? { maxHeight: `${maxHeight}px` } : undefined}>
       {/* Search and Filter on the same row */}
       <div className="flex gap-3">
         <div className="relative flex-1">
