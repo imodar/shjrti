@@ -4,6 +4,24 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { 
   ArrowLeft, 
   Upload, 
@@ -11,7 +29,12 @@ import {
   X,
   Loader2,
   Calendar,
-  User
+  User,
+  Grid,
+  List,
+  ZoomIn,
+  RotateCw,
+  AlertCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { GlobalHeader } from "@/components/GlobalHeader";
@@ -21,6 +44,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useDropzone } from "react-dropzone";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
+import Cropper from 'react-easy-crop';
+import { TimelineView } from "./FamilyGallery/TimelineView";
 
 interface FamilyMemory {
   id: string;
@@ -30,6 +55,9 @@ interface FamilyMemory {
   uploaded_by: string;
   uploaded_at: string;
   url?: string;
+  photo_date?: string;
+  tags?: string[];
+  linked_member_id?: string;
 }
 
 const FamilyGallery = () => {
@@ -47,6 +75,77 @@ const FamilyGallery = () => {
   const [dragActive, setDragActive] = useState(false);
   const [editedCaption, setEditedCaption] = useState<string>("");
   const [isSavingCaption, setIsSavingCaption] = useState(false);
+  
+  // Upload Dialog States
+  const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+
+  // Upload Form Data
+  const [uploadForm, setUploadForm] = useState({
+    caption: "",
+    photoDate: new Date(),
+    tags: [] as string[],
+    linkedMemberId: null as string | null
+  });
+
+  // View Mode State
+  const [viewMode, setViewMode] = useState<'grid' | 'list' | 'timeline'>('grid');
+
+  // Storage Usage State
+  const [storageUsage, setStorageUsage] = useState({
+    used: 0,
+    total: 100 * 1024 * 1024, // 100MB
+    percentage: 0
+  });
+
+  // Family Members for linking
+  const [familyMembers, setFamilyMembers] = useState<any[]>([]);
+
+  // Calculate storage usage
+  const calculateStorageUsage = useCallback(async () => {
+    if (!familyId) return;
+    
+    try {
+      const { data: allMemories } = await supabase
+        .from('family_memories')
+        .select('file_size')
+        .eq('family_id', familyId);
+      
+      const totalUsed = allMemories?.reduce((sum, m) => sum + (m.file_size || 0), 0) || 0;
+      const percentage = Math.min((totalUsed / storageUsage.total) * 100, 100);
+      
+      setStorageUsage({
+        ...storageUsage,
+        used: totalUsed,
+        percentage
+      });
+    } catch (error) {
+      console.error('Error calculating storage:', error);
+    }
+  }, [familyId, storageUsage.total]);
+
+  // Load family members for linking
+  const loadFamilyMembers = useCallback(async () => {
+    if (!familyId) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('family_tree_members')
+        .select('id, name, first_name, last_name')
+        .eq('family_id', familyId)
+        .order('name');
+      
+      if (error) throw error;
+      setFamilyMembers(data || []);
+    } catch (error) {
+      console.error('Error loading family members:', error);
+    }
+  }, [familyId]);
 
   // Load memories
   const loadMemories = useCallback(async () => {
@@ -126,6 +225,8 @@ const FamilyGallery = () => {
 
         setFamilyData(familyData);
         await loadMemories();
+        await calculateStorageUsage();
+        await loadFamilyMembers();
 
       } catch (error) {
         console.error('Error fetching family data:', error);
@@ -140,15 +241,73 @@ const FamilyGallery = () => {
     };
 
     fetchFamilyData();
-  }, [familyId, navigate, toast, loadMemories]);
+  }, [familyId, navigate, toast, loadMemories, calculateStorageUsage, loadFamilyMembers]);
 
-  // Handle file upload
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+  // Image cropping helpers
+  const createImage = (url: string): Promise<HTMLImageElement> =>
+    new Promise((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener('load', () => resolve(image));
+      image.addEventListener('error', (error) => reject(error));
+      image.setAttribute('crossOrigin', 'anonymous');
+      image.src = url;
+    });
+
+  const getCroppedImg = async (
+    imageSrc: string,
+    pixelCrop: any,
+    rotation = 0
+  ): Promise<Blob> => {
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+      throw new Error('No 2d context');
+    }
+
+    const maxSize = Math.max(image.width, image.height);
+    const safeArea = 2 * ((maxSize / 2) * Math.sqrt(2));
+
+    canvas.width = safeArea;
+    canvas.height = safeArea;
+
+    ctx.translate(safeArea / 2, safeArea / 2);
+    ctx.rotate((rotation * Math.PI) / 180);
+    ctx.translate(-safeArea / 2, -safeArea / 2);
+
+    ctx.drawImage(
+      image,
+      safeArea / 2 - image.width * 0.5,
+      safeArea / 2 - image.height * 0.5
+    );
+
+    const data = ctx.getImageData(0, 0, safeArea, safeArea);
+
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+
+    ctx.putImageData(
+      data,
+      Math.round(0 - safeArea / 2 + image.width * 0.5 - pixelCrop.x),
+      Math.round(0 - safeArea / 2 + image.height * 0.5 - pixelCrop.y)
+    );
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        if (blob) resolve(blob);
+      }, 'image/jpeg', 0.9);
+    });
+  };
+
+  // Handle file upload - Open dialog instead of direct upload
+  const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
 
     const file = acceptedFiles[0];
     const maxSize = 5 * 1024 * 1024; // 5MB
 
+    // التحقق من الحجم
     if (file.size > maxSize) {
       toast({
         title: "خطأ",
@@ -158,10 +317,45 @@ const FamilyGallery = () => {
       return;
     }
 
+    // التحقق من النوع
     if (!file.type.startsWith('image/')) {
       toast({
         title: "خطأ",
         description: "يجب أن يكون الملف صورة",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // إنشاء Preview وفتح الـ Dialog
+    setSelectedFile(file);
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+    setUploadDialogOpen(true);
+    
+    // Reset form
+    setUploadForm({
+      caption: "",
+      photoDate: new Date(),
+      tags: [],
+      linkedMemberId: null
+    });
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+    setRotation(0);
+  }, [toast]);
+
+  // Crop complete handler
+  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  // Handle confirm upload with cropped image
+  const handleConfirmUpload = async () => {
+    if (!selectedFile || !croppedAreaPixels) {
+      toast({
+        title: "خطأ",
+        description: "يرجى قص الصورة أولاً",
         variant: "destructive"
       });
       return;
@@ -173,37 +367,56 @@ const FamilyGallery = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      const fileExt = file.name.split('.').pop();
+      // 1. قص الصورة
+      const croppedBlob = await getCroppedImg(
+        previewUrl,
+        croppedAreaPixels,
+        rotation
+      );
+
+      // 2. رفع الصورة المقصوصة
+      const fileExt = selectedFile.name.split('.').pop();
       const fileName = `${familyId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from('family-memories')
-        .upload(fileName, file, {
-          contentType: file.type,
+        .upload(fileName, croppedBlob, {
+          contentType: selectedFile.type,
           upsert: false
         });
 
       if (uploadError) throw uploadError;
 
+      // 3. حفظ Metadata في قاعدة البيانات
       const { error: dbError } = await supabase
         .from('family_memories')
         .insert({
           family_id: familyId,
           file_path: fileName,
-          original_filename: file.name,
-          content_type: file.type,
-          file_size: file.size,
-          uploaded_by: user.id
+          original_filename: selectedFile.name,
+          content_type: selectedFile.type,
+          file_size: croppedBlob.size,
+          uploaded_by: user.id,
+          caption: uploadForm.caption || null,
+          photo_date: uploadForm.photoDate.toISOString(),
+          tags: uploadForm.tags.length > 0 ? uploadForm.tags : null,
+          linked_member_id: uploadForm.linkedMemberId || null
         });
 
       if (dbError) throw dbError;
 
       toast({
         title: "نجاح",
-        description: "تم رفع الصورة بنجاح",
+        description: "تم رفع الصورة بنجاح مع جميع التفاصيل",
       });
 
+      // Reset & Close
+      setUploadDialogOpen(false);
+      setSelectedFile(null);
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl("");
       await loadMemories();
+      await calculateStorageUsage();
 
     } catch (error) {
       console.error('Upload error:', error);
@@ -215,7 +428,16 @@ const FamilyGallery = () => {
     } finally {
       setIsUploading(false);
     }
-  }, [familyId, toast, loadMemories]);
+  };
+
+  const handleCancelUpload = () => {
+    setUploadDialogOpen(false);
+    setSelectedFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl("");
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -373,7 +595,7 @@ const FamilyGallery = () => {
                   <div className="flex flex-col lg:flex-row gap-6 items-start">
                     
                     {/* Stats Section */}
-                    <div className="flex items-center gap-4 lg:w-48">
+                    <div className="flex items-center gap-4 lg:w-48 border-r border-purple-300/40 dark:border-purple-600/40 pr-6">
                       <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
                         <ImageIcon className="h-8 w-8 text-white" />
                       </div>
@@ -382,6 +604,25 @@ const FamilyGallery = () => {
                         <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                           {memories.length}
                         </p>
+                      </div>
+                    </div>
+
+                    {/* Storage Usage */}
+                    <div className="flex items-center gap-4 lg:w-48 border-r border-purple-300/40 dark:border-purple-600/40 pr-6">
+                      <div className="w-full space-y-2">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-600 dark:text-gray-400">التخزين</span>
+                          <span className="font-semibold text-gray-800 dark:text-gray-200">
+                            {(storageUsage.used / 1024 / 1024).toFixed(1)} / {(storageUsage.total / 1024 / 1024).toFixed(0)} MB
+                          </span>
+                        </div>
+                        <Progress value={storageUsage.percentage} className="h-2" />
+                        {storageUsage.percentage > 80 && (
+                          <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />
+                            المساحة على وشك الامتلاء
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -443,7 +684,7 @@ const FamilyGallery = () => {
               {memories.length > 0 ? (
                 <div className="space-y-4">
                   {/* Gallery Header */}
-                  <div className="flex items-center justify-between px-2">
+                  <div className="flex items-center justify-between px-2 flex-wrap gap-4">
                     <div>
                       <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                         معرض الصور
@@ -452,61 +693,166 @@ const FamilyGallery = () => {
                         {memories.length} صورة في المعرض
                       </p>
                     </div>
+                    
+                    {/* View Mode Selector */}
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant={viewMode === 'grid' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setViewMode('grid')}
+                      >
+                        <Grid className="h-4 w-4 ml-2" />
+                        شبكة
+                      </Button>
+                      <Button
+                        variant={viewMode === 'list' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setViewMode('list')}
+                      >
+                        <List className="h-4 w-4 ml-2" />
+                        قائمة
+                      </Button>
+                      <Button
+                        variant={viewMode === 'timeline' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setViewMode('timeline')}
+                      >
+                        <Calendar className="h-4 w-4 ml-2" />
+                        زمني
+                      </Button>
+                    </div>
                   </div>
 
-                  {/* Masonry Grid */}
-                  <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
-                    {memories.map((memory) => (
-                      <Card 
-                        key={memory.id}
-                        className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer break-inside-avoid mb-4 hover:scale-[1.02]"
-                        onClick={() => {
-                          setSelectedMemory(memory);
-                          setEditedCaption(memory.caption || "");
-                          setIsModalOpen(true);
-                        }}
-                      >
-                        {/* Image */}
-                        <div className="relative overflow-hidden">
-                          <img
-                            src={memory.url}
-                            alt={memory.original_filename}
-                            className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-110"
-                            loading="lazy"
-                          />
-                          
-                          {/* Overlay Gradient */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                              <p className="text-white text-sm font-bold line-clamp-2 mb-1">
-                                {memory.caption || memory.original_filename}
-                              </p>
-                              <div className="flex items-center gap-2 text-white/80 text-xs">
-                                <Calendar className="h-3 w-3" />
-                                <span>
-                                  {format(new Date(memory.uploaded_at), 'dd MMM yyyy', { locale: ar })}
-                                </span>
+                  {/* View-based rendering */}
+                  {viewMode === 'grid' && (
+                    <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
+                      {memories.map((memory) => (
+                        <Card 
+                          key={memory.id}
+                          className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer break-inside-avoid mb-4 hover:scale-[1.02]"
+                          onClick={() => {
+                            setSelectedMemory(memory);
+                            setEditedCaption(memory.caption || "");
+                            setIsModalOpen(true);
+                          }}
+                        >
+                          {/* Image */}
+                          <div className="relative overflow-hidden">
+                            <img
+                              src={memory.url}
+                              alt={memory.original_filename}
+                              className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-110"
+                              loading="lazy"
+                            />
+                            
+                            {/* Overlay Gradient */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                                <p className="text-white text-sm font-bold line-clamp-2 mb-1">
+                                  {memory.caption || memory.original_filename}
+                                </p>
+                                <div className="flex items-center gap-2 text-white/80 text-xs">
+                                  <Calendar className="h-3 w-3" />
+                                  <span>
+                                    {format(new Date(memory.photo_date || memory.uploaded_at), 'dd MMM yyyy', { locale: ar })}
+                                  </span>
+                                </div>
+                                {memory.tags && memory.tags.length > 0 && (
+                                  <div className="flex flex-wrap gap-1 mt-2">
+                                    {memory.tags.slice(0, 2).map((tag, i) => (
+                                      <Badge key={i} variant="secondary" className="text-xs">
+                                        {tag}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                )}
                               </div>
+                            </div>
+
+                            {/* Corner Badge */}
+                            <div className="absolute top-3 left-3 w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              <ImageIcon className="h-4 w-4 text-white" />
                             </div>
                           </div>
 
-                          {/* Corner Badge */}
-                          <div className="absolute top-3 left-3 w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <ImageIcon className="h-4 w-4 text-white" />
-                          </div>
-                        </div>
+                          {/* Caption Preview (when not hovering) */}
+                          {memory.caption && (
+                            <div className="p-3 bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:from-purple-900/20 dark:to-pink-900/20 group-hover:opacity-0 transition-opacity duration-300">
+                              <p className="text-xs text-gray-700 dark:text-gray-300 line-clamp-2">
+                                {memory.caption}
+                              </p>
+                            </div>
+                          )}
+                        </Card>
+                      ))}
+                    </div>
+                  )}
 
-                        {/* Caption Preview (when not hovering) */}
-                        {memory.caption && (
-                          <div className="p-3 bg-gradient-to-br from-purple-50/50 to-pink-50/50 dark:from-purple-900/20 dark:to-pink-900/20 group-hover:opacity-0 transition-opacity duration-300">
-                            <p className="text-xs text-gray-700 dark:text-gray-300 line-clamp-2">
-                              {memory.caption}
-                            </p>
+                  {viewMode === 'list' && (
+                    <div className="space-y-3">
+                      {memories.map((memory) => (
+                        <Card 
+                          key={memory.id}
+                          className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                          onClick={() => {
+                            setSelectedMemory(memory);
+                            setEditedCaption(memory.caption || "");
+                            setIsModalOpen(true);
+                          }}
+                        >
+                          <div className="flex gap-4 p-4">
+                            {/* Image Thumbnail */}
+                            <div className="w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden">
+                              <img 
+                                src={memory.url} 
+                                alt={memory.caption || memory.original_filename}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                              />
+                            </div>
+                            
+                            {/* Details */}
+                            <div className="flex-1 space-y-2">
+                              <h3 className="font-semibold text-gray-800 dark:text-gray-100">
+                                {memory.caption || memory.original_filename}
+                              </h3>
+                              <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 flex-wrap">
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" />
+                                  {format(new Date(memory.photo_date || memory.uploaded_at), "PPP", { locale: ar })}
+                                </span>
+                                {memory.tags && memory.tags.length > 0 && (
+                                  <div className="flex gap-1 flex-wrap">
+                                    {memory.tags.map((tag, i) => (
+                                      <Badge key={i} variant="secondary" className="text-xs">
+                                        {tag}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                              {memory.linked_member_id && (
+                                <p className="text-sm text-purple-600 dark:text-purple-400 flex items-center gap-1">
+                                  <User className="h-3 w-3" />
+                                  مرتبطة بعضو من العائلة
+                                </p>
+                              )}
+                            </div>
                           </div>
-                        )}
-                      </Card>
-                    ))}
-                  </div>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+
+                  {viewMode === 'timeline' && (
+                    <TimelineView 
+                      memories={memories} 
+                      onMemoryClick={(memory) => {
+                        setSelectedMemory(memory);
+                        setEditedCaption(memory.caption || "");
+                        setIsModalOpen(true);
+                      }} 
+                    />
+                  )}
                 </div>
               ) : (
                 <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-200/30 dark:border-purple-700/30 shadow-xl">
@@ -617,6 +963,189 @@ const FamilyGallery = () => {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Upload Dialog with Cropper */}
+      <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto" dir="rtl">
+          <DialogHeader>
+            <DialogTitle>رفع صورة جديدة</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-6">
+            {/* 1. Crop Area */}
+            <div className="relative h-[400px] bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
+              {previewUrl && (
+                <Cropper
+                  image={previewUrl}
+                  crop={crop}
+                  zoom={zoom}
+                  rotation={rotation}
+                  aspect={4 / 3}
+                  onCropChange={setCrop}
+                  onZoomChange={setZoom}
+                  onRotationChange={setRotation}
+                  onCropComplete={onCropComplete}
+                />
+              )}
+            </div>
+            
+            {/* 2. Controls */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Zoom Slider */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <ZoomIn className="h-4 w-4" />
+                  تكبير/تصغير
+                </Label>
+                <Slider 
+                  value={[zoom]} 
+                  min={1} 
+                  max={3} 
+                  step={0.1}
+                  onValueChange={(val) => setZoom(val[0])}
+                  className="w-full"
+                />
+              </div>
+              
+              {/* Rotation Slider */}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <RotateCw className="h-4 w-4" />
+                  الدوران
+                </Label>
+                <Slider 
+                  value={[rotation]} 
+                  min={0} 
+                  max={360} 
+                  step={1}
+                  onValueChange={(val) => setRotation(val[0])}
+                  className="w-full"
+                />
+              </div>
+            </div>
+            
+            {/* 3. Caption */}
+            <div className="space-y-2">
+              <Label htmlFor="caption">الوصف</Label>
+              <Textarea 
+                id="caption"
+                placeholder="أضف وصفاً للصورة..."
+                value={uploadForm.caption}
+                onChange={(e) => setUploadForm({...uploadForm, caption: e.target.value})}
+                rows={3}
+              />
+            </div>
+            
+            {/* 4. Date Picker */}
+            <div className="space-y-2">
+              <Label>تاريخ الصورة</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start text-right">
+                    <Calendar className="ml-2 h-4 w-4" />
+                    {format(uploadForm.photoDate, "PPP", { locale: ar })}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <CalendarComponent
+                    mode="single"
+                    selected={uploadForm.photoDate}
+                    onSelect={(date) => date && setUploadForm({...uploadForm, photoDate: date})}
+                    initialFocus
+                    locale={ar}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            
+            {/* 5. Tags Input */}
+            <div className="space-y-2">
+              <Label htmlFor="tags">التاجات (Tags)</Label>
+              <Input 
+                id="tags"
+                placeholder="أضف تاج واضغط Enter..."
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const val = e.currentTarget.value.trim();
+                    if (val && !uploadForm.tags.includes(val)) {
+                      setUploadForm({
+                        ...uploadForm, 
+                        tags: [...uploadForm.tags, val]
+                      });
+                      e.currentTarget.value = "";
+                    }
+                  }
+                }}
+              />
+              <div className="flex flex-wrap gap-2 mt-2">
+                {uploadForm.tags.map((tag, i) => (
+                  <Badge key={i} variant="secondary" className="flex items-center gap-1">
+                    {tag}
+                    <X 
+                      className="h-3 w-3 cursor-pointer hover:text-destructive" 
+                      onClick={() => setUploadForm({
+                        ...uploadForm,
+                        tags: uploadForm.tags.filter((_, idx) => idx !== i)
+                      })}
+                    />
+                  </Badge>
+                ))}
+              </div>
+            </div>
+            
+            {/* 6. Link to Member */}
+            <div className="space-y-2">
+              <Label htmlFor="member">ربط بعضو من العائلة</Label>
+              <Select 
+                value={uploadForm.linkedMemberId || undefined}
+                onValueChange={(val) => setUploadForm({...uploadForm, linkedMemberId: val === "none" ? null : val})}
+              >
+                <SelectTrigger id="member">
+                  <SelectValue placeholder="اختر عضو (اختياري)..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">بدون ربط</SelectItem>
+                  {familyMembers.map(member => (
+                    <SelectItem key={member.id} value={member.id}>
+                      {member.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <Button 
+                onClick={handleCancelUpload} 
+                variant="outline"
+                className="flex-1"
+                disabled={isUploading}
+              >
+                إلغاء
+              </Button>
+              <Button 
+                onClick={handleConfirmUpload}
+                disabled={isUploading}
+                className="flex-1"
+              >
+                {isUploading ? (
+                  <>
+                    <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                    جاري الرفع...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="ml-2 h-4 w-4" />
+                    رفع الصورة
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

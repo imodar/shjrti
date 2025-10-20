@@ -211,7 +211,10 @@ export type Database = {
           file_path: string
           file_size: number
           id: string
+          linked_member_id: string | null
           original_filename: string
+          photo_date: string | null
+          tags: string[] | null
           updated_at: string
           uploaded_at: string
           uploaded_by: string
@@ -224,7 +227,10 @@ export type Database = {
           file_path: string
           file_size: number
           id?: string
+          linked_member_id?: string | null
           original_filename: string
+          photo_date?: string | null
+          tags?: string[] | null
           updated_at?: string
           uploaded_at?: string
           uploaded_by?: string
@@ -237,7 +243,10 @@ export type Database = {
           file_path?: string
           file_size?: number
           id?: string
+          linked_member_id?: string | null
           original_filename?: string
+          photo_date?: string | null
+          tags?: string[] | null
           updated_at?: string
           uploaded_at?: string
           uploaded_by?: string
@@ -248,6 +257,13 @@ export type Database = {
             columns: ["family_id"]
             isOneToOne: false
             referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_memories_linked_member_id_fkey"
+            columns: ["linked_member_id"]
+            isOneToOne: false
+            referencedRelation: "family_tree_members"
             referencedColumns: ["id"]
           },
         ]
