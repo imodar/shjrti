@@ -130,6 +130,16 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
       description: "تم نسخ رابط المشاركة العام إلى الحافظة"
     });
   };
+
+  const handleCopyCustomDomain = () => {
+    if (familyData?.custom_domain) {
+      navigator.clipboard.writeText(`https://shjrti.com/${familyData.custom_domain}`);
+      toast({
+        title: "تم نسخ الرابط المخصص",
+        description: "تم نسخ رابط النطاق المخصص بنجاح"
+      });
+    }
+  };
   
   const handleShareTree = () => {
     if (navigator.share) {
@@ -456,11 +466,39 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Custom Domain Section */}
-            <div className="space-y-4">
+            
+            {/* 1. الرابط العام للشجرة - متاح دائماً */}
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200">
+              <div className="flex items-center gap-2 mb-3">
+                <Link2 className="h-5 w-5 text-blue-600" />
+                <Label className="font-semibold">الرابط العام للشجرة</Label>
+              </div>
+              <div className="flex gap-2 mb-2">
+                <Input 
+                  readOnly 
+                  value={publicShareableLink}
+                  className="flex-1 bg-white dark:bg-gray-800 text-sm"
+                />
+                <Button variant="outline" size="sm" onClick={handleCopyPublicLink}>
+                  <Copy className="h-4 w-4" />
+                </Button>
+                <Button size="sm" onClick={() => setIsShareModalOpen(true)}>
+                  <Share2 className="h-4 w-4 ml-2" />
+                  مشاركة
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                يمكن لأي شخص عرض الشجرة باستخدام هذا الرابط
+              </p>
+            </div>
+
+            <Separator />
+
+            {/* 2. الرابط المخصص - Premium Feature */}
+            <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Globe className="h-5 w-5" />
-                <Label className="text-base font-semibold">{t('tree_settings.custom_domain', 'النطاق المخصص')}</Label>
+                <Label className="text-base font-semibold">الرابط المخصص</Label>
               </div>
               
               {checkingFeature ? (
@@ -468,184 +506,102 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                 </div>
               ) : !hasCustomDomainFeature ? (
-                  <div 
-                    className="p-4 border border-yellow-200 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 cursor-pointer hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors"
-                    onClick={() => setShowUpgradeModal(true)}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <Shield className="h-5 w-5 text-yellow-600" />
-                      <span className="font-semibold text-yellow-800 dark:text-yellow-200">
-                        {t('tree_settings.custom_domain_not_available', 'ميزة النطاق المخصص غير متاحة')}
-                      </span>
+                // حالة 1: الميزة غير متاحة (باقة مجانية)
+                <div 
+                  className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border-2 border-dashed border-amber-300 cursor-pointer hover:border-amber-400 transition-colors"
+                  onClick={() => setShowUpgradeModal(true)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
+                        <Globe className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold">الرابط المخصص</span>
+                          <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs">
+                            👑 Premium
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          احصل على رابط مخصص سهل التذكر لشجرتك
+                        </p>
+                      </div>
                     </div>
-                    <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                      {t('tree_settings.custom_domain_upgrade_message', 'قم بترقية باقتك للحصول على إمكانية استخدام نطاق مخصص لشجرة عائلتك')}
-                    </p>
-                    <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-2 font-medium">
-                      اضغط هنا للترقية
-                    </p>
-                  </div>
-              ) : (
-                <div className="space-y-3">
-                  <div className="flex gap-2">
-                    <Input
-                      value={customDomain}
-                      onChange={(e) => setCustomDomain(e.target.value)}
-                      placeholder="example.com"
-                      disabled={!isEditingDomain || isLoadingDomain}
-                      readOnly
-                    />
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setIsDomainModalOpen(true)}
-                      size="sm"
-                      className="flex items-center gap-2"
-                    >
-                      <Globe className="h-4 w-4" />
-                      {customDomain ? "تعديل" : "إضافة"}
+                    <Button variant="outline" size="sm">
+                      ترقية الآن
                     </Button>
                   </div>
-                  
-                  {domainValidationError && (
-                    <div className="flex items-center gap-2 text-sm text-red-600">
-                      <AlertTriangle className="h-4 w-4" />
-                      {domainValidationError}
-                    </div>
-                  )}
-                  
-                  {isValidatingDomain && (
-                    <div className="flex items-center gap-2 text-sm text-blue-600">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                      جاري التحقق من النطاق...
-                    </div>
-                  )}
-                  
-                  {familyData?.custom_domain && (
-                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
-                          <CheckCircle className="h-4 w-4" />
-                          <span className="text-sm font-medium">
-                            الرابط المخصص نشط: https://shjrti.com/{familyData.custom_domain}
-                          </span>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => {
-                              navigator.clipboard.writeText(`https://shjrti.com/${familyData.custom_domain}`);
-                              toast({
-                                title: "تم نسخ الرابط",
-                                description: "تم نسخ رابط النطاق المخصص بنجاح",
-                              });
-                            }}
-                            className="flex items-center gap-1 text-xs px-2 py-1"
-                          >
-                            <Copy className="h-3 w-3" />
-                            نسخ
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            onClick={() => setIsShareModalOpen(true)}
-                            className="flex items-center gap-1 text-xs px-2 py-1"
-                          >
-                            <Share2 className="h-3 w-3" />
-                            مشاركة
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {/* Public Link Sharing Section */}
-                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
-                        <Link2 className="h-4 w-4" />
-                        <span className="text-sm font-medium">
-                          الرابط العام: {window.location.origin}/tree/{familyData.id}
-                        </span>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={handleCopyPublicLink}
-                          className="flex items-center gap-1 text-xs px-2 py-1"
-                        >
-                          <Copy className="h-3 w-3" />
-                          نسخ
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => setIsShareModalOpen(true)}
-                          className="flex items-center gap-1 text-xs px-2 py-1"
-                        >
-                          <Share2 className="h-3 w-3" />
-                          مشاركة
-                        </Button>
-                      </div>
-                    </div>
+                </div>
+              ) : !familyData?.custom_domain ? (
+                // حالة 2: الميزة متاحة - بدون رابط مخصص
+                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Globe className="h-5 w-5 text-green-600" />
+                    <span className="font-semibold">الرابط المخصص</span>
+                    <Badge variant="outline" className="text-xs">متاح</Badge>
                   </div>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setIsDomainModalOpen(true)}
+                    className="w-full"
+                  >
+                    <Globe className="h-4 w-4 ml-2" />
+                    إضافة رابط مخصص لشجرتك
+                  </Button>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    اختر رابطاً سهلاً مثل: https://shjrti.com/my-family
+                  </p>
+                </div>
+              ) : (
+                // حالة 3: الميزة متاحة - مع رابط مخصص موجود
+                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Globe className="h-5 w-5 text-green-600" />
+                    <span className="font-semibold">الرابط المخصص</span>
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  </div>
+                  <div className="flex gap-2 mb-2">
+                    <Input 
+                      readOnly 
+                      value={`https://shjrti.com/${familyData.custom_domain}`}
+                      className="flex-1 bg-white dark:bg-gray-800 font-mono text-sm"
+                    />
+                    <Button variant="outline" size="sm" onClick={handleCopyCustomDomain}>
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                    <Button size="sm" onClick={() => setIsShareModalOpen(true)}>
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setIsDomainModalOpen(true)}
+                    className="text-xs"
+                  >
+                    تعديل الرابط
+                  </Button>
                 </div>
               )}
             </div>
-            
+
             <Separator />
-            
-            {/* Sharing Links Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Link2 className="h-5 w-5" />
-                <Label className="text-base font-semibold">{t('tree_settings.sharing_links', 'روابط المشاركة')}</Label>
-              </div>
-              
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <Eye className="h-5 w-5 text-green-600" />
-                    <div>
-                      <p className="font-medium text-sm">رابط العرض العام</p>
-                      <p className="text-xs text-muted-foreground">يمكن لأي شخص الوصول إليه</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={handleCopyPublicLink}>
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="default" 
-                      size="sm" 
-                      onClick={() => setIsShareModalOpen(true)}
-                      className="flex items-center gap-2"
-                    >
-                      <Share2 className="h-4 w-4" />
-                      مشاركة
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <Separator />
-            
-            {/* Password Protection Section */}
-            <div className="space-y-4">
+
+            {/* 3. حماية بكلمة المرور */}
+            <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Lock className="h-5 w-5" />
-                <Label className="text-base font-semibold">{t('tree_settings.password_protection', 'حماية بكلمة مرور')}</Label>
+                <Label className="text-base font-semibold">حماية بكلمة المرور</Label>
               </div>
-              
+
               {isEditingPassword ? (
                 <div className="space-y-3">
                   <Input
                     type="password"
                     value={sharePassword}
                     onChange={(e) => setSharePassword(e.target.value)}
-                    placeholder="أدخل كلمة مرور (اختياري)"
+                    placeholder="أدخل كلمة مرور قوية..."
                   />
                   <div className="flex gap-2">
                     <Button 
@@ -664,52 +620,75 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                     </Button>
                   </div>
                 </div>
-              ) : (
-                <div className="space-y-2">
-                  {/* تحذير أمني */}
-                  <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3 mb-4">
-                    <div className="flex items-start gap-2">
-                      <div className="text-amber-600 dark:text-amber-400 mt-0.5">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-amber-800 dark:text-amber-200 mb-1">
-                          تحذير أمني
-                        </p>
-                        <p className="text-sm text-amber-700 dark:text-amber-300">
-                          ننصح بشدة أن تقوم بحماية الشجرة بكلمة مرور، لأن من يملك الرابط سيستطيع استعراض كافة أفراد الأسرة والوصول إلى معلوماتهم الشخصية.
-                        </p>
-                      </div>
+              ) : !sharePassword ? (
+                // حالة: بدون كلمة مرور - تحذير أمني
+                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200">
+                  {/* تحذير أمني بارز */}
+                  <div className="flex items-start gap-3 mb-4 p-3 bg-white dark:bg-gray-800 rounded-lg border border-amber-300">
+                    <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-1">
+                        ⚠️ تحذير أمني مهم
+                      </p>
+                      <p className="text-xs text-amber-700 dark:text-amber-300">
+                        شجرتك حالياً <strong>غير محمية</strong>. أي شخص يملك الرابط يستطيع عرض جميع المعلومات. 
+                        ننصح بشدة بإضافة كلمة مرور للحماية.
+                      </p>
                     </div>
                   </div>
                   
-                  <p className="text-sm text-muted-foreground">
-                    {sharePassword ? "🔒 الشجرة محمية بكلمة مرور" : "🔓 الشجرة متاحة بدون كلمة مرور"}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">الحالة: 🔓 غير محمية</span>
+                    </div>
+                    <Button 
+                      onClick={() => setIsEditingPassword(true)}
+                      className="bg-amber-600 hover:bg-amber-700"
+                    >
+                      <Lock className="h-4 w-4 ml-2" />
+                      إضافة كلمة مرور
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                // حالة: مع كلمة مرور - محمية
+                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <Lock className="h-5 w-5 text-green-600" />
+                      <span className="font-semibold">حماية بكلمة المرور</span>
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                    </div>
+                    <Badge className="bg-green-600 text-white">🔒 محمية</Badge>
+                  </div>
+                  
+                  <p className="text-sm text-green-700 dark:text-green-300 mb-3">
+                    شجرتك محمية بكلمة مرور. فقط من يملك كلمة المرور يمكنه الوصول.
                   </p>
+                  
                   <div className="flex gap-2">
                     <Button 
                       variant="outline" 
-                      onClick={() => setIsEditingPassword(true)}
                       size="sm"
+                      onClick={() => setIsEditingPassword(true)}
                     >
-                      {sharePassword ? "تغيير كلمة المرور" : "إضافة كلمة مرور"}
+                      تغيير كلمة المرور
                     </Button>
-                    {sharePassword && (
-                      <Button 
-                        variant="destructive" 
-                        onClick={handleDeletePassword}
-                        disabled={isUpdatingPassword}
-                        size="sm"
-                      >
-                        {isUpdatingPassword ? "جاري الحذف..." : "حذف كلمة المرور"}
-                      </Button>
-                    )}
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={handleDeletePassword}
+                      disabled={isUpdatingPassword}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4 ml-2" />
+                      {isUpdatingPassword ? "جاري الإزالة..." : "إزالة الحماية"}
+                    </Button>
                   </div>
                 </div>
               )}
             </div>
+
           </CardContent>
         </Card>
 
@@ -771,29 +750,10 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
         familyName={familyData?.name || 'غير محدد'}
-        shareLink={publicShareableLink}
-      />
-      
-      {/* Custom Domain Modal */}
-      <CustomDomainModal
-        isOpen={isDomainModalOpen}
-        onClose={() => setIsDomainModalOpen(false)}
-        familyId={familyData?.id || ''}
-        currentDomain={familyData?.custom_domain || undefined}
-        onDomainUpdated={(newDomain) => {
-          if (familyData) {
-            familyData.custom_domain = newDomain;
-            setCustomDomain(newDomain || '');
-          }
-        }}
-      />
-      
-      {/* Share Link Modal */}
-      <ShareLinkModal
-        isOpen={isShareModalOpen}
-        onClose={() => setIsShareModalOpen(false)}
-        familyName={familyData?.name || 'غير محدد'}
-        shareLink={publicShareableLink}
+        shareLink={familyData?.custom_domain 
+          ? `https://shjrti.com/${familyData.custom_domain}`
+          : publicShareableLink
+        }
       />
       
       {/* Custom Domain Modal */}
