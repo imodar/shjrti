@@ -4,6 +4,7 @@ export interface Family {
   description?: string;
   custom_domain?: string;
   share_password?: string;
+  share_gallery?: boolean;
   creator_id: string;
   is_archived?: boolean;
   archived_at?: string;

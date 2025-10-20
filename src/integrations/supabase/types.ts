@@ -141,6 +141,7 @@ export type Database = {
           id: string
           is_archived: boolean | null
           name: string
+          share_gallery: boolean | null
           share_password: string | null
           updated_at: string
         }
@@ -153,6 +154,7 @@ export type Database = {
           id?: string
           is_archived?: boolean | null
           name: string
+          share_gallery?: boolean | null
           share_password?: string | null
           updated_at?: string
         }
@@ -165,6 +167,7 @@ export type Database = {
           id?: string
           is_archived?: boolean | null
           name?: string
+          share_gallery?: boolean | null
           share_password?: string | null
           updated_at?: string
         }

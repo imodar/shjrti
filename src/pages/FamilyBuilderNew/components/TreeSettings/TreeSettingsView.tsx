@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import ReactQuill from 'react-quill';
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +24,8 @@ import {
   Shield,
   AlertTriangle,
   CheckCircle,
-  Pencil
+  Pencil,
+  Images
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/contexts/SubscriptionContext";
@@ -78,6 +80,10 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   
   // Delete Modal state
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  
+  // Share Gallery state
+  const [shareGallery, setShareGallery] = useState(familyData?.share_gallery || false);
+  const [isUpdatingGallery, setIsUpdatingGallery] = useState(false);
   
   const shareableLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
   const publicShareableLink = `${window.location.origin}/tree?familyId=${familyData?.id}`;
@@ -591,7 +597,86 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
 
             <Separator />
 
-            {/* 3. حماية بكلمة المرور */}
+            {/* 3. مشاركة ألبوم صور العائلة */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Images className="h-5 w-5" />
+                <Label className="text-base font-semibold">مشاركة ألبوم صور العائلة</Label>
+              </div>
+              
+              <div className={`p-4 rounded-lg border ${shareGallery ? 'bg-green-50 dark:bg-green-900/20 border-green-200' : 'bg-gray-50 dark:bg-gray-900/20 border-gray-200'}`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <Images className={`h-5 w-5 ${shareGallery ? 'text-green-600' : 'text-gray-400'}`} />
+                    <div>
+                      <p className="font-semibold text-sm">السماح للزوار بمشاهدة ألبوم الصور</p>
+                      <p className="text-xs text-muted-foreground">
+                        عند التفعيل، سيتمكن زوار الشجرة من رؤية جميع صور الألبوم
+                      </p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={shareGallery}
+                    onCheckedChange={async (checked) => {
+                      setIsUpdatingGallery(true);
+                      try {
+                        const { error } = await supabase
+                          .from('families')
+                          .update({ 
+                            share_gallery: checked,
+                            updated_at: new Date().toISOString()
+                          })
+                          .eq('id', familyData?.id);
+
+                        if (error) throw error;
+
+                        setShareGallery(checked);
+                        if (familyData) {
+                          familyData.share_gallery = checked;
+                        }
+
+                        toast({
+                          title: checked ? "تم تفعيل المشاركة" : "تم إلغاء المشاركة",
+                          description: checked 
+                            ? "أصبح ألبوم الصور متاحاً للزوار" 
+                            : "لم يعد ألبوم الصور متاحاً للزوار"
+                        });
+                      } catch (error) {
+                        console.error('Error updating gallery sharing:', error);
+                        toast({
+                          title: "خطأ",
+                          description: "حدث خطأ أثناء تحديث إعدادات المشاركة",
+                          variant: "destructive"
+                        });
+                      } finally {
+                        setIsUpdatingGallery(false);
+                      }
+                    }}
+                    disabled={isUpdatingGallery}
+                  />
+                </div>
+                
+                <Badge className={shareGallery ? "bg-green-600 text-white" : "bg-gray-400 text-white"}>
+                  {shareGallery ? "مفعل" : "معطل"}
+                </Badge>
+                
+                {shareGallery && (
+                  <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200">
+                    <div className="flex items-start gap-2">
+                      <AlertTriangle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <p className="text-xs text-amber-700 dark:text-amber-300">
+                        <strong>تنبيه:</strong> جميع صور ألبوم العائلة ستكون مرئية لأي شخص يزور الشجرة. 
+                        تأكد من أن الصور مناسبة للمشاركة العامة.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* 4. حماية بكلمة المرور */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Lock className="h-5 w-5" />
