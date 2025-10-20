@@ -828,26 +828,36 @@ const FamilyGallery = () => {
                 />
               </div>
 
-              <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  <span>
-                    {format(new Date(selectedMemory.uploaded_at), 'dd MMMM yyyy - hh:mm a', { locale: ar })}
-                  </span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Caption */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    وصف الصورة
+                  </label>
+                  <Textarea
+                    value={editedCaption}
+                    onChange={(e) => setEditedCaption(e.target.value)}
+                    placeholder="أضف وصفاً للصورة..."
+                    className="min-h-[100px] resize-none"
+                    dir="rtl"
+                  />
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  وصف الصورة
-                </label>
-                <Textarea
-                  value={editedCaption}
-                  onChange={(e) => setEditedCaption(e.target.value)}
-                  placeholder="أضف وصفاً للصورة..."
-                  className="min-h-[100px] resize-none"
-                  dir="rtl"
-                />
+                {/* Photo Date */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    تاريخ الصورة
+                  </label>
+                  <div className="flex items-center gap-2 p-3 bg-muted rounded-lg">
+                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm">
+                      {format(new Date(selectedMemory.photo_date || selectedMemory.uploaded_at), 'dd MMMM yyyy', { locale: ar })}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    تاريخ التحميل: {format(new Date(selectedMemory.uploaded_at), 'dd MMM yyyy', { locale: ar })}
+                  </p>
+                </div>
               </div>
 
               <div className="flex gap-2">
