@@ -572,7 +572,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       <Copy className="h-4 w-4 ml-1" />
                       نسخ
                     </Button>
-                    <Button size="sm" onClick={() => setIsShareModalOpen(true)}>
+                    <Button variant="default" size="sm" onClick={() => setIsShareModalOpen(true)}>
                       <Share2 className="h-4 w-4 ml-1" />
                       مشاركة
                     </Button>
@@ -580,7 +580,6 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       variant="outline" 
                       size="sm"
                       onClick={() => setIsDomainModalOpen(true)}
-                      className="text-xs"
                     >
                       <Pencil className="h-4 w-4 ml-1" />
                       تعديل
