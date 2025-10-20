@@ -585,7 +585,8 @@ const FamilyGallery = () => {
             </div>
 
             {/* Unified Content - Upload & Gallery */}
-            <div className="max-w-7xl mx-auto space-y-6">
+            <div className="max-w-7xl mx-auto">
+              <div className="bg-background/95 dark:bg-background/90 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-border/40 space-y-6">
               
               {/* Upload Section */}
               <Card className="bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-rose-500/10 dark:from-purple-900/30 dark:via-pink-900/30 dark:to-rose-900/30 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-2xl overflow-hidden">
@@ -876,6 +877,7 @@ const FamilyGallery = () => {
                 </Card>
               )}
 
+              </div>
             </div>
           </div>
         </section>
