@@ -87,7 +87,7 @@ export const CustomDomainModal: React.FC<CustomDomainModalProps> = ({
         .maybeSingle();
         
       if (existingDomain) {
-        setValidationError(`هذا الرابط مستخدم بالفعل من قبل عائلة أخرى: ${existingDomain.name}`);
+        setValidationError("هذا الرابط مستخدم بالفعل، الرجاء اختيار رابط آخر");
         return false;
       }
       
