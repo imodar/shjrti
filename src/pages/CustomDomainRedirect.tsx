@@ -45,8 +45,8 @@ const CustomDomainRedirect = () => {
 
         console.log('Found family, redirecting to:', family.id);
         
-        // Redirect to the family tree view
-        navigate(`/family-tree-view?family=${family.id}`, { replace: true });
+        // Redirect to the public tree view
+        navigate(`/tree?familyId=${family.id}`, { replace: true });
 
       } catch (error) {
         console.error('Error in custom domain lookup:', error);
