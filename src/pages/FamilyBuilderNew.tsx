@@ -38,6 +38,7 @@ import { SuggestionPanel } from "@/components/SuggestionPanel";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
+import { SubscriptionGuard } from "@/components/SubscriptionGuard";
 import { supabase } from "@/integrations/supabase/client";
 import { uploadMemberImage, getMemberImageUrl, deleteMemberImage } from "@/utils/imageUpload";
 import Cropper from "react-easy-crop";
@@ -235,9 +236,8 @@ const FamilyBuilderNew = () => {
     profile
   } = useDashboardData();
 
-  // Package and subscription data
-  const [packageData, setPackageData] = useState(null);
-  const [subscriptionData, setSubscriptionData] = useState(null);
+  // Get subscription from context
+  const { subscription } = useSubscription();
   const familyId = searchParams.get('family');
   const treeId = searchParams.get('treeId');
   const isNew = searchParams.get('new') === 'true';
@@ -392,30 +392,7 @@ const FamilyBuilderNew = () => {
         }
       } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
-      const {
-        data: userSubscription,
-        error: subError
-      } = await supabase.from('user_subscriptions').select(`
-          *,
-          packages:package_id (
-            id,
-            name,
-            max_family_members,
-            max_family_trees,
-            features
-          )
-        `).eq('user_id', user.id).eq('status', 'active').order('created_at', {
-        ascending: false
-      }).limit(1).single();
-      if (userSubscription && userSubscription.packages) {
-        setPackageData(userSubscription.packages);
-        setSubscriptionData(userSubscription);
-      } else {
-        const {
-          data: freePackage
-        } = await supabase.from('packages').select('*').ilike('name->en', 'Free').single();
-        if (freePackage) setPackageData(freePackage);
-      }
+      // Subscription check is now handled by SubscriptionGuard wrapper
       if (!familyId) {
         throw new Error('No family ID provided');
       }
@@ -1755,8 +1732,8 @@ const FamilyBuilderNew = () => {
 
   // Form panel actions
   const handleAddMember = () => {
-    // Check if user has reached package limit
-    if (packageData && familyMembers.length >= packageData.max_family_members) {
+    // Check if user has reached package limit using subscription from context
+    if (subscription?.package_name && familyMembers.length >= subscription.package_name.max_family_members) {
       setShowUpgradeModal(true);
       return;
     }
@@ -3013,7 +2990,7 @@ const FamilyBuilderNew = () => {
       isSavingRef.current = false;
       setIsSaving(false);
     }
-  }, [formData, familyData, wives, husband, packageData, subscriptionData, editingMember, toast, t, refreshFamilyData]);
+  }, [formData, familyData, wives, husband, subscription, editingMember, toast, t, refreshFamilyData]);
   const nextStep = () => {
     // Validate required fields for step 1
     if (currentStep === 1) {
@@ -3087,7 +3064,8 @@ const FamilyBuilderNew = () => {
       </div>;
 
   }
-  return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
+  return <SubscriptionGuard requireActiveSubscription={true}>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
       <GlobalHeader />
       <main className="flex-1 relative">
       
@@ -3832,7 +3810,7 @@ const FamilyBuilderNew = () => {
                   </DrawerTrigger>
                   <DrawerContent className="h-[80vh]">
                     <div className="p-4">
-                        <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={packageData} />
+                        <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={subscription?.package_name} />
                     </div>
                   </DrawerContent>
                 </Drawer> : <Card className="bg-white backdrop-blur-xl border-white/30 shadow-xl h-full min-h-0 flex flex-col">
@@ -3846,7 +3824,7 @@ const FamilyBuilderNew = () => {
                      </CardTitle>
                   </CardHeader>
                   <CardContent className="relative overflow-y-auto flex-1 min-h-0">
-                      <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={packageData} />
+                      <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={subscription?.package_name} />
                   </CardContent>
                 </Card>}
             </div>
@@ -4149,11 +4127,11 @@ const FamilyBuilderNew = () => {
               <div className="flex items-center gap-2 mb-2">
                 <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                 <span className="font-semibold text-amber-800 dark:text-amber-300">
-                  الحد الأقصى: {packageData?.max_family_members || 0} عضو
+                  الحد الأقصى: {subscription?.package_name?.max_family_members || 0} عضو
                 </span>
               </div>
               <p className="text-sm text-amber-700 dark:text-amber-400">
-                باقتك الحالية تسمح بإضافة {packageData?.max_family_members || 0} أعضاء فقط.
+                باقتك الحالية تسمح بإضافة {subscription?.package_name?.max_family_members || 0} أعضاء فقط.
               </p>
             </div>
 
@@ -4179,7 +4157,8 @@ const FamilyBuilderNew = () => {
 
       </main>
       <GlobalFooterSimplified />
-    </div>;
+    </div>
+  </SubscriptionGuard>;
 };
 
 // Member List Component
