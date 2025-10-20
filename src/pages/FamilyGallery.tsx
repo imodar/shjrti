@@ -592,32 +592,32 @@ const FamilyGallery = () => {
               <Card className="bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-rose-500/10 dark:from-purple-900/30 dark:via-pink-900/30 dark:to-rose-900/30 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-2xl overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-white/30 dark:from-gray-800/50 dark:to-gray-900/30 backdrop-blur-sm"></div>
                 
-                <CardContent className="relative p-6">
-                  <div className="flex flex-col lg:flex-row gap-6 items-start">
+                <CardContent className="relative p-4">
+                  <div className="flex flex-col lg:flex-row gap-4 items-center">
                     
                     {/* Stats Section */}
-                    <div className="flex items-center gap-4 lg:w-48 border-r border-purple-300/40 dark:border-purple-600/40 pr-6">
-                      <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg flex-shrink-0">
-                        <ImageIcon className="h-8 w-8 text-white" />
+                    <div className="flex items-center gap-3 lg:border-r border-purple-300/40 dark:border-purple-600/40 lg:pr-4">
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                        <ImageIcon className="h-6 w-6 text-white" />
                       </div>
                       <div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">إجمالي الصور</p>
-                        <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                        <p className="text-xs text-gray-600 dark:text-gray-400">الصور</p>
+                        <p className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                           {memories.length}
                         </p>
                       </div>
                     </div>
 
                     {/* Storage Usage */}
-                    <div className="flex items-center gap-4 lg:w-48 border-r border-purple-300/40 dark:border-purple-600/40 pr-6">
-                      <div className="w-full space-y-2">
+                    <div className="flex-1 lg:max-w-[200px] lg:border-r border-purple-300/40 dark:border-purple-600/40 lg:pr-4 w-full">
+                      <div className="space-y-1.5">
                         <div className="flex items-center justify-between text-xs">
                           <span className="text-gray-600 dark:text-gray-400">التخزين</span>
                           <span className="font-semibold text-gray-800 dark:text-gray-200">
                             {(storageUsage.used / 1024 / 1024).toFixed(1)} / {(storageUsage.total / 1024 / 1024).toFixed(0)} MB
                           </span>
                         </div>
-                        <Progress value={storageUsage.percentage} className="h-2" />
+                        <Progress value={storageUsage.percentage} className="h-1.5" />
                         {storageUsage.percentage > 80 && (
                           <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
                             <AlertCircle className="h-3 w-3" />
@@ -628,11 +628,11 @@ const FamilyGallery = () => {
                     </div>
 
                     {/* Upload Dropzone */}
-                    <div className="flex-1">
+                    <div className="flex-1 w-full">
                       <div
                         {...getRootProps()}
                         className={`
-                          relative border-2 border-dashed rounded-2xl p-6 lg:p-8 text-center cursor-pointer transition-all duration-300 overflow-hidden
+                          relative border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-all duration-300 overflow-hidden
                           ${isDragActive || dragActive
                             ? 'border-purple-500 bg-purple-100/50 dark:bg-purple-900/30 scale-[1.02]'
                             : 'border-purple-300 dark:border-purple-600 hover:border-purple-500 hover:bg-purple-50/30 dark:hover:bg-purple-900/20'
@@ -647,27 +647,27 @@ const FamilyGallery = () => {
                         
                         <div className="relative">
                           {isUploading ? (
-                            <div className="flex flex-col lg:flex-row items-center justify-center gap-4">
+                            <div className="flex items-center justify-center gap-3">
                               <div className="relative">
-                                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 opacity-20 animate-ping absolute"></div>
-                                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center relative">
-                                  <Loader2 className="h-8 w-8 animate-spin text-white" />
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 opacity-20 animate-ping absolute"></div>
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center relative">
+                                  <Loader2 className="h-5 w-5 animate-spin text-white" />
                                 </div>
                               </div>
-                              <p className="text-base font-medium text-purple-700 dark:text-purple-300">
+                              <p className="text-sm font-medium text-purple-700 dark:text-purple-300">
                                 جاري رفع الصورة...
                               </p>
                             </div>
                           ) : (
-                            <div className="flex flex-col lg:flex-row items-center justify-center gap-6">
-                              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
-                                <Upload className="h-8 w-8 text-white" />
+                            <div className="flex items-center justify-center gap-4">
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+                                <Upload className="h-5 w-5 text-white" />
                               </div>
-                              <div className="text-center lg:text-right">
-                                <p className="text-lg font-bold text-gray-800 dark:text-gray-100">
-                                  اسحب الصور هنا أو انقر للاختيار
+                              <div className="text-right">
+                                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+                                  اسحب الصور أو انقر للاختيار
                                 </p>
-                                <p className="text-sm text-purple-600 dark:text-purple-400 font-medium mt-1">
+                                <p className="text-xs text-purple-600 dark:text-purple-400 mt-0.5">
                                   PNG, JPG, GIF • حتى 5MB
                                 </p>
                               </div>
