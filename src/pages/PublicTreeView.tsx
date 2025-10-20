@@ -24,7 +24,11 @@ import PasswordModal from "@/components/PasswordModal";
 import { sanitizeHtml } from "@/lib/security";
 import { SuggestEditDialog } from "@/components/SuggestEditDialog";
 
-const PublicTreeView = () => {
+interface PublicTreeViewProps {
+  overrideFamilyId?: string;
+}
+
+const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   
@@ -41,8 +45,8 @@ const PublicTreeView = () => {
   const [selectedMemberId, setSelectedMemberId] = useState<string>("");
   const [selectedMemberName, setSelectedMemberName] = useState<string>("");
   
-  // Get family ID from URL parameters
-  const familyId = searchParams.get('familyId');
+  // Get family ID from URL parameters or props
+  const familyId = overrideFamilyId || searchParams.get('familyId');
 
   useEffect(() => {
     if (familyId) {

@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertTriangle } from 'lucide-react';
+import PublicTreeView from './PublicTreeView';
 
 const CustomDomainRedirect = () => {
   const { customDomain } = useParams();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [familyId, setFamilyId] = useState<string | null>(null);
 
   useEffect(() => {
     const lookupAndRedirect = async () => {
@@ -43,10 +44,11 @@ const CustomDomainRedirect = () => {
           return;
         }
 
-        console.log('Found family, redirecting to:', family.id);
+        console.log('Found family, displaying tree for:', family.id);
         
-        // Redirect to the public tree view
-        navigate(`/tree?familyId=${family.id}`, { replace: true });
+        // Set family ID to display the tree without redirecting
+        setFamilyId(family.id);
+        setLoading(false);
 
       } catch (error) {
         console.error('Error in custom domain lookup:', error);
@@ -56,7 +58,7 @@ const CustomDomainRedirect = () => {
     };
 
     lookupAndRedirect();
-  }, [customDomain, navigate]);
+  }, [customDomain]);
 
   if (loading) {
     return (
@@ -98,6 +100,11 @@ const CustomDomainRedirect = () => {
         </Card>
       </div>
     );
+  }
+
+  // Display PublicTreeView with the found familyId
+  if (familyId) {
+    return <PublicTreeView overrideFamilyId={familyId} />;
   }
 
   return null;
