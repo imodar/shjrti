@@ -279,68 +279,6 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
         ذكريات الأفراد - {memberName}
       </h3>
 
-      {/* Upload Area */}
-      {!isImageUploadEnabled ? (
-        <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center bg-muted/50">
-          <div className="flex flex-col items-center gap-4">
-            <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-full">
-              <Lock className="h-8 w-8 text-amber-600" />
-            </div>
-            <div>
-              <h4 className="font-semibold text-muted-foreground mb-1">ميزة غير متاحة</h4>
-              <p className="text-sm text-muted-foreground mb-3">
-                تحتاج إلى ترقية باقتك لتتمكن من رفع صور الذكريات
-              </p>
-              <div className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 rounded-full text-xs">
-                <Crown className="h-3 w-3" />
-                باقة مميزة مطلوبة
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div
-          onDragEnter={handleDragEnter}
-          onDragLeave={handleDragLeave}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
-            isDragActive 
-              ? 'border-primary bg-primary/5' 
-              : uploading 
-              ? 'border-muted-foreground/30 bg-muted/50 cursor-not-allowed'
-              : 'border-muted-foreground/30 hover:border-primary hover:bg-primary/5'
-          }`}
-          onClick={() => {
-            if (!uploading && isImageUploadEnabled) {
-              const input = document.createElement('input');
-              input.type = 'file';
-              input.multiple = true;
-              input.accept = 'image/*';
-              input.onchange = (e) => handleFileSelect(e as unknown as React.ChangeEvent<HTMLInputElement>);
-              input.click();
-            }
-          }}
-        >
-          <div className="flex flex-col items-center gap-4">
-            <div className={`p-3 rounded-full ${uploading ? 'bg-muted' : 'bg-primary/10'}`}>
-              {uploading ? (
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              ) : (
-                <Upload className="h-8 w-8 text-primary" />
-              )}
-            </div>
-            <div>
-              <h4 className="font-semibold mb-1">
-                {uploading ? 'جاري الرفع...' : isDragActive ? 'اتركها هنا' : 'اسحب وأفلت الصور هنا'}
-              </h4>
-              <p className="text-sm text-muted-foreground">
-                أو انقر لتحديد الصور • الحد الأقصى 1 ميجابايت لكل صورة
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Memories Grid */}
       {loading ? (
