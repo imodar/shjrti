@@ -114,31 +114,6 @@ export const FamilyMembersList: React.FC<FamilyMembersListProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
-            <Users className="h-6 w-6 text-white" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              قائمة الأعضاء
-            </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              {filteredMembers.length} من {familyMembers.length} عضو
-            </p>
-          </div>
-        </div>
-        {!readOnly && onAddClick && (
-          <Button
-            onClick={onAddClick}
-            className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-          >
-            <UserPlus className="h-5 w-5 ml-2" />
-            إضافة عضو
-          </Button>
-        )}
-      </div>
 
       {/* Filters */}
       <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30">
