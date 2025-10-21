@@ -480,13 +480,6 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                 >
                   إعادة المحاولة
                 </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => window.history.back()}
-                  className="w-full"
-                >
-                  العودة للخلف
-                </Button>
               </div>
             </Card>
           </div>
