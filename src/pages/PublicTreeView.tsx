@@ -26,6 +26,10 @@ import { supabase } from "@/integrations/supabase/client";
 import PasswordModal from "@/components/PasswordModal";
 import { sanitizeHtml } from "@/lib/security";
 import { SuggestEditDialog } from "@/components/SuggestEditDialog";
+import { FamilyOverviewStats } from "@/components/FamilyOverviewStats";
+import { FamilyMembersList } from "@/components/FamilyMembersList";
+import { FamilyStatisticsView } from "@/components/FamilyStatisticsView";
+import { FamilyGalleryView } from "@/components/FamilyGalleryView";
 
 interface PublicTreeViewProps {
   overrideFamilyId?: string;
