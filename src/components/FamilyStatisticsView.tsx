@@ -112,6 +112,41 @@ export const FamilyStatisticsView: React.FC<FamilyStatisticsViewProps> = ({
         return !isAlive && birthDate && deathDate;
       }).length || 0;
 
+    // حساب حالات الزواج
+    const memberMarriageStatus = new Map();
+    familyMarriages.forEach(marriage => {
+      const isActive = marriage.is_active;
+      
+      if (isActive) {
+        memberMarriageStatus.set(marriage.husband_id, 'married');
+        memberMarriageStatus.set(marriage.wife_id, 'married');
+      } else {
+        if (!memberMarriageStatus.get(marriage.husband_id)) {
+          memberMarriageStatus.set(marriage.husband_id, 'divorced');
+        }
+        if (!memberMarriageStatus.get(marriage.wife_id)) {
+          memberMarriageStatus.set(marriage.wife_id, 'divorced');
+        }
+      }
+    });
+
+    const marriedMembers = Array.from(memberMarriageStatus.values()).filter(s => s === 'married').length;
+    const divorcedMembers = Array.from(memberMarriageStatus.values()).filter(s => s === 'divorced').length;
+    const singleMembers = familyMembers.length - marriedMembers - divorcedMembers;
+    
+    const marriedMales = familyMembers.filter(m => 
+      m.gender === 'male' && memberMarriageStatus.get(m.id) === 'married'
+    ).length;
+    const marriedFemales = familyMembers.filter(m => 
+      m.gender === 'female' && memberMarriageStatus.get(m.id) === 'married'
+    ).length;
+    const divorcedMales = familyMembers.filter(m => 
+      m.gender === 'male' && memberMarriageStatus.get(m.id) === 'divorced'
+    ).length;
+    const divorcedFemales = familyMembers.filter(m => 
+      m.gender === 'female' && memberMarriageStatus.get(m.id) === 'divorced'
+    ).length;
+
     return {
       totalMembers,
       maleMembers,
@@ -122,6 +157,13 @@ export const FamilyStatisticsView: React.FC<FamilyStatisticsViewProps> = ({
       totalMarriages,
       generations,
       averageAgeAtDeath,
+      marriedMembers,
+      divorcedMembers,
+      singleMembers,
+      marriedMales,
+      marriedFemales,
+      divorcedMales,
+      divorcedFemales,
     };
   }, [familyMembers, familyMarriages]);
 
@@ -241,7 +283,7 @@ export const FamilyStatisticsView: React.FC<FamilyStatisticsViewProps> = ({
       </Card>
 
       {/* Additional Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         {/* Gender Distribution */}
         <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-200/30 dark:border-purple-700/30 shadow-xl">
           <CardHeader>
@@ -288,6 +330,62 @@ export const FamilyStatisticsView: React.FC<FamilyStatisticsViewProps> = ({
                 <span className="font-bold text-gray-600">{stats.deceasedMembers}</span>
               </div>
               <Progress value={(stats.deceasedMembers / stats.totalMembers) * 100} className="h-2" />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Gender Count */}
+        <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-indigo-200/30 dark:border-indigo-700/30 shadow-xl">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3 text-indigo-600">
+              <Users className="h-5 w-5" />
+              عدد الذكور والإناث
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/10 rounded-lg">
+                <span className="text-gray-700 dark:text-gray-300 font-medium">ذكور</span>
+                <span className="font-bold text-2xl text-blue-600">{stats.maleMembers}</span>
+              </div>
+              
+              <div className="flex items-center justify-between p-3 bg-pink-50 dark:bg-pink-900/10 rounded-lg">
+                <span className="text-gray-700 dark:text-gray-300 font-medium">إناث</span>
+                <span className="font-bold text-2xl text-pink-600">{stats.femaleMembers}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Marital Status */}
+        <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-rose-200/30 dark:border-rose-700/30 shadow-xl">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-3 text-rose-600">
+              <Heart className="h-5 w-5" />
+              الحالة الاجتماعية
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between p-2 bg-green-50 dark:bg-green-900/10 rounded">
+                <span className="text-sm text-gray-600 dark:text-gray-300">متزوجين</span>
+                <span className="font-bold text-green-600">{stats.marriedMembers}</span>
+              </div>
+              
+              <div className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-900/10 rounded">
+                <span className="text-sm text-gray-600 dark:text-gray-300">عزاب</span>
+                <span className="font-bold text-gray-600">{stats.singleMembers}</span>
+              </div>
+              
+              <div className="flex items-center justify-between p-2 bg-orange-50 dark:bg-orange-900/10 rounded">
+                <span className="text-sm text-gray-600 dark:text-gray-300">مطلقين</span>
+                <span className="font-bold text-orange-600">{stats.divorcedMales}</span>
+              </div>
+              
+              <div className="flex items-center justify-between p-2 bg-rose-50 dark:bg-rose-900/10 rounded">
+                <span className="text-sm text-gray-600 dark:text-gray-300">مطلقات</span>
+                <span className="font-bold text-rose-600">{stats.divorcedFemales}</span>
+              </div>
             </div>
           </CardContent>
         </Card>
