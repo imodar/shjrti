@@ -30,7 +30,6 @@ export const FamilyMembersList: React.FC<FamilyMembersListProps> = ({
   onDeleteClick,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [genderFilter, setGenderFilter] = useState<string>("all");
   const [generationFilter, setGenerationFilter] = useState<string>("all");
 
   // Calculate generations
@@ -95,15 +94,13 @@ export const FamilyMembersList: React.FC<FamilyMembersListProps> = ({
         (member.first_name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
         (member.last_name || "").toLowerCase().includes(searchQuery.toLowerCase());
       
-      const matchesGender = genderFilter === "all" || member.gender === genderFilter;
-      
       const memberGen = memberGenerations.get(member.id);
       const matchesGeneration = generationFilter === "all" || 
         (memberGen && memberGen.toString() === generationFilter);
       
-      return matchesSearch && matchesGender && matchesGeneration;
+      return matchesSearch && matchesGeneration;
     });
-  }, [familyMembers, searchQuery, genderFilter, generationFilter, memberGenerations]);
+  }, [familyMembers, searchQuery, generationFilter, memberGenerations]);
 
   // Get unique generations
   const generations = useMemo(() => {
@@ -118,9 +115,9 @@ export const FamilyMembersList: React.FC<FamilyMembersListProps> = ({
       {/* Filters */}
       <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30">
         <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
-            <div className="relative">
+            <div className="relative md:col-span-3">
               <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
                 placeholder="بحث عن عضو..."
@@ -129,18 +126,6 @@ export const FamilyMembersList: React.FC<FamilyMembersListProps> = ({
                 className="pr-10"
               />
             </div>
-
-            {/* Gender Filter */}
-            <Select value={genderFilter} onValueChange={setGenderFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="الجنس" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">الكل</SelectItem>
-                <SelectItem value="male">ذكور</SelectItem>
-                <SelectItem value="female">إناث</SelectItem>
-              </SelectContent>
-            </Select>
 
             {/* Generation Filter */}
             <Select value={generationFilter} onValueChange={setGenerationFilter}>
