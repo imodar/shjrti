@@ -16,7 +16,9 @@ import {
   Crown,
   Images,
   RefreshCw,
-  AlertCircle
+  AlertCircle,
+  Users,
+  BarChart3
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { GlobalFooter } from "@/components/GlobalFooter";
@@ -575,23 +577,64 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
               </div>
             </div>
 
-            {/* Tree Container */}
+            {/* Main Content Tabs */}
             <div className="w-full">
-              <Tabs defaultValue="traditional" className="w-full">
-                <TabsList className={`grid w-full ${familyData?.share_gallery ? 'grid-cols-2' : 'grid-cols-1'} mb-8 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2`}>
-                  <TabsTrigger value="traditional" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <Tabs defaultValue="overview" className="w-full">
+                <TabsList className={`grid w-full ${familyData?.share_gallery ? 'grid-cols-5' : 'grid-cols-4'} mb-8 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2`}>
+                  <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
                     <TreePine className="ml-2 h-4 w-4" />
-                    عرض شجرة العائلة
+                    نبذة
+                  </TabsTrigger>
+                  <TabsTrigger value="members" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white">
+                    <Users className="ml-2 h-4 w-4" />
+                    الأعضاء
+                  </TabsTrigger>
+                  <TabsTrigger value="tree" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+                    <TreePine className="ml-2 h-4 w-4" />
+                    الشجرة
+                  </TabsTrigger>
+                  <TabsTrigger value="statistics" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white">
+                    <BarChart3 className="ml-2 h-4 w-4" />
+                    الإحصائيات
                   </TabsTrigger>
                   {familyData?.share_gallery && (
                     <TabsTrigger value="gallery" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white">
                       <Images className="ml-2 h-4 w-4" />
-                      ألبوم صور العائلة
+                      الألبوم
                     </TabsTrigger>
                   )}
                 </TabsList>
                 
-                <TabsContent value="traditional">
+                {/* Overview Tab */}
+                <TabsContent value="overview">
+                  <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 shadow-xl">
+                    <FamilyOverviewStats
+                      familyData={familyData}
+                      familyMembers={familyMembers}
+                      familyMarriages={familyMarriages}
+                      generationCount={Math.max(...(familyTree.length > 0 ? familyTree.map((_, i) => i + 1) : [1]))}
+                    />
+                  </div>
+                </TabsContent>
+
+                {/* Members Tab */}
+                <TabsContent value="members">
+                  <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-blue-200/30 dark:border-blue-700/30 rounded-2xl p-8 shadow-xl">
+                    <FamilyMembersList
+                      familyMembers={familyMembers}
+                      familyMarriages={familyMarriages}
+                      readOnly={true}
+                      onMemberClick={(member) => {
+                        setSelectedMemberId(member.id);
+                        setSelectedMemberName(member.name);
+                        setSuggestEditOpen(true);
+                      }}
+                    />
+                  </div>
+                </TabsContent>
+                
+                {/* Tree Tab */}
+                <TabsContent value="tree">
                   <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 min-h-[600px] overflow-auto shadow-xl">
                     {/* Progressive loading indicator */}
                     {familyTree.length > loadedGenerations && (
@@ -623,59 +666,24 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                   </div>
                 </TabsContent>
 
+                {/* Statistics Tab */}
+                <TabsContent value="statistics">
+                  <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-200/30 dark:border-purple-700/30 rounded-2xl p-8 shadow-xl">
+                    <FamilyStatisticsView
+                      familyMembers={familyMembers}
+                      familyMarriages={familyMarriages}
+                    />
+                  </div>
+                </TabsContent>
+
+                {/* Gallery Tab */}
                 {familyData?.share_gallery && (
                   <TabsContent value="gallery">
-                    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-amber-200/30 dark:border-amber-700/30 rounded-2xl p-8 min-h-[600px] shadow-xl">
-                      {isLoadingGallery ? (
-                        <div className="flex items-center justify-center h-64">
-                          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500"></div>
-                        </div>
-                      ) : galleryMemories.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-64 text-center">
-                          <Images className="h-16 w-16 text-gray-300 mb-4" />
-                          <h3 className="text-lg font-semibold text-gray-600 mb-2">لا توجد صور في الألبوم</h3>
-                          <p className="text-sm text-gray-500">لم يتم إضافة أي صور إلى ألبوم العائلة بعد</p>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="mb-6">
-                            <h3 className="text-xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent mb-2">
-                              ألبوم صور العائلة
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                              {galleryMemories.length} صورة متاحة
-                            </p>
-                          </div>
-                          
-                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            {galleryMemories.map((memory) => (
-                              <div 
-                                key={memory.id}
-                                className="group relative aspect-square rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-amber-500 transition-all"
-                                onClick={() => setSelectedImage(memory)}
-                              >
-                                <img
-                                  src={getImageUrl(memory.file_path)}
-                                  alt={memory.caption || 'صورة من الألبوم'}
-                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <div className="absolute bottom-0 left-0 right-0 p-3">
-                                    {memory.caption && (
-                                      <p className="text-white text-xs font-medium line-clamp-2">{memory.caption}</p>
-                                    )}
-                                    {memory.photo_date && (
-                                      <p className="text-white/80 text-xs mt-1">
-                                        {new Date(memory.photo_date).toLocaleDateString('ar-SA')}
-                                      </p>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      )}
+                    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-amber-200/30 dark:border-amber-700/30 rounded-2xl p-8 shadow-xl">
+                      <FamilyGalleryView 
+                        familyId={familyId!} 
+                        readOnly={true} 
+                      />
                     </div>
                   </TabsContent>
                 )}
@@ -694,42 +702,6 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
         memberId={selectedMemberId}
         memberName={selectedMemberName}
       />
-
-      {/* Image Viewer Dialog */}
-      {selectedImage && (
-        <div 
-          className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
-          onClick={() => setSelectedImage(null)}
-        >
-          <div className="relative max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white"
-              onClick={() => setSelectedImage(null)}
-            >
-              ✕
-            </Button>
-            <img
-              src={getImageUrl(selectedImage.file_path)}
-              alt={selectedImage.caption || 'صورة من الألبوم'}
-              className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
-            />
-            {(selectedImage.caption || selectedImage.photo_date) && (
-              <div className="mt-4 bg-white/10 backdrop-blur-xl rounded-lg p-4 text-white">
-                {selectedImage.caption && (
-                  <p className="font-medium mb-2">{selectedImage.caption}</p>
-                )}
-                {selectedImage.photo_date && (
-                  <p className="text-sm text-white/80">
-                    {new Date(selectedImage.photo_date).toLocaleDateString('ar-SA')}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
