@@ -618,7 +618,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   };
 
   return (
-    <div className={`min-h-[50vh] sm:min-h-screen transition-all duration-700 overflow-x-hidden ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+    <div className={`transition-all duration-700 overflow-x-hidden ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
       {/* Header */}
       {/* Header removed */}
 
