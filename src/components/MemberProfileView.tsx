@@ -44,15 +44,16 @@ import {
 
 interface MemberProfileViewProps {
   member: any;
-  onEdit: () => void;
-  onDelete: () => void;
-  onBack: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onBack?: () => void;
   familyMembers: any[];
   marriages?: any[];
   isSpouse?: boolean;
   onSpouseEditWarning?: () => void;
   onSpouseDeleteWarning?: () => void;
   onMemberClick?: (member: any) => void;
+  readOnly?: boolean;
 }
 
 export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
@@ -65,7 +66,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   isSpouse = false,
   onSpouseEditWarning,
   onSpouseDeleteWarning,
-  onMemberClick
+  onMemberClick,
+  readOnly = false
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
@@ -657,21 +659,23 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     </Avatar>
                     
                     {/* Camera Icon for Quick Image Upload */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowImageUploadModal(true);
-                      }}
-                      disabled={isUploadingImage}
-                      className="absolute bottom-2 right-2 bg-primary hover:bg-primary/90 text-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
-                      title="تغيير الصورة"
-                    >
-                      {isUploadingImage ? (
-                        <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        <Camera className="h-4 w-4" />
-                      )}
-                    </button>
+                    {!readOnly && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowImageUploadModal(true);
+                        }}
+                        disabled={isUploadingImage}
+                        className="absolute bottom-2 right-2 bg-primary hover:bg-primary/90 text-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="تغيير الصورة"
+                      >
+                        {isUploadingImage ? (
+                          <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Camera className="h-4 w-4" />
+                        )}
+                      </button>
+                    )}
                   </div>
 
                   {/* Basic Info - Name and Stats after picture */}
@@ -736,21 +740,23 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                      </div>
                      
                      {/* Action Button */}
-                     <div className="flex justify-center sm:justify-start mt-4">
-                       <Button 
-                         onClick={() => {
-                           if (isSpouse && onSpouseEditWarning) {
-                             onSpouseEditWarning();
-                           } else {
-                             onEdit();
-                           }
-                         }}
-                         className="facebook-button-primary px-4 py-2"
-                       >
-                         <Edit className="h-4 w-4 ml-2" />
-                         تعديل المعلومات
-                       </Button>
-                     </div>
+                     {!readOnly && onEdit && (
+                       <div className="flex justify-center sm:justify-start mt-4">
+                         <Button 
+                           onClick={() => {
+                             if (isSpouse && onSpouseEditWarning) {
+                               onSpouseEditWarning();
+                             } else {
+                               onEdit();
+                             }
+                           }}
+                           className="facebook-button-primary px-4 py-2"
+                         >
+                           <Edit className="h-4 w-4 ml-2" />
+                           تعديل المعلومات
+                         </Button>
+                       </div>
+                     )}
                    </div>
                  </div>
                </div>
@@ -1225,41 +1231,45 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             </div>
 
             {/* Delete Action */}
-            <div className="bg-card rounded-xl border border-destructive/20 p-4">
-              <h4 className="font-bold text-sm mb-4 text-destructive">منطقة الخطر</h4>
-              <Button 
-                onClick={() => {
-                  if (isSpouse && onSpouseDeleteWarning) {
-                    onSpouseDeleteWarning();
-                  } else {
-                    onDelete();
-                  }
-                }}
-                variant="destructive" 
-                className="w-full"
-                size="sm"
-              >
-                <Trash2 className="h-4 w-4 ml-2" />
-                حذف العضو
-              </Button>
-              <p className="text-xs text-destructive/70 mt-2 text-center">
-                هذا الإجراء لا يمكن التراجع عنه
-              </p>
-            </div>
+            {!readOnly && onDelete && (
+              <div className="bg-card rounded-xl border border-destructive/20 p-4">
+                <h4 className="font-bold text-sm mb-4 text-destructive">منطقة الخطر</h4>
+                <Button 
+                  onClick={() => {
+                    if (isSpouse && onSpouseDeleteWarning) {
+                      onSpouseDeleteWarning();
+                    } else {
+                      onDelete();
+                    }
+                  }}
+                  variant="destructive" 
+                  className="w-full"
+                  size="sm"
+                >
+                  <Trash2 className="h-4 w-4 ml-2" />
+                  حذف العضو
+                </Button>
+                <p className="text-xs text-destructive/70 mt-2 text-center">
+                  هذا الإجراء لا يمكن التراجع عنه
+                </p>
+              </div>
+            )}
           </div>
         </div>
         
         {/* Back Button */}
-        <div className="flex justify-center mt-8 pt-6 border-t border-border">
-          <Button
-            onClick={onBack}
-            variant="ghost"
-            className="flex items-center gap-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl px-6 py-3 transition-all duration-300 group"
-          >
-            <ArrowRight className="h-4 w-4 group-hover:-translate-x-1 transition-transform duration-200" />
-            <span className="font-medium">العودة</span>
-          </Button>
-        </div>
+        {onBack && (
+          <div className="flex justify-center mt-8 pt-6 border-t border-border">
+            <Button
+              onClick={onBack}
+              variant="ghost"
+              className="flex items-center gap-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl px-6 py-3 transition-all duration-300 group"
+            >
+              <ArrowRight className="h-4 w-4 group-hover:-translate-x-1 transition-transform duration-200" />
+              <span className="font-medium">العودة</span>
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Image Upload Modal */}

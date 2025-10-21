@@ -376,6 +376,7 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
               member={selectedMember}
               familyMembers={familyMembers}
               marriages={familyMarriages}
+              readOnly={true}
             />
           )}
         </DialogContent>
