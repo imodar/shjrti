@@ -164,13 +164,15 @@ export const FamilyMembersList: React.FC<FamilyMembersListProps> = ({
       {filteredMembers.length > 0 ? (
         <div className="flex flex-col gap-3">
           {filteredMembers.map(member => (
-            <SimpleMemberCard
-              key={member.id}
-              member={member}
-              generation={memberGenerations.get(member.id) || 1}
-              onClick={() => onMemberClick?.(member)}
-              readOnly={readOnly}
-            />
+          <SimpleMemberCard
+            key={member.id}
+            member={member}
+            generation={memberGenerations.get(member.id) || 1}
+            onClick={() => onMemberClick?.(member)}
+            readOnly={readOnly}
+            familyMembers={familyMembers}
+            marriages={familyMarriages}
+          />
           ))}
         </div>
       ) : (
@@ -196,15 +198,78 @@ interface SimpleMemberCardProps {
   generation: number;
   onClick: () => void;
   readOnly: boolean;
+  familyMembers: any[];
+  marriages: any[];
 }
 
-const SimpleMemberCard: React.FC<SimpleMemberCardProps> = ({ member, generation, onClick, readOnly }) => {
+const SimpleMemberCard: React.FC<SimpleMemberCardProps> = ({ 
+  member, 
+  generation, 
+  onClick, 
+  readOnly,
+  familyMembers,
+  marriages,
+}) => {
   const memberImageSrc = useResolvedImageUrl(member.image || member.image_url);
   
   const getGenderColor = (gender: string) => {
     return gender === "male" 
       ? "bg-blue-100 text-blue-600 dark:bg-blue-900/20" 
       : "bg-pink-100 text-pink-600 dark:bg-pink-900/20";
+  };
+
+  // Generate parentage display (son of X son of Y)
+  const renderParentage = () => {
+    const father = familyMembers.find((m) => m.id === member.father_id);
+    const mother = familyMembers.find((m) => m.id === member.mother_id);
+    
+    // Prioritize mother's lineage if she's from the main family
+    const primaryParent = mother?.father_id ? mother : father;
+    
+    if (!primaryParent) return null;
+
+    const grandfather = familyMembers.find(
+      (m) => m.id === primaryParent.father_id
+    );
+
+    const relationship = member.gender === "male" ? "ابن" : "ابنة";
+    const parentRelationship = primaryParent.gender === "male" ? "ابن" : "بنت";
+
+    if (grandfather) {
+      return `${relationship} ${primaryParent.name} ${parentRelationship} ${grandfather.name}`;
+    }
+    return `${relationship} ${primaryParent.name}`;
+  };
+
+  // Generate spouse info for non-family members
+  const renderSpouseInfo = () => {
+    if (member.is_founder || member.isFounder) {
+      return "الجد الأكبر";
+    }
+
+    const marriage = marriages.find(
+      (m) =>
+        (m.husband_id === member.id || m.wife_id === member.id) &&
+        m.is_active
+    );
+
+    if (!marriage) return null;
+
+    const spouseId = marriage.husband_id === member.id ? marriage.wife_id : marriage.husband_id;
+    const spouse = familyMembers.find((m) => m.id === spouseId);
+
+    if (!spouse) return null;
+
+    const spouseRelation = member.gender === "male" ? "زوج" : "زوجة";
+    
+    // If spouse has family lineage, show it
+    const spouseFather = familyMembers.find((m) => m.id === spouse.father_id);
+    if (spouseFather) {
+      const spouseRelationship = spouse.gender === "male" ? "ابن" : "ابنة";
+      return `${spouseRelation} ${spouse.name} ${spouseRelationship} ${spouseFather.name}`;
+    }
+
+    return `${spouseRelation} ${spouse.name}`;
   };
 
   return (
@@ -231,9 +296,9 @@ const SimpleMemberCard: React.FC<SimpleMemberCardProps> = ({ member, generation,
                 الجيل {generation}
               </Badge>
               
-              <span className="text-xs text-gray-600 dark:text-gray-400">
-                {member.gender === "male" ? "ذكر" : "أنثى"}
-              </span>
+              <div className="text-sm text-primary truncate font-arabic">
+                {renderParentage() || renderSpouseInfo()}
+              </div>
               
               {(member.is_founder || member.isFounder) && (
                 <div className="flex items-center gap-1 text-amber-600">
