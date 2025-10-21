@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,7 +14,9 @@ import {
   HeartCrack,
   Star,
   Crown,
-  Images
+  Images,
+  RefreshCw,
+  AlertCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { GlobalFooter } from "@/components/GlobalFooter";
@@ -39,10 +41,13 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [isPasswordCorrect, setIsPasswordCorrect] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [galleryMemories, setGalleryMemories] = useState<any[]>([]);
   const [isLoadingGallery, setIsLoadingGallery] = useState(false);
   const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [loadedGenerations, setLoadedGenerations] = useState(2); // Progressive loading
   
   // Suggest Edit Dialog state
   const [suggestEditOpen, setSuggestEditOpen] = useState(false);
@@ -113,8 +118,11 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
     if (password === familyData?.share_password) {
       setIsPasswordCorrect(true);
       setShowPasswordModal(false);
+      setPasswordError(false);
       loadFamilyTreeData();
     } else {
+      setPasswordError(true);
+      setShowPasswordModal(false);
       toast({
         title: "خطأ",
         description: "كلمة المرور غير صحيحة",
@@ -370,6 +378,43 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.2, 0.5));
   const handleResetZoom = () => setZoomLevel(1);
 
+  // Pull to refresh handler
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    await checkFamilyAccess();
+    setIsRefreshing(false);
+  }, [familyId]);
+
+  // Touch handling for pull to refresh
+  useEffect(() => {
+    let startY = 0;
+    let currentY = 0;
+    
+    const handleTouchStart = (e: TouchEvent) => {
+      startY = e.touches[0].clientY;
+    };
+    
+    const handleTouchMove = (e: TouchEvent) => {
+      currentY = e.touches[0].clientY;
+      if (currentY - startY > 100 && window.scrollY === 0) {
+        handleRefresh();
+      }
+    };
+    
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchmove', handleTouchMove);
+    
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [handleRefresh]);
+
+  // Progressive loading - load more generations
+  const loadMoreGenerations = () => {
+    setLoadedGenerations(prev => prev + 2);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
@@ -391,7 +436,10 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
         <GlobalHeader />
         <PasswordModal
           isOpen={showPasswordModal}
-          onClose={() => setShowPasswordModal(false)}
+          onClose={() => {
+            setShowPasswordModal(false);
+            setPasswordError(true);
+          }}
           onSubmit={handlePasswordSubmit}
           familyName={familyData?.name || ''}
         />
@@ -400,9 +448,65 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
     );
   }
 
+  // Show error page if password is incorrect
+  if (passwordError) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+        <GlobalHeader />
+        <div className="container mx-auto px-6 pt-24 pb-12">
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <Card className="max-w-md w-full p-8 text-center bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-2 border-red-200 dark:border-red-800 shadow-2xl">
+              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-lg">
+                <AlertCircle className="h-10 w-10 text-white" />
+              </div>
+              
+              <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">
+                الوصول محظور
+              </h2>
+              
+              <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
+                عذراً، كلمة المرور المستخدمة للشجرة <span className="font-bold">{familyData?.name}</span> غير صحيحة.
+                <br />
+                يرجى التواصل مع مالك الشجرة للحصول على كلمة المرور الصحيحة.
+              </p>
+              
+              <div className="flex flex-col gap-3">
+                <Button
+                  onClick={() => {
+                    setPasswordError(false);
+                    setShowPasswordModal(true);
+                  }}
+                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
+                >
+                  إعادة المحاولة
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => window.history.back()}
+                  className="w-full"
+                >
+                  العودة للخلف
+                </Button>
+              </div>
+            </Card>
+          </div>
+        </div>
+        <GlobalFooter />
+      </div>
+    );
+  }
+
   const familyTreeData = generateFamilyTree();
   const familyTree = familyTreeData.tree;
   const familyUnits = familyTreeData.units;
+
+  // Filter units by loaded generations for progressive loading
+  const filteredUnits = new Map<string, FamilyUnit>();
+  familyUnits.forEach((unit, id) => {
+    if (unit.generation <= loadedGenerations) {
+      filteredUnits.set(id, unit);
+    }
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir="rtl">
@@ -447,6 +551,16 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
 
                   {/* Right: Zoom Controls */}
                   <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={handleRefresh} 
+                      disabled={isRefreshing}
+                      className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                    >
+                      <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                    </Button>
+                    <div className="h-4 w-px bg-emerald-200 dark:bg-emerald-700"></div>
                     <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
                       <ZoomOut className="h-4 w-4" />
                     </Button>
@@ -482,8 +596,25 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                 
                 <TabsContent value="traditional">
                   <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 min-h-[600px] overflow-auto shadow-xl">
+                    {/* Progressive loading indicator */}
+                    {familyTree.length > loadedGenerations && (
+                      <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg text-center">
+                        <p className="text-sm text-amber-800 dark:text-amber-200 mb-2">
+                          عرض {loadedGenerations} من {familyTree.length} جيل
+                        </p>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={loadMoreGenerations}
+                          className="text-amber-600 border-amber-300 hover:bg-amber-50"
+                        >
+                          تحميل المزيد من الأجيال
+                        </Button>
+                      </div>
+                    )}
+                    
                     <OrganizationalChart 
-                      familyUnits={familyUnits} 
+                      familyUnits={filteredUnits} 
                       zoomLevel={zoomLevel}
                       isPublicView={true}
                       onSuggestEdit={(memberId, memberName) => {
