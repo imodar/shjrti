@@ -293,24 +293,6 @@ export const FamilyStatisticsView: React.FC<FamilyStatisticsViewProps> = ({
         </Card>
       </div>
 
-      {/* Founders Card */}
-      {stats.founders > 0 && (
-        <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-amber-200/30 dark:border-amber-700/30 shadow-xl">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
-                <Crown className="h-8 w-8 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-xl font-bold text-amber-600">مؤسسو العائلة</h3>
-                <p className="text-3xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-                  {stats.founders} {stats.founders === 1 ? "مؤسس" : "مؤسسين"}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 };
