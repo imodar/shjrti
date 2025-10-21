@@ -14,8 +14,7 @@ import { PublicFamilyHeader } from "@/components/PublicFamilyHeader";
 import { FamilyOverview } from "@/components/FamilyOverview";
 import { TreeView } from "@/components/TreeView";
 import { Users, AlertCircle } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { MemberProfileView } from "@/components/MemberProfileView";
+import { MemberProfileModal } from "@/components/MemberProfileModal";
 
 interface PublicTreeViewProps {
   overrideFamilyId?: string;
@@ -38,11 +37,11 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   
   // Suggest Edit Dialog state
   const [suggestEditOpen, setSuggestEditOpen] = useState(false);
-  const [selectedMemberId, setSelectedMemberId] = useState<string>("");
+  const [suggestEditMemberId, setSuggestEditMemberId] = useState<string>("");
   const [selectedMemberName, setSelectedMemberName] = useState<string>("");
   
   // Member Profile Modal state
-  const [selectedMember, setSelectedMember] = useState<any>(null);
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   
   // Get family ID from URL parameters or props
   const familyId = overrideFamilyId || searchParams.get('familyId');
@@ -198,15 +197,14 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
 
   // Handle member click for profile view
   const handleMemberClick = (member: any) => {
-    setSelectedMember(member);
+    setSelectedMemberId(member.id);
   };
 
   // Handle suggest edit
   const handleSuggestEdit = (memberId: string, memberName: string) => {
-    setSelectedMemberId(memberId);
+    setSuggestEditMemberId(memberId);
     setSelectedMemberName(memberName);
     setSuggestEditOpen(true);
-    setSelectedMember(null);
   };
 
   if (isLoading) {
@@ -369,25 +367,21 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
       <GlobalFooterSimplified />
 
       {/* Member Profile Modal */}
-      <Dialog open={selectedMember !== null} onOpenChange={() => setSelectedMember(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          {selectedMember && (
-            <MemberProfileView
-              member={selectedMember}
-              familyMembers={familyMembers}
-              marriages={familyMarriages}
-              readOnly={true}
-            />
-          )}
-        </DialogContent>
-      </Dialog>
+      <MemberProfileModal
+        isOpen={selectedMemberId !== null}
+        onClose={() => setSelectedMemberId(null)}
+        memberId={selectedMemberId}
+        familyId={familyId}
+        readOnly={true}
+        onMemberClick={handleMemberClick}
+      />
 
       {/* Suggest Edit Dialog */}
       <SuggestEditDialog
         isOpen={suggestEditOpen}
         onClose={() => setSuggestEditOpen(false)}
         familyId={familyId}
-        memberId={selectedMemberId}
+        memberId={suggestEditMemberId}
         memberName={selectedMemberName}
       />
     </div>
