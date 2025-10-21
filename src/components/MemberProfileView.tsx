@@ -307,7 +307,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   };
 
   const getChildren = () => {
-    return familyMembers.filter(m => m.fatherId === member.id || m.motherId === member.id);
+    return familyMembers.filter(m => 
+      (m.fatherId === member.id || m.father_id === member.id) || 
+      (m.motherId === member.id || m.mother_id === member.id)
+    );
   };
 
   const getGrandchildren = () => {
@@ -315,7 +318,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     let grandchildren = [];
     
     children.forEach(child => {
-      const childGrandchildren = familyMembers.filter(m => m.fatherId === child.id || m.motherId === child.id);
+      const childGrandchildren = familyMembers.filter(m => 
+        (m.fatherId === child.id || m.father_id === child.id) || 
+        (m.motherId === child.id || m.mother_id === child.id)
+      );
       grandchildren.push(...childGrandchildren);
     });
     
@@ -324,21 +330,37 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   
   const getChildrenBySpouse = (spouseId?: string) => {
     const children = getChildren();
-    if (!spouseId) return children.filter(child => (!child.motherId && !child.fatherId) || (child.fatherId === member.id && !child.motherId) || (child.motherId === member.id && !child.fatherId));
+    if (!spouseId) {
+      return children.filter(child => 
+        (!child.motherId && !child.mother_id && !child.fatherId && !child.father_id) || 
+        ((child.fatherId === member.id || child.father_id === member.id) && !child.motherId && !child.mother_id) || 
+        ((child.motherId === member.id || child.mother_id === member.id) && !child.fatherId && !child.father_id)
+      );
+    }
     
     if (member.gender === 'male') {
-      return children.filter(child => child.motherId === spouseId && child.fatherId === member.id);
+      return children.filter(child => 
+        ((child.motherId === spouseId || child.mother_id === spouseId) && 
+         (child.fatherId === member.id || child.father_id === member.id))
+      );
     } else {
-      return children.filter(child => child.fatherId === spouseId && child.motherId === member.id);
+      return children.filter(child => 
+        ((child.fatherId === spouseId || child.father_id === spouseId) && 
+         (child.motherId === member.id || child.mother_id === member.id))
+      );
     }
   };
   
   const getFather = () => {
-    return familyMembers.find(m => m.id === member.father_id || m.id === member.fatherId);
+    return familyMembers.find(m => 
+      m.id === member.father_id || m.id === member.fatherId
+    );
   };
   
   const getMother = () => {
-    return familyMembers.find(m => m.id === member.mother_id || m.id === member.motherId);
+    return familyMembers.find(m => 
+      m.id === member.mother_id || m.id === member.motherId
+    );
   };
 
   // Get lineage display according to the updated rules
