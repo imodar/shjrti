@@ -423,12 +423,12 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/5 to-muted/20" dir="rtl">
         <GlobalHeader />
-        <div className="container mx-auto px-6 pt-24 pb-12">
+        <div className="container mx-auto px-4 sm:px-6 pt-24 pb-12">
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
-            <p className="text-emerald-600 mr-4">جاري تحميل شجرة العائلة...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            <p className="text-primary mr-4">جاري تحميل شجرة العائلة...</p>
           </div>
         </div>
         <GlobalFooter />
@@ -438,7 +438,7 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
 
   if (showPasswordModal) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/5 to-muted/20" dir="rtl">
         <GlobalHeader />
         <PasswordModal
           isOpen={showPasswordModal}
@@ -457,20 +457,20 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   // Show error page if password is incorrect
   if (passwordError) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/5 to-muted/20" dir="rtl">
         <GlobalHeader />
-        <div className="container mx-auto px-6 pt-24 pb-12">
+        <div className="container mx-auto px-4 sm:px-6 pt-24 pb-12">
           <div className="flex flex-col items-center justify-center min-h-[60vh]">
-            <Card className="max-w-md w-full p-8 text-center bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border-2 border-red-200 dark:border-red-800 shadow-2xl">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center shadow-lg">
-                <AlertCircle className="h-10 w-10 text-white" />
+            <Card className="max-w-md w-full p-8 text-center bg-card/70 backdrop-blur-xl border-2 border-destructive/20 shadow-2xl">
+              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-destructive to-destructive/80 rounded-full flex items-center justify-center shadow-lg">
+                <AlertCircle className="h-10 w-10 text-destructive-foreground" />
               </div>
               
-              <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">
+              <h2 className="text-2xl font-bold text-destructive mb-4">
                 الوصول محظور
               </h2>
               
-              <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
+              <p className="text-muted-foreground mb-6 leading-relaxed">
                 عذراً، كلمة المرور المستخدمة للشجرة <span className="font-bold">{familyData?.name}</span> غير صحيحة.
                 <br />
                 يرجى التواصل مع مالك الشجرة للحصول على كلمة المرور الصحيحة.
@@ -482,7 +482,7 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                     setPasswordError(false);
                     setShowPasswordModal(true);
                   }}
-                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
+                  className="w-full bg-gradient-to-r from-primary to-primary/80"
                 >
                   إعادة المحاولة
                 </Button>
@@ -508,189 +508,223 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/5 to-muted/20" dir="rtl">
       <GlobalHeader />
-      {/* Floating Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
-        <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
-        <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
-      </div>
-
-      <main className="relative z-10 pt-8">
-        {/* Hero Section */}
-        <section className="py-8 relative">
-          <div className="container mx-auto px-6 relative z-10">
-            {/* Header Card */}
-            <div className="relative max-w-5xl mx-auto mb-8">
+      
+      <main className="container mx-auto px-4 sm:px-6 pt-4 pb-8">
+        {/* Family Header Section */}
+        <section className="py-2 relative mb-6">
+          <div className="mb-2 relative">
+            {/* Main Content Container */}
+            <div className="relative w-full mx-auto">
+              {/* Background Glow */}
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
               
-              <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-6 px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  {/* Center: Title */}
-                  <div className="text-center flex-1">
-                    <div className="flex items-center justify-center gap-3 mb-2">
-                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
+              <div className="relative bg-card/30 backdrop-blur-xl border border-border rounded-2xl py-3 px-4 shadow-xl ring-1 ring-border/10">
+                <div className="flex items-center justify-between gap-2 sm:gap-4 md:gap-8">
+                  {/* Left: Avatar & Title */}
+                  <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+                    {/* Family Avatar */}
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
+                      <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-3 border-white/30 dark:border-gray-700/30">
                         <TreePine className="h-6 w-6 text-white" />
                       </div>
-                      <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                        {familyData?.name || 'شجرة العائلة'}
-                      </h1>
+                      {/* Status Indicator */}
+                      <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                        <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
+                      </div>
                     </div>
-                    {familyData?.description && (
-                      <div 
-                        className="text-muted-foreground mb-2"
-                        dangerouslySetInnerHTML={{ __html: familyData.description }}
-                      />
-                    )}
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">
-                      عرض عام لشجرة العائلة - {familyTree.length} جيل
-                    </p>
+                    
+                    {/* Family Name */}
+                    <div className="text-right">
+                      <h1 className="text-base sm:text-lg md:text-xl font-bold">
+                        <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                          عائلة {familyData?.name || 'شجرة العائلة'}
+                        </span>
+                      </h1>
+                      {familyData?.description && (
+                        <div 
+                          className="text-xs sm:text-sm text-muted-foreground mt-1 line-clamp-1"
+                          dangerouslySetInnerHTML={{ __html: familyData.description }}
+                        />
+                      )}
+                    </div>
                   </div>
 
-                  {/* Right: Zoom Controls */}
-                  <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={handleRefresh} 
-                      disabled={isRefreshing}
-                      className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
-                    >
-                      <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                    </Button>
-                    <div className="h-4 w-px bg-emerald-200 dark:bg-emerald-700"></div>
-                    <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                      <ZoomOut className="h-4 w-4" />
-                    </Button>
-                    <span className="text-sm min-w-[3rem] text-center font-medium">
-                      {Math.round(zoomLevel * 100)}%
-                    </span>
-                    <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                      <ZoomIn className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={handleResetZoom} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                      <Maximize className="h-4 w-4" />
-                    </Button>
+                  {/* Right: Stats & Zoom Controls */}
+                  <div className="flex items-center gap-3">
+                    {/* Stats */}
+                    <div className="hidden md:flex items-center gap-2">
+                      <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full text-xs">
+                        <Users className="h-3 w-3 text-primary" />
+                        <span className="font-medium">{familyMembers.length}</span>
+                      </div>
+                      <div className="w-1 h-1 bg-border rounded-full"></div>
+                      <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/10 rounded-full text-xs">
+                        <Crown className="h-3 w-3 text-amber-600" />
+                        <span className="font-medium text-amber-600">{familyTree.length}</span>
+                      </div>
+                    </div>
+
+                    {/* Zoom Controls */}
+                    <div className="flex items-center gap-1 bg-card/50 backdrop-blur-xl rounded-lg p-1 border border-border/30">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={handleRefresh} 
+                        disabled={isRefreshing}
+                        className="h-8 w-8 p-0"
+                      >
+                        <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                      </Button>
+                      <div className="h-4 w-px bg-border"></div>
+                      <Button variant="ghost" size="sm" onClick={handleZoomOut} className="h-8 w-8 p-0">
+                        <ZoomOut className="h-3.5 w-3.5" />
+                      </Button>
+                      <span className="text-xs min-w-[2.5rem] text-center font-medium px-1">
+                        {Math.round(zoomLevel * 100)}%
+                      </span>
+                      <Button variant="ghost" size="sm" onClick={handleZoomIn} className="h-8 w-8 p-0">
+                        <ZoomIn className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={handleResetZoom} className="h-8 w-8 p-0">
+                        <Maximize className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
+                
+                {/* Decorative Elements */}
+                <div className="absolute top-2 right-2 w-6 h-6 border-r border-t border-emerald-300/40 dark:border-emerald-700/40"></div>
+                <div className="absolute bottom-2 left-2 w-6 h-6 border-l border-b border-emerald-300/40 dark:border-emerald-700/40"></div>
               </div>
-            </div>
-
-            {/* Main Content Tabs */}
-            <div className="w-full">
-              <Tabs defaultValue="overview" className="w-full">
-                <TabsList className={`grid w-full ${familyData?.share_gallery ? 'grid-cols-5' : 'grid-cols-4'} mb-8 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2`}>
-                  <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-                    <TreePine className="ml-2 h-4 w-4" />
-                    نبذة
-                  </TabsTrigger>
-                  <TabsTrigger value="members" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white">
-                    <Users className="ml-2 h-4 w-4" />
-                    الأعضاء
-                  </TabsTrigger>
-                  <TabsTrigger value="tree" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-                    <TreePine className="ml-2 h-4 w-4" />
-                    الشجرة
-                  </TabsTrigger>
-                  <TabsTrigger value="statistics" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white">
-                    <BarChart3 className="ml-2 h-4 w-4" />
-                    الإحصائيات
-                  </TabsTrigger>
-                  {familyData?.share_gallery && (
-                    <TabsTrigger value="gallery" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white">
-                      <Images className="ml-2 h-4 w-4" />
-                      الألبوم
-                    </TabsTrigger>
-                  )}
-                </TabsList>
-                
-                {/* Overview Tab */}
-                <TabsContent value="overview">
-                  <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 shadow-xl">
-                    <FamilyOverviewStats
-                      familyData={familyData}
-                      familyMembers={familyMembers}
-                      familyMarriages={familyMarriages}
-                      generationCount={Math.max(...(familyTree.length > 0 ? familyTree.map((_, i) => i + 1) : [1]))}
-                    />
-                  </div>
-                </TabsContent>
-
-                {/* Members Tab */}
-                <TabsContent value="members">
-                  <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-blue-200/30 dark:border-blue-700/30 rounded-2xl p-8 shadow-xl">
-                    <FamilyMembersList
-                      familyMembers={familyMembers}
-                      familyMarriages={familyMarriages}
-                      readOnly={true}
-                      onMemberClick={(member) => {
-                        setSelectedMemberId(member.id);
-                        setSelectedMemberName(member.name);
-                        setSuggestEditOpen(true);
-                      }}
-                    />
-                  </div>
-                </TabsContent>
-                
-                {/* Tree Tab */}
-                <TabsContent value="tree">
-                  <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 min-h-[600px] overflow-auto shadow-xl">
-                    {/* Progressive loading indicator */}
-                    {familyTree.length > loadedGenerations && (
-                      <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg text-center">
-                        <p className="text-sm text-amber-800 dark:text-amber-200 mb-2">
-                          عرض {loadedGenerations} من {familyTree.length} جيل
-                        </p>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={loadMoreGenerations}
-                          className="text-amber-600 border-amber-300 hover:bg-amber-50"
-                        >
-                          تحميل المزيد من الأجيال
-                        </Button>
-                      </div>
-                    )}
-                    
-                    <OrganizationalChart 
-                      familyUnits={filteredUnits} 
-                      zoomLevel={zoomLevel}
-                      isPublicView={true}
-                      onSuggestEdit={(memberId, memberName) => {
-                        setSelectedMemberId(memberId);
-                        setSelectedMemberName(memberName);
-                        setSuggestEditOpen(true);
-                      }}
-                    />
-                  </div>
-                </TabsContent>
-
-                {/* Statistics Tab */}
-                <TabsContent value="statistics">
-                  <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-purple-200/30 dark:border-purple-700/30 rounded-2xl p-8 shadow-xl">
-                    <FamilyStatisticsView
-                      familyMembers={familyMembers}
-                      familyMarriages={familyMarriages}
-                    />
-                  </div>
-                </TabsContent>
-
-                {/* Gallery Tab */}
-                {familyData?.share_gallery && (
-                  <TabsContent value="gallery">
-                    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-amber-200/30 dark:border-amber-700/30 rounded-2xl p-8 shadow-xl">
-                      <FamilyGalleryView 
-                        familyId={familyId!} 
-                        readOnly={true} 
-                      />
-                    </div>
-                  </TabsContent>
-                )}
-              </Tabs>
             </div>
           </div>
         </section>
+
+        {/* Main Content Tabs */}
+        <div className="w-full">
+          <Tabs defaultValue="overview" className="w-full">
+            <TabsList className={`grid w-full ${familyData?.share_gallery ? 'grid-cols-5' : 'grid-cols-4'} mb-6 bg-card/70 backdrop-blur-xl border border-border rounded-xl p-1.5`}>
+              <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white transition-all">
+                <TreePine className="ml-2 h-4 w-4" />
+                نبذة
+              </TabsTrigger>
+              <TabsTrigger value="members" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white transition-all">
+                <Users className="ml-2 h-4 w-4" />
+                الأعضاء
+              </TabsTrigger>
+              <TabsTrigger value="tree" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white transition-all">
+                <TreePine className="ml-2 h-4 w-4" />
+                الشجرة
+              </TabsTrigger>
+              <TabsTrigger value="statistics" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
+                <BarChart3 className="ml-2 h-4 w-4" />
+                الإحصائيات
+              </TabsTrigger>
+              {familyData?.share_gallery && (
+                <TabsTrigger value="gallery" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white transition-all">
+                  <Images className="ml-2 h-4 w-4" />
+                  الألبوم
+                </TabsTrigger>
+              )}
+            </TabsList>
+            
+            {/* Overview Tab */}
+            <TabsContent value="overview">
+              <Card className="bg-card/70 backdrop-blur-xl border-border shadow-lg">
+                <div className="p-6">
+                  <FamilyOverviewStats
+                    familyData={familyData}
+                    familyMembers={familyMembers}
+                    familyMarriages={familyMarriages}
+                    generationCount={Math.max(...(familyTree.length > 0 ? familyTree.map((_, i) => i + 1) : [1]))}
+                  />
+                </div>
+              </Card>
+            </TabsContent>
+
+            {/* Members Tab */}
+            <TabsContent value="members">
+              <Card className="bg-card/70 backdrop-blur-xl border-border shadow-lg">
+                <div className="p-6">
+                  <FamilyMembersList
+                    familyMembers={familyMembers}
+                    familyMarriages={familyMarriages}
+                    readOnly={true}
+                    onMemberClick={(member) => {
+                      setSelectedMemberId(member.id);
+                      setSelectedMemberName(member.name);
+                      setSuggestEditOpen(true);
+                    }}
+                  />
+                </div>
+              </Card>
+            </TabsContent>
+            
+            {/* Tree Tab */}
+            <TabsContent value="tree">
+              <Card className="bg-card/70 backdrop-blur-xl border-border shadow-lg">
+                <div className="p-6 min-h-[600px] overflow-auto">
+                  {/* Progressive loading indicator */}
+                  {familyTree.length > loadedGenerations && (
+                    <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg text-center">
+                      <p className="text-sm text-amber-800 dark:text-amber-200 mb-2">
+                        عرض {loadedGenerations} من {familyTree.length} جيل
+                      </p>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={loadMoreGenerations}
+                        className="text-amber-600 border-amber-300 hover:bg-amber-50"
+                      >
+                        تحميل المزيد من الأجيال
+                      </Button>
+                    </div>
+                  )}
+                  
+                  <OrganizationalChart 
+                    familyUnits={filteredUnits} 
+                    zoomLevel={zoomLevel}
+                    isPublicView={true}
+                    onSuggestEdit={(memberId, memberName) => {
+                      setSelectedMemberId(memberId);
+                      setSelectedMemberName(memberName);
+                      setSuggestEditOpen(true);
+                    }}
+                  />
+                </div>
+              </Card>
+            </TabsContent>
+
+            {/* Statistics Tab */}
+            <TabsContent value="statistics">
+              <Card className="bg-card/70 backdrop-blur-xl border-border shadow-lg">
+                <div className="p-6">
+                  <FamilyStatisticsView
+                    familyMembers={familyMembers}
+                    familyMarriages={familyMarriages}
+                  />
+                </div>
+              </Card>
+            </TabsContent>
+
+            {/* Gallery Tab */}
+            {familyData?.share_gallery && (
+              <TabsContent value="gallery">
+                <Card className="bg-card/70 backdrop-blur-xl border-border shadow-lg">
+                  <div className="p-6">
+                    <FamilyGalleryView 
+                      familyId={familyId!} 
+                      readOnly={true} 
+                    />
+                  </div>
+                </Card>
+              </TabsContent>
+            )}
+          </Tabs>
+        </div>
       </main>
       
       <GlobalFooter />
