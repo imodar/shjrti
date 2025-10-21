@@ -236,9 +236,9 @@ const SimpleMemberCard: React.FC<SimpleMemberCardProps> = ({
     const parentRelationship = primaryParent.gender === "male" ? "ابن" : "بنت";
 
     if (grandfather) {
-      return `${relationship} ${primaryParent.name} ${parentRelationship} ${grandfather.name}`;
+      return `${relationship} ${primaryParent.first_name || primaryParent.name} ${parentRelationship} ${grandfather.first_name || grandfather.name}`;
     }
-    return `${relationship} ${primaryParent.name}`;
+    return `${relationship} ${primaryParent.first_name || primaryParent.name}`;
   };
 
   // Generate spouse info for non-family members
@@ -266,10 +266,10 @@ const SimpleMemberCard: React.FC<SimpleMemberCardProps> = ({
     const spouseFather = familyMembers.find((m) => m.id === spouse.father_id);
     if (spouseFather) {
       const spouseRelationship = spouse.gender === "male" ? "ابن" : "ابنة";
-      return `${spouseRelation} ${spouse.name} ${spouseRelationship} ${spouseFather.name}`;
+      return `${spouseRelation} ${spouse.first_name || spouse.name} ${spouseRelationship} ${spouseFather.first_name || spouseFather.name}`;
     }
 
-    return `${spouseRelation} ${spouse.name}`;
+    return `${spouseRelation} ${spouse.first_name || spouse.name}`;
   };
 
   return (
