@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AdminProvider } from "@/contexts/AdminContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { DirectionWrapper } from "@/components/DirectionWrapper";
@@ -57,8 +58,9 @@ const App = () => (
       <LanguageProvider>
         <DirectionWrapper>
           <AuthProvider>
-            <SubscriptionProvider>
-              <MaintenanceModeGuard>
+            <AdminProvider>
+              <SubscriptionProvider>
+                <MaintenanceModeGuard>
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
@@ -174,8 +176,9 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                   </Routes>
                 </BrowserRouter>
-              </MaintenanceModeGuard>
-            </SubscriptionProvider>
+                </MaintenanceModeGuard>
+              </SubscriptionProvider>
+            </AdminProvider>
           </AuthProvider>
         </DirectionWrapper>
       </LanguageProvider>

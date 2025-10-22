@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TreePine, User, LogIn, LogOut, Settings, CreditCard, HelpCircle, Sparkles, Mail, Home, Globe, ChevronDown, Crown, Menu, X, Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAdmin } from "@/contexts/AdminContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
@@ -20,37 +20,9 @@ import familyTreeLogo from "@/assets/family-tree-logo.png";
 
 export const GlobalHeader = () => {
   const { user, signOut } = useAuth();
+  const { isAdmin } = useAdmin();
   const { t, direction, setLanguage, languages, currentLanguage } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  // Check if user is admin
-  useEffect(() => {
-    const checkAdminStatus = async () => {
-      if (!user) {
-        setIsAdmin(false);
-        return;
-      }
-
-      try {
-        const { data, error } = await supabase
-          .rpc('is_admin_secure', { user_uuid: user.id });
-
-        if (error) {
-          console.error('Error checking admin status:', error);
-          setIsAdmin(false);
-          return;
-        }
-
-        setIsAdmin(Boolean(data));
-      } catch (error) {
-        console.error('Error checking admin status:', error);
-        setIsAdmin(false);
-      }
-    };
-
-    checkAdminStatus();
-  }, [user]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
