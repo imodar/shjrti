@@ -1171,18 +1171,11 @@ export type Database = {
         Args: { new_expiry_date: string; target_user_id: string }
         Returns: boolean
       }
-      binary_quantize: {
-        Args: { "": string } | { "": unknown }
-        Returns: unknown
-      }
       complete_payment_and_upgrade: {
         Args: { p_invoice_id: string; p_stripe_payment_intent_id?: string }
         Returns: boolean
       }
-      create_admin_user: {
-        Args: { admin_email: string }
-        Returns: undefined
-      }
+      create_admin_user: { Args: { admin_email: string }; Returns: undefined }
       create_invoice: {
         Args: {
           p_amount: number
@@ -1197,12 +1190,9 @@ export type Database = {
         Args: { family_uuid: string }
         Returns: boolean
       }
-      generate_invoice_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      generate_invoice_number: { Args: never; Returns: string }
       get_all_users_for_admin: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           created_at: string
           email: string
@@ -1239,86 +1229,10 @@ export type Database = {
           subscription_id: string
         }[]
       }
-      halfvec_avg: {
-        Args: { "": number[] }
-        Returns: unknown
-      }
-      halfvec_out: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      halfvec_send: {
-        Args: { "": unknown }
-        Returns: string
-      }
-      halfvec_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
-      }
-      hnsw_bit_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnsw_halfvec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnsw_sparsevec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnswhandler: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      is_admin: {
-        Args: { user_uuid: string }
-        Returns: boolean
-      }
-      is_admin_secure: {
-        Args: { user_uuid: string }
-        Returns: boolean
-      }
-      is_maintenance_mode_enabled: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_subscription_expired: {
-        Args: { user_uuid: string }
-        Returns: boolean
-      }
-      ivfflat_bit_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      ivfflat_halfvec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      ivfflathandler: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      l2_norm: {
-        Args: { "": unknown } | { "": unknown }
-        Returns: number
-      }
-      l2_normalize: {
-        Args: { "": string } | { "": unknown } | { "": unknown }
-        Returns: unknown
-      }
-      sparsevec_out: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      sparsevec_send: {
-        Args: { "": unknown }
-        Returns: string
-      }
-      sparsevec_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
-      }
+      is_admin: { Args: { user_uuid: string }; Returns: boolean }
+      is_admin_secure: { Args: { user_uuid: string }; Returns: boolean }
+      is_maintenance_mode_enabled: { Args: never; Returns: boolean }
+      is_subscription_expired: { Args: { user_uuid: string }; Returns: boolean }
       update_user_status: {
         Args: {
           new_status: Database["public"]["Enums"]["user_status_type"]
@@ -1326,30 +1240,6 @@ export type Database = {
           target_user_id: string
         }
         Returns: boolean
-      }
-      vector_avg: {
-        Args: { "": number[] }
-        Returns: string
-      }
-      vector_dims: {
-        Args: { "": string } | { "": unknown }
-        Returns: number
-      }
-      vector_norm: {
-        Args: { "": string }
-        Returns: number
-      }
-      vector_out: {
-        Args: { "": string }
-        Returns: unknown
-      }
-      vector_send: {
-        Args: { "": string }
-        Returns: string
-      }
-      vector_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
       }
     }
     Enums: {

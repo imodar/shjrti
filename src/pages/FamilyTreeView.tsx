@@ -16,25 +16,30 @@ import { SmartSearchBar } from "@/components/SmartSearchBar";
 import { SuggestionPanel } from "@/components/SuggestionPanel";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useFamilyData } from "@/contexts/FamilyDataContext";
 import { supabase } from "@/integrations/supabase/client";
 import FamilyTreeViewSkeleton from "@/components/skeletons/FamilyTreeViewSkeleton";
+
 const FamilyTreeView = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [searchParams] = useSearchParams();
+  const { toast } = useToast();
+  const { hasAIFeatures } = useSubscription();
+  
+  // ✅ Use FamilyDataContext for shared data (no duplicate queries!)
   const {
-    toast
-  } = useToast();
-  const {
-    hasAIFeatures
-  } = useSubscription();
-  const [familyMembers, setFamilyMembers] = useState<any[]>([]);
-  const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
-  const [familyData, setFamilyData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+    familyData,
+    familyMembers,
+    marriages: familyMarriages,
+    loading: dataLoading,
+    error: dataError
+  } = useFamilyData();
+
   const [zoomLevel, setZoomLevel] = useState(1);
   const [user, setUser] = useState<any>(null);
   const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>("all");
+  const [isLoading, setIsLoading] = useState(true);
 
   const traditionalRef = useRef<HTMLDivElement>(null);
   const diagramRef = useRef<HTMLDivElement>(null);
@@ -80,39 +85,24 @@ const FamilyTreeView = () => {
   // Get family ID from URL parameters
   const familyId = searchParams.get('family');
 
-  // Fetch family tree data from database
+  // Initialize user and handle authentication
   useEffect(() => {
-    fetchFamilyTreeData();
-  }, [familyId]);
-  const fetchFamilyTreeData = async () => {
-    try {
-      setIsLoading(true);
-
-      // Get current user
-      const {
-        data: {
-          user
-        }
-      } = await supabase.auth.getUser();
+    const initUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate('/auth');
         return;
       }
       setUser(user);
-
-      // If no family ID is provided, redirect to dashboard
+      
+      // Verify access
       if (!familyId) {
         navigate('/dashboard');
         return;
       }
-
-      // Verify user has access to this family (either as creator or member)
-      const {
-        data: family,
-        error: familyError
-      } = await supabase.from('families').select('id, name, creator_id').eq('id', familyId).eq('creator_id', user.id).single();
-      if (familyError || !family) {
-        console.error('Error accessing family or family not found:', familyError);
+      
+      // Check if user has access (handled by FamilyDataContext)
+      if (familyData && familyData.creator_id !== user.id) {
         toast({
           title: "خطأ",
           description: "لا يمكن الوصول إلى شجرة العائلة المطلوبة",
@@ -121,47 +111,23 @@ const FamilyTreeView = () => {
         navigate('/dashboard');
         return;
       }
-      setFamilyData(family);
+      
+      setIsLoading(false);
+    };
+    
+    initUser();
+  }, [familyId, familyData, navigate]);
 
-      // Fetch family tree members for the specific family only
-      const {
-        data: members,
-        error: membersError
-      } = await supabase.from('family_tree_members').select('*').eq('family_id', familyId);
-      if (membersError) {
-        console.error('Error fetching family members:', membersError);
-        toast({
-          title: "خطأ",
-          description: "فشل في تحميل بيانات شجرة العائلة",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Fetch marriages for the specific family only
-      const {
-        data: marriages,
-        error: marriagesError
-      } = await supabase.from('marriages').select('*').eq('family_id', familyId);
-      if (marriagesError) {
-        console.error('Error fetching marriages:', marriagesError);
-      }
-      console.log('Fetched family members:', members);
-      console.log('Fetched marriages:', marriages);
-      console.log('Family ID:', familyId);
-      setFamilyMembers(members || []);
-      setFamilyMarriages(marriages || []);
-    } catch (error) {
-      console.error('Error fetching family tree data:', error);
+  // Show error from context
+  useEffect(() => {
+    if (dataError) {
       toast({
         title: "خطأ",
-        description: "حدث خطأ في تحميل البيانات",
+        description: dataError || "حدث خطأ في تحميل البيانات",
         variant: "destructive"
       });
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, [dataError]);
 
   // Family Units - Core logic for tree structure
   interface FamilyUnit {
@@ -410,7 +376,7 @@ const FamilyTreeView = () => {
         </Card>
       </div>;
   };
-  if (isLoading) {
+  if (isLoading || dataLoading) {
     return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
         <GlobalHeader />
         <div className="container mx-auto px-6 pt-24 pb-12">

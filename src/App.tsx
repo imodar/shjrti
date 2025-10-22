@@ -25,7 +25,7 @@ import FamilyCreator from "./pages/FamilyCreator";
 import FamilyBuilder from "./pages/FamilyBuilder";
 import FamilyBuilderNew from "./pages/FamilyBuilderNew";
 
-import FamilyTreeView from "./pages/FamilyTreeView";
+import FamilyTreeView from "./pages/FamilyTreeView/FamilyTreeViewWithContext";
 import FamilyStatistics from "./pages/FamilyStatistics";
 import FamilyGallery from "./pages/FamilyGallery";
 import Profile from "./pages/Profile";
