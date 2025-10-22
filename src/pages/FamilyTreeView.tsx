@@ -636,7 +636,7 @@ const FamilyTreeView = () => {
               <div className={hasAIFeatures ? "lg:col-span-3" : "col-span-1"}>
                 {/* Tree Container */}
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-1 mb-8">
+              <TabsList className="hidden grid w-full grid-cols-1 mb-8">
                 <TabsTrigger value="traditional" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
                   <TreePine className="ml-2 h-4 w-4" />
                   العرض التقليدي
