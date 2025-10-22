@@ -704,8 +704,6 @@ const FamilyTreeView = () => {
                   </div>
                 </div>
               </TabsContent>
-
-
                 </Tabs>
               </div>
             </div>
