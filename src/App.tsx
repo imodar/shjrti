@@ -23,7 +23,7 @@ import Dashboard from "./pages/Dashboard";
 import DashboardBackup from "./pages/DashboardBackup";
 import FamilyCreator from "./pages/FamilyCreator";
 import FamilyBuilder from "./pages/FamilyBuilder";
-import FamilyBuilderNew from "./pages/FamilyBuilderNew";
+import FamilyBuilderNewWithContext from "./pages/FamilyBuilderNew/FamilyBuilderNewWithContext";
 
 import FamilyTreeView from "./pages/FamilyTreeView/FamilyTreeViewWithContext";
 import FamilyStatistics from "./pages/FamilyStatistics";
@@ -95,7 +95,7 @@ const App = () => (
           <Route path="/family-builder-new" element={
             <ProtectedRoute>
               <ProtectedFamilyRoute loadingFallback={<SkeletonLayoutForBuilder />}>
-                <FamilyBuilderNew />
+                <FamilyBuilderNewWithContext />
               </ProtectedFamilyRoute>
             </ProtectedRoute>
           } />

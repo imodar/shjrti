@@ -52,6 +52,7 @@ import { TreeSettingsButton } from "@/pages/FamilyBuilderNew/components/TreeSett
 import { MemberCard } from "@/pages/FamilyBuilderNew/components/MemberList/MemberCard";
 import { TreeSettingsView } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsView";
 import { CustomDomainCard } from "@/pages/FamilyBuilderNew/components/TreeSettings/CustomDomainCard";
+import { useFamilyData } from "@/contexts/FamilyDataContext";
 
 
 const FamilyBuilderNew = () => {
@@ -62,6 +63,15 @@ const FamilyBuilderNew = () => {
     hasAIFeatures
   } = useSubscription();
   const isMobile = useIsMobile();
+  
+  // ✅ Use FamilyDataContext for shared data (no duplicate queries!)
+  const { 
+    familyData: contextFamilyData, 
+    familyMembers: contextMembers, 
+    marriages: contextMarriages,
+    loading: contextLoading,
+    refetch: refetchFamilyData 
+  } = useFamilyData();
 
   // Image Upload and Crop Component (consolidated states)
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -442,22 +452,11 @@ const FamilyBuilderNew = () => {
         setFamilyMembers(transformedMembers);
         console.log(`✅ Members loaded with images: ${transformedMembers.filter(m => m.image).length}/${transformedMembers.length}`);
       }
-      const {
-        data: marriages,
-        error: marriagesError
-      } = await supabase.from('marriages').select(`
-          id,
-          husband_id,
-          wife_id,
-          is_active,
-          marital_status
-        `).eq('family_id', familyToUse.id).eq('is_active', true);
-      if (marriagesError) throw marriagesError;
-
-      // ✨ OPTIMIZED: Match marriages with already-fetched members (NO extra queries!)
+      
+      // ✅ Use marriages from Context (NO extra query!)
       let marriagesWithMembers = [];
-      if (marriages && transformedMembers.length > 0) {
-        marriagesWithMembers = marriages.map(marriage => {
+      if (contextMarriages && transformedMembers.length > 0) {
+        marriagesWithMembers = contextMarriages.map(marriage => {
           const husband = transformedMembers.find(m => m.id === marriage.husband_id);
           const wife = transformedMembers.find(m => m.id === marriage.wife_id);
           return {
@@ -577,23 +576,11 @@ const FamilyBuilderNew = () => {
       }));
       setFamilyMembers(transformedMembers);
 
-      // Fetch minimal marriage data for initial load
-      const {
-        data: marriages,
-        error: marriagesError
-      } = await supabase.from('marriages').select(`
-          id,
-          husband_id,
-          wife_id,
-          is_active,
-          marital_status
-        `).eq('family_id', family.id).eq('is_active', true);
-      if (marriagesError) throw marriagesError;
-
-      // Create simplified marriage objects for initial load
+      
+      // ✅ Use marriages from Context (NO extra query!)
       let marriagesWithMembers = [];
-      if (marriages) {
-        marriagesWithMembers = marriages.map(marriage => ({
+      if (contextMarriages) {
+        marriagesWithMembers = contextMarriages.map(marriage => ({
           ...marriage,
           husband: {
             id: marriage.husband_id,
@@ -1757,23 +1744,20 @@ const FamilyBuilderNew = () => {
       if (memberError) throw memberError;
 
       // Fetch member's marriages with spouse details
-      const {
-        data: marriages,
-        error: marriagesError
-      } = await supabase.from('marriages').select(`
-          id,
-          husband_id,
-          wife_id,
-          is_active,
-          marital_status
-        `).eq('family_id', familyId).eq('is_active', true).or(`husband_id.eq.${memberId},wife_id.eq.${memberId}`);
-      if (marriagesError) throw marriagesError;
-
-      // Get detailed marriage data with member info
+      
+      // ✅ Use marriages from Context (NO extra query!)
       let memberMarriages = [];
-      if (marriages) {
-        memberMarriages = await Promise.all(marriages.map(async marriage => {
-          const [husbandResult, wifeResult] = await Promise.all([supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(), supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()]);
+      if (contextMarriages) {
+        const memberMarriagesData = contextMarriages.filter(
+          m => m.husband_id === memberId || m.wife_id === memberId
+        );
+        
+        // Get detailed marriage data with member info from Context
+        memberMarriages = await Promise.all(memberMarriagesData.map(async marriage => {
+          const [husbandResult, wifeResult] = await Promise.all([
+            supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(),
+            supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()
+          ]);
           return {
             ...marriage,
             husband: husbandResult.data,
