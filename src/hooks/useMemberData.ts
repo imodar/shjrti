@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useMemberQuery, useMemberMemoriesQuery } from '@/hooks/queries/useFamilyQueries';
+import { useFamilyData } from '@/contexts/FamilyDataContext';
 
 interface MemberData {
   member: any | null;
@@ -9,77 +9,26 @@ interface MemberData {
 }
 
 export const useMemberData = (memberId: string | null, familyId: string | null) => {
-  const [data, setData] = useState<MemberData>({
-    member: null,
-    marriages: [],
-    memories: [],
-    familyMembers: []
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // ✅ Use FamilyDataContext for shared data (no duplicate queries!)
+  const { familyMembers, marriages } = useFamilyData();
+  
+  // ✅ Use React Query for specific member data
+  const { data: member = null, isLoading: memberLoading } = useMemberQuery(memberId);
+  
+  // ✅ Use React Query for member memories
+  const { data: memories = [], isLoading: memoriesLoading } = useMemberMemoriesQuery(memberId);
 
-  useEffect(() => {
-    if (!memberId || !familyId) {
-      setLoading(false);
-      return;
-    }
+  const loading = memberLoading || memoriesLoading;
+  const error = null; // Errors are handled by React Query
 
-    const fetchMemberData = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        // Fetch member details
-        const { data: member, error: memberError } = await supabase
-          .from('family_tree_members')
-          .select('*')
-          .eq('id', memberId)
-          .single();
-
-        if (memberError) throw memberError;
-
-        // Fetch all family members for relationships
-        const { data: familyMembers, error: familyMembersError } = await supabase
-          .from('family_tree_members')
-          .select('*')
-          .eq('family_id', familyId);
-
-        if (familyMembersError) throw familyMembersError;
-
-        // Fetch marriages
-        const { data: marriages, error: marriagesError } = await supabase
-          .from('marriages')
-          .select('*')
-          .eq('family_id', familyId);
-
-        if (marriagesError) throw marriagesError;
-
-        // Fetch member memories
-        const { data: memories, error: memoriesError } = await supabase
-          .from('member_memories')
-          .select('*')
-          .eq('member_id', memberId)
-          .order('uploaded_at', { ascending: false });
-
-        // Memories might not exist for some members, so don't throw error
-        const memberMemories = memoriesError ? [] : (memories || []);
-
-        setData({
-          member,
-          marriages: marriages || [],
-          memories: memberMemories,
-          familyMembers: familyMembers || []
-        });
-      } catch (err) {
-        console.error('Error fetching member data:', err);
-        setError(err instanceof Error ? err.message : 'حدث خطأ في تحميل البيانات');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMemberData();
-  }, [memberId, familyId]);
-
-  return { data, loading, error };
+  return {
+    data: {
+      member,
+      marriages,
+      memories,
+      familyMembers,
+    },
+    loading,
+    error,
+  };
 };
