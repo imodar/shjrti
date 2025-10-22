@@ -264,32 +264,35 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   const positions = calculatePositions();
 
-  // Center root member in visible area
-  const [hasInitialized, setHasInitialized] = useState(false);
+  // Center root member in visible area - re-centers when root changes
+  const [currentRootId, setCurrentRootId] = useState<string | null>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    if (displayUnits.size > 0 && rootUnits.length > 0 && !hasInitialized && containerRef.current) {
-      // Get the first root unit position
-      const rootPosition = positions.get(rootUnits[0].id);
+    if (displayUnits.size > 0 && rootUnits.length > 0 && containerRef.current) {
+      const newRootId = rootUnits[0].id;
       
-      if (rootPosition) {
-        const containerWidth = containerRef.current.offsetWidth;
-        const containerHeight = containerRef.current.offsetHeight;
+      // Re-center only if root has changed
+      if (newRootId !== currentRootId) {
+        const rootPosition = positions.get(newRootId);
         
-        // Calculate the center of the root unit
-        const rootCenterX = rootPosition.x + UNIT_WIDTH / 2;
-        const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
-        
-        // Calculate offset to position the root at the top of the viewport
-        const offsetX = (containerWidth / 2) - rootCenterX;
-        const offsetY = 150 - rootCenterY;
-        
-        setPanOffset({ x: offsetX, y: offsetY });
-        setHasInitialized(true);
+        if (rootPosition) {
+          const containerWidth = containerRef.current.offsetWidth;
+          
+          // Calculate the center of the root unit
+          const rootCenterX = rootPosition.x + UNIT_WIDTH / 2;
+          const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
+          
+          // Calculate offset to position the root at the top center of the viewport
+          const offsetX = (containerWidth / 2) - rootCenterX;
+          const offsetY = 150 - rootCenterY;
+          
+          setPanOffset({ x: offsetX, y: offsetY });
+          setCurrentRootId(newRootId);
+        }
       }
     }
-  }, [displayUnits.size, rootUnits.length, hasInitialized, positions]);
+  }, [displayUnits.size, rootUnits.length, rootUnits[0]?.id, positions, currentRootId]);
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
