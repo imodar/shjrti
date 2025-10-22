@@ -3,10 +3,10 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Users, BarChart3, ZoomIn, ZoomOut, Maximize, Minimize, TreePine, Heart, HeartCrack, Star, Sparkles, Crown, Gem, Calendar } from "lucide-react";
+import { ArrowLeft, Users, BarChart3, ZoomIn, ZoomOut, Maximize, Minimize, Heart, HeartCrack, Star, Sparkles, Crown, Gem, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
@@ -37,7 +37,6 @@ const FamilyTreeView = () => {
   const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>("all");
 
   const traditionalRef = useRef<HTMLDivElement>(null);
-  const diagramRef = useRef<HTMLDivElement>(null);
 
   // Reset zoom and center when filter changes
   const handleRootMarriageChange = (value: string) => {
@@ -50,19 +49,13 @@ const FamilyTreeView = () => {
         el.scrollLeft = Math.max(0, (el.scrollWidth - el.clientWidth) / 2);
         el.scrollTop = 0;
       }
-      if (diagramRef.current) {
-        const el = diagramRef.current;
-        el.scrollLeft = Math.max(0, (el.scrollWidth - el.clientWidth) / 2);
-        el.scrollTop = 0;
-      }
     }, 0);
   };
 
-  const [activeTab, setActiveTab] = useState<string>("traditional");
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const handleToggleFullscreen = () => {
-    const el = (activeTab === 'traditional' ? traditionalRef.current : diagramRef.current);
+    const el = traditionalRef.current;
     if (!el) return;
     if (document.fullscreenElement) {
       document.exitFullscreen?.();
@@ -604,7 +597,7 @@ const FamilyTreeView = () => {
                   <div className="text-center">
                     <div className="flex items-center justify-center gap-3 mb-2">
                       <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
-                        <TreePine className="h-6 w-6 text-white" />
+                        <Users className="h-6 w-6 text-white" />
                       </div>
                       <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                         {t('familyTree')}
@@ -634,17 +627,6 @@ const FamilyTreeView = () => {
 
               {/* شجرة العائلة */}
               <div className={hasAIFeatures ? "lg:col-span-3" : "col-span-1"}>
-                {/* Tree Container */}
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-1 mb-8">
-                <TabsTrigger value="traditional" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-                  <TreePine className="ml-2 h-4 w-4" />
-                  العرض التقليدي
-                </TabsTrigger>
-              </TabsList>
-              
-              {/* Traditional Tree View - Organizational Chart Style */}
-              <TabsContent value="traditional">
                 <div ref={traditionalRef} className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-xl shadow-lg overflow-hidden">
                   {/* Filter Bar at Top */}
                   <div className="flex items-center justify-between p-4 border-b border-white/40 dark:border-gray-600/40 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10">
@@ -703,8 +685,6 @@ const FamilyTreeView = () => {
                     />
                   </div>
                 </div>
-              </TabsContent>
-                </Tabs>
               </div>
             </div>
 
