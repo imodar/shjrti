@@ -225,11 +225,13 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       const birthText = gender === 'female' ? 'ولدت' : 'ولد';
       const deathText = gender === 'female' ? 'توفيت' : 'توفي';
       const age = differenceInYears(parseISO(deathDate), parseISO(birthDate));
+      const birthYear = parseISO(birthDate).getFullYear();
+      const deathYear = parseISO(deathDate).getFullYear();
       return (
         <div className="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-full">
           <Calendar className="h-3 w-3 text-amber-600 dark:text-amber-400" />
           <span className="text-xs text-amber-700 dark:text-amber-300 font-arabic">
-            {birthText} في <DateDisplay date={birthDate} /> - {deathText} في <DateDisplay date={deathDate} /> - {age} سنة
+            {birthText} في {birthYear} - {deathText} في {deathYear} - {age} سنة
           </span>
         </div>
       );
