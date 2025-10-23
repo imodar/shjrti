@@ -16,12 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import { 
   ArrowLeft, 
   Upload, 
@@ -932,23 +927,14 @@ const FamilyGallery = () => {
               {/* Date Picker */}
               <div className="space-y-2">
                 <Label>تاريخ الصورة</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-right">
-                      <Calendar className="ml-2 h-4 w-4" />
-                      {format(uploadForm.photoDate, "PPP", { locale: ar })}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarComponent
-                      mode="single"
-                      selected={uploadForm.photoDate}
-                      onSelect={(date) => date && setUploadForm({...uploadForm, photoDate: date})}
-                      initialFocus
-                      locale={ar}
-                    />
-                  </PopoverContent>
-                </Popover>
+                <EnhancedDatePicker
+                  value={uploadForm.photoDate}
+                  onChange={(date) => date && setUploadForm({...uploadForm, photoDate: date})}
+                  placeholder="اختر تاريخ الصورة"
+                  disableFuture={false}
+                  fromYear={1900}
+                  toYear={new Date().getFullYear() + 1}
+                />
               </div>
             </div>
             
