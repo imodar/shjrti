@@ -268,8 +268,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       return 'متزوج';
     }
     
-    if (member.relatedPersonId && spouses.length === 0) {
-      const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
+    if ((member.related_person_id || member.relatedPersonId) && spouses.length === 0) {
+      const relatedPerson = familyMembers.find(m => m.id === (member.related_person_id || member.relatedPersonId));
       if (relatedPerson) {
         return 'متزوج';
       }
@@ -296,14 +296,17 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       }).filter(Boolean);
     }
 
-    if (member.relatedPersonId) {
-      const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
+    if (member.related_person_id || member.relatedPersonId) {
+      const relatedPerson = familyMembers.find(m => m.id === (member.related_person_id || member.relatedPersonId));
       if (relatedPerson) {
         return [relatedPerson];
       }
     }
 
-    return familyMembers.filter(m => member.spouseId === m.id || m.spouseId === member.id);
+    return familyMembers.filter(m => 
+      (member.spouse_id || member.spouseId) === m.id || 
+      (m.spouse_id || m.spouseId) === member.id
+    );
   };
 
   const getChildren = () => {
