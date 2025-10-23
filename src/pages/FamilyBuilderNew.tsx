@@ -262,6 +262,72 @@ const FamilyBuilderNew = () => {
   const [profileLoading, setProfileLoading] = useState(false);
   const [memberProfileData, setMemberProfileData] = useState(null);
 
+  // Keep marriages in sync with Context after it loads
+  useEffect(() => {
+    // If no marriages in context yet, clear local state
+    if (!contextMarriages || contextMarriages.length === 0) {
+      setFamilyMarriages([]);
+      return;
+    }
+
+    // If members not loaded yet, set basic marriages without embedded member objects
+    if (familyMembers.length === 0) {
+      setFamilyMarriages(
+        contextMarriages.map((marriage: any) => ({
+          ...marriage,
+          husband: null,
+          wife: null,
+        }))
+      );
+      return;
+    }
+
+    // Map marriages to include embedded husband/wife from current member list
+    const marriagesWithMembers = contextMarriages.map((marriage: any) => {
+      const husband = (familyMembers as any[]).find(m => m.id === marriage.husband_id);
+      const wife = (familyMembers as any[]).find(m => m.id === marriage.wife_id);
+      return {
+        ...marriage,
+        husband: husband
+          ? {
+              id: husband.id,
+              name: husband.name,
+              first_name: husband.first_name,
+              last_name: husband.last_name,
+              father_id: husband.fatherId,
+              mother_id: husband.motherId,
+              gender: husband.gender,
+              birth_date: husband.birthDate,
+              is_alive: husband.isAlive,
+              death_date: husband.deathDate,
+              image_url: husband.image,
+              biography: husband.bio,
+              marital_status: husband.marital_status,
+            }
+          : null,
+        wife: wife
+          ? {
+              id: wife.id,
+              name: wife.name,
+              first_name: wife.first_name,
+              last_name: wife.last_name,
+              father_id: wife.fatherId,
+              mother_id: wife.motherId,
+              gender: wife.gender,
+              birth_date: wife.birthDate,
+              is_alive: wife.isAlive,
+              death_date: wife.deathDate,
+              image_url: wife.image,
+              biography: wife.bio,
+              marital_status: wife.marital_status,
+            }
+          : null,
+      };
+    });
+
+    setFamilyMarriages(marriagesWithMembers);
+  }, [contextMarriages, familyMembers]);
+
   // Memoized generation count calculation
   const generationCount = useMemo(() => {
     if (familyMembers.length === 0) {
@@ -4284,7 +4350,7 @@ const MemberList = ({
               key={member.id}
               member={member}
               familyMembers={familyMembers}
-              marriages={marriages}
+              marriages={contextMarriages}
               onViewMember={onViewMember}
               onEditMember={onEditMember}
               onDeleteMember={onDeleteMember}

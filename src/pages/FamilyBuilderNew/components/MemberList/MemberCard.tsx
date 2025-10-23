@@ -129,54 +129,64 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     // Show founder text for founders
     const isFounder = member.is_founder || (member as any).isFounder;
     if (isFounder) {
-      return <p className="text-sm text-primary font-arabic whitespace-normal break-words">
-          الجد الأكبر
-        </p>;
+      return <p className="text-sm text-primary font-arabic whitespace-normal break-words">الجد الأكبر</p>;
     }
 
-    // Find marriage where this member is husband or wife
+    // 1) Try marriages table first
     const marriage = marriages?.find(m => m.husband_id === member.id || m.wife_id === member.id);
+    let spouse: any | null = null;
+
     if (marriage) {
-      // Determine if this member is the husband or wife
-      const isHusband = marriage.husband_id === member.id;
+      const spouseId = marriage.husband_id === member.id ? marriage.wife_id : marriage.husband_id;
+      spouse = familyMembers?.find(m => m?.id === spouseId) || null;
+    }
 
-      // Get spouse data
-      let spouseId = isHusband ? marriage.wife_id : marriage.husband_id;
-      let spouse = familyMembers?.find(m => m?.id === spouseId);
-      if (spouse) {
-        // Check if current member is a non-family member (married into the family)
-        const memberHasFamilyFather = (member.father_id || (member as any).fatherId) && familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
-
-        // Only show spouse info for non-family members (those without family fathers)
-        if (!memberHasFamilyFather) {
-          // Get spouse's father and grandfather from familyMembers
-          const spouseFather = familyMembers?.find(m => m?.id === (spouse.father_id || (spouse as any).fatherId));
-          const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === (spouseFather.father_id || (spouseFather as any).fatherId)) : null;
-
-          // Build detailed spouse info: زوجة مضر ابن أمير ابن مظهر
-          const spouseName = spouse.first_name || (spouse as any).name?.split(' ')[0] || (spouse as any).name;
-          let spouseInfo = spouseName;
-          if (spouseFather) {
-            const fatherFirstName = spouseFather.first_name || (spouseFather as any).name?.split(' ')[0] || (spouseFather as any).name;
-            const genderTerm = spouse.gender === 'female' ? 'ابنة' : 'ابن';
-            spouseInfo += ` ${genderTerm} ${fatherFirstName}`;
-
-            // Add grandfather if exists
-            if (spouseGrandfather) {
-              const grandfatherFirstName = spouseGrandfather.first_name || (spouseGrandfather as any).name?.split(' ')[0] || (spouseGrandfather as any).name;
-              spouseInfo += ` ابن ${grandfatherFirstName}`;
-            }
-          }
-
-          // Use زوج for husband, زوجة for wife (from member's perspective)
-          const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
-          return <p className="text-sm text-primary font-arabic whitespace-normal break-words">
-              {relationLabel} {spouseInfo}
-            </p>;
-        }
+    // 2) Fallback: spouse_id field on member record
+    if (!spouse) {
+      const spouseIdField = (member as any).spouse_id || (member as any).spouseId;
+      if (spouseIdField) {
+        spouse = familyMembers?.find(m => m?.id === spouseIdField) || null;
       }
     }
-    return null;
+
+    // 3) Fallback: related_person_id used historically to link outside spouse
+    if (!spouse) {
+      const relatedId = (member as any).related_person_id || (member as any).relatedPersonId;
+      if (relatedId) {
+        spouse = familyMembers?.find(m => m?.id === relatedId) || null;
+      }
+    }
+
+    if (!spouse) return null;
+
+    // Only show detailed spouse lineage when current member is married-into (no family father)
+    const memberHasFamilyFather = ((member as any).father_id || (member as any).fatherId) &&
+      familyMembers?.find(m => m?.id === ((member as any).father_id || (member as any).fatherId));
+
+    if (!memberHasFamilyFather) {
+      const spouseFather = familyMembers?.find(m => m?.id === ((spouse as any).father_id || (spouse as any).fatherId));
+      const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === ((spouseFather as any).father_id || (spouseFather as any).fatherId)) : null;
+
+      const spouseName = (spouse as any).first_name || (spouse as any).name?.split(' ')[0] || (spouse as any).name || '';
+      let spouseInfo = spouseName;
+      if (spouseFather) {
+        const fatherFirstName = (spouseFather as any).first_name || (spouseFather as any).name?.split(' ')[0] || (spouseFather as any).name;
+        const genderTerm = (spouse as any).gender === 'female' ? 'ابنة' : 'ابن';
+        spouseInfo += ` ${genderTerm} ${fatherFirstName}`;
+        if (spouseGrandfather) {
+          const grandfatherFirstName = (spouseGrandfather as any).first_name || (spouseGrandfather as any).name?.split(' ')[0] || (spouseGrandfather as any).name;
+          spouseInfo += ` ابن ${grandfatherFirstName}`;
+        }
+      }
+
+      const relationLabel = (member as any).gender === 'male' ? 'زوج' : 'زوجة';
+      return <p className="text-sm text-primary font-arabic whitespace-normal break-words">{relationLabel} {spouseInfo}</p>;
+    }
+
+    // Default minimal spouse info
+    const relationLabel = (member as any).gender === 'male' ? 'زوج' : 'زوجة';
+    const spouseDisplayName = (spouse as any).first_name || (spouse as any).name || '';
+    return <p className="text-sm text-primary font-arabic whitespace-normal break-words">{relationLabel} {spouseDisplayName}</p>;
   };
   return <TooltipProvider>
     <Card className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden" onClick={() => onViewMember(member)}>
