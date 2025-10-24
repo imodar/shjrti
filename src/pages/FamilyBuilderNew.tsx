@@ -3853,8 +3853,8 @@ const FamilyBuilderNew = () => {
                       عرض قائمة الأعضاء ({familyMembers.length})
                     </Button>
                   </DrawerTrigger>
-                  <DrawerContent className="h-[80vh]">
-                    <div className="p-4">
+                  <DrawerContent className="h-[80vh] flex flex-col">
+                    <div className="flex-1 overflow-y-auto mobile-smooth-scroll p-4">
                         <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={subscription?.package_name} />
                     </div>
                   </DrawerContent>
