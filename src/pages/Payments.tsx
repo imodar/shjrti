@@ -641,35 +641,35 @@ export default function Payments() {
             <div className="mb-8 relative">
               <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-emerald-500/20 to-teal-500/10 rounded-2xl blur-2xl"></div>
               
-              <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-6 px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-6">
-                    <div className="relative">
+              <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 sm:py-6 px-4 sm:px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 sm:gap-6 w-full sm:w-auto">
+                    <div className="relative shrink-0">
                       <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
-                      <div className="relative w-20 h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-4 border-white/30 dark:border-gray-700/30">
-                        <CreditCard className="h-10 w-10 text-white" />
+                      <div className="relative w-14 h-14 sm:w-20 sm:h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-2 sm:border-4 border-white/30 dark:border-gray-700/30">
+                        <CreditCard className="h-7 w-7 sm:h-10 sm:w-10 text-white" />
                       </div>
                     </div>
                     
-                    <div>
-                      <h1 className="text-3xl font-bold mb-2">
+                    <div className="flex-1 min-w-0">
+                      <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2">
                         <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                           الاشتراكات والمدفوعات
                         </span>
                       </h1>
-                      <p className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                        إدارة اشتراكك وطرق الدفع بسهولة
+                      <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shrink-0"></div>
+                        <span className="truncate">إدارة اشتراكك وطرق الدفع بسهولة</span>
                       </p>
                     </div>
                   </div>
                   
-                  {currentPlanData ? <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-emerald-500 text-white px-4 py-2 rounded-full shadow-lg">
-                      <Crown className="h-4 w-4" />
-                      <span className="text-sm font-bold">{getLocalizedPackageField(currentPlanData, 'name') || currentPlanData.name}</span>
-                    </div> : <div className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-slate-500 text-white px-4 py-2 rounded-full shadow-lg">
-                      <Shield className="h-4 w-4" />
-                      <span className="text-sm font-bold">الباقة المجانية</span>
+                  {currentPlanData ? <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-emerald-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg shrink-0 self-start sm:self-center">
+                      <Crown className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+                      <span className="text-xs sm:text-sm font-bold whitespace-nowrap">{getLocalizedPackageField(currentPlanData, 'name') || currentPlanData.name}</span>
+                    </div> : <div className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-slate-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg shrink-0 self-start sm:self-center">
+                      <Shield className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
+                      <span className="text-xs sm:text-sm font-bold whitespace-nowrap">الباقة المجانية</span>
                     </div>}
                 </div>
               </div>
