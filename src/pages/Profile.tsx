@@ -505,6 +505,53 @@ export default function Profile() {
               {/* Stats Section */}
               <div className="space-y-6">
                 
+                {/* Account Stats */}
+                <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
+                  <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg">
+                        <Users className="h-5 w-5 text-white" />
+                      </div>
+                      <CardTitle className="text-lg bg-gradient-to-r from-teal-600 to-amber-600 bg-clip-text text-transparent">
+                        {t('profile.account_statistics')}
+                      </CardTitle>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid grid-cols-1 gap-4">
+                      <div className="bg-emerald-50 dark:bg-emerald-950/30 p-4 rounded-lg border border-emerald-200/50 dark:border-emerald-700/50">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">{t('profile.families_created')}</p>
+                            <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{stats.familiesCreated}</p>
+                          </div>
+                          <TreePine className="h-8 w-8 text-emerald-500" />
+                        </div>
+                      </div>
+                      
+                      <div className="bg-teal-50 dark:bg-teal-950/30 p-4 rounded-lg border border-teal-200/50 dark:border-teal-700/50">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-teal-600 dark:text-teal-400 font-medium">{t('profile.total_members')}</p>
+                            <p className="text-2xl font-bold text-teal-700 dark:text-teal-300">{stats.totalMembers}</p>
+                          </div>
+                          <Users className="h-8 w-8 text-teal-500" />
+                        </div>
+                      </div>
+
+                      <div className="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-lg border border-amber-200/50 dark:border-amber-700/50">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-amber-600 dark:text-amber-400 font-medium">آخر نشاط</p>
+                            <p className="text-lg font-semibold text-amber-700 dark:text-amber-300">{stats.lastActivity}</p>
+                          </div>
+                          <Calendar className="h-8 w-8 text-amber-500" />
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                
                 {/* Danger Zone - Delete Account */}
                 <Card className="bg-gradient-to-br from-red-50 via-rose-50 to-orange-50 dark:from-red-950/30 dark:via-rose-950/30 dark:to-orange-950/30 backdrop-blur-xl border-2 border-red-300/50 dark:border-red-700/50 shadow-xl">
                   <CardHeader>
@@ -551,53 +598,6 @@ export default function Profile() {
                     <p className="text-xs text-center text-gray-600 dark:text-gray-400">
                       للامتثال للوائح GDPR وقوانين حماية البيانات
                     </p>
-                  </CardContent>
-                </Card>
-                
-                {/* Account Stats */}
-                <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg">
-                        <Users className="h-5 w-5 text-white" />
-                      </div>
-                      <CardTitle className="text-lg bg-gradient-to-r from-teal-600 to-amber-600 bg-clip-text text-transparent">
-                        {t('profile.account_statistics')}
-                      </CardTitle>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-1 gap-4">
-                      <div className="bg-emerald-50 dark:bg-emerald-950/30 p-4 rounded-lg border border-emerald-200/50 dark:border-emerald-700/50">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">{t('profile.families_created')}</p>
-                            <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{stats.familiesCreated}</p>
-                          </div>
-                          <TreePine className="h-8 w-8 text-emerald-500" />
-                        </div>
-                      </div>
-                      
-                      <div className="bg-teal-50 dark:bg-teal-950/30 p-4 rounded-lg border border-teal-200/50 dark:border-teal-700/50">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm text-teal-600 dark:text-teal-400 font-medium">{t('profile.total_members')}</p>
-                            <p className="text-2xl font-bold text-teal-700 dark:text-teal-300">{stats.totalMembers}</p>
-                          </div>
-                          <Users className="h-8 w-8 text-teal-500" />
-                        </div>
-                      </div>
-
-                      <div className="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-lg border border-amber-200/50 dark:border-amber-700/50">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="text-sm text-amber-600 dark:text-amber-400 font-medium">آخر نشاط</p>
-                            <p className="text-lg font-semibold text-amber-700 dark:text-amber-300">{stats.lastActivity}</p>
-                          </div>
-                          <Calendar className="h-8 w-8 text-amber-500" />
-                        </div>
-                      </div>
-                    </div>
                   </CardContent>
                 </Card>
               </div>
