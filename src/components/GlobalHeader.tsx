@@ -70,7 +70,7 @@ export const GlobalHeader = () => {
               {/* Brand Name and Tagline with enhanced styling */}
               <div className="flex flex-col">
                 <h1 className="text-xl sm:text-2xl font-bold text-emerald-300 bg-gradient-to-r from-emerald-300 via-teal-300 to-amber-300 bg-clip-text [background-clip:text] hover:text-transparent group-hover:scale-105 transition-transform duration-500 filter drop-shadow-lg">
-                  {t('site.name', 'شجرة العائلة')}
+                  {t('site.name', 'شجرتي')}
                 </h1>
                 <p className="hidden sm:block text-sm text-gray-300 font-medium bg-gradient-to-r from-gray-300 to-emerald-200 bg-clip-text text-transparent">
                   {t('site.tagline', 'منصة إدارة الأنساب')}
