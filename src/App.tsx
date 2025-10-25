@@ -17,7 +17,6 @@ import { SkeletonLayoutForBuilder } from "@/components/SkeletonLayoutForBuilder"
 import ScrollToTop from "@/components/ScrollToTop";
 import CustomScriptInjector from "@/components/CustomScriptInjector";
 import Index from "./pages/Index";
-import IndexBackup from "./pages/IndexBackup";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import DashboardBackup from "./pages/DashboardBackup";
@@ -68,7 +67,6 @@ const App = () => (
                   <CustomScriptInjector />
                   <Routes>
                   <Route path="/" element={<Index />} />
-                  <Route path="/home-backup" element={<IndexBackup />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/dashboard" element={
                     <ProtectedRoute>
