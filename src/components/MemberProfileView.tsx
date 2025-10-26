@@ -1202,10 +1202,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                               <div className={`bg-card border border-border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow`}>
                                 <div className="flex items-start justify-between gap-4">
                                   <div className="flex-1">
-                                    <h4 className="font-semibold text-foreground mb-1">
+                                     <h4 className="font-semibold text-foreground mb-1">
                                       {event.title}
                                     </h4>
-                                     {event.type !== 'marriage' && (
+                                     {event.type !== 'marriage' && (event.type !== 'divorce' || event.date) && (
                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                          <Calendar className="w-4 h-4" />
                                          {event.date ? (
@@ -1215,7 +1215,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                          )}
                                        </div>
                                      )}
-                                     {event.description && event.type !== 'marriage' && (
+                                     {event.description && event.type !== 'marriage' && event.type !== 'divorce' && (
                                        <p className="text-sm text-muted-foreground mt-2">
                                          {event.description}
                                        </p>
