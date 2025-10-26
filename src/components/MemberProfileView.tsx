@@ -199,18 +199,24 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         });
       });
 
-      // Divorce event if divorced - only show if there's a divorce date
-      if (spouse.marital_status === 'divorced' && spouse.divorce_date) {
-        const divorceTimestamp = new Date(spouse.divorce_date).getTime();
-        
+      // Divorce event if divorced - comes after all children
+      if (spouse.marital_status === 'divorced') {
+        // Find the last child's date from this marriage or use marriage date
+        const lastChildDate = childrenWithSpouse.length > 0
+          ? Math.max(...childrenWithSpouse.map(c => {
+              const d = c.birthDate || c.birth_date;
+              return d ? new Date(d).getTime() : marriageTimestamp;
+            }))
+          : marriageTimestamp;
+
         events.push({
           type: 'divorce',
-          date: spouse.divorce_date,
+          date: null,
           sortOrder: (marriageIndex + 1) * 100 + 50, // After children: 150, 250, etc.
-          sortTimestamp: divorceTimestamp,
+          sortTimestamp: lastChildDate + 1000,
           spouseId: spouse.id,
           title: `${genderText.divorce} عن ${spouse.first_name || spouse.name}`,
-          description: null,
+          description: 'في تاريخ غير محدد',
           icon: 'X',
           color: 'text-orange-600',
           bgColor: 'bg-orange-50'
@@ -321,8 +327,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         return spouse ? {
           ...spouse,
           marital_status: marriage.marital_status || 'married',
-          marriage_date: marriage.created_at,
-          divorce_date: (marriage as any).divorce_date // إضافة تاريخ الطلاق
+          marriage_date: marriage.created_at
         } : null;
       }).filter(Boolean);
     }
