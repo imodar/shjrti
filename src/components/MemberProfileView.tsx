@@ -136,69 +136,61 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     return gender === 'male' ? 'bg-blue-500' : 'bg-pink-500';
   };
 
-  // Generate timeline events
+  // Generate timeline events with proper logical ordering
   const generateTimelineEvents = () => {
     const events = [];
     const genderText = member.gender === 'male' ? { birth: 'ولد', marry: 'تزوج', death: 'توفي', divorce: 'انفصل' } : { birth: 'ولدت', marry: 'تزوجت', death: 'توفيت', divorce: 'انفصلت' };
 
-    // Birth event
-    if (member.birthDate || member.birth_date) {
-      const birthDate = member.birthDate || member.birth_date;
-      events.push({
-        type: 'birth',
-        date: birthDate,
-        title: `${genderText.birth} ${member.first_name || member.name}`,
-        description: birthDate ? null : 'في تاريخ غير محدد',
-        icon: 'Gift',
-        color: 'text-green-600',
-        bgColor: 'bg-green-50'
-      });
-    } else {
-      events.push({
-        type: 'birth',
-        date: null,
-        title: `${genderText.birth} ${member.first_name || member.name}`,
-        description: 'في تاريخ غير محدد',
-        icon: 'Gift',
-        color: 'text-green-600',
-        bgColor: 'bg-green-50'
-      });
-    }
+    // Birth date as baseline
+    const birthDate = member.birthDate || member.birth_date;
+    const birthTimestamp = birthDate ? new Date(birthDate).getTime() : 0;
 
-    // Marriage events
+    // Birth event - always first
+    events.push({
+      type: 'birth',
+      date: birthDate,
+      sortOrder: 0, // First event
+      sortTimestamp: birthTimestamp,
+      title: `${genderText.birth} ${member.first_name || member.name}`,
+      description: birthDate ? null : 'في تاريخ غير محدد',
+      icon: 'Gift',
+      color: 'text-green-600',
+      bgColor: 'bg-green-50'
+    });
+
+    // Marriage events with children grouped properly
     const spouses = getSpouses();
-    spouses.forEach((spouse, index) => {
+    spouses.forEach((spouse, marriageIndex) => {
       const marriageDate = spouse.marriage_date || spouse.created_at;
-      events.push({
+      const marriageTimestamp = marriageDate ? new Date(marriageDate).getTime() : (birthTimestamp + (marriageIndex + 1) * 1000);
+      
+      // Marriage event
+      const marriageEvent = {
         type: 'marriage',
         date: marriageDate,
+        sortOrder: (marriageIndex + 1) * 100, // Marriage 1: 100, Marriage 2: 200, etc.
+        sortTimestamp: marriageTimestamp,
+        spouseId: spouse.id,
         title: `${genderText.marry} من ${spouse.first_name || spouse.name} ${spouse.last_name || ''}`.trim(),
         description: marriageDate ? null : 'في تاريخ غير محدد',
         icon: 'Heart',
         color: 'text-pink-600',
         bgColor: 'bg-pink-50'
-      });
+      };
+      events.push(marriageEvent);
 
-      // Divorce event if divorced
-      if (spouse.marital_status === 'divorced') {
-        events.push({
-          type: 'divorce',
-          date: null, // We don't have divorce date
-          title: `${genderText.divorce} عن ${spouse.first_name || spouse.name}`,
-          description: 'في تاريخ غير محدد',
-          icon: 'X',
-          color: 'text-orange-600',
-          bgColor: 'bg-orange-50'
-        });
-      }
-
-      // Children with this spouse
+      // Children from this marriage - must be after marriage and before divorce
       const childrenWithSpouse = getChildrenBySpouse(spouse.id);
-      childrenWithSpouse.forEach(child => {
+      childrenWithSpouse.forEach((child, childIndex) => {
         const childBirthDate = child.birthDate || child.birth_date;
+        const childBirthTimestamp = childBirthDate ? new Date(childBirthDate).getTime() : (marriageTimestamp + (childIndex + 1) * 100);
+        
         events.push({
           type: 'child',
           date: childBirthDate,
+          sortOrder: (marriageIndex + 1) * 100 + 10 + childIndex, // After marriage: 110, 111, 112...
+          sortTimestamp: childBirthTimestamp,
+          spouseId: spouse.id,
           title: `ولد لهم ${child.first_name || child.name}`,
           description: childBirthDate ? null : 'في تاريخ غير محدد',
           icon: 'Users',
@@ -206,15 +198,43 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           bgColor: 'bg-blue-50'
         });
       });
+
+      // Divorce event if divorced - comes after all children
+      if (spouse.marital_status === 'divorced') {
+        // Find the last child's date from this marriage or use marriage date
+        const lastChildDate = childrenWithSpouse.length > 0
+          ? Math.max(...childrenWithSpouse.map(c => {
+              const d = c.birthDate || c.birth_date;
+              return d ? new Date(d).getTime() : marriageTimestamp;
+            }))
+          : marriageTimestamp;
+
+        events.push({
+          type: 'divorce',
+          date: null,
+          sortOrder: (marriageIndex + 1) * 100 + 50, // After children: 150, 250, etc.
+          sortTimestamp: lastChildDate + 1000,
+          spouseId: spouse.id,
+          title: `${genderText.divorce} عن ${spouse.first_name || spouse.name}`,
+          description: 'في تاريخ غير محدد',
+          icon: 'X',
+          color: 'text-orange-600',
+          bgColor: 'bg-orange-50'
+        });
+      }
     });
 
-    // Children without specific spouse
+    // Children without specific spouse - after all marriages
     const childrenWithoutSpouse = getChildrenBySpouse();
-    childrenWithoutSpouse.forEach(child => {
+    childrenWithoutSpouse.forEach((child, index) => {
       const childBirthDate = child.birthDate || child.birth_date;
+      const childBirthTimestamp = childBirthDate ? new Date(childBirthDate).getTime() : (birthTimestamp + (spouses.length + 1) * 1000 + index * 100);
+      
       events.push({
         type: 'child',
         date: childBirthDate,
+        sortOrder: 10000 + index, // Very high number to come after all marriages
+        sortTimestamp: childBirthTimestamp,
         title: `ولد له ${child.first_name || child.name}`,
         description: childBirthDate ? null : 'في تاريخ غير محدد',
         icon: 'Users',
@@ -223,12 +243,16 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       });
     });
 
-    // Death event
+    // Death event - always last
     if (member.deathDate || member.death_date) {
       const deathDate = member.deathDate || member.death_date;
+      const deathTimestamp = deathDate ? new Date(deathDate).getTime() : (birthTimestamp + 999999999);
+      
       events.push({
         type: 'death',
         date: deathDate,
+        sortOrder: 999999, // Very high to be last
+        sortTimestamp: deathTimestamp,
         title: `${genderText.death}`,
         description: deathDate ? null : 'في تاريخ غير محدد',
         icon: 'Clock',
@@ -237,12 +261,24 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       });
     }
 
-    // Sort events by date (nulls last)
+    // Sort events: first by actual dates if available, then by logical sortOrder
     return events.sort((a, b) => {
-      if (!a.date && !b.date) return 0;
-      if (!a.date) return 1;
-      if (!b.date) return 1;
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
+      // If both have dates, sort by date
+      if (a.date && b.date) {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      }
+      
+      // If one has date and other doesn't, use sortTimestamp for comparison
+      if (a.date && !b.date) {
+        return new Date(a.date).getTime() - b.sortTimestamp;
+      }
+      
+      if (!a.date && b.date) {
+        return a.sortTimestamp - new Date(b.date).getTime();
+      }
+      
+      // If neither has date, use sortOrder
+      return a.sortOrder - b.sortOrder;
     });
   };
 
