@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Users, BarChart3, ZoomIn, ZoomOut, Maximize, Minimize, TreePine, Heart, HeartCrack, Star, Sparkles, Crown, Gem, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { GlobalHeader } from "@/components/GlobalHeader";
-import { GlobalFooter } from "@/components/GlobalFooter";
+import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { FamilyHeader } from "@/components/FamilyHeader";
 import { OrganizationalChart } from "@/components/OrganizationalChart";
 import { SmartSearchBar } from "@/components/SmartSearchBar";
@@ -379,11 +379,11 @@ const FamilyTreeView = () => {
   if (isLoading || dataLoading) {
     return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
         <GlobalHeader />
-        <div className="container mx-auto px-6 pt-24 pb-12">
-          <FamilyTreeViewSkeleton />
-        </div>
-        <GlobalFooter />
-      </div>;
+      <div className="container mx-auto px-6 pt-24 pb-12">
+        <FamilyTreeViewSkeleton />
+      </div>
+      <GlobalFooterSimplified />
+    </div>;
   }
 
   // Generate family tree structure using family units with proper cousin grouping
@@ -678,7 +678,7 @@ const FamilyTreeView = () => {
         </section>
       </main>
 
-      <GlobalFooter />
+      <GlobalFooterSimplified />
     </div>;
 };
 export default FamilyTreeView;
