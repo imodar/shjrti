@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { GlobalHeader } from "@/components/GlobalHeader";
-import { GlobalFooter } from "@/components/GlobalFooter";
+import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { FamilyHeader } from "@/components/FamilyHeader";
 import FamilyStatisticsSkeleton from "@/components/skeletons/FamilyStatisticsSkeleton";
 import { supabase } from "@/integrations/supabase/client";
@@ -242,7 +242,7 @@ const FamilyStatistics = () => {
           </div>
         </main>
         
-        <GlobalFooter />
+        <GlobalFooterSimplified />
       </div>
     );
   }
@@ -566,7 +566,7 @@ const FamilyStatistics = () => {
         </section>
       </main>
 
-      <GlobalFooter />
+      <GlobalFooterSimplified />
     </div>
   );
 };
