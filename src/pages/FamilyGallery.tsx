@@ -31,7 +31,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { GlobalHeader } from "@/components/GlobalHeader";
-import { GlobalFooter } from "@/components/GlobalFooter";
+import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { FamilyHeader } from "@/components/FamilyHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useDropzone } from "react-dropzone";
@@ -449,7 +449,7 @@ const FamilyGallery = () => {
         <main className="relative z-10 pt-20 py-8">
           <FamilyGallerySkeleton />
         </main>
-        <GlobalFooter />
+        <GlobalFooterSimplified />
       </div>
     );
   }
@@ -800,7 +800,7 @@ const FamilyGallery = () => {
         </section>
       </main>
       
-      <GlobalFooter />
+      <GlobalFooterSimplified />
 
       {/* Memory Detail Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
