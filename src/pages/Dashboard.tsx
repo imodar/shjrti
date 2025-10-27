@@ -21,7 +21,7 @@ import {
   Search,
   Loader2
 } from "lucide-react";
-import { GlobalFooter } from "@/components/GlobalFooter";
+import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { SmartSearchBar } from "@/components/SmartSearchBar";
 import { SuggestionPanel } from "@/components/SuggestionPanel";
@@ -928,7 +928,7 @@ const Dashboard = () => {
         treeName={deleteTreeName}
       />
       
-      <GlobalFooter />
+      <GlobalFooterSimplified />
     </div>
   );
 };
