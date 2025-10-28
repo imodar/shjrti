@@ -421,7 +421,10 @@ export type Database = {
           id: string
           invoice_number: string | null
           package_id: string | null
+          payment_gateway: string | null
           payment_status: string | null
+          paypal_capture_id: string | null
+          paypal_order_id: string | null
           status: string | null
           stripe_payment_intent_id: string | null
           updated_at: string
@@ -436,7 +439,10 @@ export type Database = {
           id?: string
           invoice_number?: string | null
           package_id?: string | null
+          payment_gateway?: string | null
           payment_status?: string | null
+          paypal_capture_id?: string | null
+          paypal_order_id?: string | null
           status?: string | null
           stripe_payment_intent_id?: string | null
           updated_at?: string
@@ -451,7 +457,10 @@ export type Database = {
           id?: string
           invoice_number?: string | null
           package_id?: string | null
+          payment_gateway?: string | null
           payment_status?: string | null
+          paypal_capture_id?: string | null
+          paypal_order_id?: string | null
           status?: string | null
           stripe_payment_intent_id?: string | null
           updated_at?: string
@@ -768,6 +777,33 @@ export type Database = {
           slug?: string
           title?: Json
           updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_gateway_settings: {
+        Row: {
+          created_at: string | null
+          environment: string
+          gateway_name: string
+          id: string
+          is_active: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          environment?: string
+          gateway_name?: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          environment?: string
+          gateway_name?: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -1171,10 +1207,19 @@ export type Database = {
         Args: { new_expiry_date: string; target_user_id: string }
         Returns: boolean
       }
-      complete_payment_and_upgrade: {
-        Args: { p_invoice_id: string; p_stripe_payment_intent_id?: string }
-        Returns: boolean
-      }
+      complete_payment_and_upgrade:
+        | {
+            Args: { p_invoice_id: string; p_stripe_payment_intent_id?: string }
+            Returns: boolean
+          }
+        | {
+            Args: {
+              p_invoice_id: string
+              p_payment_gateway?: string
+              p_payment_id?: string
+            }
+            Returns: boolean
+          }
       create_admin_user: { Args: { admin_email: string }; Returns: undefined }
       create_invoice: {
         Args: {
