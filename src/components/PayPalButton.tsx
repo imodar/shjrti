@@ -131,8 +131,8 @@ export function PayPalButton({
 
           console.log('Plan created successfully:', planData.planId);
 
-          // Return plan ID as string for PayPal SDK
-          return String(planData.planId);
+          // IMPORTANT: Use PayPal SDK to create the subscription with the plan ID
+          return actions.subscription.create({ plan_id: String(planData.planId) });
         } catch (error: any) {
           console.error('Error creating subscription:', error);
           toast({
