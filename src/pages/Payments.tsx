@@ -526,36 +526,17 @@ export default function Payments() {
         return;
       }
 
-      // Create payment session for paid plans
-      const {
-        data: paymentData,
-        error: paymentError
-      } = await supabase.functions.invoke('create-payment', {
-        body: {
-          packageId: planId,
+      // Navigate to payment page for paid plans
+      console.log('✅ Navigating to payment page with invoice:', invoiceId);
+      
+      navigate('/payment', {
+        state: {
+          planId: planId,
+          invoiceId: invoiceId,
           amount: amount,
-          currency: currency,
-          invoiceId: invoiceId
+          currency: currency
         }
       });
-      if (paymentError) {
-        console.error('Payment session error:', paymentError);
-        throw new Error(`Payment session failed: ${paymentError.message}`);
-      }
-      if (!paymentData?.url) {
-        throw new Error('No payment URL received');
-      }
-      console.log('✅ Payment session created:', paymentData.url);
-
-      // Open payment in new tab
-      window.open(paymentData.url, '_blank');
-      toast({
-        title: "تم إنشاء جلسة الدفع",
-        description: "تم توجيهك لصفحة الدفع في نافذة جديدة"
-      });
-
-      // Reload invoices
-      loadInvoices();
     } catch (error: any) {
       console.error('Error in handlePlanSelect:', error);
       let errorMessage = "فشل في إنشاء جلسة الدفع";
@@ -1232,32 +1213,15 @@ export default function Payments() {
                   </div> : <div className="space-y-4">
                     {invoices.map((invoice: any) => <div key={invoice.id} className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors ${invoice.payment_status === 'pending' ? 'hover:bg-yellow-50 dark:hover:bg-yellow-900/20 cursor-pointer border-yellow-200 dark:border-yellow-700' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'}`} onClick={async () => {
                         if (invoice.payment_status === 'pending') {
-                          // إذا كانت الفاتورة في انتظار الدفع، توجيه للدفع
-                          try {
-                            const {
-                              data,
-                              error
-                            } = await supabase.functions.invoke('create-payment', {
-                              body: {
-                                packageId: invoice.package_id,
-                                amount: invoice.amount,
-                                currency: invoice.currency,
-                                invoiceId: invoice.id
-                              }
-                            });
-                            if (error) throw error;
-                            if (data.url) {
-                              // فتح صفحة الدفع في تبويب جديد
-                              window.open(data.url, '_blank');
+                          // Navigate to payment page for pending invoices
+                          navigate('/payment', {
+                            state: {
+                              planId: invoice.package_id,
+                              invoiceId: invoice.id,
+                              amount: invoice.amount,
+                              currency: invoice.currency
                             }
-                          } catch (error) {
-                            console.error('Error redirecting to payment:', error);
-                            toast({
-                              title: "خطأ في عملية الدفع",
-                              description: "حدث خطأ أثناء توجيهك لصفحة الدفع. يرجى المحاولة مرة أخرى.",
-                              variant: "destructive"
-                            });
-                          }
+                          });
                         }
                       }}>
                         <div className="flex items-center justify-between">
