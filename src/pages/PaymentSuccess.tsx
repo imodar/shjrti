@@ -8,36 +8,38 @@ import { GlobalFooter } from "@/components/GlobalFooter";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/contexts/SubscriptionContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { currentLanguage } = useLanguage();
   const { clearSubscriptionCache, refreshSubscription } = useSubscription();
   const [verifying, setVerifying] = useState(true);
   const [paymentStatus, setPaymentStatus] = useState<'success' | 'failed' | 'pending'>('pending');
   const [paymentDetails, setPaymentDetails] = useState<any>(null);
 
   const invoiceId = searchParams.get('invoice_id');
-  const sessionId = searchParams.get('session_id');
+  const orderId = searchParams.get('order_id');
 
   useEffect(() => {
-    if (!invoiceId) {
+    if (!invoiceId && !orderId) {
       navigate('/payments');
       return;
     }
 
     verifyPayment();
-  }, [invoiceId]);
+  }, [invoiceId, orderId]);
 
   const verifyPayment = async () => {
     try {
-      if (sessionId) {
-        // Verify with Stripe session
-        const { data, error } = await supabase.functions.invoke('verify-payment', {
+      if (orderId) {
+        // Verify PayPal payment
+        const { data, error } = await supabase.functions.invoke('verify-paypal-payment', {
           body: {
-            session_id: sessionId,
-            invoice_id: invoiceId
+            orderId,
+            invoiceId
           }
         });
 
@@ -45,7 +47,7 @@ export default function PaymentSuccess() {
           throw new Error(error.message);
         }
 
-        if (data.success && data.payment_status === 'paid') {
+        if (data.success && data.status === 'COMPLETED') {
           setPaymentStatus('success');
           setPaymentDetails(data);
           
@@ -54,14 +56,16 @@ export default function PaymentSuccess() {
           await refreshSubscription();
           
           toast({
-            title: "تم الدفع بنجاح! 🎉",
-            description: "تم تفعيل اشتراكك وترقية حسابك بنجاح",
+            title: currentLanguage === 'ar' ? "تم الدفع بنجاح! 🎉" : "Payment Successful! 🎉",
+            description: currentLanguage === 'ar' 
+              ? "تم تفعيل اشتراكك وترقية حسابك بنجاح"
+              : "Your subscription has been activated successfully",
             duration: 5000,
           });
         } else {
           setPaymentStatus('failed');
         }
-      } else {
+      } else if (invoiceId) {
         // Just check invoice status in database
         const { data: invoice, error } = await supabase
           .from('invoices')
@@ -70,7 +74,7 @@ export default function PaymentSuccess() {
           .single();
 
         if (error) {
-          throw new Error('فشل في العثور على الفاتورة');
+          throw new Error(currentLanguage === 'ar' ? 'فشل في العثور على الفاتورة' : 'Failed to find invoice');
         }
 
         if (invoice.payment_status === 'paid') {
@@ -88,8 +92,10 @@ export default function PaymentSuccess() {
       console.error('Payment verification error:', error);
       setPaymentStatus('failed');
       toast({
-        title: "خطأ في التحقق من الدفع",
-        description: "فشل في التحقق من حالة الدفع",
+        title: currentLanguage === 'ar' ? "خطأ في التحقق من الدفع" : "Payment Verification Error",
+        description: currentLanguage === 'ar' 
+          ? "فشل في التحقق من حالة الدفع"
+          : "Failed to verify payment status",
         variant: "destructive",
       });
     } finally {
