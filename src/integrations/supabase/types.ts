@@ -414,12 +414,14 @@ export type Database = {
       invoices: {
         Row: {
           amount: number
+          billing_agreement_id: string | null
           created_at: string
           currency: string | null
           due_date: string | null
           family_id: string | null
           id: string
           invoice_number: string | null
+          is_recurring: boolean | null
           package_id: string | null
           payment_gateway: string | null
           payment_status: string | null
@@ -432,12 +434,14 @@ export type Database = {
         }
         Insert: {
           amount: number
+          billing_agreement_id?: string | null
           created_at?: string
           currency?: string | null
           due_date?: string | null
           family_id?: string | null
           id?: string
           invoice_number?: string | null
+          is_recurring?: boolean | null
           package_id?: string | null
           payment_gateway?: string | null
           payment_status?: string | null
@@ -450,12 +454,14 @@ export type Database = {
         }
         Update: {
           amount?: number
+          billing_agreement_id?: string | null
           created_at?: string
           currency?: string | null
           due_date?: string | null
           family_id?: string | null
           id?: string
           invoice_number?: string | null
+          is_recurring?: boolean | null
           package_id?: string | null
           payment_gateway?: string | null
           payment_status?: string | null
@@ -807,6 +813,48 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_tokens: {
+        Row: {
+          created_at: string
+          customer_id: string | null
+          id: string
+          metadata: Json | null
+          payment_gateway: string
+          payment_source_type: string | null
+          setup_token_id: string | null
+          status: string
+          token_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_gateway?: string
+          payment_source_type?: string | null
+          setup_token_id?: string | null
+          status?: string
+          token_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_gateway?: string
+          payment_source_type?: string | null
+          setup_token_id?: string | null
+          status?: string
+          token_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -1155,6 +1203,8 @@ export type Database = {
           expires_at: string | null
           id: string
           package_id: string
+          payment_token_id: string | null
+          paypal_subscription_id: string | null
           started_at: string
           status: string
           updated_at: string
@@ -1165,6 +1215,8 @@ export type Database = {
           expires_at?: string | null
           id?: string
           package_id: string
+          payment_token_id?: string | null
+          paypal_subscription_id?: string | null
           started_at?: string
           status?: string
           updated_at?: string
@@ -1175,6 +1227,8 @@ export type Database = {
           expires_at?: string | null
           id?: string
           package_id?: string
+          payment_token_id?: string | null
+          paypal_subscription_id?: string | null
           started_at?: string
           status?: string
           updated_at?: string
@@ -1186,6 +1240,13 @@ export type Database = {
             columns: ["package_id"]
             isOneToOne: false
             referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_subscriptions_payment_token_id_fkey"
+            columns: ["payment_token_id"]
+            isOneToOne: false
+            referencedRelation: "payment_tokens"
             referencedColumns: ["id"]
           },
         ]
@@ -1278,6 +1339,16 @@ export type Database = {
       is_admin_secure: { Args: { user_uuid: string }; Returns: boolean }
       is_maintenance_mode_enabled: { Args: never; Returns: boolean }
       is_subscription_expired: { Args: { user_uuid: string }; Returns: boolean }
+      process_recurring_payment: {
+        Args: {
+          p_amount: number
+          p_currency: string
+          p_package_id: string
+          p_payment_token_id: string
+          p_user_id: string
+        }
+        Returns: string
+      }
       update_user_status: {
         Args: {
           new_status: Database["public"]["Enums"]["user_status_type"]
