@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react';
 
 interface PayPalButtonProps {
   invoiceId: string;
+  packageId: string;
   amount: number;
   currency: string;
   onSuccess: (orderId: string) => void;
@@ -20,6 +21,7 @@ declare global {
 
 export function PayPalButton({
   invoiceId,
+  packageId,
   amount,
   currency,
   onSuccess,
@@ -59,7 +61,8 @@ export function PayPalButton({
         console.log('Loading PayPal SDK with environment:', data.environment);
         
         const script = document.createElement('script');
-        script.src = `https://www.paypal.com/sdk/js?client-id=${data.clientId}&currency=${currency}&intent=subscription&vault=true`;
+        // Always use USD for PayPal subscriptions
+        script.src = `https://www.paypal.com/sdk/js?client-id=${data.clientId}&currency=USD&intent=subscription&vault=true`;
         script.async = true;
         script.onload = () => {
           console.log('PayPal SDK loaded successfully');
@@ -105,25 +108,31 @@ export function PayPalButton({
 
       createSubscription: async (data: any, actions: any) => {
         try {
-          setLoading(true);
+          console.log('Creating PayPal subscription...');
           
           // Call edge function to create billing plan
           const { data: planData, error } = await supabase.functions.invoke('create-paypal-subscription', {
             body: {
-              packageId: invoiceId,
+              packageId: packageId,
               amount,
               currency,
             },
           });
 
-          if (error || !planData.planId) {
-            throw new Error('Failed to create billing plan');
+          if (error) {
+            console.error('Edge function error:', error);
+            throw new Error(error.message || 'Failed to create billing plan');
           }
 
-          console.log('Creating subscription with plan:', planData.planId);
+          if (!planData?.planId) {
+            console.error('No plan ID received:', planData);
+            throw new Error('No plan ID received from server');
+          }
 
-          // Return plan ID for PayPal to create subscription
-          return planData.planId;
+          console.log('Plan created successfully:', planData.planId);
+
+          // Return plan ID as string for PayPal SDK
+          return String(planData.planId);
         } catch (error: any) {
           console.error('Error creating subscription:', error);
           toast({
@@ -132,8 +141,6 @@ export function PayPalButton({
             description: error.message || 'فشل إنشاء الاشتراك',
           });
           throw error;
-        } finally {
-          setLoading(false);
         }
       },
 
@@ -198,7 +205,7 @@ export function PayPalButton({
     } else {
       onError('PayPal is not available in your region');
     }
-  }, [scriptLoaded, invoiceId, amount, currency, onSuccess, onError, onCancel, toast]);
+  }, [scriptLoaded, invoiceId, packageId, amount, currency, onSuccess, onError, onCancel, toast]);
 
   if (loading) {
     return (

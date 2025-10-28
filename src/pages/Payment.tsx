@@ -319,6 +319,7 @@ const Payment = () => {
                     {invoice && (
                       <PayPalButton
                         invoiceId={invoice.id}
+                        packageId={invoice.package_id}
                         amount={invoice.amount}
                         currency={invoice.currency}
                         onSuccess={handlePaymentSuccess}
