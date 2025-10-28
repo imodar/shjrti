@@ -119,6 +119,28 @@ export default function PaymentSuccess() {
         }
 
         if (invoice.payment_status === 'paid') {
+          // Check if subscription package matches invoice package
+          const { data: subscription } = await supabase
+            .from('user_subscriptions')
+            .select('package_id')
+            .eq('user_id', invoice.user_id)
+            .eq('status', 'active')
+            .single();
+
+          // If packages don't match, try to fix the subscription
+          if (subscription && subscription.package_id !== invoice.package_id) {
+            console.log('Package mismatch detected. Attempting to fix subscription...');
+            const { data: fixResult, error: fixError } = await supabase.functions.invoke('fix-paid-subscription', {
+              body: { invoiceId: invoice.id },
+            });
+
+            if (fixError) {
+              console.error('Failed to fix subscription:', fixError);
+            } else {
+              console.log('Subscription fixed successfully:', fixResult);
+            }
+          }
+
           setPaymentStatus('success');
           setPaymentDetails({ invoice });
 

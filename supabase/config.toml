@@ -76,3 +76,6 @@ verify_jwt = false
 
 [functions.notify-suggestion-status]
 verify_jwt = true
+
+[functions.fix-paid-subscription]
+verify_jwt = true
