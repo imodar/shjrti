@@ -59,7 +59,7 @@ export function PayPalButton({
         console.log('Loading PayPal SDK with environment:', data.environment);
         
         const script = document.createElement('script');
-        script.src = `https://www.paypal.com/sdk/js?client-id=${data.clientId}&currency=${currency}&intent=capture`;
+        script.src = `https://www.paypal.com/sdk/js?client-id=${data.clientId}&currency=${currency}&intent=subscription&vault=true`;
         script.async = true;
         script.onload = () => {
           console.log('PayPal SDK loaded successfully');
@@ -103,34 +103,33 @@ export function PayPalButton({
         height: 55,
       },
 
-      createOrder: async () => {
+      createSubscription: async (data: any, actions: any) => {
         try {
           setLoading(true);
           
-          // Call edge function to create PayPal order
-          const { data, error } = await supabase.functions.invoke('create-paypal-payment', {
+          // Call edge function to create billing plan
+          const { data: planData, error } = await supabase.functions.invoke('create-paypal-subscription', {
             body: {
-              invoiceId,
+              packageId: invoiceId,
               amount,
               currency,
             },
           });
 
-          if (error) {
-            throw error;
+          if (error || !planData.planId) {
+            throw new Error('Failed to create billing plan');
           }
 
-          if (!data.orderId) {
-            throw new Error('Failed to create PayPal order');
-          }
+          console.log('Creating subscription with plan:', planData.planId);
 
-          return data.orderId;
+          // Return plan ID for PayPal to create subscription
+          return planData.planId;
         } catch (error: any) {
-          console.error('Error creating PayPal order:', error);
+          console.error('Error creating subscription:', error);
           toast({
             variant: 'destructive',
             title: 'خطأ في الدفع',
-            description: error.message || 'فشل إنشاء طلب الدفع',
+            description: error.message || 'فشل إنشاء الاشتراك',
           });
           throw error;
         } finally {
@@ -142,32 +141,34 @@ export function PayPalButton({
         try {
           setLoading(true);
           
-          // Call edge function to capture payment
-          const { data: verifyData, error } = await supabase.functions.invoke('verify-paypal-payment', {
+          console.log('Subscription approved:', data.subscriptionID);
+          
+          // Call edge function to verify and activate subscription
+          const { data: verifyData, error } = await supabase.functions.invoke('verify-paypal-subscription', {
             body: {
-              orderId: data.orderID,
+              subscriptionId: data.subscriptionID,
               invoiceId,
             },
           });
 
           if (error || !verifyData.success) {
-            throw new Error(verifyData?.error || 'Payment verification failed');
+            throw new Error(verifyData?.error || 'Subscription verification failed');
           }
 
           toast({
             title: 'تم الدفع بنجاح',
-            description: 'تم تفعيل اشتراكك بنجاح',
+            description: 'تم تفعيل اشتراكك المتكرر بنجاح - سيتم التجديد تلقائياً كل سنة',
           });
 
-          onSuccess(data.orderID);
+          onSuccess(data.subscriptionID);
         } catch (error: any) {
-          console.error('Error capturing PayPal payment:', error);
+          console.error('Error verifying subscription:', error);
           toast({
             variant: 'destructive',
-            title: 'خطأ في تأكيد الدفع',
-            description: error.message || 'فشل تأكيد الدفع',
+            title: 'خطأ في تأكيد الاشتراك',
+            description: error.message || 'فشل تأكيد الاشتراك',
           });
-          onError(error.message || 'Payment capture failed');
+          onError(error.message || 'Subscription verification failed');
         } finally {
           setLoading(false);
         }

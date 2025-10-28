@@ -56,6 +56,12 @@ verify_jwt = true
 [functions.verify-paypal-payment]
 verify_jwt = true
 
+[functions.create-paypal-subscription]
+verify_jwt = true
+
+[functions.verify-paypal-subscription]
+verify_jwt = true
+
 [functions.get-paypal-client-id]
 verify_jwt = false
 
