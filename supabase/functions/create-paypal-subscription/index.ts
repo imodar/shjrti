@@ -54,11 +54,18 @@ Deno.serve(async (req) => {
     // Get package details
     const { data: packageData } = await supabaseClient
       .from('packages')
-      .select('name')
+      .select('name, price_usd')
       .eq('id', packageId)
       .single();
 
     const packageName = packageData?.name?.en || 'Subscription';
+    
+    // PayPal requires USD for most sandbox/live accounts
+    // Convert SAR to USD if needed
+    const paypalAmount = currency === 'SAR' && packageData?.price_usd 
+      ? packageData.price_usd 
+      : amount;
+    const paypalCurrency = 'USD';
 
     // Get gateway settings
     const { data: gatewaySettings } = await supabaseClient
@@ -124,7 +131,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         product_id: productData.id,
         name: `${packageName} Annual Plan`,
-        description: `Annual subscription - ${currency} ${amount}`,
+        description: `Annual subscription - USD ${paypalAmount}`,
         status: 'ACTIVE',
         billing_cycles: [
           {
@@ -137,8 +144,8 @@ Deno.serve(async (req) => {
             total_cycles: 0, // Infinite renewals
             pricing_scheme: {
               fixed_price: {
-                value: amount.toFixed(2),
-                currency_code: currency,
+                value: paypalAmount.toFixed(2),
+                currency_code: paypalCurrency,
               },
             },
           },
