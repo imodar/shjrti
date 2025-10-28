@@ -41,20 +41,23 @@ verify_jwt = true
 [functions.smart-suggestions]
 verify_jwt = true
 
-[functions.create-payment]
-verify_jwt = true
-
 [functions.delete-user]
 verify_jwt = true
 
 [functions.delete-current-user]
 verify_jwt = true
 
-[functions.verify-payment]
-verify_jwt = true
-
 [functions.cancel-pending-invoices]
 verify_jwt = true
+
+[functions.create-paypal-payment]
+verify_jwt = true
+
+[functions.verify-paypal-payment]
+verify_jwt = true
+
+[functions.get-paypal-client-id]
+verify_jwt = false
 
 [functions.cleanup-old-invoices]
 verify_jwt = true

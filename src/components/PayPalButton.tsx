@@ -39,28 +39,35 @@ export function PayPalButton({
       return;
     }
 
-    // Get PayPal client ID from settings
+    // Get PayPal client ID from backend
     const loadPayPalScript = async () => {
       try {
-        const { data: settings } = await supabase
-          .from('payment_gateway_settings')
-          .select('environment')
-          .eq('gateway_name', 'paypal')
-          .eq('is_active', true)
-          .single();
-
-        const environment = settings?.environment || 'sandbox';
+        console.log('Fetching PayPal client ID...');
         
-        // For client-side, we'll use a public client ID
-        // The actual payment creation happens server-side with the secret
+        // Get the client ID from our edge function
+        const { data, error } = await supabase.functions.invoke('get-paypal-client-id');
+
+        if (error) {
+          console.error('Error fetching client ID:', error);
+          throw new Error('Failed to get PayPal configuration');
+        }
+
+        if (!data.clientId) {
+          throw new Error('PayPal client ID not available');
+        }
+
+        console.log('Loading PayPal SDK with environment:', data.environment);
+        
         const script = document.createElement('script');
-        script.src = `https://www.paypal.com/sdk/js?client-id=sb&currency=${currency}&intent=capture`;
+        script.src = `https://www.paypal.com/sdk/js?client-id=${data.clientId}&currency=${currency}&intent=capture`;
         script.async = true;
         script.onload = () => {
+          console.log('PayPal SDK loaded successfully');
           setScriptLoaded(true);
           setLoading(false);
         };
         script.onerror = () => {
+          console.error('Failed to load PayPal SDK script');
           setLoading(false);
           onError('Failed to load PayPal SDK');
         };
