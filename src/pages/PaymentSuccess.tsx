@@ -35,35 +35,76 @@ export default function PaymentSuccess() {
   const verifyPayment = async () => {
     try {
       if (orderId) {
-        // Verify PayPal payment
-        const { data, error } = await supabase.functions.invoke('verify-paypal-payment', {
-          body: {
-            orderId,
-            invoiceId
-          }
-        });
-
-        if (error) {
-          throw new Error(error.message);
-        }
-
-        if (data.success && data.status === 'COMPLETED') {
-          setPaymentStatus('success');
-          setPaymentDetails(data);
-          
-          // Clear subscription cache and refresh after successful payment
-          clearSubscriptionCache();
-          await refreshSubscription();
-          
-          toast({
-            title: currentLanguage === 'ar' ? "تم الدفع بنجاح! 🎉" : "Payment Successful! 🎉",
-            description: currentLanguage === 'ar' 
-              ? "تم تفعيل اشتراكك وترقية حسابك بنجاح"
-              : "Your subscription has been activated successfully",
-            duration: 5000,
+        // If orderId starts with "I-", it's a PayPal Subscription ID
+        if (orderId.startsWith('I-')) {
+          const { data, error } = await supabase.functions.invoke('verify-paypal-subscription', {
+            body: {
+              subscriptionId: orderId,
+              invoiceId,
+            },
           });
+
+          if (error) {
+            throw new Error(error.message);
+          }
+
+          if (data?.success && data.status === 'ACTIVE') {
+            setPaymentStatus('success');
+            // Try to load invoice details for UI
+            if (invoiceId) {
+              const { data: invoice } = await supabase
+                .from('invoices')
+                .select('*, packages(name)')
+                .eq('id', invoiceId)
+                .single();
+              if (invoice) setPaymentDetails({ invoice });
+            }
+
+            // Clear subscription cache and refresh after successful payment
+            clearSubscriptionCache();
+            await refreshSubscription();
+
+            toast({
+              title: currentLanguage === 'ar' ? "تم الدفع بنجاح! 🎉" : "Payment Successful! 🎉",
+              description: currentLanguage === 'ar'
+                ? "تم تفعيل اشتراكك وترقية حسابك بنجاح"
+                : "Your subscription has been activated successfully",
+              duration: 5000,
+            });
+          } else {
+            setPaymentStatus('failed');
+          }
         } else {
-          setPaymentStatus('failed');
+          // One-time PayPal order capture flow
+          const { data, error } = await supabase.functions.invoke('verify-paypal-payment', {
+            body: {
+              orderId,
+              invoiceId,
+            },
+          });
+
+          if (error) {
+            throw new Error(error.message);
+          }
+
+          if (data.success && data.status === 'COMPLETED') {
+            setPaymentStatus('success');
+            setPaymentDetails(data);
+
+            // Clear subscription cache and refresh after successful payment
+            clearSubscriptionCache();
+            await refreshSubscription();
+
+            toast({
+              title: currentLanguage === 'ar' ? "تم الدفع بنجاح! 🎉" : "Payment Successful! 🎉",
+              description: currentLanguage === 'ar'
+                ? "تم تفعيل اشتراكك وترقية حسابك بنجاح"
+                : "Your subscription has been activated successfully",
+              duration: 5000,
+            });
+          } else {
+            setPaymentStatus('failed');
+          }
         }
       } else if (invoiceId) {
         // Just check invoice status in database
@@ -80,7 +121,7 @@ export default function PaymentSuccess() {
         if (invoice.payment_status === 'paid') {
           setPaymentStatus('success');
           setPaymentDetails({ invoice });
-          
+
           // Clear subscription cache and refresh after successful payment
           clearSubscriptionCache();
           await refreshSubscription();
@@ -93,7 +134,7 @@ export default function PaymentSuccess() {
       setPaymentStatus('failed');
       toast({
         title: currentLanguage === 'ar' ? "خطأ في التحقق من الدفع" : "Payment Verification Error",
-        description: currentLanguage === 'ar' 
+        description: currentLanguage === 'ar'
           ? "فشل في التحقق من حالة الدفع"
           : "Failed to verify payment status",
         variant: "destructive",
