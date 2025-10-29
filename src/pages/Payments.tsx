@@ -60,7 +60,6 @@ export default function Payments() {
   const [cancellingDowngrade, setCancellingDowngrade] = useState(false);
   const [showDowngradeModal, setShowDowngradeModal] = useState(false);
   const [selectedDowngradePlan, setSelectedDowngradePlan] = useState<any>(null);
-  const [deletingSARInvoices, setDeletingSARInvoices] = useState(false);
 
   // Function to get localized value
   const getLocalizedValue = (value: string | object): string => {
@@ -213,61 +212,6 @@ export default function Payments() {
       });
     } finally {
       setInvoicesLoading(false);
-    }
-  };
-
-  // Delete cancelled SAR invoices
-  const deleteSARInvoices = async () => {
-    if (!user) return;
-    
-    try {
-      setDeletingSARInvoices(true);
-      
-      // Get all cancelled SAR invoices
-      const { data: sarInvoices, error: fetchError } = await supabase
-        .from('invoices')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('currency', 'SAR')
-        .eq('payment_status', 'cancelled');
-      
-      if (fetchError) throw fetchError;
-      
-      if (!sarInvoices || sarInvoices.length === 0) {
-        toast({
-          title: "لا توجد فواتير",
-          description: "لا توجد فواتير ملغاة بعملة ر.س للحذف.",
-        });
-        return;
-      }
-      
-      // Delete the invoices
-      const { error: deleteError } = await supabase
-        .from('invoices')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('currency', 'SAR')
-        .eq('payment_status', 'cancelled');
-      
-      if (deleteError) throw deleteError;
-      
-      toast({
-        title: "تم الحذف بنجاح",
-        description: `تم حذف ${sarInvoices.length} فاتورة ملغاة بعملة ر.س`,
-      });
-      
-      // Reload invoices
-      await loadInvoices();
-      
-    } catch (error) {
-      console.error('Error deleting SAR invoices:', error);
-      toast({
-        title: "خطأ",
-        description: "فشل في حذف الفواتير. يرجى المحاولة مرة أخرى.",
-        variant: "destructive"
-      });
-    } finally {
-      setDeletingSARInvoices(false);
     }
   };
 
@@ -984,29 +928,8 @@ export default function Payments() {
 
             {/* Billing History */}
             <Card className="mt-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+              <CardHeader>
                 <CardTitle className="text-emerald-800 dark:text-emerald-200">سجل الفواتير</CardTitle>
-                {invoices.some((inv: any) => inv.currency === 'SAR' && inv.payment_status === 'cancelled') && (
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={deleteSARInvoices}
-                    disabled={deletingSARInvoices}
-                    className="text-red-600 hover:text-red-700 border-red-200 hover:border-red-300"
-                  >
-                    {deletingSARInvoices ? (
-                      <>
-                        <Loader2 className="h-4 w-4 ml-2 animate-spin" />
-                        جاري الحذف...
-                      </>
-                    ) : (
-                      <>
-                        <Trash2 className="h-4 w-4 ml-2" />
-                        حذف فواتير ر.س
-                      </>
-                    )}
-                  </Button>
-                )}
               </CardHeader>
               <CardContent>
                 {invoicesLoading ? <div className="text-center py-8">
