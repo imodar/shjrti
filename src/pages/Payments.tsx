@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreditCard, Plus, Settings, Trash2, Star, Crown, Zap, Shield, Wallet, Calendar, Download, TreePine, Heart, Gem, CheckCircle, Sparkles, ChevronRight, ChevronLeft, Loader2 } from "lucide-react";
+import { UpgradeBadge } from "@/components/UpgradeBadge";
 import { Link, useNavigate } from "react-router-dom";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
@@ -645,13 +646,11 @@ export default function Payments() {
                     </div>
                   </div>
                   
-                  {currentPlanData ? <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-emerald-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg shrink-0 self-start sm:self-center">
-                      <Crown className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
-                      <span className="text-xs sm:text-sm font-bold whitespace-nowrap">{getLocalizedPackageField(currentPlanData, 'name') || currentPlanData.name}</span>
-                    </div> : <div className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-slate-500 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full shadow-lg shrink-0 self-start sm:self-center">
-                      <Shield className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
-                      <span className="text-xs sm:text-sm font-bold whitespace-nowrap">الباقة المجانية</span>
-                    </div>}
+                  <UpgradeBadge 
+                    packageName={currentPlanData?.name || 'الباقة المجانية'}
+                    isPremium={!!(currentPlanData && (currentPlanData.price_sar > 0 || currentPlanData.price_usd > 0))}
+                    showUpgradePrompt={true}
+                  />
                 </div>
               </div>
             </div>
