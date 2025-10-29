@@ -476,9 +476,9 @@ export default function Payments() {
         currentLanguage: currentLanguage
       });
 
-      // Calculate amount based on language - use the same logic as PlanSelection
-      const amount = currentLanguage === 'ar' ? selectedPackage.price_sar || 0 : selectedPackage.price_usd || 0;
-      const currency = currentLanguage === 'ar' ? 'SAR' : 'USD';
+      // Calculate amount - always use USD for PayPal
+      const amount = selectedPackage.price_usd || 0;
+      const currency = 'USD';
       console.log('🔍 Package details for payment:', {
         packageId: planId,
         amount: amount,
@@ -859,15 +859,18 @@ export default function Payments() {
                               </div> : <div className="text-center">
                                 <div className="flex items-baseline justify-center gap-1 mb-1">
                                   <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                                    {plan.price}
+                                    ${plan.price_usd}
                                   </span>
-                                  {plan.price !== "مجاني للأبد" && <span className="text-sm text-gray-600 dark:text-gray-400">
-                                      ريال/سنة
-                                    </span>}
+                                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                                    / سنة
+                                  </span>
                                 </div>
-                                {plan.price !== "مجاني للأبد" && <p className="text-xs text-gray-600 dark:text-gray-400">
-                                    {Math.round(parseFloat(plan.price) / 12)} ريال شهرياً
-                                  </p>}
+                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                  (تقريباً {Math.round(plan.price_usd * 3.75)} ريال)
+                                </p>
+                                <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-1">
+                                  *المبلغ النهائي يحسب من PayPal
+                                </p>
                               </div>}
                           </div>
                         </CardHeader>
