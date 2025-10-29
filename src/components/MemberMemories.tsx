@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useImageUploadPermission } from "@/hooks/useImageUploadPermission";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 import { 
   Upload, 
   Camera, 
@@ -48,6 +49,7 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
   const [showModal, setShowModal] = useState(false);
   const { toast } = useToast();
   const { isImageUploadEnabled, loading: permissionLoading } = useImageUploadPermission();
+  const navigate = useNavigate();
 
   // Load memories for this member
   const loadMemories = useCallback(async () => {
@@ -318,7 +320,12 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
           <p className="text-xs text-muted-foreground mb-3">
             يتطلب هذه الميزة ترقية باقتك
           </p>
-          <Button variant="default" size="sm" className="gap-2">
+          <Button 
+            variant="default" 
+            size="sm" 
+            className="gap-2"
+            onClick={() => navigate('/plan-selection')}
+          >
             <Crown className="h-4 w-4" />
             ترقية الباقة
           </Button>
