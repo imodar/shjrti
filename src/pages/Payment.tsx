@@ -341,7 +341,7 @@ const Payment = () => {
               {/* Cancel Button */}
               <Button 
                 variant="outline" 
-                onClick={() => navigate('/plan-selection')}
+                onClick={() => navigate(-1)}
                 className="w-full border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-300"
                 disabled={processing}
               >
