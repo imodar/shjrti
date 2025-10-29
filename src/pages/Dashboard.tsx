@@ -367,8 +367,8 @@ const Dashboard = () => {
                             <div className="flex flex-col items-center gap-1 sm:gap-2 md:gap-3">
                               {/* Subscription Status */}
                               <UpgradeBadge 
-                                packageName={userSubscription?.package_name || "الباقة الذهبية"}
-                                isPremium={true}
+                                packageName={userSubscription?.package_name}
+                                isPremium={userSubscription?.package_name && !userSubscription?.is_expired && (userSubscription?.price_sar > 0 || userSubscription?.price_usd > 0)}
                               />
                               
                               <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
