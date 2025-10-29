@@ -279,10 +279,20 @@ const Payment = () => {
                       </div>
                       
                       <div className="border-t border-emerald-200/30 dark:border-emerald-700/30 pt-2 mt-2">
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center mb-1">
                           <span className="font-semibold">{currentLanguage === 'ar' ? 'المجموع' : 'Total'}</span>
-                          <span className="font-bold text-lg bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{formatPrice(invoice.amount)}</span>
+                          <div className="text-right">
+                            <div className="font-bold text-lg bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                              ${invoice.amount}
+                            </div>
+                            <div className="text-[10px] text-gray-500 dark:text-gray-400">
+                              (تقريباً {Math.round(invoice.amount * 3.75)} ريال)
+                            </div>
+                          </div>
                         </div>
+                        <p className="text-[9px] text-gray-500 dark:text-gray-500 mt-1 text-center">
+                          *المبلغ النهائي يحسب من PayPal
+                        </p>
                       </div>
                       
                       <div className="flex items-center gap-2 text-xs text-orange-600">
