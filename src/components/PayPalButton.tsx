@@ -19,6 +19,10 @@ declare global {
   }
 }
 
+// SDK loading state outside component to prevent multiple loads
+let sdkLoadingPromise: Promise<void> | null = null;
+let sdkLoaded = false;
+
 export function PayPalButton({
   invoiceId,
   packageId,
@@ -32,13 +36,23 @@ export function PayPalButton({
   const [loading, setLoading] = useState(true);
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const buttonRenderedRef = useRef(false);
+  const isRenderingRef = useRef(false);
   const { toast } = useToast();
 
-  // Load PayPal SDK
+  // Load PayPal SDK (singleton pattern)
   useEffect(() => {
-    if (window.paypal) {
+    if (sdkLoaded && window.paypal) {
       setScriptLoaded(true);
       setLoading(false);
+      return;
+    }
+
+    if (sdkLoadingPromise) {
+      // Wait for existing load
+      sdkLoadingPromise.then(() => {
+        setScriptLoaded(true);
+        setLoading(false);
+      });
       return;
     }
 
@@ -65,38 +79,47 @@ export function PayPalButton({
         // Always use USD for PayPal subscriptions
         script.src = `https://www.paypal.com/sdk/js?client-id=${data.clientId}&currency=USD&intent=subscription&vault=true`;
         script.async = true;
-        script.onload = () => {
-          console.log('PayPal SDK loaded successfully');
-          setScriptLoaded(true);
-          setLoading(false);
-        };
-        script.onerror = () => {
-          console.error('Failed to load PayPal SDK script');
-          setLoading(false);
-          onError('Failed to load PayPal SDK');
-        };
         
-        document.body.appendChild(script);
+        await new Promise<void>((resolve, reject) => {
+          script.onload = () => {
+            console.log('PayPal SDK loaded successfully');
+            sdkLoaded = true;
+            resolve();
+          };
+          script.onerror = () => {
+            console.error('Failed to load PayPal SDK script');
+            reject(new Error('Failed to load PayPal SDK'));
+          };
+          document.body.appendChild(script);
+        });
+
+        setScriptLoaded(true);
+        setLoading(false);
       } catch (error) {
         console.error('Error loading PayPal script:', error);
         setLoading(false);
         onError('Failed to initialize PayPal');
+        sdkLoadingPromise = null;
       }
     };
 
-    loadPayPalScript();
-  }, [currency, onError]);
+    sdkLoadingPromise = loadPayPalScript();
+  }, [onError]);
 
   // Render PayPal button
   useEffect(() => {
-    if (!scriptLoaded || !paypalRef.current || !window.paypal || buttonRenderedRef.current) {
+    if (!scriptLoaded || !paypalRef.current || !window.paypal || buttonRenderedRef.current || isRenderingRef.current) {
       return;
     }
 
     let buttonsInstance: any = null;
 
     const renderButtons = async () => {
+      if (isRenderingRef.current) return;
+      
       try {
+        isRenderingRef.current = true;
+        
         // Clear any existing buttons
         if (paypalRef.current) {
           paypalRef.current.innerHTML = '';
@@ -214,6 +237,7 @@ export function PayPalButton({
         }
       } catch (error) {
         console.error('Error rendering PayPal buttons:', error);
+        isRenderingRef.current = false;
       }
     };
 
@@ -222,6 +246,7 @@ export function PayPalButton({
     // Cleanup function
     return () => {
       buttonRenderedRef.current = false;
+      isRenderingRef.current = false;
       if (buttonsInstance && typeof buttonsInstance.close === 'function') {
         try {
           buttonsInstance.close();
