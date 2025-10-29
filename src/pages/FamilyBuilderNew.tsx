@@ -4299,7 +4299,7 @@ const MemberList = ({
       </div>
 
       {/* Add Member Button */}
-      {formMode === 'view' && <TooltipProvider>
+      {(formMode === 'view' || formMode === 'profile') && <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button onClick={onAddMember} className="w-full flex items-center gap-2">
