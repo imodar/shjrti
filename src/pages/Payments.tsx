@@ -974,9 +974,9 @@ export default function Payments() {
                           </div>
                           <div className="text-right">
                             <p className="text-2xl font-bold text-emerald-600">
-                              {formatPrice(invoice.amount)}
+                              ${formatPrice(invoice.amount)}
                             </p>
-                            <p className="text-sm text-muted-foreground">{invoice.currency}</p>
+                            <p className="text-sm text-muted-foreground">USD</p>
                             <div className="flex gap-2 mt-2">
                               {invoice.amount > 0 && <Button variant="outline" size="sm">
                                   <Download className="h-4 w-4 mr-1" />
