@@ -240,27 +240,14 @@ export default function PaymentSuccess() {
                 </div>
               )}
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex justify-center">
                 <Button 
                   asChild 
                   className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
                 >
                   <Link to="/dashboard">
-                    الذهاب للوحة التحكم
+                    الذهاب إلى حسابي
                     <ArrowRight className="h-4 w-4 mr-2" />
-                  </Link>
-                </Button>
-                
-                <Button variant="outline" asChild>
-                  <Link to="/payments">
-                    عرض الفواتير
-                  </Link>
-                </Button>
-                
-                <Button variant="ghost" asChild>
-                  <Link to="/">
-                    <Home className="h-4 w-4 ml-2" />
-                    الصفحة الرئيسية
                   </Link>
                 </Button>
               </div>
