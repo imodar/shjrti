@@ -657,7 +657,7 @@ export default function Payments() {
             </div>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Current Plan */}
           <div className="lg:col-span-1">
             <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
@@ -733,7 +733,7 @@ export default function Payments() {
           </div>
 
           {/* Available Plans */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-2">
             <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-emerald-800 dark:text-emerald-200">اختر خطتك</CardTitle>
