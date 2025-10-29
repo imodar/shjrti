@@ -96,6 +96,8 @@ export default function Profile() {
     name: string;
     status: string;
     expires_at?: string;
+    price_sar?: number;
+    price_usd?: number;
   } | null>(null);
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
   const [stats, setStats] = useState({
@@ -138,7 +140,9 @@ export default function Profile() {
           status,
           expires_at,
           packages (
-            name
+            name,
+            price_sar,
+            price_usd
           )
         `)
         .eq('user_id', user.id)
@@ -177,7 +181,9 @@ export default function Profile() {
       setCurrentPackage({
         name: packageName,
         status: subscription.status,
-        expires_at: subscription.expires_at
+        expires_at: subscription.expires_at,
+        price_sar: subscription.packages?.price_sar || 0,
+        price_usd: subscription.packages?.price_usd || 0
       });
 
     } catch (error) {
@@ -472,7 +478,7 @@ export default function Profile() {
                   <div className="flex flex-col items-start gap-2">
                     <UpgradeBadge 
                       packageName={currentPackage?.name}
-                      isPremium={currentPackage?.name !== t('profile.no_active_package') && currentPackage?.status === "active"}
+                      isPremium={!!(currentPackage && currentPackage.name !== t('profile.no_active_package') && currentPackage.status === "active" && (currentPackage.price_sar > 0 || currentPackage.price_usd > 0))}
                     />
                     <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
                       <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
