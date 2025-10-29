@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
 import AccountDeleteModal from "@/components/AccountDeleteModal";
+import { UpgradeBadge } from "@/components/UpgradeBadge";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDatePreference } from "@/contexts/DatePreferenceContext";
 import { useDateFormat } from "@/hooks/useDateFormat";
@@ -469,24 +470,10 @@ export default function Profile() {
                   
                   {/* Package Status - Match Dashboard Logic */}
                   <div className="flex flex-col items-start gap-2">
-                    {currentPackage && currentPackage.name !== t('profile.no_active_package') && currentPackage.status === "active" ? (
-                      <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-2 rounded-full shadow-lg">
-                        <Crown className="h-4 w-4" />
-                        <span className="text-sm font-bold">{currentPackage.name}</span>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-2 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-xl p-3 border border-amber-200/50 dark:border-amber-700/50 shadow-lg">
-                        <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
-                          <Gem className="h-4 w-4" />
-                          <span className="text-sm font-medium">{currentPackage?.name || t('profile.no_active_package')}</span>
-                        </div>
-                        <Link to="/plan-selection">
-                          <Button size="sm" className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white text-xs px-2 py-1 rounded-full border-0">
-                            {t('profile.manage_subscription')}
-                          </Button>
-                        </Link>
-                      </div>
-                    )}
+                    <UpgradeBadge 
+                      packageName={currentPackage?.name}
+                      isPremium={currentPackage?.name !== t('profile.no_active_package') && currentPackage?.status === "active"}
+                    />
                     <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400">
                       <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
                       <span>{profileData.joinDate}</span>
