@@ -207,8 +207,9 @@ const PlanSelection = () => {
     if (!selectedPackage) return;
 
     try {
-      const packagePrice = getPackagePrice(selectedPackage);
-      const currency = currentLanguage === 'ar' ? 'SAR' : 'USD';
+      // Always use USD for PayPal payments
+      const packagePrice = selectedPackage.price_usd || 0;
+      const currency = 'USD';
 
       const { data: invoiceId, error } = await supabase.rpc('create_invoice', {
         p_user_id: user.id,
@@ -566,17 +567,17 @@ const PlanSelection = () => {
                       <div className="text-center">
                         <div className="flex items-baseline justify-center gap-1 mb-1">
                           <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                            {formatPrice(packagePrice)}
+                            ${pkg.price_usd}
                           </span>
                           <span className="text-sm text-gray-600 dark:text-gray-400">
                             {currentLanguage === 'ar' ? '/سنة' : '/year'}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {currentLanguage === 'ar' 
-                            ? `${Math.round(packagePrice / 12)} ريال شهرياً` 
-                            : `$${Math.round(packagePrice / 12)} per month`
-                          }
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          (تقريباً {Math.round((pkg.price_usd || 0) * 3.75)} ريال)
+                        </p>
+                        <p className="text-[9px] text-gray-500 dark:text-gray-500 mt-1">
+                          *المبلغ النهائي يحسب من PayPal
                         </p>
                       </div>
                     )}
