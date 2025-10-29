@@ -197,7 +197,7 @@ export default function Payments() {
         error
       } = await supabase.from('invoices').select(`
           *,
-          packages (name)
+          packages (name, price_sar, price_usd)
         `).eq('user_id', user.id).order('created_at', {
         ascending: false
       });
@@ -974,9 +974,13 @@ export default function Payments() {
                           </div>
                           <div className="text-right">
                             <p className="text-2xl font-bold text-emerald-600">
-                              {formatPrice(invoice.amount)}
+                              {currentLanguage === 'ar' && invoice.packages?.price_sar 
+                                ? formatPrice(invoice.packages.price_sar) 
+                                : formatPrice(invoice.amount)}
                             </p>
-                            <p className="text-sm text-muted-foreground">{invoice.currency}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {currentLanguage === 'ar' && invoice.packages?.price_sar ? 'SAR' : invoice.currency}
+                            </p>
                             <div className="flex gap-2 mt-2">
                               {invoice.amount > 0 && <Button variant="outline" size="sm">
                                   <Download className="h-4 w-4 mr-1" />
