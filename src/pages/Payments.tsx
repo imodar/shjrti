@@ -974,7 +974,7 @@ export default function Payments() {
                           </div>
                           <div className="text-right">
                             <p className="text-2xl font-bold text-emerald-600">
-                              ${formatPrice(invoice.amount)}
+                              ${invoice.amount}
                             </p>
                             <p className="text-sm text-muted-foreground">USD</p>
                             <div className="flex gap-2 mt-2">
