@@ -279,6 +279,51 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
         ذكريات الأفراد - {memberName}
       </h3>
 
+      {/* Upload Area */}
+      {isImageUploadEnabled ? (
+        <div
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          className={`
+            relative border-2 border-dashed rounded-lg p-6 text-center transition-colors
+            ${isDragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}
+            ${uploading ? 'opacity-50 pointer-events-none' : ''}
+          `}
+        >
+          <input
+            type="file"
+            id="memory-upload"
+            multiple
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+            disabled={uploading}
+          />
+          <label htmlFor="memory-upload" className="cursor-pointer">
+            <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+            <p className="text-sm font-medium mb-1">
+              {uploading ? 'جاري الرفع...' : 'اسحب الصور هنا أو انقر للاختيار'}
+            </p>
+            <p className="text-xs text-muted-foreground">
+              الحد الأقصى: 1 ميجابايت لكل صورة
+            </p>
+          </label>
+        </div>
+      ) : (
+        <div className="relative border-2 border-dashed border-border rounded-lg p-6 text-center bg-muted/30">
+          <Lock className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+          <p className="text-sm font-medium mb-1">رفع الصور غير متاح</p>
+          <p className="text-xs text-muted-foreground mb-3">
+            يتطلب هذه الميزة ترقية باقتك
+          </p>
+          <Button variant="default" size="sm" className="gap-2">
+            <Crown className="h-4 w-4" />
+            ترقية الباقة
+          </Button>
+        </div>
+      )}
 
       {/* Memories Grid */}
       {loading ? (
