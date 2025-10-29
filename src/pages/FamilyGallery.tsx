@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -93,6 +94,9 @@ const FamilyGallery = () => {
   // Family Members for linking
   const [familyMembers, setFamilyMembers] = useState<any[]>([]);
 
+  // Image loading states
+  const [loadingImages, setLoadingImages] = useState<Set<string>>(new Set());
+
   // Calculate storage usage
   const calculateStorageUsage = useCallback(async () => {
     if (!familyId) return;
@@ -164,6 +168,11 @@ const FamilyGallery = () => {
         );
 
         setMemories(memoriesWithUrls.filter(m => m.url) as FamilyMemory[]);
+        
+        // Initialize all images as loading
+        const memoryIds = memoriesWithUrls.filter(m => m.url).map(m => m.id);
+        setLoadingImages(new Set(memoryIds));
+        
         console.log(`✅ Loaded ${memoriesWithUrls.length} family memories`);
       }
     } catch (error) {
@@ -644,24 +653,44 @@ const FamilyGallery = () => {
                   {/* View-based rendering */}
                   {viewMode === 'grid' && (
                     <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
-                      {memories.map((memory) => (
-                        <Card 
-                          key={memory.id}
-                          className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer break-inside-avoid mb-4 hover:scale-[1.02]"
-                          onClick={() => {
-                            setSelectedMemory(memory);
-                            setEditedCaption(memory.caption || "");
-                            setIsModalOpen(true);
-                          }}
-                        >
-                          {/* Image */}
-                          <div className="relative overflow-hidden">
-                            <img
-                              src={memory.url}
-                              alt={memory.original_filename}
-                              className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-110"
-                              loading="lazy"
-                            />
+                      {memories.map((memory) => {
+                        const isImageLoading = loadingImages.has(memory.id);
+                        
+                        return (
+                          <Card 
+                            key={memory.id}
+                            className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer break-inside-avoid mb-4 hover:scale-[1.02]"
+                            onClick={() => {
+                              setSelectedMemory(memory);
+                              setEditedCaption(memory.caption || "");
+                              setIsModalOpen(true);
+                            }}
+                          >
+                            {/* Image */}
+                            <div className="relative overflow-hidden">
+                              {isImageLoading && (
+                                <Skeleton className="absolute inset-0 w-full h-64 z-10" />
+                              )}
+                              <img
+                                src={memory.url}
+                                alt={memory.original_filename}
+                                className={`w-full h-auto object-cover transition-transform duration-500 group-hover:scale-110 ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}
+                                loading="lazy"
+                                onLoad={() => {
+                                  setLoadingImages(prev => {
+                                    const newSet = new Set(prev);
+                                    newSet.delete(memory.id);
+                                    return newSet;
+                                  });
+                                }}
+                                onError={() => {
+                                  setLoadingImages(prev => {
+                                    const newSet = new Set(prev);
+                                    newSet.delete(memory.id);
+                                    return newSet;
+                                  });
+                                }}
+                              />
                             
                             {/* Overlay Gradient */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -702,30 +731,51 @@ const FamilyGallery = () => {
                             </div>
                           )}
                         </Card>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
 
                   {viewMode === 'list' && (
                     <div className="space-y-3">
-                      {memories.map((memory) => (
-                        <Card 
-                          key={memory.id}
-                          className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-                          onClick={() => {
-                            setSelectedMemory(memory);
-                            setEditedCaption(memory.caption || "");
-                            setIsModalOpen(true);
-                          }}
-                        >
-                          <div className="flex gap-4 p-4">
-                            {/* Image Thumbnail */}
-                            <div className="w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden">
-                              <img 
-                                src={memory.url} 
-                                alt={memory.caption || memory.original_filename}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                              />
+                      {memories.map((memory) => {
+                        const isImageLoading = loadingImages.has(memory.id);
+                        
+                        return (
+                          <Card 
+                            key={memory.id}
+                            className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                            onClick={() => {
+                              setSelectedMemory(memory);
+                              setEditedCaption(memory.caption || "");
+                              setIsModalOpen(true);
+                            }}
+                          >
+                            <div className="flex gap-4 p-4">
+                              {/* Image Thumbnail */}
+                              <div className="w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden relative">
+                                {isImageLoading && (
+                                  <Skeleton className="absolute inset-0 w-full h-full z-10" />
+                                )}
+                                <img 
+                                  src={memory.url} 
+                                  alt={memory.caption || memory.original_filename}
+                                  className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}
+                                  onLoad={() => {
+                                    setLoadingImages(prev => {
+                                      const newSet = new Set(prev);
+                                      newSet.delete(memory.id);
+                                      return newSet;
+                                    });
+                                  }}
+                                  onError={() => {
+                                    setLoadingImages(prev => {
+                                      const newSet = new Set(prev);
+                                      newSet.delete(memory.id);
+                                      return newSet;
+                                    });
+                                  }}
+                                />
                             </div>
                             
                             {/* Details */}
@@ -754,10 +804,11 @@ const FamilyGallery = () => {
                                   مرتبطة بعضو من العائلة
                                 </p>
                               )}
+                              </div>
                             </div>
-                          </div>
-                        </Card>
-                      ))}
+                          </Card>
+                        );
+                      })}
                     </div>
                   )}
 
