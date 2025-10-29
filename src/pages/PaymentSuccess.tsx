@@ -14,7 +14,7 @@ export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { currentLanguage } = useLanguage();
+  const { currentLanguage, t } = useLanguage();
   const { clearSubscriptionCache, refreshSubscription } = useSubscription();
   const [verifying, setVerifying] = useState(true);
   const [paymentStatus, setPaymentStatus] = useState<'success' | 'failed' | 'pending'>('pending');
@@ -182,8 +182,8 @@ export default function PaymentSuccess() {
             <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
               <CardContent className="text-center py-12">
                 <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-emerald-600" />
-                <h2 className="text-xl font-semibold mb-2">جاري التحقق من الدفع...</h2>
-                <p className="text-muted-foreground">يرجى الانتظار بينما نتحقق من حالة دفعتك</p>
+                <h2 className="text-xl font-semibold mb-2">{t('payment_success.verifying')}</h2>
+                <p className="text-muted-foreground">{t('payment_success.please_wait')}</p>
               </CardContent>
             </Card>
           </div>
@@ -214,17 +214,17 @@ export default function PaymentSuccess() {
               
               <CardTitle className="text-2xl">
                 {paymentStatus === 'success' ? (
-                  <span className="text-green-600">تم الدفع بنجاح! 🎉</span>
+                  <span className="text-green-600">{t('payment_success.success_title')}</span>
                 ) : (
-                  <span className="text-red-600">فشل في الدفع</span>
+                  <span className="text-red-600">{t('payment_success.failed_title')}</span>
                 )}
               </CardTitle>
               
               <CardDescription className="text-lg">
                 {paymentStatus === 'success' ? (
-                  'تم تفعيل اشتراكك وترقية حسابك بنجاح'
+                  t('payment_success.success_description')
                 ) : (
-                  'لم يتم إتمام عملية الدفع. يرجى المحاولة مرة أخرى.'
+                  t('payment_success.failed_description')
                 )}
               </CardDescription>
             </CardHeader>
@@ -232,11 +232,11 @@ export default function PaymentSuccess() {
             <CardContent className="space-y-6">
               {paymentStatus === 'success' && paymentDetails && (
                 <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 space-y-2">
-                  <p><strong>الفاتورة:</strong> {invoiceId}</p>
+                  <p><strong>{t('payment_success.invoice')}:</strong> {invoiceId}</p>
                   {paymentDetails.invoice?.packages && (
-                    <p><strong>الباقة:</strong> {getLocalizedPackageName(paymentDetails.invoice.packages.name)}</p>
+                    <p><strong>{t('payment_success.package')}:</strong> {getLocalizedPackageName(paymentDetails.invoice.packages.name)}</p>
                   )}
-                  <p><strong>حالة الدفع:</strong> مدفوع ✓</p>
+                  <p><strong>{t('payment_success.payment_status')}:</strong> {t('payment_success.paid')}</p>
                 </div>
               )}
               
@@ -246,7 +246,7 @@ export default function PaymentSuccess() {
                   className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
                 >
                   <Link to="/dashboard">
-                    الذهاب إلى حسابي
+                    {t('payment_success.go_to_dashboard')}
                     <ArrowRight className="h-4 w-4 mr-2" />
                   </Link>
                 </Button>
@@ -258,7 +258,7 @@ export default function PaymentSuccess() {
                     onClick={() => navigate('/payments')}
                     className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
                   >
-                    المحاولة مرة أخرى
+                    {t('payment_success.try_again')}
                   </Button>
                 </div>
               )}
