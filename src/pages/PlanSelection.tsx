@@ -436,14 +436,19 @@ const PlanSelection = () => {
       {/* Creative Floating Back Button */}
       <div className="fixed top-8 left-8 z-50">
         <Button
-          onClick={() => window.history.back()}
           size="lg"
-          className="w-14 h-14 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 hover:bg-white dark:hover:bg-gray-900 shadow-2xl hover:shadow-emerald-200/30 dark:hover:shadow-emerald-800/30 transition-all duration-300 group hover:scale-110 hover:-translate-y-1"
+          className="rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 hover:bg-white dark:hover:bg-gray-900 shadow-2xl hover:shadow-emerald-200/30 dark:hover:shadow-emerald-800/30 transition-all duration-300 group hover:scale-110 hover:-translate-y-1 px-6 py-3 flex items-center gap-2"
         >
           {direction === 'rtl' ? (
-            <ChevronRight className="h-6 w-6 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform duration-200" />
+            <>
+              <ChevronRight className="h-6 w-6 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform duration-200" />
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">عودة</span>
+            </>
           ) : (
-            <ArrowLeft className="h-6 w-6 text-emerald-600 dark:text-emerald-400 group-hover:-translate-x-1 transition-transform duration-200" />
+            <>
+              <ArrowLeft className="h-6 w-6 text-emerald-600 dark:text-emerald-400 group-hover:-translate-x-1 transition-transform duration-200" />
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">عودة</span>
+            </>
           )}
         </Button>
       </div>
