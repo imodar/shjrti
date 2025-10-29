@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { getLocalizedText } from "@/lib/packageUtils";
 
 export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
@@ -166,12 +167,6 @@ export default function PaymentSuccess() {
     }
   };
 
-  const getLocalizedPackageName = (packageName: any) => {
-    if (typeof packageName === 'object' && packageName !== null) {
-      return packageName.ar || packageName.en || 'باقة غير محددة';
-    }
-    return packageName || 'باقة غير محددة';
-  };
 
   if (verifying) {
     return (
@@ -234,7 +229,7 @@ export default function PaymentSuccess() {
                 <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 space-y-2">
                   <p><strong>{t('payment_success.invoice')}:</strong> {invoiceId}</p>
                   {paymentDetails.invoice?.packages && (
-                    <p><strong>{t('payment_success.package')}:</strong> {getLocalizedPackageName(paymentDetails.invoice.packages.name)}</p>
+                    <p><strong>{t('payment_success.package')}:</strong> {getLocalizedText(paymentDetails.invoice.packages.name, currentLanguage)}</p>
                   )}
                   <p><strong>{t('payment_success.payment_status')}:</strong> {t('payment_success.paid')}</p>
                 </div>
