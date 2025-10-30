@@ -143,12 +143,12 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
 
       if (notifyError) {
         console.error("Notification error:", notifyError);
-        toast.warning("Suggestion updated, but notification email failed");
+        toast.warning(t('suggestions.notification_failed'));
       } else {
         toast.success(
           actionType === "accept"
-            ? "Suggestion accepted and user notified"
-            : "Suggestion rejected and user notified"
+            ? t('suggestions.accepted_notified')
+            : t('suggestions.rejected_notified')
         );
       }
 

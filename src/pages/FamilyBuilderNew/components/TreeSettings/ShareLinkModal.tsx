@@ -47,26 +47,28 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareLink);
     toast({
-      title: "تم نسخ الرابط",
-      description: "تم نسخ رابط الشجرة إلى الحافظة"
+      title: t('share_modal.link_copied'),
+      description: t('share_modal.link_copied_desc')
     });
   };
 
   const handleCopyPublicLink = () => {
     navigator.clipboard.writeText(publicLink);
     toast({
-      title: "تم نسخ الرابط العام",
-      description: "تم نسخ الرابط العام إلى الحافظة"
+      title: t('share_modal.public_link_copied'),
+      description: t('share_modal.public_link_copied_desc')
     });
   };
 
   const shareOnFacebook = () => {
-    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareLink)}&quote=${encodeURIComponent(`شاهد شجرة عائلة ${familyName}`)}`;
+    const message = t('share_modal.share_message').replace('{familyName}', familyName);
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareLink)}&quote=${encodeURIComponent(message)}`;
     window.open(facebookUrl, '_blank', 'width=600,height=400');
   };
 
   const shareOnTwitter = () => {
-    const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(`شاهد شجرة عائلة ${familyName}`)}`;
+    const message = t('share_modal.share_message').replace('{familyName}', familyName);
+    const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(message)}`;
     window.open(twitterUrl, '_blank', 'width=600,height=400');
   };
 
@@ -76,7 +78,8 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
   };
 
   const shareOnWhatsApp = () => {
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`شاهد شجرة عائلة ${familyName}: ${shareLink}`)}`;
+    const message = t('share_modal.share_message').replace('{familyName}', familyName);
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${message}: ${shareLink}`)}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -86,10 +89,10 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Share2 className="h-5 w-5" />
-            مشاركة رابط الشجرة
+            {t('share_modal.title')}
           </DialogTitle>
           <DialogDescription>
-            شارك شجرة عائلة {familyName} مع الآخرين
+            {t('share_modal.description').replace('{familyName}', familyName)}
           </DialogDescription>
         </DialogHeader>
 
@@ -97,7 +100,7 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
           {/* Custom Link Section - Only show if user has custom domain feature */}
           {hasCustomDomain && (
             <div className="space-y-2">
-              <Label>الرابط المخصص</Label>
+              <Label>{t('share_modal.custom_link')}</Label>
               <div className="flex gap-2">
                 <Input
                   value={shareLink}
@@ -111,7 +114,7 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                   className="flex items-center gap-2"
                 >
                   <Copy className="h-4 w-4" />
-                  نسخ
+                  {t('share_modal.copy')}
                 </Button>
               </div>
             </div>
@@ -119,7 +122,7 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
 
           {/* Public Link Section */}
           <div className="space-y-2">
-            <Label>الرابط العام</Label>
+            <Label>{t('share_modal.public_link')}</Label>
             <div className="flex gap-2">
               <Input
                 value={publicLink}
@@ -133,7 +136,7 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                 className="flex items-center gap-2"
               >
                 <Copy className="h-4 w-4" />
-                نسخ
+                {t('share_modal.copy')}
               </Button>
             </div>
           </div>
@@ -193,7 +196,7 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
               className="w-full flex items-center gap-2"
             >
               <ExternalLink className="h-4 w-4" />
-              فتح الرابط في نافذة جديدة
+              {t('share_modal.open_new_window')}
             </Button>
           </div>
         </div>
