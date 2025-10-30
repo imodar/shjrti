@@ -22,6 +22,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2, Check, X, Mail, Calendar, Trash2, Eye } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Suggestion {
   id: string;
@@ -51,6 +52,7 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
   const [selectedSuggestion, setSelectedSuggestion] = useState<Suggestion | null>(null);
   const [actionType, setActionType] = useState<"accept" | "reject" | null>(null);
   const [adminNotes, setAdminNotes] = useState("");
+  const { t } = useLanguage();
 
   useEffect(() => {
     loadSuggestions();
@@ -95,7 +97,7 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
       setSuggestions(data || []);
     } catch (error) {
       console.error("Error loading suggestions:", error);
-      toast.error("Failed to load suggestions");
+      toast.error(t('suggestions.load_error'));
     } finally {
       setLoading(false);
     }
@@ -153,14 +155,14 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
       loadSuggestions();
     } catch (error) {
       console.error("Action error:", error);
-      toast.error("Failed to process suggestion");
+      toast.error(t('suggestions.process_error'));
     } finally {
       setActionLoading(null);
     }
   };
 
   const handleDelete = async (suggestionId: string) => {
-    if (!confirm("Are you sure you want to delete this suggestion?")) return;
+    if (!confirm(t('suggestions.delete_confirm'))) return;
 
     setActionLoading(suggestionId);
 
@@ -172,11 +174,11 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
 
       if (error) throw error;
 
-      toast.success("Suggestion deleted");
+      toast.success(t('suggestions.deleted_success'));
       loadSuggestions();
     } catch (error) {
       console.error("Delete error:", error);
-      toast.error("Failed to delete suggestion");
+      toast.error(t('suggestions.delete_error'));
     } finally {
       setActionLoading(null);
     }
@@ -194,9 +196,11 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
       rejected: "destructive",
     };
 
+    const statusKey = `suggestions.status.${status}` as const;
+
     return (
       <Badge variant={variants[status] || "outline"}>
-        {status.replace("_", " ")}
+        {t(statusKey)}
       </Badge>
     );
   };
@@ -215,22 +219,22 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold">Suggested Edits</h3>
+          <h3 className="text-lg font-semibold">{t('suggestions.title')}</h3>
           <p className="text-sm text-muted-foreground">
-            {pendingCount > 0 ? `${pendingCount} pending suggestions` : "No pending suggestions"}
+            {pendingCount > 0 ? `${pendingCount} ${t('suggestions.pending_count')}` : t('suggestions.no_pending')}
           </p>
         </div>
 
         <Select value={filterStatus} onValueChange={setFilterStatus}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder={t('suggestions.filter_by_status')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Suggestions</SelectItem>
-            <SelectItem value="pending">Pending</SelectItem>
-            <SelectItem value="under_review">Under Review</SelectItem>
-            <SelectItem value="accepted">Accepted</SelectItem>
-            <SelectItem value="rejected">Rejected</SelectItem>
+            <SelectItem value="all">{t('suggestions.status.all')}</SelectItem>
+            <SelectItem value="pending">{t('suggestions.status.pending')}</SelectItem>
+            <SelectItem value="under_review">{t('suggestions.status.under_review')}</SelectItem>
+            <SelectItem value="accepted">{t('suggestions.status.accepted')}</SelectItem>
+            <SelectItem value="rejected">{t('suggestions.status.rejected')}</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -238,7 +242,7 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
       {filteredSuggestions.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center text-muted-foreground">
-            No suggestions found
+            {t('suggestions.no_suggestions_found')}
           </CardContent>
         </Card>
       ) : (
@@ -275,7 +279,7 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
 
                     {suggestion.admin_notes && (
                       <div className="text-sm">
-                        <span className="font-medium">Notes: </span>
+                        <span className="font-medium">{t('suggestions.notes')}</span>
                         <span className="text-muted-foreground">{suggestion.admin_notes}</span>
                       </div>
                     )}
@@ -290,7 +294,7 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
                           disabled={actionLoading === suggestion.id}
                         >
                           <Check className="h-4 w-4 mr-1" />
-                          Accept
+                          {t('suggestions.accept')}
                         </Button>
                         <Button
                           size="sm"
@@ -299,7 +303,7 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
                           disabled={actionLoading === suggestion.id}
                         >
                           <X className="h-4 w-4 mr-1" />
-                          Reject
+                          {t('suggestions.reject')}
                         </Button>
                       </>
                     )}
@@ -327,18 +331,18 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {actionType === "accept" ? "Accept Suggestion" : "Reject Suggestion"}
+              {actionType === "accept" ? t('suggestions.accept_title') : t('suggestions.reject_title')}
             </DialogTitle>
             <DialogDescription>
               {actionType === "accept"
-                ? "Add optional notes to thank the contributor"
-                : "Add optional notes explaining why this suggestion isn't being accepted"}
+                ? t('suggestions.accept_desc')
+                : t('suggestions.reject_desc')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2">
             <Textarea
-              placeholder="Add notes (optional)"
+              placeholder={t('suggestions.add_notes_placeholder')}
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
               rows={4}
@@ -347,7 +351,7 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              Cancel
+              {t('suggestions.cancel')}
             </Button>
             <Button
               onClick={confirmAction}
@@ -355,7 +359,7 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
               variant={actionType === "accept" ? "default" : "destructive"}
             >
               {actionLoading !== null && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Confirm {actionType === "accept" ? "Accept" : "Reject"}
+              {t('suggestions.confirm')} {actionType === "accept" ? t('suggestions.accept') : t('suggestions.reject')}
             </Button>
           </DialogFooter>
         </DialogContent>
