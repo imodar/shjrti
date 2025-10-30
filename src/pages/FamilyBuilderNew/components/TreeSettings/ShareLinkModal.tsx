@@ -27,6 +27,7 @@ interface ShareLinkModalProps {
   familyName: string;
   shareLink: string;
   familyId: string;
+  hasCustomDomain?: boolean;
 }
 
 export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
@@ -34,7 +35,8 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
   onClose,
   familyName,
   shareLink,
-  familyId
+  familyId,
+  hasCustomDomain = false
 }) => {
   const { toast } = useToast();
   
@@ -90,26 +92,28 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Custom Link Section */}
-          <div className="space-y-2">
-            <Label>الرابط المخصص</Label>
-            <div className="flex gap-2">
-              <Input
-                value={shareLink}
-                readOnly
-                className="flex-1 text-sm"
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleCopyLink}
-                className="flex items-center gap-2"
-              >
-                <Copy className="h-4 w-4" />
-                نسخ
-              </Button>
+          {/* Custom Link Section - Only show if user has custom domain feature */}
+          {hasCustomDomain && (
+            <div className="space-y-2">
+              <Label>الرابط المخصص</Label>
+              <div className="flex gap-2">
+                <Input
+                  value={shareLink}
+                  readOnly
+                  className="flex-1 text-sm"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopyLink}
+                  className="flex items-center gap-2"
+                >
+                  <Copy className="h-4 w-4" />
+                  نسخ
+                </Button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Public Link Section */}
           <div className="space-y-2">
