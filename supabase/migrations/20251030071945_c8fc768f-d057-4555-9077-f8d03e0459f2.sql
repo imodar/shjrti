@@ -1,0 +1,31 @@
+-- Add TreeSettingsView translations (Part 4: Gallery & Password)
+INSERT INTO translations (key, category, language_code, value) VALUES
+('tree_settings.gallery_title', 'tree_settings', 'ar', 'مشاركة ألبوم صور العائلة'),
+('tree_settings.gallery_title', 'tree_settings', 'en', 'Share Family Photo Gallery'),
+('tree_settings.gallery_allow_visitors', 'tree_settings', 'ar', 'السماح للزوار بمشاهدة ألبوم الصور'),
+('tree_settings.gallery_allow_visitors', 'tree_settings', 'en', 'Allow visitors to view photo gallery'),
+('tree_settings.gallery_info', 'tree_settings', 'ar', 'عند التفعيل، سيتمكن زوار الشجرة من رؤية جميع صور الألبوم'),
+('tree_settings.gallery_info', 'tree_settings', 'en', 'When enabled, tree visitors will be able to see all gallery photos'),
+('tree_settings.gallery_enabled', 'tree_settings', 'ar', 'تم تفعيل المشاركة'),
+('tree_settings.gallery_enabled', 'tree_settings', 'en', 'Sharing enabled'),
+('tree_settings.gallery_disabled', 'tree_settings', 'ar', 'تم إلغاء المشاركة'),
+('tree_settings.gallery_disabled', 'tree_settings', 'en', 'Sharing disabled'),
+('tree_settings.gallery_now_shared', 'tree_settings', 'ar', 'أصبح ألبوم الصور متاحاً للزوار'),
+('tree_settings.gallery_now_shared', 'tree_settings', 'en', 'Photo gallery is now available to visitors'),
+('tree_settings.gallery_not_shared', 'tree_settings', 'ar', 'لم يعد ألبوم الصور متاحاً للزوار'),
+('tree_settings.gallery_not_shared', 'tree_settings', 'en', 'Photo gallery is no longer available to visitors'),
+('tree_settings.gallery_update_error', 'tree_settings', 'ar', 'حدث خطأ أثناء تحديث إعدادات المشاركة'),
+('tree_settings.gallery_update_error', 'tree_settings', 'en', 'An error occurred while updating sharing settings'),
+('tree_settings.active', 'tree_settings', 'ar', 'مفعل'),
+('tree_settings.active', 'tree_settings', 'en', 'Active'),
+('tree_settings.inactive', 'tree_settings', 'ar', 'معطل'),
+('tree_settings.inactive', 'tree_settings', 'en', 'Inactive'),
+('tree_settings.gallery_warning_strong', 'tree_settings', 'ar', 'تنبيه:'),
+('tree_settings.gallery_warning_strong', 'tree_settings', 'en', 'Warning:'),
+('tree_settings.gallery_warning_text', 'tree_settings', 'ar', 'جميع صور ألبوم العائلة ستكون مرئية لأي شخص يزور الشجرة. تأكد من أن الصور مناسبة للمشاركة العامة.'),
+('tree_settings.gallery_warning_text', 'tree_settings', 'en', 'All family gallery photos will be visible to anyone visiting the tree. Make sure the photos are appropriate for public sharing.'),
+('tree_settings.share_album_benefit', 'tree_settings', 'ar', 'اسمح للزوار بمشاهدة ألبوم صور العائلة'),
+('tree_settings.share_album_benefit', 'tree_settings', 'en', 'Allow visitors to view family photo gallery')
+ON CONFLICT (key, language_code) DO UPDATE SET
+  value = EXCLUDED.value,
+  updated_at = now();
