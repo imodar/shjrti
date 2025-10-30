@@ -742,7 +742,7 @@ const Auth = () => {
                       <Button
                         onClick={handleGoogleSignIn}
                         variant="outline"
-                        className="w-full mt-4 border-2 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                        className="w-full mt-4 border-2 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
                         disabled={isLoading}
                       >
                         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
