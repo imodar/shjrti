@@ -750,30 +750,27 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                 </div>
               ) : !sharePassword ? (
                 // حالة: بدون كلمة مرور - تحذير أمني
-                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200">
-                  {/* تحذير أمني بارز */}
-                  <div className="flex items-start gap-3 mb-4 p-3 bg-white dark:bg-gray-800 rounded-lg border border-amber-300">
-                    <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-1">
-                        ⚠️ تحذير أمني مهم
-                      </p>
-                      <p className="text-xs text-amber-700 dark:text-amber-300">
-                        شجرتك حالياً <strong>غير محمية</strong>. أي شخص يملك الرابط يستطيع عرض جميع المعلومات. 
-                        ننصح بشدة بإضافة كلمة مرور للحماية.
-                      </p>
-                    </div>
-                  </div>
-                  
+                <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border-2 border-dashed border-amber-300 cursor-pointer hover:border-amber-400 transition-colors"
+                  onClick={() => setIsEditingPassword(true)}
+                >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">الحالة: 🔓 غير محمية</span>
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
+                        <AlertTriangle className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold">حماية بكلمة مرور</span>
+                          <Badge className="bg-red-500 text-white text-xs">
+                            🔓 غير محمية
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          أضف كلمة مرور لحماية شجرتك من الوصول غير المصرح
+                        </p>
+                      </div>
                     </div>
-                    <Button 
-                      onClick={() => setIsEditingPassword(true)}
-                      className="bg-amber-600 hover:bg-amber-700"
-                    >
-                      <Lock className="h-4 w-4 ml-2" />
+                    <Button variant="outline" size="sm">
                       إضافة كلمة مرور
                     </Button>
                   </div>
