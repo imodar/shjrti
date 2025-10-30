@@ -20,6 +20,7 @@ import {
   ExternalLink
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface ShareLinkModalProps {
   isOpen: boolean;
@@ -39,6 +40,7 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
   hasCustomDomain = false
 }) => {
   const { toast } = useToast();
+  const { t } = useLanguage();
   
   const publicLink = `${window.location.origin}/tree?familyId=${familyId}`;
 
@@ -140,7 +142,7 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
 
           {/* Social Media Sharing */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">المشاركة عبر</Label>
+            <Label className="text-sm font-medium">{t('social.share_via')}</Label>
             
             <div className="grid grid-cols-2 gap-3">
               <Button
@@ -149,7 +151,7 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                 className="flex items-center gap-2 justify-start"
               >
                 <Facebook className="h-4 w-4 text-blue-600" />
-                Facebook
+                {t('social.facebook')}
               </Button>
 
               <Button
@@ -158,7 +160,7 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                 className="flex items-center gap-2 justify-start"
               >
                 <Twitter className="h-4 w-4 text-blue-400" />
-                X (Twitter)
+                {t('social.twitter')}
               </Button>
 
               <Button
@@ -167,7 +169,7 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                 className="flex items-center gap-2 justify-start"
               >
                 <Linkedin className="h-4 w-4 text-blue-700" />
-                LinkedIn
+                {t('social.linkedin')}
               </Button>
 
               <Button
@@ -176,7 +178,7 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                 className="flex items-center gap-2 justify-start"
               >
                 <MessageCircle className="h-4 w-4 text-green-500" />
-                WhatsApp
+                {t('social.whatsapp')}
               </Button>
             </div>
           </div>
