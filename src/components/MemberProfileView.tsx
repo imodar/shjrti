@@ -671,6 +671,17 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           <div className="relative">
             
             <div className="relative bg-card/95 backdrop-blur-xl rounded-xl sm:rounded-2xl overflow-hidden p-4 sm:p-6 md:p-8 border border-border shadow-xl">
+              {/* Close Button */}
+              {onBack && (
+                <button
+                  onClick={onBack}
+                  className="absolute top-4 right-4 rtl:left-4 rtl:right-auto z-20 p-2 rounded-full bg-background/80 hover:bg-background border border-border shadow-md transition-all duration-200 hover:scale-110"
+                  aria-label="إغلاق"
+                >
+                  <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                </button>
+              )}
+              
               {/* Black ribbon for deceased members */}
               {(member.deathDate || member.death_date || !member.isAlive) && (
                 <div className="absolute top-0 left-0 z-10">
