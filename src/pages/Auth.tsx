@@ -21,6 +21,10 @@ const Auth = () => {
   const [showOTP, setShowOTP] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [pendingUserData, setPendingUserData] = useState<any>(null);
+  const [showPasswordReset, setShowPasswordReset] = useState<'email' | 'otp' | 'newPassword' | null>(null);
+  const [resetEmail, setResetEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, direction } = useLanguage();
@@ -297,6 +301,127 @@ const Auth = () => {
     setPendingUserData(null);
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/auth`,
+      });
+
+      if (error) {
+        toast({
+          title: t('error', 'خطأ'),
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: t('reset_code_sent', 'تم إرسال رمز إعادة التعيين'),
+        description: t('check_email_for_code', 'يرجى التحقق من بريدك الإلكتروني'),
+      });
+
+      setShowPasswordReset('otp');
+    } catch (error: any) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyResetOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: resetEmail,
+        token: otpCode,
+        type: 'recovery'
+      });
+
+      if (error) {
+        toast({
+          title: t('verification_error', 'خطأ في التحقق'),
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setShowPasswordReset('newPassword');
+      setOtpCode("");
+    } catch (error: any) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('passwords_dont_match', 'كلمات المرور غير متطابقة'),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        toast({
+          title: t('error', 'خطأ'),
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: t('password_updated', 'تم تحديث كلمة المرور'),
+        description: t('password_updated_success', 'تم تحديث كلمة المرور بنجاح'),
+      });
+
+      // Reset all states
+      setShowPasswordReset(null);
+      setResetEmail("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setOtpCode("");
+
+      // Redirect to dashboard
+      window.location.href = "/dashboard";
+    } catch (error: any) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
@@ -491,7 +616,178 @@ const Auth = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="relative z-10">
-                {showOTP ? (
+                {showPasswordReset === 'email' ? (
+                  /* Password Reset - Email Entry */
+                  <div className="space-y-6">
+                    <div className="text-center space-y-2">
+                      <div className="flex justify-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+                          <Lock className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-800">{t('reset_password', 'إعادة تعيين كلمة المرور')}</h3>
+                      <p className="text-gray-600">
+                        {t('enter_email_for_reset', 'أدخل بريدك الإلكتروني لإرسال رمز إعادة التعيين')}
+                      </p>
+                    </div>
+
+                    <form onSubmit={handleForgotPassword} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="resetEmail">{t('email', 'البريد الإلكتروني')}</Label>
+                        <div className="relative">
+                          <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="resetEmail"
+                            type="email"
+                            placeholder={t('email_placeholder', 'example@domain.com')}
+                            className="pr-10"
+                            value={resetEmail}
+                            onChange={(e) => setResetEmail(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? t('sending', 'جاري الإرسال...') : t('send_reset_code', 'إرسال رمز إعادة التعيين')}
+                        <Mail className="mr-2 h-4 w-4" />
+                      </Button>
+                    </form>
+
+                    <Button
+                      onClick={() => {
+                        setShowPasswordReset(null);
+                        setResetEmail("");
+                      }}
+                      variant="ghost"
+                      className="w-full"
+                      disabled={isLoading}
+                    >
+                      <ArrowLeft className="ml-2 h-4 w-4" />
+                      {t('back_to_login', 'العودة إلى تسجيل الدخول')}
+                    </Button>
+                  </div>
+                ) : showPasswordReset === 'otp' ? (
+                  /* Password Reset - OTP Verification */
+                  <div className="space-y-6">
+                    <div className="text-center space-y-2">
+                      <div className="flex justify-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+                          <ShieldCheck className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-800">{t('verify_reset_code', 'تحقق من رمز إعادة التعيين')}</h3>
+                      <p className="text-gray-600">
+                        {t('enter_reset_code', 'أدخل الرمز المرسل إلى')}
+                        <br />
+                        <span className="font-medium text-emerald-600">{resetEmail}</span>
+                      </p>
+                    </div>
+
+                    <form onSubmit={handleVerifyResetOTP} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="resetOtpCode">{t('verification_code', 'رمز التحقق')}</Label>
+                        <div className="relative">
+                          <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="resetOtpCode"
+                            type="text"
+                            placeholder={t('enter_6_digit_code', 'أدخل الرمز المكون من 6 أرقام')}
+                            className="pr-10 text-center text-lg tracking-wider"
+                            value={otpCode}
+                            onChange={(e) => setOtpCode(e.target.value)}
+                            maxLength={6}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                        disabled={isLoading || otpCode.length !== 6}
+                      >
+                        {isLoading ? t('verifying', 'جاري التحقق...') : t('verify_code', 'تحقق من الرمز')}
+                        <ShieldCheck className="mr-2 h-4 w-4" />
+                      </Button>
+                    </form>
+
+                    <Button
+                      onClick={() => {
+                        setShowPasswordReset('email');
+                        setOtpCode("");
+                      }}
+                      variant="ghost"
+                      className="w-full"
+                      disabled={isLoading}
+                    >
+                      <ArrowLeft className="ml-2 h-4 w-4" />
+                      {t('back', 'رجوع')}
+                    </Button>
+                  </div>
+                ) : showPasswordReset === 'newPassword' ? (
+                  /* Password Reset - New Password Entry */
+                  <div className="space-y-6">
+                    <div className="text-center space-y-2">
+                      <div className="flex justify-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+                          <Lock className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-800">{t('new_password', 'كلمة مرور جديدة')}</h3>
+                      <p className="text-gray-600">
+                        {t('enter_new_password', 'أدخل كلمة المرور الجديدة')}
+                      </p>
+                    </div>
+
+                    <form onSubmit={handleUpdatePassword} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="newPassword">{t('new_password', 'كلمة المرور الجديدة')}</Label>
+                        <div className="relative">
+                          <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="newPassword"
+                            type="password"
+                            placeholder={t('enter_new_password', 'أدخل كلمة المرور الجديدة')}
+                            className="pr-10"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">{t('confirm_password', 'تأكيد كلمة المرور')}</Label>
+                        <div className="relative">
+                          <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="confirmPassword"
+                            type="password"
+                            placeholder={t('confirm_new_password', 'أكد كلمة المرور الجديدة')}
+                            className="pr-10"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? t('updating', 'جاري التحديث...') : t('update_password', 'تحديث كلمة المرور')}
+                        <Lock className="mr-2 h-4 w-4" />
+                      </Button>
+                    </form>
+                  </div>
+                ) : showOTP ? (
                   /* OTP Verification Screen */
                   <div className="space-y-6">
                     <div className="text-center space-y-2">
@@ -711,13 +1007,20 @@ const Auth = () => {
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-between text-sm">
+                           <div className="flex items-center justify-between text-sm">
                             <span className="text-muted-foreground">
                               {t('login_via_otp', 'تسجيل الدخول بواسطة رمز مؤقت')}
                             </span>
-                            <a href="#" className="text-primary hover:underline">
+                            <button 
+                              type="button"
+                              onClick={() => {
+                                setShowPasswordReset('email');
+                                setResetEmail(email);
+                              }}
+                              className="text-primary hover:underline"
+                            >
                               {t('forgot_password', 'نسيت كلمة المرور؟')}
-                            </a>
+                            </button>
                           </div>
 
                           <Button
