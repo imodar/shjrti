@@ -584,11 +584,11 @@ const Auth = () => {
                             <div className={`space-y-2 ${direction === 'rtl' ? 'order-2' : 'order-1'}`}>
                               <Label htmlFor="firstName">{t('first_name', 'الاسم الأول')}</Label>
                               <div className="relative">
-                                <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <User className={`absolute top-3 h-4 w-4 text-muted-foreground ${direction === 'rtl' ? 'right-3' : 'left-3'}`} />
                                 <Input
                                   id="firstName"
                                   placeholder={t('enter_first_name', 'أدخل اسمك الأول')}
-                                  className="pr-10"
+                                  className={direction === 'rtl' ? 'pr-10' : 'pl-10'}
                                   value={firstName}
                                   onChange={(e) => setFirstName(e.target.value)}
                                   tabIndex={1}
@@ -600,11 +600,11 @@ const Auth = () => {
                             <div className={`space-y-2 ${direction === 'rtl' ? 'order-1' : 'order-2'}`}>
                               <Label htmlFor="lastName">{t('last_name', 'اسم العائلة')}</Label>
                               <div className="relative">
-                                <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                                <User className={`absolute top-3 h-4 w-4 text-muted-foreground ${direction === 'rtl' ? 'right-3' : 'left-3'}`} />
                                 <Input
                                   id="lastName"
                                   placeholder={t('enter_last_name', 'أدخل اسم العائلة')}
-                                  className="pr-10"
+                                  className={direction === 'rtl' ? 'pr-10' : 'pl-10'}
                                   value={lastName}
                                   onChange={(e) => setLastName(e.target.value)}
                                   tabIndex={2}
