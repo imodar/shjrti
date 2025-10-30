@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,26 +31,22 @@ const Auth = () => {
   const { toast } = useToast();
   const { t, direction } = useLanguage();
 
-  // Cooldown states to avoid Supabase email rate limits
-  const [resetCooldown, setResetCooldown] = useState(0);
-  const [signupCooldown, setSignupCooldown] = useState(0);
-  const [magicCooldown, setMagicCooldown] = useState(0);
+  // Global OTP cooldown (one timer for all OTP-related requests)
+  const [otpCooldown, setOtpCooldown] = useState(0);
+  // Extra guard to ensure a single network request per click (synchronous)
+  const magicSubmittingRef = useRef(false);
 
-  const startCooldown = (key: string, seconds: number, setState: (v: number) => void) => {
+  const startGlobalCooldown = (seconds: number) => {
     const until = Date.now() + seconds * 1000;
-    localStorage.setItem(key, String(until));
-    setState(seconds);
+    localStorage.setItem('auth_otp_global_until', String(until));
+    setOtpCooldown(seconds);
   };
 
   useEffect(() => {
     const update = () => {
       const now = Date.now();
-      const r = parseInt(localStorage.getItem('auth_reset_until') || '0', 10);
-      const s = parseInt(localStorage.getItem('auth_signup_resend_until') || '0', 10);
-      const m = parseInt(localStorage.getItem('auth_magic_until') || '0', 10);
-      setResetCooldown(Math.max(0, Math.ceil((r - now) / 1000)));
-      setSignupCooldown(Math.max(0, Math.ceil((s - now) / 1000)));
-      setMagicCooldown(Math.max(0, Math.ceil((m - now) / 1000)));
+      const g = parseInt(localStorage.getItem('auth_otp_global_until') || '0', 10);
+      setOtpCooldown(Math.max(0, Math.ceil((g - now) / 1000)));
     };
     update();
     const id = setInterval(update, 1000);
@@ -288,10 +284,10 @@ const Auth = () => {
 
   const handleResendOTP = async () => {
     if (!pendingUserData) return;
-    if (signupCooldown > 0) {
+    if (otpCooldown > 0) {
       toast({
         title: t('wait_before_retry', 'الرجاء الانتظار'),
-        description: `${t('retry_after', 'يمكنك إعادة الإرسال بعد')} ${signupCooldown}ث`,
+        description: `${t('retry_after', 'يمكنك إعادة الإرسال بعد')} ${otpCooldown}ث`,
       });
       return;
     }
@@ -309,10 +305,10 @@ const Auth = () => {
       if (error) {
         const msg = (error.message || '').toLowerCase();
         if (msg.includes('rate limit')) {
-          startCooldown('auth_signup_resend_until', 60, setSignupCooldown);
+          startGlobalCooldown(300);
           toast({
             title: t('too_many_requests', 'طلبات متكررة'),
-            description: t('retry_in_seconds', 'يرجى الانتظار 60 ثانية قبل إعادة الإرسال'),
+            description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل إعادة الإرسال')}`,
           });
         } else {
           toast({
@@ -328,7 +324,7 @@ const Auth = () => {
         title: t('resent_successfully', 'تم إعادة الإرسال'),
         description: t('resent_description', 'تم إرسال رمز تحقق جديد إلى بريدك الإلكتروني'),
       });
-      startCooldown('auth_signup_resend_until', 60, setSignupCooldown);
+      startGlobalCooldown(300);
     } catch (error: any) {
       toast({
         title: t('error', 'خطأ'),
