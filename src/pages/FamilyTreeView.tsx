@@ -22,7 +22,7 @@ import FamilyTreeViewSkeleton from "@/components/skeletons/FamilyTreeViewSkeleto
 
 const FamilyTreeView = () => {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, direction } = useLanguage();
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { hasAIFeatures } = useSubscription();
@@ -377,7 +377,7 @@ const FamilyTreeView = () => {
       </div>;
   };
   if (isLoading || dataLoading) {
-    return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+    return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
         <GlobalHeader />
       <div className="container mx-auto px-6 pt-24 pb-12">
         <FamilyTreeViewSkeleton />
@@ -529,7 +529,7 @@ const FamilyTreeView = () => {
       variant: "default"
     });
   };
-  return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir="rtl">
+  return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
       <GlobalHeader />
       
       {/* Floating Background Elements */}
