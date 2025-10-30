@@ -911,6 +911,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
           ? `https://shjrti.com/${familyData.custom_domain}`
           : publicShareableLink
         }
+        familyId={familyData?.id || ''}
       />
       
       {/* Custom Domain Modal */}

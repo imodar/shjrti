@@ -26,21 +26,33 @@ interface ShareLinkModalProps {
   onClose: () => void;
   familyName: string;
   shareLink: string;
+  familyId: string;
 }
 
 export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
   isOpen,
   onClose,
   familyName,
-  shareLink
+  shareLink,
+  familyId
 }) => {
   const { toast } = useToast();
+  
+  const publicLink = `${window.location.origin}/tree?familyId=${familyId}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareLink);
     toast({
       title: "تم نسخ الرابط",
       description: "تم نسخ رابط الشجرة إلى الحافظة"
+    });
+  };
+
+  const handleCopyPublicLink = () => {
+    navigator.clipboard.writeText(publicLink);
+    toast({
+      title: "تم نسخ الرابط العام",
+      description: "تم نسخ الرابط العام إلى الحافظة"
     });
   };
 
@@ -78,9 +90,9 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Copy Link Section */}
+          {/* Custom Link Section */}
           <div className="space-y-2">
-            <Label>رابط الشجرة</Label>
+            <Label>الرابط المخصص</Label>
             <div className="flex gap-2">
               <Input
                 value={shareLink}
@@ -91,6 +103,27 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={handleCopyLink}
+                className="flex items-center gap-2"
+              >
+                <Copy className="h-4 w-4" />
+                نسخ
+              </Button>
+            </div>
+          </div>
+
+          {/* Public Link Section */}
+          <div className="space-y-2">
+            <Label>الرابط العام</Label>
+            <div className="flex gap-2">
+              <Input
+                value={publicLink}
+                readOnly
+                className="flex-1 text-sm"
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCopyPublicLink}
                 className="flex items-center gap-2"
               >
                 <Copy className="h-4 w-4" />
