@@ -675,7 +675,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               {onBack && (
                 <button
                   onClick={onBack}
-                  className="absolute top-4 right-4 rtl:left-4 rtl:right-auto z-20 p-2 rounded-full bg-background/80 hover:bg-background border border-border shadow-md transition-all duration-200 hover:scale-110"
+                  className="absolute top-4 right-4 rtl:left-4 rtl:right-auto z-20 h-8 w-8 flex items-center justify-center rounded-full bg-background/80 hover:bg-background border border-border shadow-md transition-all duration-200 hover:scale-110"
                   aria-label="إغلاق"
                 >
                   <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
