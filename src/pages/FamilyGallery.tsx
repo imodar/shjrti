@@ -31,6 +31,7 @@ import {
   AlertCircle
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { FamilyHeader } from "@/components/FamilyHeader";
@@ -57,6 +58,7 @@ interface FamilyMemory {
 const FamilyGallery = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { direction } = useLanguage();
   const [searchParams] = useSearchParams();
   const familyId = searchParams.get('family');
   
@@ -445,7 +447,7 @@ const FamilyGallery = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir="rtl">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
         <GlobalHeader />
         
         {/* Floating Background Elements */}
@@ -464,7 +466,7 @@ const FamilyGallery = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
       <GlobalHeader />
       
       {/* Floating Background Elements */}
@@ -589,7 +591,7 @@ const FamilyGallery = () => {
                               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
                                 <Upload className="h-5 w-5 text-white" />
                               </div>
-                              <div className="text-right">
+                              <div className={direction === 'rtl' ? 'text-right' : 'text-left'}>
                                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">
                                   اسحب الصور أو انقر للاختيار
                                 </p>
@@ -855,7 +857,7 @@ const FamilyGallery = () => {
 
       {/* Memory Detail Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir={direction}>
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between">
               <span>{selectedMemory?.original_filename}</span>
@@ -890,7 +892,7 @@ const FamilyGallery = () => {
                     onChange={(e) => setEditedCaption(e.target.value)}
                     placeholder="أضف وصفاً للصورة..."
                     className="min-h-[100px] resize-none"
-                    dir="rtl"
+                    dir={direction}
                   />
                 </div>
 
@@ -948,7 +950,7 @@ const FamilyGallery = () => {
 
       {/* Upload Dialog - Simplified */}
       <Dialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen}>
-        <DialogContent className="max-w-2xl" dir="rtl">
+        <DialogContent className="max-w-2xl" dir={direction}>
           <DialogHeader>
             <DialogTitle>رفع صورة جديدة</DialogTitle>
           </DialogHeader>
