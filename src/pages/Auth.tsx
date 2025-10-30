@@ -303,6 +303,10 @@ const Auth = () => {
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent multiple submissions
+    if (isLoading) return;
+    
     setIsLoading(true);
 
     try {
@@ -316,6 +320,7 @@ const Auth = () => {
           description: error.message,
           variant: "destructive",
         });
+        setIsLoading(false);
         return;
       }
 
@@ -325,13 +330,13 @@ const Auth = () => {
       });
 
       setShowPasswordReset('otp');
+      setIsLoading(false);
     } catch (error: any) {
       toast({
         title: t('error', 'خطأ'),
         description: error.message,
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
