@@ -3860,14 +3860,14 @@ const FamilyBuilderNew = () => {
                   </DrawerContent>
                 </Drawer> : <Card className="bg-white backdrop-blur-xl border-white/30 shadow-xl h-full min-h-0 flex flex-col">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-lg"></div>
-                  <CardHeader className="pb-4 relative shrink-0">
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                       <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                         أعضاء العائلة ({familyMembers.length})
-                       </span>
-                     </CardTitle>
-                  </CardHeader>
+                   <CardHeader className="pb-4 relative shrink-0">
+                     <CardTitle className="flex items-center gap-2">
+                       <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                        <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                          {t('family_builder.members_title')} ({familyMembers.length})
+                        </span>
+                      </CardTitle>
+                   </CardHeader>
                   <CardContent className="relative overflow-y-auto flex-1 min-h-0 pt-2">
                       <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={contextLoading || memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={subscription?.package_name} />
                   </CardContent>
