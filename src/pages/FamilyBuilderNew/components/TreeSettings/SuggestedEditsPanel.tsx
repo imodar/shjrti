@@ -22,6 +22,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Loader2, Check, X, Mail, Calendar, Trash2, Eye } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import { ar } from "date-fns/locale";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Suggestion {
@@ -52,7 +53,7 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
   const [selectedSuggestion, setSelectedSuggestion] = useState<Suggestion | null>(null);
   const [actionType, setActionType] = useState<"accept" | "reject" | null>(null);
   const [adminNotes, setAdminNotes] = useState("");
-  const { t } = useLanguage();
+  const { t, currentLanguage } = useLanguage();
 
   useEffect(() => {
     loadSuggestions();
@@ -271,7 +272,10 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
                       </div>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
                         <Calendar className="h-3 w-3" />
-                        {formatDistanceToNow(new Date(suggestion.created_at), { addSuffix: true })}
+                        {formatDistanceToNow(new Date(suggestion.created_at), { 
+                          addSuffix: true,
+                          locale: currentLanguage === 'ar' ? ar : undefined 
+                        })}
                       </div>
                     </div>
 
