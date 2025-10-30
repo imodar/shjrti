@@ -481,7 +481,7 @@ const Auth = () => {
               <CardHeader className="text-center relative z-10">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <Crown className="h-6 w-6 text-amber-500" />
-                 <CardTitle className="text-3xl bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                 <CardTitle className="text-3xl bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent pb-1 leading-relaxed">
                     {t('join_my_tree', 'انضم إلى شجرتي')}
                   </CardTitle>
                   <Crown className="h-6 w-6 text-amber-500" />
