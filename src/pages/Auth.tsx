@@ -25,6 +25,8 @@ const Auth = () => {
   const [resetEmail, setResetEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showMagicLink, setShowMagicLink] = useState<'email' | 'otp' | null>(null);
+  const [magicLinkEmail, setMagicLinkEmail] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, direction } = useLanguage();
@@ -427,6 +429,91 @@ const Auth = () => {
     }
   };
 
+  const handleMagicLinkLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Prevent multiple submissions
+    if (isLoading) return;
+    
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email: magicLinkEmail,
+        options: {
+          shouldCreateUser: false,
+        }
+      });
+
+      if (error) {
+        toast({
+          title: t('error', 'خطأ'),
+          description: error.message,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      toast({
+        title: t('code_sent', 'تم إرسال الرمز'),
+        description: t('check_email_for_code', 'تحقق من بريدك الإلكتروني لإدخال الرمز المؤقت'),
+      });
+
+      setShowMagicLink('otp');
+      setIsLoading(false);
+    } catch (error: any) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: error.message,
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyMagicLinkOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: magicLinkEmail,
+        token: otpCode,
+        type: 'email'
+      });
+
+      if (error) {
+        toast({
+          title: t('verification_error', 'خطأ في التحقق'),
+          description: error.message,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      toast({
+        title: t('login_successful', 'تم تسجيل الدخول بنجاح'),
+        description: t('welcome_back', 'مرحباً بعودتك'),
+      });
+
+      // Clear form and redirect
+      setMagicLinkEmail("");
+      setOtpCode("");
+      setShowMagicLink(null);
+      
+      navigate("/dashboard");
+    } catch (error: any) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: error.message,
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    }
+  };
+
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     try {
@@ -621,7 +708,125 @@ const Auth = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="relative z-10">
-                {showPasswordReset === 'email' ? (
+                {showMagicLink === 'email' ? (
+                  /* Magic Link Login - Email Entry */
+                  <div className="space-y-6">
+                    <div className="text-center space-y-2">
+                      <div className="flex justify-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+                          <Mail className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-800">{t('magic_link_login', 'تسجيل الدخول بالرمز المؤقت')}</h3>
+                      <p className="text-gray-600">
+                        {t('enter_email_for_magic_link', 'أدخل بريدك الإلكتروني لإرسال رمز الدخول المؤقت')}
+                      </p>
+                      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-sm text-blue-800 text-center">
+                          {t('magic_link_info', 'سيصلك رمز مؤقت للبريد المسجل يمكنك استخدامه للدخول مباشرة')}
+                        </p>
+                      </div>
+                    </div>
+
+                    <form onSubmit={handleMagicLinkLogin} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="magicLinkEmail">{t('email', 'البريد الإلكتروني')}</Label>
+                        <div className="relative">
+                          <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="magicLinkEmail"
+                            type="email"
+                            placeholder={t('email_placeholder', 'example@domain.com')}
+                            className="pr-10"
+                            value={magicLinkEmail}
+                            onChange={(e) => setMagicLinkEmail(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? t('sending', 'جاري الإرسال...') : t('send_magic_code', 'إرسال الرمز المؤقت')}
+                        <Mail className="mr-2 h-4 w-4" />
+                      </Button>
+                    </form>
+
+                    <Button
+                      onClick={() => {
+                        setShowMagicLink(null);
+                        setMagicLinkEmail("");
+                      }}
+                      variant="ghost"
+                      className="w-full"
+                      disabled={isLoading}
+                    >
+                      <ArrowLeft className="ml-2 h-4 w-4" />
+                      {t('back_to_login', 'العودة إلى تسجيل الدخول')}
+                    </Button>
+                  </div>
+                ) : showMagicLink === 'otp' ? (
+                  /* Magic Link - OTP Verification */
+                  <div className="space-y-6">
+                    <div className="text-center space-y-2">
+                      <div className="flex justify-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+                          <ShieldCheck className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-800">{t('verify_magic_code', 'أدخل الرمز المؤقت')}</h3>
+                      <p className="text-gray-600">
+                        {t('enter_magic_code', 'أدخل الرمز المرسل إلى')}
+                        <br />
+                        <span className="font-medium text-emerald-600">{magicLinkEmail}</span>
+                      </p>
+                    </div>
+
+                    <form onSubmit={handleVerifyMagicLinkOTP} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="magicOtpCode">{t('verification_code', 'رمز التحقق')}</Label>
+                        <div className="relative">
+                          <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="magicOtpCode"
+                            type="text"
+                            placeholder={t('enter_6_digit_code', 'أدخل الرمز المكون من 6 أرقام')}
+                            className="pr-10 text-center text-lg tracking-wider"
+                            value={otpCode}
+                            onChange={(e) => setOtpCode(e.target.value)}
+                            maxLength={6}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                        disabled={isLoading || otpCode.length !== 6}
+                      >
+                        {isLoading ? t('verifying', 'جاري التحقق...') : t('login_with_code', 'تسجيل الدخول')}
+                        <ShieldCheck className="mr-2 h-4 w-4" />
+                      </Button>
+                    </form>
+
+                    <Button
+                      onClick={() => {
+                        setShowMagicLink('email');
+                        setOtpCode("");
+                      }}
+                      variant="ghost"
+                      className="w-full"
+                      disabled={isLoading}
+                    >
+                      <ArrowLeft className="ml-2 h-4 w-4" />
+                      {t('back', 'رجوع')}
+                    </Button>
+                  </div>
+                ) : showPasswordReset === 'email' ? (
                   /* Password Reset - Email Entry */
                   <div className="space-y-6">
                     <div className="text-center space-y-2">
@@ -1018,9 +1223,16 @@ const Auth = () => {
                           </div>
 
                            <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">
+                            <button 
+                              type="button"
+                              onClick={() => {
+                                setShowMagicLink('email');
+                                setMagicLinkEmail(email);
+                              }}
+                              className="text-primary hover:underline font-medium"
+                            >
                               {t('login_via_otp', 'تسجيل الدخول بواسطة رمز مؤقت')}
-                            </span>
+                            </button>
                             <button 
                               type="button"
                               onClick={() => {
