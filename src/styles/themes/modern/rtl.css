@@ -58,8 +58,10 @@
 [dir="rtl"] input[type="search"],
 [dir="rtl"] input[type="tel"],
 [dir="rtl"] textarea,
-[dir="rtl"] select {
-  text-align: right;
+[dir="rtl"] select,
+[dir="rtl"] input {
+  text-align: right !important;
+  direction: rtl;
 }
 
 /* RTL Support for input placeholders */
