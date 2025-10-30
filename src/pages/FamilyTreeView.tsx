@@ -616,14 +616,14 @@ const FamilyTreeView = () => {
                   <div className="flex items-center justify-between p-4 border-b border-white/40 dark:border-gray-600/40 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10">
                     <div className="flex-1 max-w-md">
                       <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                        اختر جذر الشجرة
+                        {t('tree_view.choose_root')}
                       </label>
                       <Select value={selectedRootMarriage} onValueChange={handleRootMarriageChange}>
                         <SelectTrigger className="w-full bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-emerald-200/50 dark:border-emerald-600/50">
-                          <SelectValue placeholder="اختر الزواج كجذر للشجرة" />
+                          <SelectValue placeholder={t('tree_view.choose_marriage_placeholder')} />
                         </SelectTrigger>
-                        <SelectContent searchable searchPlaceholder="ابحث عن العائلة..." className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-emerald-200/50 dark:border-emerald-600/50">
-                          <SelectItem value="all">عرض الشجرة كاملة</SelectItem>
+                        <SelectContent searchable searchPlaceholder={t('tree_view.search_family_placeholder')} className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-emerald-200/50 dark:border-emerald-600/50">
+                          <SelectItem value="all">{t('tree_view.display_full_tree')}</SelectItem>
                           {familyMarriages
                             .filter(marriage => marriage.is_active)
                             .map(marriage => {
