@@ -42,29 +42,63 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
           
           <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-1 px-3 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
             <div className="flex items-center justify-between gap-2 sm:gap-4 md:gap-8">
-              {/* Left: Avatar & Welcome */}
-              <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
-                {/* Family Avatar */}
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
-                  <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-3 border-white/30 dark:border-gray-700/30">
-                    <TreePine className="h-6 w-6 text-white" />
-                  </div>
-                  {/* Status Indicator */}
-                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
-                    <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
-                  </div>
+              {/* Right: Generation Stats */}
+              <TooltipProvider>
+                <div className="flex flex-col items-center gap-1 sm:gap-2 md:gap-3">
+                  <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
+                    <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
+                    <div className="hidden md:flex items-center justify-center gap-1">
+                      <Tooltip>
+                       <TooltipTrigger asChild>
+                         <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full text-xs cursor-help">
+                           <Users className="h-3 w-3 text-primary" />
+                           <span className="font-medium">{familyMembers.length}</span>
+                         </div>
+                       </TooltipTrigger>
+                       <TooltipContent className="z-[9999]">
+                         <p>{t('family_header.total_members')}</p>
+                       </TooltipContent>
+                     </Tooltip>
+                     <div className="w-1 h-1 bg-border rounded-full"></div>
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/10 rounded-full text-xs cursor-help">
+                           <UserIcon className="h-3 w-3 text-blue-600" />
+                           <span className="font-medium text-blue-600">{familyMembers.filter(m => m.gender === 'male').length}</span>
+                         </div>
+                       </TooltipTrigger>
+                       <TooltipContent className="z-[9999]">
+                         <p>{t('family_header.male_count')}</p>
+                       </TooltipContent>
+                     </Tooltip>
+                     <div className="w-1 h-1 bg-border rounded-full"></div>
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <div className="flex items-center gap-1 px-2 py-1 bg-rose-500/10 rounded-full text-xs cursor-help">
+                           <UserRoundIcon className="h-3 w-3 text-rose-600" />
+                           <span className="font-medium text-rose-600">{familyMembers.filter(m => m.gender === 'female').length}</span>
+                         </div>
+                       </TooltipTrigger>
+                       <TooltipContent className="z-[9999]">
+                         <p>{t('family_header.female_count')}</p>
+                       </TooltipContent>
+                     </Tooltip>
+                     <div className="w-1 h-1 bg-border rounded-full"></div>
+                     <Tooltip>
+                       <TooltipTrigger asChild>
+                         <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/10 rounded-full text-xs cursor-help">
+                           <Crown className="h-3 w-3 text-amber-600" />
+                           <span className="font-medium text-amber-600">{generationCount}</span>
+                         </div>
+                       </TooltipTrigger>
+                       <TooltipContent className="z-[9999]">
+                         <p>{t('family_header.generation_count')}</p>
+                       </TooltipContent>
+                      </Tooltip>
+                   </div>
                 </div>
-                
-                 {/* Family Name */}
-                <div className="text-right">
-                  <h1 className="text-sm sm:text-base md:text-lg font-bold">
-                    <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                      {t('family_header.family_prefix')} {familyData?.name || t('family_header.family_tree_default')}
-                    </span>
-                  </h1>
                 </div>
-              </div>
+              </TooltipProvider>
 
               {/* Center: Compact Creative Stats */}
               <div className="flex-1 px-2">
@@ -113,63 +147,29 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
                  </div>
               </div>
 
-               {/* Right: Generation Stats */}
-               <TooltipProvider>
-                 <div className="flex flex-col items-center gap-1 sm:gap-2 md:gap-3">
-                   <div className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
-                     <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
-                     <div className="hidden md:flex items-center justify-center gap-1">
-                       <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full text-xs cursor-help">
-                            <Users className="h-3 w-3 text-primary" />
-                            <span className="font-medium">{familyMembers.length}</span>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent className="z-[9999]">
-                          <p>{t('family_header.total_members')}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                      <div className="w-1 h-1 bg-border rounded-full"></div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/10 rounded-full text-xs cursor-help">
-                            <UserIcon className="h-3 w-3 text-blue-600" />
-                            <span className="font-medium text-blue-600">{familyMembers.filter(m => m.gender === 'male').length}</span>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent className="z-[9999]">
-                          <p>{t('family_header.male_count')}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                      <div className="w-1 h-1 bg-border rounded-full"></div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="flex items-center gap-1 px-2 py-1 bg-rose-500/10 rounded-full text-xs cursor-help">
-                            <UserRoundIcon className="h-3 w-3 text-rose-600" />
-                            <span className="font-medium text-rose-600">{familyMembers.filter(m => m.gender === 'female').length}</span>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent className="z-[9999]">
-                          <p>{t('family_header.female_count')}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                      <div className="w-1 h-1 bg-border rounded-full"></div>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/10 rounded-full text-xs cursor-help">
-                            <Crown className="h-3 w-3 text-amber-600" />
-                            <span className="font-medium text-amber-600">{generationCount}</span>
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent className="z-[9999]">
-                          <p>{t('family_header.generation_count')}</p>
-                        </TooltipContent>
-                       </Tooltip>
-                    </div>
-                 </div>
-                 </div>
-               </TooltipProvider>
+              {/* Left: Avatar & Family Name */}
+              <div className="flex items-center gap-2 sm:gap-4 md:gap-6">
+                 {/* Family Name */}
+                <div className="text-right">
+                  <h1 className="text-sm sm:text-base md:text-lg font-bold">
+                    <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                      {t('family_header.family_prefix')} {familyData?.name || t('family_header.family_tree_default')}
+                    </span>
+                  </h1>
+                </div>
+                
+                {/* Family Avatar */}
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
+                  <div className="relative w-12 h-12 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-3 border-white/30 dark:border-gray-700/30">
+                    <TreePine className="h-6 w-6 text-white" />
+                  </div>
+                  {/* Status Indicator */}
+                  <div className="absolute -bottom-1 -left-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                    <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
+                  </div>
+                </div>
+              </div>
             </div>
             
             {/* Decorative Elements */}
