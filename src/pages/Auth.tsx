@@ -634,6 +634,11 @@ const Auth = () => {
                       <p className="text-gray-600">
                         {t('enter_email_for_reset', 'أدخل بريدك الإلكتروني لإرسال رمز إعادة التعيين')}
                       </p>
+                      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-sm text-blue-800 text-center">
+                          {t('reset_code_info', 'إذا كنت مسجلاً، سيصلك بريد إلكتروني يحتوي على رمز إعادة التعيين')}
+                        </p>
+                      </div>
                     </div>
 
                     <form onSubmit={handleForgotPassword} className="space-y-4">
