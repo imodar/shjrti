@@ -723,7 +723,39 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                 <Label className="text-base font-semibold">حماية بكلمة المرور</Label>
               </div>
 
-              {isEditingPassword ? (
+              {checkingFeature ? (
+                <div className="flex items-center justify-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              ) : !hasCustomDomainFeature ? (
+                // حالة: الميزة غير متاحة (باقة مجانية)
+                <div 
+                  className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border-2 border-dashed border-amber-300 cursor-pointer hover:border-amber-400 transition-colors"
+                  onClick={() => setShowUpgradeModal(true)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
+                        <Lock className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold">حماية بكلمة مرور</span>
+                          <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs">
+                            👑 Premium
+                          </Badge>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          احمِ شجرتك بكلمة مرور لمنع الوصول غير المصرح
+                        </p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      ترقية الآن
+                    </Button>
+                  </div>
+                </div>
+              ) : isEditingPassword ? (
                 <div className="space-y-3">
                   <Input
                     type="password"
