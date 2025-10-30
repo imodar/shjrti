@@ -713,7 +713,7 @@ const Auth = () => {
 
                           <div className="flex items-center justify-between text-sm">
                             <span className="text-muted-foreground">
-                              {t('login_via_otp', 'تسجيل الدخول عبر OTP')}
+                              {t('login_via_otp', 'تسجيل الدخول بواسطة رمز مؤقت')}
                             </span>
                             <a href="#" className="text-primary hover:underline">
                               {t('forgot_password', 'نسيت كلمة المرور؟')}
