@@ -4227,6 +4227,7 @@ const MemberList = ({
   onAddMember,
   packageData
 }: any) => {
+  const { t } = useLanguage();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [maxHeight, setMaxHeight] = React.useState<number | null>(null);
 
@@ -4279,20 +4280,20 @@ const MemberList = ({
       <div className="flex gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="ابحث عن عضو..." value={searchTerm} onChange={e => onSearchChange(e.target.value)} className="pl-10" />
+          <Input placeholder={t('family_builder.search_placeholder')} value={searchTerm} onChange={e => onSearchChange(e.target.value)} className="pl-10" />
         </div>
         <div className="flex-1">
           <Select value={selectedFilter} onValueChange={onFilterChange}>
         <SelectTrigger>
-          <SelectValue placeholder="تصفية حسب..." />
+          <SelectValue placeholder={t('family_builder.filter_placeholder')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">جميع الأعضاء</SelectItem>
-          <SelectItem value="alive">الأحياء</SelectItem>
-          <SelectItem value="deceased">المتوفين</SelectItem>
-          <SelectItem value="male">الذكور</SelectItem>
-          <SelectItem value="female">الإناث</SelectItem>
-          <SelectItem value="founders">المؤسسون</SelectItem>
+          <SelectItem value="all">{t('family_builder.filter_all')}</SelectItem>
+          <SelectItem value="alive">{t('family_builder.filter_alive')}</SelectItem>
+          <SelectItem value="deceased">{t('family_builder.filter_deceased')}</SelectItem>
+          <SelectItem value="male">{t('family_builder.filter_male')}</SelectItem>
+          <SelectItem value="female">{t('family_builder.filter_female')}</SelectItem>
+          <SelectItem value="founders">{t('family_builder.filter_founders')}</SelectItem>
         </SelectContent>
       </Select>
         </div>
