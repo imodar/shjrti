@@ -20,6 +20,7 @@ export default function PaymentSuccess() {
   const [verifying, setVerifying] = useState(true);
   const [paymentStatus, setPaymentStatus] = useState<'success' | 'failed' | 'pending'>('pending');
   const [paymentDetails, setPaymentDetails] = useState<any>(null);
+  const [nextRenewalDate, setNextRenewalDate] = useState<string | null>(null);
 
   const invoiceId = searchParams.get('invoice_id');
   const orderId = searchParams.get('order_id');
@@ -65,6 +66,18 @@ export default function PaymentSuccess() {
             clearSubscriptionCache();
             await refreshSubscription();
 
+            // Fetch renewal date from user_subscriptions
+            const { data: subscriptionData } = await supabase
+              .from('user_subscriptions')
+              .select('expires_at')
+              .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+              .eq('status', 'active')
+              .single();
+            
+            if (subscriptionData?.expires_at) {
+              setNextRenewalDate(subscriptionData.expires_at);
+            }
+
             toast({
               title: currentLanguage === 'ar' ? "تم الدفع بنجاح! 🎉" : "Payment Successful! 🎉",
               description: currentLanguage === 'ar'
@@ -95,6 +108,18 @@ export default function PaymentSuccess() {
             // Clear subscription cache and refresh after successful payment
             clearSubscriptionCache();
             await refreshSubscription();
+
+            // Fetch renewal date from user_subscriptions
+            const { data: subscriptionData } = await supabase
+              .from('user_subscriptions')
+              .select('expires_at')
+              .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
+              .eq('status', 'active')
+              .single();
+            
+            if (subscriptionData?.expires_at) {
+              setNextRenewalDate(subscriptionData.expires_at);
+            }
 
             toast({
               title: currentLanguage === 'ar' ? "تم الدفع بنجاح! 🎉" : "Payment Successful! 🎉",
@@ -148,6 +173,18 @@ export default function PaymentSuccess() {
           // Clear subscription cache and refresh after successful payment
           clearSubscriptionCache();
           await refreshSubscription();
+
+          // Fetch renewal date from user_subscriptions
+          const { data: subscriptionData } = await supabase
+            .from('user_subscriptions')
+            .select('expires_at')
+            .eq('user_id', invoice.user_id)
+            .eq('status', 'active')
+            .single();
+          
+          if (subscriptionData?.expires_at) {
+            setNextRenewalDate(subscriptionData.expires_at);
+          }
         } else {
           setPaymentStatus('pending');
         }
@@ -232,6 +269,9 @@ export default function PaymentSuccess() {
                     <p><strong>{t('payment_success.package')}:</strong> {getLocalizedText(paymentDetails.invoice.packages.name, currentLanguage)}</p>
                   )}
                   <p><strong>{t('payment_success.payment_status')}:</strong> {t('payment_success.paid')}</p>
+                  {nextRenewalDate && (
+                    <p><strong>{currentLanguage === 'ar' ? 'تاريخ التجديد التلقائي:' : 'Next Renewal Date:'}</strong> {new Date(nextRenewalDate).toLocaleDateString(currentLanguage === 'ar' ? 'ar-SA' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                  )}
                 </div>
               )}
               
