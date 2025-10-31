@@ -194,27 +194,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     return { hierarchy, rootUnits };
   };
 
-  const { hierarchy, rootUnits: initialRoots } = buildHierarchy();
-  let rootUnits = initialRoots;
-
-  // Fallback root selection if no roots found
-  if (rootUnits.length === 0 && displayUnits.size > 0) {
-    const allUnits = Array.from(displayUnits.values());
-    const childSet = new Set<string>();
-    allUnits.forEach(u => (u.childUnits || []).forEach(cid => childSet.add(cid)));
-    const inDegreeRoots = allUnits.filter(u => !childSet.has(u.id));
-
-    if (inDegreeRoots.length > 0) {
-      rootUnits = inDegreeRoots;
-    } else {
-      const minGen = Math.min(...allUnits.map(u => u.generation ?? 0));
-      const minGenRoots = allUnits.filter(u => (u.generation ?? 0) === minGen);
-      rootUnits = minGenRoots.length > 0 ? minGenRoots : [allUnits[0]];
-    }
-    console.debug('OrganizationalChart: Fallback roots selected', rootUnits.map(u => u.id));
-  }
-
-  console.debug('OrganizationalChart: Root units count =', rootUnits.length);
+  const { hierarchy, rootUnits } = buildHierarchy();
   const generations = Object.keys(hierarchy).map(Number).sort();
 
   // Calculate optimal positions using tree layout algorithm
@@ -791,25 +771,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           <Users className="h-16 w-16 mx-auto mb-4 opacity-50" />
           <p className="text-lg font-medium">لا توجد بيانات عائلة لعرضها</p>
           <p className="text-sm mt-2">ابدأ بإضافة أعضاء العائلة لبناء الشجرة</p>
-        </div>
-      </div>
-    );
-  }
-
-  console.debug('OrganizationalChart: displayUnits.size =', displayUnits.size, '| positions.size =', positions.size);
-
-  // Last-resort fallback rendering when positions could not be calculated
-  if (displayUnits.size > 0 && positions.size === 0) {
-    return (
-      <div className="p-6">
-        <div className="text-xs text-muted-foreground mb-3">وضع عرض احتياطي: لا توجد مواضع محسوبة للشجرة، عرض قائم بسيط.</div>
-        <div className="grid gap-3">
-          {Array.from(displayUnits.values()).slice(0, 200).map(u => (
-            <div key={u.id} className="border border-border/50 rounded-md p-3 bg-card/80">
-              <div className="font-medium">{u.type === 'married' ? (u.members.map(m => m.name).join(' و ')) : (u.members[0]?.name || '')}</div>
-              <div className="text-xs text-muted-foreground">الجيل: {u.generation || 1}</div>
-            </div>
-          ))}
         </div>
       </div>
     );

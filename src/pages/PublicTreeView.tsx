@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { GlobalHeader } from "@/components/GlobalHeader";
@@ -16,10 +15,9 @@ import { FamilyStatisticsView } from "@/components/FamilyStatisticsView";
 import { FamilyGalleryView } from "@/components/FamilyGalleryView";
 import { PublicFamilyHeader } from "@/components/PublicFamilyHeader";
 import { FamilyOverview } from "@/components/FamilyOverview";
-import { OrganizationalChart } from "@/components/OrganizationalChart";
-import { Users, AlertCircle, Menu, ZoomIn, ZoomOut } from "lucide-react";
+import { TreeView } from "@/components/TreeView";
+import { Users, AlertCircle, Menu } from "lucide-react";
 import { MemberProfileModal } from "@/components/MemberProfileModal";
-import { createFamilyUnitsFromData, assignGenerationsToUnits, filterUnitsByRootMarriage, ensureGenerations } from "@/lib/familyTree";
 
 interface PublicTreeViewProps {
   overrideFamilyId?: string;
@@ -38,23 +36,9 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const [isPasswordCorrect, setIsPasswordCorrect] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>("all");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [activeSection, setActiveSection] = useState('tree');
+  const [activeSection, setActiveSection] = useState('overview');
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
-  
-  const traditionalRef = useRef<HTMLDivElement>(null);
-  const handleRootMarriageChange = (value: string) => {
-    setSelectedRootMarriage(value);
-    setZoomLevel(1);
-    setTimeout(() => {
-      if (traditionalRef.current) {
-        const el = traditionalRef.current;
-        el.scrollLeft = Math.max(0, (el.scrollWidth - el.clientWidth) / 2);
-        el.scrollTop = 0;
-      }
-    }, 0);
-  };
   
   // Suggest Edit Dialog state
   const [suggestEditOpen, setSuggestEditOpen] = useState(false);
@@ -66,31 +50,6 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   
   // Get family ID from URL parameters or props
   const familyId = overrideFamilyId || searchParams.get('familyId');
-
-  // Generate family units for the tree
-  const generateFamilyUnits = useCallback(() => {
-    // Build units using shared utilities to keep parity with private view
-    let units = createFamilyUnitsFromData(familyMembers, familyMarriages);
-
-    assignGenerationsToUnits(units);
-
-    if (selectedRootMarriage !== 'all') {
-      units = filterUnitsByRootMarriage(units, familyMarriages, selectedRootMarriage);
-    }
-
-    ensureGenerations(units, familyMarriages, selectedRootMarriage, familyMembers);
-
-    console.debug('PublicTreeView: units =', units.size, 'members =', familyMembers.length, 'marriages =', familyMarriages.length);
-    return units;
-  }, [familyMembers, familyMarriages, selectedRootMarriage]);
-
-  const familyUnits = useMemo(() => {
-    const units = generateFamilyUnits();
-    console.log('PublicTreeView - Generated family units:', units.size);
-    console.log('PublicTreeView - Family members:', familyMembers.length);
-    console.log('PublicTreeView - Family marriages:', familyMarriages.length);
-    return units;
-  }, [generateFamilyUnits]);
 
   useEffect(() => {
     if (familyId) {
@@ -410,70 +369,15 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                     )}
                     
                     {activeSection === 'tree' && (
-                      <div className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-xl shadow-lg overflow-hidden">
-                        {/* Filter Bar at Top */}
-                        <div className="flex items-center justify-between p-4 border-b border-white/40 dark:border-gray-600/40 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10">
-                          <div className="flex-1 max-w-md">
-                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                              اختر جذر الشجرة
-                            </label>
-                          <Select value={selectedRootMarriage} onValueChange={handleRootMarriageChange}>
-                              <SelectTrigger className="w-full bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-emerald-200/50 dark:border-emerald-600/50">
-                                <SelectValue placeholder="اختر عائلة لعرضها" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-emerald-200/50 dark:border-emerald-600/50">
-                                <SelectItem value="all">عرض الشجرة الكاملة</SelectItem>
-                                {familyMarriages
-                                  .filter(marriage => marriage.is_active)
-                                  .map(marriage => {
-                                    const husband = familyMembers.find(m => m.id === marriage.husband_id);
-                                    const wife = familyMembers.find(m => m.id === marriage.wife_id);
-                                    if (husband && wife) {
-                                      return (
-                                        <SelectItem key={marriage.id} value={marriage.id}>
-                                          عائلة {husband.name} و {wife.name}
-                                        </SelectItem>
-                                      );
-                                    }
-                                    return null;
-                                  })}
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          
-                          {/* Zoom Controls */}
-                          <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
-                            <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                              <ZoomOut className="h-4 w-4" />
-                            </Button>
-                            <span className="text-sm min-w-[3rem] text-center font-medium">
-                              {Math.round(zoomLevel * 100)}%
-                            </span>
-                            <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                              <ZoomIn className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                        
-                        {/* Tree Content Area */}
-                        <div ref={traditionalRef} className="p-4 min-h-[600px] overflow-auto">
-                          <OrganizationalChart 
-                            key={`${selectedRootMarriage}-${familyMembers.length}-${familyMarriages.length}-${Array.from(familyUnits.keys()).length}`}
-                            familyUnits={familyUnits} 
-                            zoomLevel={zoomLevel}
-                            isPublicView={true}
-                            onSuggestEdit={handleSuggestEdit}
-                            marriages={familyMarriages}
-                            members={familyMembers}
-                          />
-                        </div>
-                        
-                        {familyMembers.length === 0 && (
-                          <div className="text-center py-12">
-                            <p className="text-muted-foreground">لا توجد أعضاء في شجرة العائلة بعد</p>
-                          </div>
-                        )}
-                      </div>
+                      <TreeView 
+                        familyMembers={familyMembers}
+                        familyMarriages={familyMarriages}
+                        zoomLevel={zoomLevel}
+                        onZoomIn={handleZoomIn}
+                        onZoomOut={handleZoomOut}
+                        onResetZoom={handleResetZoom}
+                        onSuggestEdit={handleSuggestEdit}
+                      />
                     )}
                     
                     {activeSection === 'statistics' && (
