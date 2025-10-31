@@ -3,6 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { GlobalHeader } from "@/components/GlobalHeader";
@@ -15,8 +17,8 @@ import { FamilyStatisticsView } from "@/components/FamilyStatisticsView";
 import { FamilyGalleryView } from "@/components/FamilyGalleryView";
 import { PublicFamilyHeader } from "@/components/PublicFamilyHeader";
 import { FamilyOverview } from "@/components/FamilyOverview";
-import { TreeView } from "@/components/TreeView";
-import { Users, AlertCircle, Menu } from "lucide-react";
+import { OrganizationalChart } from "@/components/OrganizationalChart";
+import { Users, AlertCircle, Menu, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import { MemberProfileModal } from "@/components/MemberProfileModal";
 
 interface PublicTreeViewProps {
@@ -39,6 +41,7 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
+  const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>("all");
   
   // Suggest Edit Dialog state
   const [suggestEditOpen, setSuggestEditOpen] = useState(false);
@@ -165,6 +168,189 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
     await loadFamilyTreeData();
     setIsRefreshing(false);
   };
+
+  // Handler for root marriage filter change
+  const handleRootMarriageChange = (value: string) => {
+    setSelectedRootMarriage(value);
+    setZoomLevel(1); // Reset zoom to default
+  };
+
+  // Family Units - Core logic for tree structure
+  interface FamilyUnit {
+    id: string;
+    type: 'married' | 'single';
+    members: any[];
+    generation: number;
+    parentUnitId?: string;
+    childUnits: string[];
+  }
+
+  const createFamilyUnits = (): Map<string, FamilyUnit> => {
+    const units = new Map<string, FamilyUnit>();
+    const processedMembers = new Set<string>();
+    console.log('Creating family units from members:', familyMembers.length);
+
+    // Step 1: Create units for married couples
+    familyMarriages.forEach(marriage => {
+      if (marriage.is_active) {
+        const husband = familyMembers.find(m => m.id === marriage.husband_id);
+        const wife = familyMembers.find(m => m.id === marriage.wife_id);
+        if (husband && wife) {
+          const unitId = `married_${marriage.id}`;
+          units.set(unitId, {
+            id: unitId,
+            type: 'married',
+            members: [husband, wife],
+            generation: 0,
+            childUnits: []
+          });
+          processedMembers.add(husband.id);
+          processedMembers.add(wife.id);
+          console.log(`Created married unit: ${husband.name} & ${wife.name}`);
+        }
+      }
+    });
+
+    // Step 2: Create units for single members
+    familyMembers.forEach(member => {
+      if (!processedMembers.has(member.id)) {
+        const unitId = `single_${member.id}`;
+        units.set(unitId, {
+          id: unitId,
+          type: 'single',
+          members: [member],
+          generation: 0,
+          childUnits: []
+        });
+        console.log(`Created single unit: ${member.name}`);
+      }
+    });
+    console.log('Created units:', units.size);
+    return units;
+  };
+
+  const getUnitByMemberId = (memberId: string, units: Map<string, FamilyUnit>): FamilyUnit | undefined => {
+    for (const unit of units.values()) {
+      if (unit.members.some(m => m.id === memberId)) {
+        return unit;
+      }
+    }
+    return undefined;
+  };
+
+  const assignGenerationsToUnits = (units: Map<string, FamilyUnit>) => {
+    console.log('Assigning generations to units...');
+
+    // Step 1: Find founder units (units containing founders)
+    const founderUnits: string[] = [];
+    units.forEach((unit, unitId) => {
+      if (unit.members.some(m => m.is_founder)) {
+        unit.generation = 1;
+        founderUnits.push(unitId);
+        console.log(`Set ${unit.members.map(m => m.name).join(' & ')} as generation 1 (founder unit)`);
+      }
+    });
+
+    // Step 2: Establish parent-child relationships between units
+    units.forEach((unit, unitId) => {
+      unit.members.forEach(member => {
+        if (member.father_id || member.mother_id) {
+          // Find parent unit
+          const fatherId = member.father_id;
+          const motherId = member.mother_id;
+          const parentUnit = fatherId ? getUnitByMemberId(fatherId, units) : motherId ? getUnitByMemberId(motherId, units) : undefined;
+          if (parentUnit && parentUnit.id !== unitId) {
+            unit.parentUnitId = parentUnit.id;
+            if (!parentUnit.childUnits.includes(unitId)) {
+              parentUnit.childUnits.push(unitId);
+            }
+            console.log(`Connected ${unit.members.map(m => m.name).join(' & ')} to parent ${parentUnit.members.map(m => m.name).join(' & ')}`);
+          }
+        }
+      });
+    });
+
+    // Step 3: Assign generations based on parent-child relationships
+    let changed = true;
+    let iterations = 0;
+    const maxIterations = 20;
+    while (changed && iterations < maxIterations) {
+      changed = false;
+      iterations++;
+      units.forEach((unit, unitId) => {
+        if (unit.generation === 0 && unit.parentUnitId) {
+          const parentUnit = units.get(unit.parentUnitId);
+          if (parentUnit && parentUnit.generation > 0) {
+            unit.generation = parentUnit.generation + 1;
+            console.log(`Set ${unit.members.map(m => m.name).join(' & ')} as generation ${unit.generation}`);
+            changed = true;
+          }
+        }
+      });
+    }
+    console.log('Generation assignment completed after', iterations, 'iterations');
+  };
+
+  // Generate family tree structure using family units
+  const generateFamilyTree = () => {
+    console.log('Generating family tree with members:', familyMembers.length);
+    if (familyMembers.length === 0) return {
+      tree: [],
+      units: new Map()
+    };
+
+    // Create family units
+    const units = createFamilyUnits();
+
+    // Assign generations to units first (establishes parent-child relationships)
+    assignGenerationsToUnits(units);
+
+    // Filter units based on selected root marriage AFTER relationships are established
+    if (selectedRootMarriage !== "all") {
+      const rootMarriage = familyMarriages.find(m => m.id === selectedRootMarriage);
+      if (rootMarriage) {
+        const filteredUnits = new Map<string, FamilyUnit>();
+        const rootUnitId = `married_${rootMarriage.id}`;
+        
+        // Function to collect descendants recursively
+        const collectDescendants = (unitId: string, visited = new Set<string>()) => {
+          if (visited.has(unitId)) return;
+          visited.add(unitId);
+          
+          const unit = units.get(unitId);
+          if (unit) {
+            filteredUnits.set(unitId, unit);
+            // Now childUnits should be populated
+            unit.childUnits.forEach(childId => collectDescendants(childId, visited));
+          }
+        };
+        
+        // Start from root marriage and collect all descendants
+        collectDescendants(rootUnitId);
+        
+        // Update units to only filtered ones - preserve the relationships
+        const originalUnits = new Map(units);
+        units.clear();
+        filteredUnits.forEach((unit, id) => {
+          units.set(id, unit);
+        });
+        
+        console.log(`Filtered to ${filteredUnits.size} units from original ${originalUnits.size} units`);
+        
+        // Re-calculate generations after filtering
+        const minGen = Math.min(...Array.from(units.values()).map(u => u.generation).filter(g => g > 0));
+        units.forEach(unit => {
+          if (unit.generation > 0) {
+            unit.generation = unit.generation - minGen + 1;
+          }
+        });
+      }
+    }
+
+    return { tree: [], units };
+  };
+
+  const familyTreeData = useMemo(() => generateFamilyTree(), [familyMembers, familyMarriages, selectedRootMarriage]);
 
   // Calculate generation count
   const generationCount = useMemo(() => {
@@ -369,15 +555,86 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                     )}
                     
                     {activeSection === 'tree' && (
-                      <TreeView 
-                        familyMembers={familyMembers}
-                        familyMarriages={familyMarriages}
-                        zoomLevel={zoomLevel}
-                        onZoomIn={handleZoomIn}
-                        onZoomOut={handleZoomOut}
-                        onResetZoom={handleResetZoom}
-                        onSuggestEdit={handleSuggestEdit}
-                      />
+                      <div className="space-y-4">
+                        {/* Filter by Marriage */}
+                        <div className="flex items-center gap-4 mb-4">
+                          <label className="text-sm font-medium">عرض عائلة:</label>
+                          <Select value={selectedRootMarriage} onValueChange={handleRootMarriageChange}>
+                            <SelectTrigger className="w-[250px]">
+                              <SelectValue placeholder="اختر العائلة" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">جميع العائلات</SelectItem>
+                              {familyMarriages
+                                .filter(m => m.is_active)
+                                .map(marriage => {
+                                  const husband = familyMembers.find(m => m.id === marriage.husband_id);
+                                  const wife = familyMembers.find(m => m.id === marriage.wife_id);
+                                  if (!husband || !wife) return null;
+                                  return (
+                                    <SelectItem key={marriage.id} value={marriage.id}>
+                                      عائلة {husband.name} و {wife.name}
+                                    </SelectItem>
+                                  );
+                                })}
+                            </SelectContent>
+                          </Select>
+                        </div>
+
+                        {/* Zoom Controls */}
+                        <div className="flex justify-end gap-2 mb-4">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleZoomIn}
+                            className="bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-800"
+                          >
+                            <ZoomIn className="h-4 w-4 ml-2" />
+                            تكبير
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleZoomOut}
+                            className="bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-800"
+                          >
+                            <ZoomOut className="h-4 w-4 ml-2" />
+                            تصغير
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleResetZoom}
+                            className="bg-white/80 hover:bg-white dark:bg-gray-800/80 dark:hover:bg-gray-800"
+                          >
+                            <RotateCcw className="h-4 w-4 ml-2" />
+                            إعادة تعيين
+                          </Button>
+                        </div>
+
+                        {/* Tree Chart */}
+                        <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 overflow-auto max-h-[600px]">
+                          <div 
+                            className="transition-transform duration-300 ease-in-out origin-top-left"
+                            style={{ transform: `scale(${zoomLevel})` }}
+                          >
+                            <OrganizationalChart
+                              familyUnits={familyTreeData.units}
+                              zoomLevel={zoomLevel}
+                              isPublicView={true}
+                              onSuggestEdit={handleSuggestEdit}
+                              marriages={familyMarriages}
+                              members={familyMembers}
+                            />
+                          </div>
+                        </div>
+
+                        {familyMembers.length === 0 && (
+                          <div className="text-center py-12">
+                            <p className="text-muted-foreground">لا توجد أعضاء في شجرة العائلة بعد</p>
+                          </div>
+                        )}
+                      </div>
                     )}
                     
                     {activeSection === 'statistics' && (
