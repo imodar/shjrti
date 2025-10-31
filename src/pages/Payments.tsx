@@ -21,6 +21,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { DateDisplay } from "@/components/DateDisplay";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { usePackageTransition } from "@/hooks/usePackageTransition";
+import { ScheduledPackageChangeCard } from "@/components/ScheduledPackageChangeCard";
+import { useQuery } from "@tanstack/react-query";
 export default function Payments() {
   const {
     toast
@@ -61,6 +63,40 @@ export default function Payments() {
   const [cancellingDowngrade, setCancellingDowngrade] = useState(false);
   const [showDowngradeModal, setShowDowngradeModal] = useState(false);
   const [selectedDowngradePlan, setSelectedDowngradePlan] = useState<any>(null);
+
+  // Query for scheduled package changes
+  const { data: scheduledChanges, refetch: refetchScheduledChanges } = useQuery({
+    queryKey: ['scheduled-package-changes', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+
+      const { data: changes, error: changesError } = await supabase
+        .from('scheduled_package_changes')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false })
+        .maybeSingle();
+
+      if (changesError && changesError.code !== 'PGRST116') throw changesError;
+      if (!changes) return null;
+
+      // Fetch the target package separately
+      const { data: targetPackage, error: packageError } = await supabase
+        .from('packages')
+        .select('name, price_usd')
+        .eq('id', changes.target_package_id)
+        .single();
+
+      if (packageError) throw packageError;
+
+      return {
+        ...changes,
+        target_package: targetPackage
+      };
+    },
+    enabled: !!user,
+  });
 
   // Function to get localized value
   const getLocalizedValue = (value: string | object): string => {
@@ -680,6 +716,16 @@ export default function Payments() {
                         </p>
                        {currentPlan && currentPlanData?.price_usd && parseFloat(currentPlanData.price_usd.toString()) > 0 && <p className="text-muted-foreground">سنوياً</p>}
                     </div>
+
+                    {/* Scheduled Package Change Display */}
+                    {scheduledChanges && (
+                      <div className="mt-6">
+                        <ScheduledPackageChangeCard 
+                          scheduledChange={scheduledChanges} 
+                          onCancelled={() => refetchScheduledChanges()}
+                        />
+                      </div>
+                    )}
                     
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">

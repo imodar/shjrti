@@ -1268,6 +1268,10 @@ export type Database = {
         Args: { new_expiry_date: string; target_user_id: string }
         Returns: boolean
       }
+      cancel_scheduled_package_change: {
+        Args: { p_scheduled_change_id: string; p_user_id: string }
+        Returns: boolean
+      }
       complete_payment_and_upgrade: {
         Args: {
           p_invoice_id: string
@@ -1343,6 +1347,10 @@ export type Database = {
           p_user_id: string
         }
         Returns: string
+      }
+      process_scheduled_package_change: {
+        Args: { p_scheduled_change_id: string; p_user_id: string }
+        Returns: boolean
       }
       update_user_status: {
         Args: {
