@@ -198,23 +198,22 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
                 alt={selectedImage.caption || "صورة عائلية"}
                 className="w-full h-auto max-h-[80vh] object-contain"
               />
-              {(selectedImage.caption || selectedImage.photo_date) && (
-                <div className="p-4 bg-white dark:bg-gray-800">
-                  {selectedImage.caption && (
-                    <p className="text-gray-900 dark:text-gray-100 font-medium mb-2">
-                      {selectedImage.caption}
-                    </p>
-                  )}
-                  {selectedImage.photo_date && (
-                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                      <Calendar className="h-4 w-4" />
-                      <span className="text-sm">
-                        {new Date(selectedImage.photo_date).toLocaleDateString('ar-SA')}
-                      </span>
-                    </div>
-                  )}
+              <div className="p-4 bg-white dark:bg-gray-800">
+                {selectedImage.caption && (
+                  <p className="text-gray-900 dark:text-gray-100 font-medium mb-2">
+                    {selectedImage.caption}
+                  </p>
+                )}
+                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                  <Calendar className="h-4 w-4" />
+                  <span className="text-sm">
+                    {selectedImage.photo_date 
+                      ? new Date(selectedImage.photo_date).toLocaleDateString('ar-SA')
+                      : 'تاريخ الصورة غير معروف'
+                    }
+                  </span>
                 </div>
-              )}
+              </div>
             </div>
           )}
         </DialogContent>
