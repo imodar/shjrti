@@ -33,8 +33,10 @@ const Auth = () => {
 
   // Global OTP cooldown (one timer for all OTP-related requests)
   const [otpCooldown, setOtpCooldown] = useState(0);
-  // Extra guard to ensure a single network request per click (synchronous)
+  // Extra guards to ensure a single network request per click (synchronous)
+  const resetSubmittingRef = useRef(false);
   const magicSubmittingRef = useRef(false);
+  const resendSubmittingRef = useRef(false);
 
   const startGlobalCooldown = (seconds: number) => {
     const until = Date.now() + seconds * 1000;
@@ -284,6 +286,7 @@ const Auth = () => {
 
   const handleResendOTP = async () => {
     if (!pendingUserData) return;
+    if (resendSubmittingRef.current) return;
     if (otpCooldown > 0) {
       toast({
         title: t('wait_before_retry', 'الرجاء الانتظار'),
@@ -292,6 +295,7 @@ const Auth = () => {
       return;
     }
     
+    resendSubmittingRef.current = true;
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.resend({
@@ -317,6 +321,8 @@ const Auth = () => {
             variant: "destructive",
           });
         }
+        resendSubmittingRef.current = false;
+        setIsLoading(false);
         return;
       }
 
@@ -325,13 +331,15 @@ const Auth = () => {
         description: t('resent_description', 'تم إرسال رمز تحقق جديد إلى بريدك الإلكتروني'),
       });
       startGlobalCooldown(300);
+      resendSubmittingRef.current = false;
+      setIsLoading(false);
     } catch (error: any) {
       toast({
         title: t('error', 'خطأ'),
         description: error.message || t('resend_error_general', 'حدث خطأ أثناء إعادة الإرسال'),
         variant: "destructive",
       });
-    } finally {
+      resendSubmittingRef.current = false;
       setIsLoading(false);
     }
   };
@@ -346,16 +354,17 @@ const Auth = () => {
     e.preventDefault();
     
     // Prevent multiple submissions
-    if (isLoading) return;
+    if (isLoading || resetSubmittingRef.current) return;
     // Cooldown guard
-    if (resetCooldown > 0) {
+    if (otpCooldown > 0) {
       toast({
         title: t('wait_before_retry', 'الرجاء الانتظار'),
-        description: `${t('retry_after', 'يمكنك طلب رمز جديد بعد')} ${resetCooldown}ث`,
+        description: `${t('retry_after', 'يمكنك طلب رمز جديد بعد')} ${otpCooldown}ث`,
       });
       return;
     }
     
+    resetSubmittingRef.current = true;
     setIsLoading(true);
 
     try {
@@ -366,10 +375,10 @@ const Auth = () => {
       if (error) {
         const msg = (error.message || '').toLowerCase();
         if (msg.includes('rate limit')) {
-          startCooldown('auth_reset_until', 60, setResetCooldown);
+          startGlobalCooldown(300);
           toast({
             title: t('too_many_requests', 'طلبات متكررة'),
-            description: t('retry_in_seconds', 'يرجى الانتظار 60 ثانية قبل طلب رمز جديد'),
+            description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل طلب رمز جديد')}`,
           });
         } else {
           toast({
@@ -378,6 +387,7 @@ const Auth = () => {
             variant: "destructive",
           });
         }
+        resetSubmittingRef.current = false;
         setIsLoading(false);
         return;
       }
@@ -387,10 +397,11 @@ const Auth = () => {
         description: t('check_email_for_code', 'يرجى التحقق من بريدك الإلكتروني'),
       });
 
-      // Start 60s cooldown to avoid rate limit
-      startCooldown('auth_reset_until', 60, setResetCooldown);
+      // Start 5min cooldown to avoid rate limit
+      startGlobalCooldown(300);
 
       setShowPasswordReset('otp');
+      resetSubmittingRef.current = false;
       setIsLoading(false);
     } catch (error: any) {
       toast({
@@ -398,6 +409,7 @@ const Auth = () => {
         description: error.message,
         variant: "destructive",
       });
+      resetSubmittingRef.current = false;
       setIsLoading(false);
     }
   };
@@ -492,15 +504,16 @@ const Auth = () => {
     e.preventDefault();
     
     // Prevent multiple submissions
-    if (isLoading) return;
-    if (magicCooldown > 0) {
+    if (isLoading || magicSubmittingRef.current) return;
+    if (otpCooldown > 0) {
       toast({
         title: t('wait_before_retry', 'الرجاء الانتظار'),
-        description: `${t('retry_after', 'يمكنك طلب رمز جديد بعد')} ${magicCooldown}ث`,
+        description: `${t('retry_after', 'يمكنك طلب رمز جديد بعد')} ${otpCooldown}ث`,
       });
       return;
     }
     
+    magicSubmittingRef.current = true;
     setIsLoading(true);
 
     try {
@@ -514,10 +527,10 @@ const Auth = () => {
       if (error) {
         const msg = (error.message || '').toLowerCase();
         if (msg.includes('rate limit')) {
-          startCooldown('auth_magic_until', 60, setMagicCooldown);
+          startGlobalCooldown(300);
           toast({
             title: t('too_many_requests', 'طلبات متكررة'),
-            description: t('retry_in_seconds', 'يرجى الانتظار 60 ثانية قبل طلب رمز جديد'),
+            description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل طلب رمز جديد')}`,
           });
         } else {
           toast({
@@ -526,6 +539,7 @@ const Auth = () => {
             variant: "destructive",
           });
         }
+        magicSubmittingRef.current = false;
         setIsLoading(false);
         return;
       }
@@ -535,9 +549,10 @@ const Auth = () => {
         description: t('check_email_for_code', 'تحقق من بريدك الإلكتروني لإدخال الرمز المؤقت'),
       });
 
-      startCooldown('auth_magic_until', 60, setMagicCooldown);
+      startGlobalCooldown(300);
 
       setShowMagicLink('otp');
+      magicSubmittingRef.current = false;
       setIsLoading(false);
     } catch (error: any) {
       toast({
@@ -545,6 +560,7 @@ const Auth = () => {
         description: error.message,
         variant: "destructive",
       });
+      magicSubmittingRef.current = false;
       setIsLoading(false);
     }
   };
@@ -825,12 +841,12 @@ const Auth = () => {
                       <Button
                         type="submit"
                         className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-                        disabled={isLoading || magicCooldown > 0}
+                        disabled={isLoading || otpCooldown > 0}
                       >
                         {isLoading
                           ? t('sending', 'جاري الإرسال...')
-                          : magicCooldown > 0
-                            ? `${t('retry_after', 'يمكن الإرسال بعد')} ${magicCooldown}ث`
+                          : otpCooldown > 0
+                            ? `${t('retry_after', 'يمكن الإرسال بعد')} ${otpCooldown}ث`
                             : t('send_magic_code', 'إرسال الرمز المؤقت')}
                         <Mail className="mr-2 h-4 w-4" />
                       </Button>
@@ -947,12 +963,12 @@ const Auth = () => {
                       <Button
                         type="submit"
                         className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-                        disabled={isLoading || resetCooldown > 0}
+                        disabled={isLoading || otpCooldown > 0}
                       >
                         {isLoading
                           ? t('sending', 'جاري الإرسال...')
-                          : resetCooldown > 0
-                            ? `${t('retry_after', 'أعد المحاولة بعد')} ${resetCooldown}ث`
+                          : otpCooldown > 0
+                            ? `${t('retry_after', 'أعد المحاولة بعد')} ${otpCooldown}ث`
                             : t('send_reset_code', 'إرسال رمز إعادة التعيين')}
                         <Mail className="mr-2 h-4 w-4" />
                       </Button>
@@ -1137,10 +1153,10 @@ const Auth = () => {
                         onClick={handleResendOTP}
                         variant="outline"
                         className="w-full border-emerald-200 hover:bg-emerald-50"
-                        disabled={isLoading || signupCooldown > 0}
+                        disabled={isLoading || otpCooldown > 0}
                       >
-                        {signupCooldown > 0
-                          ? `${t('resend_in', 'إعادة الإرسال خلال')} ${signupCooldown}ث`
+                        {otpCooldown > 0
+                          ? `${t('resend_in', 'إعادة الإرسال خلال')} ${otpCooldown}ث`
                           : t('resend_code', 'إعادة إرسال الرمز')}
                         <Mail className="mr-2 h-4 w-4" />
                       </Button>
