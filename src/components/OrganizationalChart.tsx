@@ -194,7 +194,27 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     return { hierarchy, rootUnits };
   };
 
-  const { hierarchy, rootUnits } = buildHierarchy();
+  const { hierarchy, rootUnits: initialRoots } = buildHierarchy();
+  let rootUnits = initialRoots;
+
+  // Fallback root selection if no roots found
+  if (rootUnits.length === 0 && displayUnits.size > 0) {
+    const allUnits = Array.from(displayUnits.values());
+    const childSet = new Set<string>();
+    allUnits.forEach(u => (u.childUnits || []).forEach(cid => childSet.add(cid)));
+    const inDegreeRoots = allUnits.filter(u => !childSet.has(u.id));
+
+    if (inDegreeRoots.length > 0) {
+      rootUnits = inDegreeRoots;
+    } else {
+      const minGen = Math.min(...allUnits.map(u => u.generation ?? 0));
+      const minGenRoots = allUnits.filter(u => (u.generation ?? 0) === minGen);
+      rootUnits = minGenRoots.length > 0 ? minGenRoots : [allUnits[0]];
+    }
+    console.debug('OrganizationalChart: Fallback roots selected', rootUnits.map(u => u.id));
+  }
+
+  console.debug('OrganizationalChart: Root units count =', rootUnits.length);
   const generations = Object.keys(hierarchy).map(Number).sort();
 
   // Calculate optimal positions using tree layout algorithm

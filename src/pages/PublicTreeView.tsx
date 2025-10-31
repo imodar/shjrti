@@ -265,6 +265,38 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
       }
     }
 
+    // Step 8: Normalization pass - ensure at least one root with generation >= 1
+    const rootCandidates = Array.from(units.values()).filter(u => !u.parentUnitId);
+    if (rootCandidates.length > 0) {
+      rootCandidates.forEach(u => {
+        if (u.generation < 1) u.generation = 1;
+      });
+    } else if (units.size > 0) {
+      // No explicit roots - pick members without known parents
+      const noParentMembers = familyMembers.filter(
+        m => !m.father_id && !m.mother_id
+      );
+      if (noParentMembers.length > 0) {
+        units.forEach((u) => {
+          if (u.members.some(m => noParentMembers.some(npm => npm.id === m.id))) {
+            u.generation = 1;
+            u.parentUnitId = undefined;
+          }
+        });
+      } else {
+        // Last resort: pick unit with minimal generation
+        const minGen = Math.min(...Array.from(units.values()).map(u => u.generation));
+        const minGenUnits = Array.from(units.values()).filter(u => u.generation === minGen);
+        if (minGenUnits.length > 0) {
+          minGenUnits[0].generation = 1;
+          minGenUnits[0].parentUnitId = undefined;
+        }
+      }
+    }
+
+    const finalRoots = Array.from(units.values()).filter(u => !u.parentUnitId);
+    console.debug('PublicTreeView: Total units =', units.size, '| Root units =', finalRoots.length);
+
     return units;
   }, [familyMembers, familyMarriages, selectedRootMarriage]);
 
