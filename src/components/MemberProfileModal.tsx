@@ -49,6 +49,7 @@ export const MemberProfileModal: React.FC<MemberProfileModalProps> = ({
             readOnly={readOnly}
             onEdit={onEdit}
             onDelete={onDelete}
+            onBack={onClose}
             onMemberClick={onMemberClick}
           />
         )}
