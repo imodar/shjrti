@@ -512,10 +512,10 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                     )}
                     
                     {activeSection === 'tree' && (
-                      <div className="space-y-4">
-                        {/* Filter Bar and Zoom Controls */}
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border-b border-emerald-200/30 dark:border-emerald-600/30 bg-gradient-to-r from-emerald-500/5 via-teal-500/10 to-amber-500/5 rounded-t-lg">
-                          <div className="flex-1 w-full sm:w-auto sm:max-w-md">
+                      <div className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-xl shadow-lg overflow-hidden">
+                        {/* Filter Bar at Top */}
+                        <div className="flex items-center justify-between p-4 border-b border-white/40 dark:border-gray-600/40 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10">
+                          <div className="flex-1 max-w-md">
                             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                               اختر جذر الشجرة
                             </label>
@@ -560,23 +560,18 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                           </div>
                         </div>
                         
-                        {/* Tree Chart with Organizational Chart */}
-                        <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 overflow-auto min-h-[600px]">
-                          <div 
-                            className="transition-transform duration-300 ease-in-out origin-top-left"
-                            style={{ transform: `scale(${zoomLevel})` }}
-                          >
-                            <OrganizationalChart
-                              familyUnits={familyUnits}
-                              zoomLevel={zoomLevel}
-                              isPublicView={true}
-                              onSuggestEdit={handleSuggestEdit}
-                              marriages={familyMarriages}
-                              members={familyMembers}
-                            />
-                          </div>
+                        {/* Tree Content Area */}
+                        <div className="p-4 min-h-[600px] overflow-auto">
+                          <OrganizationalChart
+                            familyUnits={familyUnits}
+                            zoomLevel={zoomLevel}
+                            isPublicView={true}
+                            onSuggestEdit={handleSuggestEdit}
+                            marriages={familyMarriages}
+                            members={familyMembers}
+                          />
                         </div>
-
+                        
                         {familyMembers.length === 0 && (
                           <div className="text-center py-12">
                             <p className="text-muted-foreground">لا توجد أعضاء في شجرة العائلة بعد</p>
