@@ -180,7 +180,10 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
         (u as any).childUnits.forEach((cid: string) => { if (units.has(cid)) queue.push({ id: cid, gen: gen + 1 }); });
       }
     }
+    // Ensure every unit has a generation >= 1
+    units.forEach((u: any) => { if (!u.generation || u.generation < 1) u.generation = 1; });
 
+    // Filter by selected root marriage if needed
     if (selectedRootMarriage !== "all") {
       const rootMarriage = familyMarriages.find(m => m.id === selectedRootMarriage);
       if (rootMarriage) {
@@ -201,8 +204,8 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
         collectDescendants(rootUnitId);
         
         // Recompute generations for filtered tree
-        filteredUnits.forEach((u: any) => { u.generation = 0; });
-        if (filteredUnits.has(rootUnitId)) {
+        if (filteredUnits.size > 0) {
+          filteredUnits.forEach((u: any) => { u.generation = 0; });
           const queue = [{ id: rootUnitId, gen: 1 }];
           const seen = new Set<string>();
           while (queue.length) {
@@ -216,9 +219,8 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
               if (filteredUnits.has(cid)) queue.push({ id: cid, gen: gen + 1 });
             });
           }
+          return filteredUnits;
         }
-        
-        return filteredUnits;
       }
     }
 
