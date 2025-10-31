@@ -796,6 +796,25 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     );
   }
 
+  console.debug('OrganizationalChart: displayUnits.size =', displayUnits.size, '| positions.size =', positions.size);
+
+  // Last-resort fallback rendering when positions could not be calculated
+  if (displayUnits.size > 0 && positions.size === 0) {
+    return (
+      <div className="p-6">
+        <div className="text-xs text-muted-foreground mb-3">وضع عرض احتياطي: لا توجد مواضع محسوبة للشجرة، عرض قائم بسيط.</div>
+        <div className="grid gap-3">
+          {Array.from(displayUnits.values()).slice(0, 200).map(u => (
+            <div key={u.id} className="border border-border/50 rounded-md p-3 bg-card/80">
+              <div className="font-medium">{u.type === 'married' ? (u.members.map(m => m.name).join(' و ')) : (u.members[0]?.name || '')}</div>
+              <div className="text-xs text-muted-foreground">الجيل: {u.generation || 1}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   // Calculate chart dimensions
   const allPositions = Array.from(positions.values());
   const chartWidth = Math.max(
