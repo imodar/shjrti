@@ -1,10 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { TreePine, User, LogIn, LogOut, Settings, CreditCard, HelpCircle, Sparkles, Mail, Home, Globe, ChevronDown, Crown, Menu, X, Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useAdmin } from "@/contexts/AdminContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
@@ -20,9 +19,37 @@ import familyTreeLogo from "@/assets/family-tree-logo.png";
 
 export const GlobalHeader = () => {
   const { user, signOut } = useAuth();
-  const { isAdmin } = useAdmin();
   const { t, direction, setLanguage, languages, currentLanguage } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Check if user is admin
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .rpc('is_admin_secure', { user_uuid: user.id });
+
+        if (error) {
+          console.error('Error checking admin status:', error);
+          setIsAdmin(false);
+          return;
+        }
+
+        setIsAdmin(Boolean(data));
+      } catch (error) {
+        console.error('Error checking admin status:', error);
+        setIsAdmin(false);
+      }
+    };
+
+    checkAdminStatus();
+  }, [user]);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50">
@@ -40,7 +67,7 @@ export const GlobalHeader = () => {
         <div className="max-w-7xl mx-auto px-4 py-2">
           <div className="flex items-center justify-between h-16">
             {/* Creative Logo Section */}
-            <Link to="/" className={`flex items-center gap-3 group ${direction === 'rtl' ? 'font-arabic' : ''}`}>
+            <Link to="/" className={`flex items-center gap-4 group ${direction === 'rtl' ? 'font-arabic' : ''}`}>
               <div className="relative">
                 {/* Multiple animated background layers */}
                 <div className="absolute inset-0 w-16 h-16 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-2xl blur-xl opacity-40 group-hover:opacity-70 animate-pulse transition-all duration-700"></div>
@@ -70,17 +97,12 @@ export const GlobalHeader = () => {
               {/* Brand Name and Tagline with enhanced styling */}
               <div className="flex flex-col">
                 <h1 className="text-xl sm:text-2xl font-bold text-emerald-300 bg-gradient-to-r from-emerald-300 via-teal-300 to-amber-300 bg-clip-text [background-clip:text] hover:text-transparent group-hover:scale-105 transition-transform duration-500 filter drop-shadow-lg">
-                  {t('site.name', 'شجرتي')}
+                  {t('site.name', 'شجرة العائلة')}
                 </h1>
                 <p className="hidden sm:block text-sm text-gray-300 font-medium bg-gradient-to-r from-gray-300 to-emerald-200 bg-clip-text text-transparent">
                   {t('site.tagline', 'منصة إدارة الأنساب')}
                 </p>
               </div>
-
-              {/* Beta Badge */}
-              <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-red-500/50 border border-red-400/50 hover:scale-110 transition-transform duration-300">
-                {t('badge.beta', 'إطلاق تجريبي')}
-              </Badge>
             </Link>
 
             {/* Desktop Navigation and Auth Section */}
@@ -106,7 +128,7 @@ export const GlobalHeader = () => {
                     className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-300 hover:text-emerald-300 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300 border border-white/10 hover:border-emerald-400/30 group"
                   >
                     <Home className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                    <span>{t('nav.my_account', 'حسابي')}</span>
+                    <span>حسابي</span>
                   </Link>
 
 
@@ -175,50 +197,50 @@ export const GlobalHeader = () => {
                       <DropdownMenuSeparator className="bg-white/10" />
                       
                       {/* Enhanced Menu Items */}
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/10 transition-all duration-100 cursor-pointer border border-transparent hover:border-emerald-400/20" asChild>
+                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-emerald-400/20" asChild>
                         <Link to="/dashboard" className={`flex items-center gap-4 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-emerald-400/20 rounded-xl group-hover:bg-emerald-400/30 transition-all duration-100 border border-emerald-400/30">
+                          <div className="p-3 bg-emerald-400/20 rounded-xl group-hover:bg-emerald-400/30 transition-colors border border-emerald-400/30">
                             <TreePine className="h-5 w-5 text-emerald-300" />
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.dashboard', 'حسابي')}</p>
-                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors duration-100">{t('nav.dashboard.desc', 'إدارة شجرة العائلة')}</p>
+                            <p className="text-xs text-gray-400">{t('nav.dashboard.desc', 'إدارة شجرة العائلة')}</p>
                           </div>
                         </Link>
                       </DropdownMenuItem>
                       
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-teal-400/10 transition-all duration-100 cursor-pointer border border-transparent hover:border-teal-400/20" asChild>
+                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-teal-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-teal-400/20" asChild>
                         <Link to="/profile" className={`flex items-center gap-4 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-teal-400/20 rounded-xl group-hover:bg-teal-400/30 transition-all duration-100 border border-teal-400/30">
+                          <div className="p-3 bg-teal-400/20 rounded-xl group-hover:bg-teal-400/30 transition-colors border border-teal-400/30">
                             <Settings className="h-5 w-5 text-teal-300" />
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.settings', 'الإعدادات')}</p>
-                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors duration-100">{t('nav.settings.desc', 'تخصيص الحساب')}</p>
+                            <p className="text-xs text-gray-400">{t('nav.settings.desc', 'تخصيص الحساب')}</p>
                           </div>
                         </Link>
                       </DropdownMenuItem>
                       
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-amber-400/10 transition-all duration-100 cursor-pointer border border-transparent hover:border-amber-400/20" asChild>
+                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-amber-400/10 transition-all duration-300 cursor-pointer border border-transparent hover:border-amber-400/20" asChild>
                         <Link to="/payments" className={`flex items-center gap-4 ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-amber-400/20 rounded-xl group-hover:bg-amber-400/30 transition-all duration-100 border border-amber-400/30">
+                          <div className="p-3 bg-amber-400/20 rounded-xl group-hover:bg-amber-400/30 transition-colors border border-amber-400/30">
                             <CreditCard className="h-5 w-5 text-amber-300" />
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.billing', 'الفواتير')}</p>
-                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors duration-100">{t('nav.billing.desc', 'إدارة الاشتراكات')}</p>
+                            <p className="text-xs text-gray-400">{t('nav.billing.desc', 'إدارة الاشتراكات')}</p>
                           </div>
                         </Link>
                       </DropdownMenuItem>
                       
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/20 transition-all duration-100 cursor-pointer border border-transparent hover:border-emerald-400/30">
+                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/20 transition-all duration-300 cursor-pointer border border-transparent hover:border-emerald-400/30">
                          <div className={`flex items-center gap-4 w-full ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-emerald-400/20 rounded-xl group-hover:bg-emerald-400/30 transition-all duration-100 border border-emerald-400/30">
+                          <div className="p-3 bg-emerald-400/20 rounded-xl group-hover:bg-emerald-400/30 transition-colors border border-emerald-400/30">
                             <HelpCircle className="h-5 w-5 text-emerald-300" />
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.help', 'المساعدة')}</p>
-                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors duration-100">{t('nav.help.desc', 'الدعم والتوجيه')}</p>
+                            <p className="text-xs text-gray-400">{t('nav.help.desc', 'الدعم والتوجيه')}</p>
                           </div>
                         </div>
                       </DropdownMenuItem>
@@ -227,16 +249,16 @@ export const GlobalHeader = () => {
                       
                       {/* Logout */}
                       <DropdownMenuItem 
-                        className="group p-4 rounded-xl hover:bg-red-500/20 transition-all duration-100 cursor-pointer text-red-400 focus:text-red-300 border border-transparent hover:border-red-500/30"
+                        className="group p-4 rounded-xl hover:bg-red-500/20 transition-all duration-300 cursor-pointer text-red-400 focus:text-red-300 border border-transparent hover:border-red-500/30"
                         onClick={signOut}
                       >
                         <div className={`flex items-center gap-4 w-full ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
-                          <div className="p-3 bg-red-500/20 rounded-xl group-hover:bg-red-500/30 transition-all duration-100 border border-red-500/30">
+                          <div className="p-3 bg-red-500/20 rounded-xl group-hover:bg-red-500/30 transition-colors border border-red-500/30">
                             <LogOut className="h-5 w-5 text-red-400" />
                           </div>
                           <div>
                             <p className="font-medium text-white">{t('nav.logout', 'تسجيل الخروج')}</p>
-                            <p className="text-xs text-gray-400 group-hover:text-white transition-colors duration-100">{t('nav.logout.desc', 'إنهاء الجلسة')}</p>
+                            <p className="text-xs text-gray-400">{t('nav.logout.desc', 'إنهاء الجلسة')}</p>
                           </div>
                         </div>
                       </DropdownMenuItem>

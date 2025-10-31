@@ -6,27 +6,25 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { AdminProvider } from "@/contexts/AdminContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { DirectionWrapper } from "@/components/DirectionWrapper";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ProtectedFamilyRoute } from "@/components/ProtectedFamilyRoute";
 import { MaintenanceModeGuard } from "@/components/MaintenanceModeGuard";
-import { SkeletonLayoutForBuilder } from "@/components/SkeletonLayoutForBuilder";
 import ScrollToTop from "@/components/ScrollToTop";
 import CustomScriptInjector from "@/components/CustomScriptInjector";
 import Index from "./pages/Index";
+import IndexBackup from "./pages/IndexBackup";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import DashboardBackup from "./pages/DashboardBackup";
 import FamilyCreator from "./pages/FamilyCreator";
 import FamilyBuilder from "./pages/FamilyBuilder";
-import FamilyBuilderNewWithContext from "./pages/FamilyBuilderNew/FamilyBuilderNewWithContext";
+import FamilyBuilderNew from "./pages/FamilyBuilderNew";
 
-import FamilyTreeView from "./pages/FamilyTreeView/FamilyTreeViewWithContext";
+import FamilyTreeView from "./pages/FamilyTreeView";
 import FamilyStatistics from "./pages/FamilyStatistics";
-import FamilyGallery from "./pages/FamilyGallery";
 import Profile from "./pages/Profile";
 import Payments from "./pages/Payments";
 import PlanSelection from "./pages/PlanSelection";
@@ -41,7 +39,7 @@ import EnhancedAdminPanel from "./pages/EnhancedAdminPanel";
 import AdminBilling from "./pages/AdminBilling";
 import RenewSubscription from "./pages/RenewSubscription";
 import CustomDomainRedirect from "./pages/CustomDomainRedirect";
-import PublicTreeViewWithContext from "./pages/PublicTreeView/PublicTreeViewWithContext";
+import PublicTreeView from "./pages/PublicTreeView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,9 +55,8 @@ const App = () => (
       <LanguageProvider>
         <DirectionWrapper>
           <AuthProvider>
-            <AdminProvider>
-              <SubscriptionProvider>
-                <MaintenanceModeGuard>
+            <SubscriptionProvider>
+              <MaintenanceModeGuard>
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
@@ -67,6 +64,7 @@ const App = () => (
                   <CustomScriptInjector />
                   <Routes>
                   <Route path="/" element={<Index />} />
+                  <Route path="/home-backup" element={<IndexBackup />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/dashboard" element={
                     <ProtectedRoute>
@@ -91,9 +89,9 @@ const App = () => (
             </ProtectedRoute>
           } />
           <Route path="/family-builder-new" element={
-            <ProtectedRoute>
-              <ProtectedFamilyRoute loadingFallback={<SkeletonLayoutForBuilder />}>
-                <FamilyBuilderNewWithContext />
+            <ProtectedRoute requireActiveSubscription={true}>
+              <ProtectedFamilyRoute>
+                <FamilyBuilderNew />
               </ProtectedFamilyRoute>
             </ProtectedRoute>
           } />
@@ -105,11 +103,6 @@ const App = () => (
                   <Route path="/family-statistics" element={
                     <ProtectedRoute>
                       <FamilyStatistics />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/family-gallery" element={
-                    <ProtectedRoute>
-                      <FamilyGallery />
                     </ProtectedRoute>
                   } />
                   <Route path="/profile" element={
@@ -165,7 +158,7 @@ const App = () => (
                   <Route path="/terms-conditions" element={<TermsConditions />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/contact" element={<ContactUs />} />
-                  <Route path="/tree" element={<PublicTreeViewWithContext />} />
+                  <Route path="/tree" element={<PublicTreeView />} />
                   {/* Redirect old terms route to new one */}
                   <Route path="/terms" element={<TermsConditions />} />
                   {/* Custom domain route */}
@@ -174,9 +167,8 @@ const App = () => (
                   <Route path="*" element={<NotFound />} />
                   </Routes>
                 </BrowserRouter>
-                </MaintenanceModeGuard>
-              </SubscriptionProvider>
-            </AdminProvider>
+              </MaintenanceModeGuard>
+            </SubscriptionProvider>
           </AuthProvider>
         </DirectionWrapper>
       </LanguageProvider>

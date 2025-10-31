@@ -9,10 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CreditCard, Plus, Settings, Trash2, Star, Crown, Zap, Shield, Wallet, Calendar, Download, TreePine, Heart, Gem, CheckCircle, Sparkles, ChevronRight, ChevronLeft, Loader2 } from "lucide-react";
-import { UpgradeBadge } from "@/components/UpgradeBadge";
 import { Link, useNavigate } from "react-router-dom";
 import { GlobalHeader } from "@/components/GlobalHeader";
-import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
+import { GlobalFooter } from "@/components/GlobalFooter";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,8 +20,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { DateDisplay } from "@/components/DateDisplay";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { usePackageTransition } from "@/hooks/usePackageTransition";
-import { ScheduledPackageChangeCard } from "@/components/ScheduledPackageChangeCard";
-import { useQuery } from "@tanstack/react-query";
 export default function Payments() {
   const {
     toast
@@ -63,40 +60,6 @@ export default function Payments() {
   const [cancellingDowngrade, setCancellingDowngrade] = useState(false);
   const [showDowngradeModal, setShowDowngradeModal] = useState(false);
   const [selectedDowngradePlan, setSelectedDowngradePlan] = useState<any>(null);
-
-  // Query for scheduled package changes
-  const { data: scheduledChanges, refetch: refetchScheduledChanges } = useQuery({
-    queryKey: ['scheduled-package-changes', user?.id],
-    queryFn: async () => {
-      if (!user) return null;
-
-      const { data: changes, error: changesError } = await supabase
-        .from('scheduled_package_changes')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false })
-        .maybeSingle();
-
-      if (changesError && changesError.code !== 'PGRST116') throw changesError;
-      if (!changes) return null;
-
-      // Fetch the target package separately
-      const { data: targetPackage, error: packageError } = await supabase
-        .from('packages')
-        .select('name, price_usd')
-        .eq('id', changes.target_package_id)
-        .single();
-
-      if (packageError) throw packageError;
-
-      return {
-        ...changes,
-        target_package: targetPackage
-      };
-    },
-    enabled: !!user,
-  });
 
   // Function to get localized value
   const getLocalizedValue = (value: string | object): string => {
@@ -513,9 +476,9 @@ export default function Payments() {
         currentLanguage: currentLanguage
       });
 
-      // Calculate amount - always use USD for PayPal
-      const amount = selectedPackage.price_usd || 0;
-      const currency = 'USD';
+      // Calculate amount based on language - use the same logic as PlanSelection
+      const amount = currentLanguage === 'ar' ? selectedPackage.price_sar || 0 : selectedPackage.price_usd || 0;
+      const currency = currentLanguage === 'ar' ? 'SAR' : 'USD';
       console.log('🔍 Package details for payment:', {
         packageId: planId,
         amount: amount,
@@ -563,17 +526,36 @@ export default function Payments() {
         return;
       }
 
-      // Navigate to payment page for paid plans
-      console.log('✅ Navigating to payment page with invoice:', invoiceId);
-      
-      navigate('/payment', {
-        state: {
-          planId: planId,
-          invoiceId: invoiceId,
+      // Create payment session for paid plans
+      const {
+        data: paymentData,
+        error: paymentError
+      } = await supabase.functions.invoke('create-payment', {
+        body: {
+          packageId: planId,
           amount: amount,
-          currency: currency
+          currency: currency,
+          invoiceId: invoiceId
         }
       });
+      if (paymentError) {
+        console.error('Payment session error:', paymentError);
+        throw new Error(`Payment session failed: ${paymentError.message}`);
+      }
+      if (!paymentData?.url) {
+        throw new Error('No payment URL received');
+      }
+      console.log('✅ Payment session created:', paymentData.url);
+
+      // Open payment in new tab
+      window.open(paymentData.url, '_blank');
+      toast({
+        title: "تم إنشاء جلسة الدفع",
+        description: "تم توجيهك لصفحة الدفع في نافذة جديدة"
+      });
+
+      // Reload invoices
+      loadInvoices();
     } catch (error: any) {
       console.error('Error in handlePlanSelect:', error);
       let errorMessage = "فشل في إنشاء جلسة الدفع";
@@ -659,34 +641,36 @@ export default function Payments() {
             <div className="mb-8 relative">
               <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 via-emerald-500/20 to-teal-500/10 rounded-2xl blur-2xl"></div>
               
-              <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 sm:py-6 px-4 sm:px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div className="flex items-center gap-3 sm:gap-6 w-full sm:w-auto">
-                    <div className="relative shrink-0">
+              <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-6 px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-6">
+                    <div className="relative">
                       <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
-                      <div className="relative w-14 h-14 sm:w-20 sm:h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-2 sm:border-4 border-white/30 dark:border-gray-700/30">
-                        <CreditCard className="h-7 w-7 sm:h-10 sm:w-10 text-white" />
+                      <div className="relative w-20 h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-xl border-4 border-white/30 dark:border-gray-700/30">
+                        <CreditCard className="h-10 w-10 text-white" />
                       </div>
                     </div>
                     
-                    <div className="flex-1 min-w-0">
-                      <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1 sm:mb-2">
+                    <div>
+                      <h1 className="text-3xl font-bold mb-2">
                         <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                           الاشتراكات والمدفوعات
                         </span>
                       </h1>
-                      <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 flex items-center gap-2">
-                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shrink-0"></div>
-                        <span className="truncate">إدارة اشتراكك وطرق الدفع بسهولة</span>
+                      <p className="text-gray-600 dark:text-gray-300 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                        إدارة اشتراكك وطرق الدفع بسهولة
                       </p>
                     </div>
                   </div>
                   
-                  <UpgradeBadge 
-                    packageName={currentPlanData?.name || 'الباقة المجانية'}
-                    isPremium={!!(currentPlanData && (currentPlanData.price_sar > 0 || currentPlanData.price_usd > 0))}
-                    showUpgradePrompt={true}
-                  />
+                  {currentPlanData ? <div className="flex items-center gap-2 bg-gradient-to-r from-amber-500 to-emerald-500 text-white px-4 py-2 rounded-full shadow-lg">
+                      <Crown className="h-4 w-4" />
+                      <span className="text-sm font-bold">{getLocalizedPackageField(currentPlanData, 'name') || currentPlanData.name}</span>
+                    </div> : <div className="flex items-center gap-2 bg-gradient-to-r from-gray-500 to-slate-500 text-white px-4 py-2 rounded-full shadow-lg">
+                      <Shield className="h-4 w-4" />
+                      <span className="text-sm font-bold">الباقة المجانية</span>
+                    </div>}
                 </div>
               </div>
             </div>
@@ -712,20 +696,10 @@ export default function Payments() {
                         {currentPlan ? getLocalizedPackageField(currentPlanData, 'name') || 'الباقة المدفوعة' : 'الباقة المجانية'}
                       </h3>
                         <p className="text-3xl font-bold text-emerald-600">
-                          {currentPlan ? currentPlanData?.price_usd && parseFloat(currentPlanData.price_usd.toString()) > 0 ? `$${currentPlanData.price_usd}` : 'مجاني للأبد' : 'مجاني للأبد'}
+                          {currentPlan ? currentPlanData?.price && currentPlanData.price !== '0' && parseFloat(currentPlanData.price) > 0 ? `${currentPlanData.price} ريال` : 'مجاني للأبد' : 'مجاني للأبد'}
                         </p>
-                       {currentPlan && currentPlanData?.price_usd && parseFloat(currentPlanData.price_usd.toString()) > 0 && <p className="text-muted-foreground">سنوياً</p>}
+                       {currentPlan && currentPlanData?.price && parseFloat(currentPlanData.price) > 0 && <p className="text-muted-foreground">سنوياً</p>}
                     </div>
-
-                    {/* Scheduled Package Change Display */}
-                    {scheduledChanges && (
-                      <div className="mt-6">
-                        <ScheduledPackageChangeCard 
-                          scheduledChange={scheduledChanges} 
-                          onCancelled={() => refetchScheduledChanges()}
-                        />
-                      </div>
-                    )}
                     
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
@@ -775,6 +749,280 @@ export default function Payments() {
               </CardContent>
             </Card>
 
+            {/* Payment Methods */}
+            <Card className="mt-6 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-emerald-800 dark:text-emerald-200">طرق الدفع</CardTitle>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button size="sm" variant="outline">
+                        <Plus className="h-4 w-4 mr-2" />
+                        إضافة
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[600px] z-50 bg-white dark:bg-gray-900" dir="rtl">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl font-bold text-emerald-800 dark:text-emerald-200 text-right">إضافة طريقة دفع جديدة</DialogTitle>
+                        <DialogDescription className="text-lg text-right">
+                          اختر طريقة الدفع المناسبة لك وأضف تفاصيلها
+                        </DialogDescription>
+                      </DialogHeader>
+                      
+                      <Tabs defaultValue="credit-card" className="w-full">
+                        <TabsList className="grid w-full grid-cols-3 mb-6">
+                          <TabsTrigger value="credit-card" className="flex items-center gap-2">
+                            <CreditCard className="h-4 w-4" />
+                            بطاقة ائتمانية
+                          </TabsTrigger>
+                          <TabsTrigger value="paypal" className="flex items-center gap-2">
+                            <Wallet className="h-4 w-4" />
+                            PayPal
+                          </TabsTrigger>
+                          <TabsTrigger value="bank" className="flex items-center gap-2">
+                            <Shield className="h-4 w-4" />
+                            تحويل بنكي
+                          </TabsTrigger>
+                        </TabsList>
+
+                        <TabsContent value="credit-card" className="space-y-8 p-6 bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-950/20 dark:to-gray-900/50 rounded-xl border border-emerald-200 dark:border-emerald-800/30">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="card-type">نوع البطاقة</Label>
+                              <Select>
+                                <SelectTrigger className="bg-white dark:bg-gray-800">
+                                  <SelectValue placeholder="اختر نوع البطاقة" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white dark:bg-gray-800 z-50">
+                                  <SelectItem value="visa">Visa</SelectItem>
+                                  <SelectItem value="mastercard">Mastercard</SelectItem>
+                                  <SelectItem value="amex">American Express</SelectItem>
+                                  <SelectItem value="discover">Discover</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label htmlFor="card-number">رقم البطاقة</Label>
+                              <Input id="card-number" placeholder="1234 5678 9012 3456" className="bg-white dark:bg-gray-800" />
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-3 gap-4">
+                            <div>
+                              <Label htmlFor="expiry-month">الشهر</Label>
+                              <Select>
+                                <SelectTrigger className="bg-white dark:bg-gray-800">
+                                  <SelectValue placeholder="MM" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white dark:bg-gray-800 z-50">
+                                  {Array.from({
+                                        length: 12
+                                      }, (_, i) => <SelectItem key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                                      {String(i + 1).padStart(2, '0')}
+                                    </SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label htmlFor="expiry-year">السنة</Label>
+                              <Select>
+                                <SelectTrigger className="bg-white dark:bg-gray-800">
+                                  <SelectValue placeholder="YYYY" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white dark:bg-gray-800 z-50">
+                                  {Array.from({
+                                        length: 10
+                                      }, (_, i) => <SelectItem key={i} value={String(new Date().getFullYear() + i)}>
+                                      {new Date().getFullYear() + i}
+                                    </SelectItem>)}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                            <div>
+                              <Label htmlFor="cvc">CVC</Label>
+                              <Input id="cvc" placeholder="123" maxLength={4} className="bg-white dark:bg-gray-800" />
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor="cardholder-name">اسم حامل البطاقة</Label>
+                            <Input id="cardholder-name" placeholder="الاسم كما يظهر على البطاقة" className="bg-white dark:bg-gray-800" />
+                          </div>
+                          
+                          <div className="flex items-center space-x-2 space-x-reverse checkbox-container">
+                            <Checkbox id="make-default-card" />
+                            <Label htmlFor="make-default-card" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                              جعل هذه البطاقة الافتراضية
+                            </Label>
+                          </div>
+                          
+                          <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
+                            <CreditCard className="h-4 w-4 ml-2" />
+                            إضافة البطاقة
+                          </Button>
+                        </TabsContent>
+
+                        <TabsContent value="paypal" className="space-y-6">
+                          <div className="text-center py-8">
+                            <div className="w-20 h-20 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                              <Wallet className="h-10 w-10 text-blue-600" />
+                            </div>
+                            <h3 className="text-lg font-semibold mb-4">ربط حساب PayPal</h3>
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor="paypal-email">البريد الإلكتروني لـ PayPal</Label>
+                            <Input id="paypal-email" type="email" placeholder="example@paypal.com" className="bg-white dark:bg-gray-800" />
+                          </div>
+                          
+                          <div className="flex items-center space-x-2 space-x-reverse checkbox-container">
+                            <Checkbox id="make-default-paypal" />
+                            <Label htmlFor="make-default-paypal" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                              جعل PayPal طريقة الدفع الافتراضية
+                            </Label>
+                          </div>
+                          
+                          <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                            <Wallet className="h-4 w-4 ml-2" />
+                            ربط حساب PayPal
+                          </Button>
+                        </TabsContent>
+
+                        <TabsContent value="bank" className="space-y-6">
+                          <div className="text-center py-8">
+                            <div className="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                              <Shield className="h-10 w-10 text-emerald-600" />
+                            </div>
+                            <h3 className="text-lg font-semibold mb-4">معلومات التحويل البنكي</h3>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="bank-name">اسم البنك</Label>
+                              <Input id="bank-name" placeholder="البنك الأهلي السعودي" className="bg-white dark:bg-gray-800" />
+                            </div>
+                            <div>
+                              <Label htmlFor="account-holder">اسم صاحب الحساب</Label>
+                              <Input id="account-holder" placeholder="أحمد محمد" className="bg-white dark:bg-gray-800" />
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <Label htmlFor="account-number">رقم الحساب / IBAN</Label>
+                            <Input id="account-number" placeholder="SA03 8000 0000 6080 1016 7519" className="bg-white dark:bg-gray-800" />
+                          </div>
+                          
+                          <div className="flex items-center space-x-2 space-x-reverse checkbox-container">
+                            <Checkbox id="make-default-bank" />
+                            <Label htmlFor="make-default-bank" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                              جعل هذا الحساب البنكي الافتراضي
+                            </Label>
+                          </div>
+                          
+                          <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
+                            <Shield className="h-4 w-4 ml-2" />
+                            إضافة الحساب البنكي
+                          </Button>
+                        </TabsContent>
+                      </Tabs>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                {paymentMethods.length === 0 ? <div className="text-center py-12">
+                    <div className="relative">
+                      <div className="w-24 h-24 bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900/30 dark:to-emerald-800/30 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                        <CreditCard className="h-12 w-12 text-emerald-600" />
+                        <div className="absolute -top-1 -right-1 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center">
+                          <Plus className="h-4 w-4 text-white" />
+                        </div>
+                      </div>
+                    </div>
+                    <h3 className="text-xl font-bold text-emerald-800 dark:text-emerald-200 mb-3">
+                      لا توجد طرق دفع محفوظة
+                    </h3>
+                    <p className="text-muted-foreground mb-6 max-w-sm mx-auto leading-relaxed">
+                      أضف طريقة دفع جديدة لإدارة اشتراكاتك بسهولة واستمتع بتجربة دفع سلسة وآمنة
+                    </p>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                          <Plus className="h-5 w-5 mr-2" />
+                          إضافة طريقة دفع جديدة
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent dir="rtl">
+                        <DialogHeader>
+                          <DialogTitle>إضافة طريقة دفع جديدة</DialogTitle>
+                          <DialogDescription>
+                            أضف بطاقة ائتمانية أو طريقة دفع جديدة
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="card-number">رقم البطاقة</Label>
+                            <Input id="card-number" placeholder="1234 5678 9012 3456" />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="expiry">تاريخ الانتهاء</Label>
+                              <Input id="expiry" placeholder="MM/YY" />
+                            </div>
+                            <div>
+                              <Label htmlFor="cvc">CVC</Label>
+                              <Input id="cvc" placeholder="123" />
+                            </div>
+                          </div>
+                          <div>
+                            <Label htmlFor="name">اسم حامل البطاقة</Label>
+                            <Input id="name" placeholder="الاسم كما يظهر على البطاقة" />
+                          </div>
+                          <Button className="w-full bg-emerald-600 hover:bg-emerald-700">
+                            إضافة البطاقة
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  </div> : <div className="grid gap-4">
+                    {paymentMethods.map(method => <div key={method.id} className="group relative p-4 border border-gray-200 dark:border-gray-700 rounded-xl hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-850">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            {method.type === "paypal" ? <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl text-white text-lg flex items-center justify-center font-bold shadow-lg">
+                                P
+                              </div> : <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-800 dark:to-emerald-700 rounded-xl flex items-center justify-center shadow-lg">
+                                <CreditCard className="h-6 w-6 text-emerald-600 dark:text-emerald-300" />
+                              </div>}
+                            <div>
+                              {method.type === "paypal" ? <>
+                                  <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">PayPal</p>
+                                  <p className="text-sm text-muted-foreground">{method.email}</p>
+                                </> : <>
+                                  <p className="font-semibold text-lg text-gray-900 dark:text-gray-100">
+                                    •••• •••• •••• {method.last4}
+                                  </p>
+                                  <p className="text-sm text-muted-foreground">انتهاء {method.expiry}</p>
+                                </>}
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-3">
+                            {method.isDefault && <Badge className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-3 py-1 rounded-full shadow-sm">
+                                <Star className="h-3 w-3 mr-1 fill-current" />
+                                افتراضي
+                              </Badge>}
+                            
+                            {!(currentPlan !== "free" && paymentMethods.length === 1) && <Button size="sm" variant="ghost" onClick={() => handleDeletePaymentMethod(method.id)} className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-lg">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>}
+                          </div>
+                        </div>
+                        
+                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl pointer-events-none" />
+                      </div>)}
+                  </div>}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Available Plans */}
@@ -904,18 +1152,15 @@ export default function Payments() {
                               </div> : <div className="text-center">
                                 <div className="flex items-baseline justify-center gap-1 mb-1">
                                   <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                                    ${plan.price_usd}
+                                    {plan.price}
                                   </span>
-                                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                                    / سنة
-                                  </span>
+                                  {plan.price !== "مجاني للأبد" && <span className="text-sm text-gray-600 dark:text-gray-400">
+                                      ريال/سنة
+                                    </span>}
                                 </div>
-                                <p className="text-xs text-gray-600 dark:text-gray-400">
-                                  (تقريباً {Math.round(plan.price_usd * 3.75)} ريال)
-                                </p>
-                                <p className="text-[10px] text-gray-500 dark:text-gray-500 mt-1">
-                                  *المبلغ النهائي يحسب من PayPal
-                                </p>
+                                {plan.price !== "مجاني للأبد" && <p className="text-xs text-gray-600 dark:text-gray-400">
+                                    {Math.round(parseFloat(plan.price) / 12)} ريال شهرياً
+                                  </p>}
                               </div>}
                           </div>
                         </CardHeader>
@@ -987,15 +1232,32 @@ export default function Payments() {
                   </div> : <div className="space-y-4">
                     {invoices.map((invoice: any) => <div key={invoice.id} className={`border border-gray-200 dark:border-gray-700 rounded-lg p-4 transition-colors ${invoice.payment_status === 'pending' ? 'hover:bg-yellow-50 dark:hover:bg-yellow-900/20 cursor-pointer border-yellow-200 dark:border-yellow-700' : 'hover:bg-gray-50 dark:hover:bg-gray-800/50'}`} onClick={async () => {
                         if (invoice.payment_status === 'pending') {
-                          // Navigate to payment page for pending invoices
-                          navigate('/payment', {
-                            state: {
-                              planId: invoice.package_id,
-                              invoiceId: invoice.id,
-                              amount: invoice.amount,
-                              currency: invoice.currency
+                          // إذا كانت الفاتورة في انتظار الدفع، توجيه للدفع
+                          try {
+                            const {
+                              data,
+                              error
+                            } = await supabase.functions.invoke('create-payment', {
+                              body: {
+                                packageId: invoice.package_id,
+                                amount: invoice.amount,
+                                currency: invoice.currency,
+                                invoiceId: invoice.id
+                              }
+                            });
+                            if (error) throw error;
+                            if (data.url) {
+                              // فتح صفحة الدفع في تبويب جديد
+                              window.open(data.url, '_blank');
                             }
-                          });
+                          } catch (error) {
+                            console.error('Error redirecting to payment:', error);
+                            toast({
+                              title: "خطأ في عملية الدفع",
+                              description: "حدث خطأ أثناء توجيهك لصفحة الدفع. يرجى المحاولة مرة أخرى.",
+                              variant: "destructive"
+                            });
+                          }
                         }
                       }}>
                         <div className="flex items-center justify-between">
@@ -1019,9 +1281,9 @@ export default function Payments() {
                           </div>
                           <div className="text-right">
                             <p className="text-2xl font-bold text-emerald-600">
-                              ${invoice.amount}
+                              {formatPrice(invoice.amount)}
                             </p>
-                            <p className="text-sm text-muted-foreground">USD</p>
+                            <p className="text-sm text-muted-foreground">{invoice.currency}</p>
                             <div className="flex gap-2 mt-2">
                               {invoice.amount > 0 && <Button variant="outline" size="sm">
                                   <Download className="h-4 w-4 mr-1" />
@@ -1156,7 +1418,7 @@ export default function Payments() {
         </div>
       </div>
       
-      <GlobalFooterSimplified />
+      <GlobalFooter />
       
       {/* Modal مقارنة الباقات والتحذير من الـ Downgrade */}
       <Dialog open={showDowngradeModal} onOpenChange={setShowDowngradeModal}>

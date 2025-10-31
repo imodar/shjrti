@@ -6,8 +6,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { User, UserIcon, Crown, Skull, Edit2, Trash2, Calendar } from "lucide-react";
 import { DateDisplay } from "@/components/DateDisplay";
 import { Member, Marriage } from "../../types/family.types";
-import { useResolvedImageUrl } from "@/utils/useResolvedImageUrl";
-import { differenceInYears, parseISO } from 'date-fns';
 interface MemberCardProps {
   member: Member;
   familyMembers: Member[];
@@ -30,9 +28,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   checkIfMemberIsSpouse,
   getGenderColor
 }) => {
-  // Resolve member image to signed URL with lazy loading
-  const memberImageSrc = useResolvedImageUrl((member as any).image || member.image_url, true);
-
   const generateMemberDisplayName = () => {
     // Check if this member is married into the family (actual spouse from outside)
     const marriage = marriages?.find(m => m.husband_id === member.id || m.wife_id === member.id);
@@ -98,7 +93,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         const motherGrandfather = familyMembers?.find(m => m?.id === (motherFather.father_id || (motherFather as any).fatherId));
         if (motherGrandfather) {
           const motherGrandfatherName = motherGrandfather.first_name || (motherGrandfather as any).name?.split(' ')[0] || (motherGrandfather as any).name;
-          lineage += ` بن ${motherGrandfatherName}`;
+          lineage += ` ابن ${motherGrandfatherName}`;
         }
       }
       
@@ -116,7 +111,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       
       if (grandfather) {
         const grandfatherName = grandfather.first_name || (grandfather as any).name?.split(' ')[0] || (grandfather as any).name;
-        lineage += ` بن ${grandfatherName}`;
+        lineage += ` ابن ${grandfatherName}`;
       }
       
       return <p className="text-sm text-primary truncate font-arabic">
@@ -130,127 +125,62 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     // Show founder text for founders
     const isFounder = member.is_founder || (member as any).isFounder;
     if (isFounder) {
-      return <p className="text-sm text-primary font-arabic whitespace-normal break-words">الجد الأكبر</p>;
+      return <p className="text-sm text-primary font-arabic whitespace-normal break-words">
+          الجد الأكبر
+        </p>;
     }
 
-    // إذا كان العضو من داخل العائلة (له أب)، لا تعرض معلومات الزوج
-    const memberHasFamilyFather = ((member as any).father_id || (member as any).fatherId) &&
-      familyMembers?.find(m => m?.id === ((member as any).father_id || (member as any).fatherId));
-    
-    if (memberHasFamilyFather) {
-      return null; // لا تعرض شيء للأعضاء من داخل العائلة
-    }
-
-    // فقط للأزواج من خارج العائلة: ابحث عن الزوج واعرض معلوماته
+    // Find marriage where this member is husband or wife
     const marriage = marriages?.find(m => m.husband_id === member.id || m.wife_id === member.id);
-    if (!marriage) return null;
+    if (marriage) {
+      // Determine if this member is the husband or wife
+      const isHusband = marriage.husband_id === member.id;
 
-    const spouseId = marriage.husband_id === member.id ? marriage.wife_id : marriage.husband_id;
-    const spouse = familyMembers?.find(m => m?.id === spouseId);
-    if (!spouse) return null;
+      // Get spouse data
+      let spouseId = isHusband ? marriage.wife_id : marriage.husband_id;
+      let spouse = familyMembers?.find(m => m?.id === spouseId);
+      if (spouse) {
+        // Check if current member is a non-family member (married into the family)
+        const memberHasFamilyFather = (member.father_id || (member as any).fatherId) && familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
 
-    // عرض معلومات الزوج بالتفصيل مع النسب
-    const spouseFather = familyMembers?.find(m => m?.id === ((spouse as any).father_id || (spouse as any).fatherId));
-    const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === ((spouseFather as any).father_id || (spouseFather as any).fatherId)) : null;
+        // Only show spouse info for non-family members (those without family fathers)
+        if (!memberHasFamilyFather) {
+          // Get spouse's father and grandfather from familyMembers
+          const spouseFather = familyMembers?.find(m => m?.id === (spouse.father_id || (spouse as any).fatherId));
+          const spouseGrandfather = spouseFather ? familyMembers?.find(m => m?.id === (spouseFather.father_id || (spouseFather as any).fatherId)) : null;
 
-    const spouseName = (spouse as any).first_name || (spouse as any).name?.split(' ')[0] || (spouse as any).name || '';
-    let spouseInfo = spouseName;
-    
-    if (spouseFather) {
-      const fatherFirstName = (spouseFather as any).first_name || (spouseFather as any).name?.split(' ')[0];
-      const genderTerm = (spouse as any).gender === 'female' ? 'ابنة' : 'ابن';
-      spouseInfo += ` ${genderTerm} ${fatherFirstName}`;
-      
-      if (spouseGrandfather) {
-        const grandfatherFirstName = (spouseGrandfather as any).first_name || (spouseGrandfather as any).name?.split(' ')[0];
-        spouseInfo += ` ابن ${grandfatherFirstName}`;
+          // Build detailed spouse info: زوجة مضر ابن أمير ابن مظهر
+          const spouseName = spouse.first_name || (spouse as any).name?.split(' ')[0] || (spouse as any).name;
+          let spouseInfo = spouseName;
+          if (spouseFather) {
+            const fatherFirstName = spouseFather.first_name || (spouseFather as any).name?.split(' ')[0] || (spouseFather as any).name;
+            const genderTerm = spouse.gender === 'female' ? 'ابنة' : 'ابن';
+            spouseInfo += ` ${genderTerm} ${fatherFirstName}`;
+
+            // Add grandfather if exists
+            if (spouseGrandfather) {
+              const grandfatherFirstName = spouseGrandfather.first_name || (spouseGrandfather as any).name?.split(' ')[0] || (spouseGrandfather as any).name;
+              spouseInfo += ` ابن ${grandfatherFirstName}`;
+            }
+          }
+
+          // Use زوج for husband, زوجة for wife (from member's perspective)
+          const relationLabel = member.gender === 'male' ? 'زوج' : 'زوجة';
+          return <p className="text-sm text-primary font-arabic whitespace-normal break-words">
+              {relationLabel} {spouseInfo}
+            </p>;
+        }
       }
     }
-
-    const relationLabel = (member as any).gender === 'male' ? 'زوج' : 'زوجة';
-    return <p className="text-sm text-primary font-arabic whitespace-normal break-words">{relationLabel} {spouseInfo}</p>;
-  };
-
-  const renderBirthDeathInfo = () => {
-    const birthDate = member.birth_date || (member as any).birthDate;
-    const deathDate = member.death_date || (member as any).deathDate;
-    const isAlive = member.is_alive !== false && (member as any).isAlive !== false;
-    const gender = member.gender || (member as any).gender;
-    
-    // حالة 1: لا يوجد تاريخ ولادة ولا وفاة
-    if (!birthDate && !deathDate) return null;
-    
-    // حالة 2: يوجد تاريخ وفاة فقط (بدون تاريخ ولادة)
-    if (!birthDate && deathDate) {
-      const deathText = gender === 'female' ? 'توفيت' : 'توفي';
-      return (
-        <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
-          <Skull className="h-3 w-3 text-gray-600 dark:text-gray-400" />
-          <span className="text-xs text-gray-700 dark:text-gray-300 font-arabic">
-            {deathText} في <DateDisplay date={deathDate} />
-          </span>
-        </div>
-      );
-    }
-    
-    // حالة 3: يوجد تاريخ ولادة + العضو متوفي + لا يوجد تاريخ وفاة
-    if (birthDate && !isAlive && !deathDate) {
-      const birthText = gender === 'female' ? 'ولدت' : 'ولد';
-      return (
-        <div className="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-full">
-          <Calendar className="h-3 w-3 text-blue-600 dark:text-blue-400" />
-          <span className="text-xs text-blue-700 dark:text-blue-300 font-arabic">
-            {birthText} في <DateDisplay date={birthDate} />
-          </span>
-        </div>
-      );
-    }
-    
-    // حالة 4: يوجد تاريخ ولادة + العضو على قيد الحياة
-    if (birthDate && isAlive) {
-      const birthText = gender === 'female' ? 'ولدت' : 'ولد';
-      const age = differenceInYears(new Date(), parseISO(birthDate));
-      return (
-        <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-full">
-          <Calendar className="h-3 w-3 text-green-600 dark:text-green-400" />
-          <span className="text-xs text-green-700 dark:text-green-300 font-arabic">
-            {birthText} في <DateDisplay date={birthDate} /> - {age} سنة
-          </span>
-        </div>
-      );
-    }
-    
-    // حالة 5: يوجد تاريخ ولادة + تاريخ وفاة
-    if (birthDate && deathDate) {
-      const birthText = gender === 'female' ? 'ولدت' : 'ولد';
-      const deathText = gender === 'female' ? 'توفيت' : 'توفي';
-      const age = differenceInYears(parseISO(deathDate), parseISO(birthDate));
-      const birthYear = parseISO(birthDate).getFullYear();
-      const deathYear = parseISO(deathDate).getFullYear();
-      return (
-        <div className="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-full">
-          <Calendar className="h-3 w-3 text-amber-600 dark:text-amber-400" />
-          <span className="text-xs text-amber-700 dark:text-amber-300 font-arabic">
-            {birthText} في {birthYear} - {deathText} في {deathYear} - {age} سنة
-          </span>
-        </div>
-      );
-    }
-    
     return null;
   };
   return <TooltipProvider>
     <Card className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden" onClick={() => onViewMember(member)}>
       {/* Black ribbon for deceased members */}
-      {((member as any).death_date || (member as any).deathDate || (member as any).is_alive === false) && <div className="absolute top-0 left-0 z-10">
+      {!(member as any).isAlive && <div className="absolute top-0 left-0 z-10">
           <Tooltip>
             <TooltipTrigger asChild>
-              <div 
-                className="w-12 h-12 bg-black cursor-help rounded-tl-[24px]"
-                style={{
-                  clipPath: 'polygon(0 0, 100% 0, 0 100%)'
-                }}
-              ></div>
+              <div className="w-0 h-0 border-l-[40px] border-l-black border-b-[40px] border-b-transparent cursor-help"></div>
             </TooltipTrigger>
             <TooltipContent side="right">
               <p>متوفى</p>
@@ -262,7 +192,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         <div className="flex items-center justify-between gap-3 min-h-[80px]">
           <div className="flex items-start gap-3 flex-1">
             <Avatar className="h-12 w-12 flex-shrink-0">
-              {memberImageSrc && <AvatarImage src={memberImageSrc} alt={member.name} />}
+              <AvatarImage src={(member as any).image} />
               <AvatarFallback className={getGenderColor(member.gender)}>
                 {((member as any).name || member.first_name || "؟").charAt(0)}
               </AvatarFallback>
@@ -280,12 +210,15 @@ export const MemberCard: React.FC<MemberCardProps> = ({
               {/* Spouse information - show founder text for founders, spouse info for non-family members */}
               {renderSpouseInfo()}
                 
-                {/* Birth/Death date and other icons */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  {renderBirthDeathInfo()}
-                  {[member.is_founder, (member as any).isFounder, (member as any).family_founder, (member as any).founder].some(v => v === true || v === 1 || v === 'true') && <div className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/30 px-2 py-1 rounded-full">
-                    <Crown className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
-                    <span className="text-sm text-yellow-600 dark:text-yellow-300 font-medium font-arabic">المؤسس</span>
+                {/* Birth date and other icons */}
+                <div className="flex items-center gap-2">
+                  {(member.birth_date || (member as any).birthDate) && <div className="flex items-center gap-1 bg-blue-50 px-2 py-1 rounded-full">
+                      <Calendar className="h-3 w-3 text-blue-600" />
+                      <DateDisplay date={(member as any).birthDate || member.birth_date} className="text-sm text-blue-600 font-medium font-arabic" />
+                    </div>}
+                  {[member.is_founder, (member as any).isFounder, (member as any).family_founder, (member as any).founder].some(v => v === true || v === 1 || v === 'true') && <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
+                    <Crown className="h-4 w-4 text-yellow-600" />
+                    <span className="text-sm text-yellow-600 font-medium font-arabic">المؤسس</span>
                   </div>}
                 </div>
             </div>

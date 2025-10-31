@@ -1,35 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Heart, HeartCrack, Users, Crown, UserRound, Edit3 } from "lucide-react";
-import { useResolvedImageUrl } from "@/utils/useResolvedImageUrl";
-
-// Helper component to resolve member images with lazy loading
-const MemberAvatar: React.FC<{
-  member: any;
-  size?: string;
-  borderColor?: string;
-  ringColor?: string;
-  fallbackBg?: string;
-  fallbackText?: string;
-  textSize?: string;
-}> = ({ member, size = "h-14 w-14", borderColor = "border-primary/30", ringColor = "ring-primary/10", fallbackBg = "from-primary/20 to-primary/30", fallbackText = "text-primary", textSize = "text-lg" }) => {
-  const imageSrc = useResolvedImageUrl(member?.image_url || member?.image, true);
-  
-  return (
-    <Avatar className={`${size} mx-auto border-2 ${borderColor} ring-2 ${ringColor}`}>
-      {imageSrc ? (
-        <AvatarImage src={imageSrc} alt={member?.name || ""} />
-      ) : (
-        <AvatarFallback className={`bg-gradient-to-br ${fallbackBg} ${fallbackText} font-semibold ${textSize}`}>
-          {(member?.name || "؟").slice(0, 2)}
-        </AvatarFallback>
-      )}
-    </Avatar>
-  );
-};
+import { Heart, HeartCrack, Users, Crown, UserRound } from "lucide-react";
 
 interface FamilyUnit {
   id: string;
@@ -43,10 +16,6 @@ interface FamilyUnit {
 interface OrganizationalChartProps {
   familyUnits: Map<string, FamilyUnit>;
   zoomLevel: number;
-  isPublicView?: boolean;
-  onSuggestEdit?: (memberId: string, memberName: string) => void;
-  marriages?: any[];
-  members?: any[];
 }
 
 interface Position {
@@ -57,11 +26,7 @@ interface Position {
 
 export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   familyUnits,
-  zoomLevel,
-  isPublicView = false,
-  onSuggestEdit,
-  marriages = [],
-  members = []
+  zoomLevel
 }) => {
   const UNIT_WIDTH = 380;
   const UNIT_HEIGHT = 180;
@@ -264,35 +229,32 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   const positions = calculatePositions();
 
-  // Center root member in visible area - re-centers when root changes
-  const [currentRootId, setCurrentRootId] = useState<string | null>(null);
+  // Center root member in visible area
+  const [hasInitialized, setHasInitialized] = useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    if (displayUnits.size > 0 && rootUnits.length > 0 && containerRef.current) {
-      const newRootId = rootUnits[0].id;
+    if (displayUnits.size > 0 && rootUnits.length > 0 && !hasInitialized && containerRef.current) {
+      // Get the first root unit position
+      const rootPosition = positions.get(rootUnits[0].id);
       
-      // Re-center only if root has changed
-      if (newRootId !== currentRootId) {
-        const rootPosition = positions.get(newRootId);
+      if (rootPosition) {
+        const containerWidth = containerRef.current.offsetWidth;
+        const containerHeight = containerRef.current.offsetHeight;
         
-        if (rootPosition) {
-          const containerWidth = containerRef.current.offsetWidth;
-          
-          // Calculate the center of the root unit
-          const rootCenterX = rootPosition.x + UNIT_WIDTH / 2;
-          const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
-          
-          // Calculate offset to position the root at the top center of the viewport
-          const offsetX = (containerWidth / 2) - rootCenterX;
-          const offsetY = 150 - rootCenterY;
-          
-          setPanOffset({ x: offsetX, y: offsetY });
-          setCurrentRootId(newRootId);
-        }
+        // Calculate the center of the root unit
+        const rootCenterX = rootPosition.x + UNIT_WIDTH / 2;
+        const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
+        
+        // Calculate offset to center the root in the viewport
+        const offsetX = (containerWidth / 2) - rootCenterX;
+        const offsetY = (containerHeight / 2) - rootCenterY;
+        
+        setPanOffset({ x: offsetX, y: offsetY });
+        setHasInitialized(true);
       }
     }
-  }, [displayUnits.size, rootUnits.length, rootUnits[0]?.id, positions, currentRootId]);
+  }, [displayUnits.size, rootUnits.length, hasInitialized, positions]);
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
@@ -321,23 +283,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               </Badge>
             </div>
             
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden relative" 
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden" 
                   style={{ height: `${UNIT_HEIGHT}px` }}>
-              {/* Suggest Edit Button - Shows on hover for public view */}
-              {isPublicView && onSuggestEdit && husband && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity h-8 px-2 bg-background/80 hover:bg-background shadow-sm z-20"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSuggestEdit(husband.id, husband.name);
-                  }}
-                >
-                  <Edit3 className="h-3 w-3 ml-1" />
-                  <span className="text-xs">اقتراح تعديل</span>
-                </Button>
-              )}
               <CardContent className="p-4 h-full flex flex-col justify-center">
                 {isFounder && (
                   <div className="flex justify-center mb-3">
@@ -353,34 +300,83 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                   <div className="flex items-center justify-between gap-4">
                     {/* Wife */}
                     <div className="flex-1 text-center">
-                      <MemberAvatar 
-                        member={wives[0]} 
-                        size="h-14 w-14"
-                        borderColor="border-pink-300"
-                        ringColor="ring-pink-100 dark:ring-pink-900"
-                        fallbackBg="from-pink-400/30 to-rose-500/30"
-                        fallbackText="text-pink-700 dark:text-pink-300"
-                      />
-                      <h4 className="font-semibold text-sm text-foreground text-center break-words mt-2">{wives[0].name}</h4>
+                      <Avatar className="h-14 w-14 mx-auto mb-2 border-2 border-pink-300 ring-2 ring-pink-100 dark:ring-pink-900">
+                        {wives[0].image_url ? (
+                          <AvatarImage src={wives[0].image_url} alt={wives[0].name} />
+                        ) : (
+                          <AvatarFallback className="bg-gradient-to-br from-pink-400/30 to-rose-500/30 text-pink-700 dark:text-pink-300 font-semibold">
+                            {wives[0].name.slice(0, 2)}
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                      <h4 className="font-semibold text-sm text-foreground text-center break-words">{wives[0].name}</h4>
                       <Badge variant="outline" className="text-xs mt-1 border-pink-200 text-pink-700 dark:text-pink-300">
-                        الزوجة
+                        {(() => {
+                          const husbandId = husband?.id;
+                          if (!husbandId) return 'الزوجة';
+                          const husbandMarriedUnits = Array.from(displayUnits.values()).filter(unit =>
+                            unit.type === 'married' &&
+                            unit.members.some(m => m?.id === husbandId && m?.gender === 'male')
+                          );
+                          const totalWives = husbandMarriedUnits.reduce((count, unit) =>
+                            count + unit.members.filter(m => m?.gender === 'female').length, 0
+                          );
+                          return totalWives > 1 ? `الزوجة (أم ${wives[0].name})` : 'الزوجة';
+                        })()}
                       </Badge>
                       {(() => {
-                        const wife = wives[0];
-                        const fatherId = (wife as any).father_id || (wife as any).fatherId || (wife as any)?.father?.id;
-                        const motherId = (wife as any).mother_id || (wife as any).motherId || (wife as any)?.mother?.id;
-                        if (!fatherId || !motherId) return null;
-                        const fatherMarriages = (marriages || []).filter((m: any) => m.husband_id === fatherId && (m.is_active !== false));
-                        const uniqueWives = new Set(fatherMarriages.map((m: any) => m.wife_id));
-                        if (uniqueWives.size < 2) return null;
-                        const motherMember = (members || []).find((m: any) => m.id === motherId);
-                        const motherName = motherMember?.name as string | undefined;
-                        if (!motherName) return null;
-                        return (
-                          <Badge variant="outline" className="text-xs mt-1 border-pink-200 text-pink-700 dark:text-pink-300">
-                            والدتها {motherName}
-                          </Badge>
-                        );
+                        try {
+                          const wife = wives[0];
+                          // Find wife's single unit to determine parents (display units)
+                          const wifeSingleUnit = Array.from(displayUnits.values()).find((u: any) =>
+                            u.type !== 'married' && (u as any).members?.[0]?.id === wife.id
+                          ) as any | undefined;
+                          const wParent: any = wifeSingleUnit?.parentUnitId ? displayUnits.get(wifeSingleUnit.parentUnitId) : undefined;
+                          const candidates = wParent && wParent.type === 'married' ? (wParent.members || []).filter((m: any) => m?.gender === 'female') : [];
+                          let hasMulti = (candidates?.length || 0) >= 2;
+                          let mId: string | undefined = (wife as any).motherId || (wife as any).mother_id || (wife as any).motherID || (wife as any)?.mother?.id;
+                          if (!mId && wParent) {
+                            const siblingUnits = (wParent.childUnits || [])
+                              .map((id: string) => displayUnits.get(id))
+                              .filter(Boolean) as any[];
+                            const inferred = siblingUnits
+                              .map((u: any) => (u as any).members?.[0])
+                              .find((s: any) => s && s.id !== wife.id && (s.motherId || s.mother_id));
+                            mId = inferred?.motherId || inferred?.mother_id;
+                          }
+                          let mName: string | undefined;
+                          if (mId) {
+                            const found = candidates.find((w: any) => w?.id === mId);
+                            mName = found?.name;
+                          }
+                          // Fallback: resolve via original (familyUnits) even if no single display unit exists
+                          if (!mName) {
+                            const wifeSingleOriginal = Array.from(familyUnits.values()).find((u: any) =>
+                              u.type !== 'married' && (u as any).members?.[0]?.id === wife.id
+                            ) as any | undefined;
+                            const parentOriginal: any = wifeSingleOriginal?.parentUnitId ? familyUnits.get(wifeSingleOriginal.parentUnitId) : undefined;
+                            if (parentOriginal) {
+                              const father = (parentOriginal.members || []).find((m: any) => m?.gender === 'male');
+                              const mother = (parentOriginal.members || []).find((m: any) => m?.gender === 'female');
+                              const fatherMarriedUnits = Array.from(familyUnits.values()).filter((u: any) =>
+                                u.type === 'married' && (u.members || []).some((m: any) => m?.id === father?.id && m?.gender === 'male')
+                              );
+                              const wivesCount = fatherMarriedUnits.reduce((acc: number, u: any) => acc + (u.members || []).filter((m: any) => m?.gender === 'female').length, 0);
+                              if (wivesCount >= 2) hasMulti = true;
+                              if (!mName) mName = mother?.name;
+                            }
+                          }
+                          if (hasMulti && mName) {
+                            return (
+                              <Badge variant="outline" className="text-xs mt-1 border-pink-200 text-pink-700 dark:text-pink-300">
+                                والدتها {mName}
+                              </Badge>
+                            );
+                          }
+                        } catch (e) {
+                          // no-op
+                        }
+                        return null;
                       })()}
                     </div>
 
@@ -396,34 +392,19 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                     {/* Husband */}
                     {husband && (
                       <div className="flex-1 text-center">
-                        <MemberAvatar 
-                          member={husband} 
-                          size="h-14 w-14"
-                          borderColor="border-blue-300"
-                          ringColor="ring-blue-100 dark:ring-blue-900"
-                          fallbackBg="from-blue-400/30 to-cyan-500/30"
-                          fallbackText="text-blue-700 dark:text-blue-300"
-                        />
-                        <h4 className="font-semibold text-sm text-foreground text-center break-words mt-2">{husband.name}</h4>
+                        <Avatar className="h-14 w-14 mx-auto mb-2 border-2 border-blue-300 ring-2 ring-blue-100 dark:ring-blue-900">
+                          {husband.image_url ? (
+                            <AvatarImage src={husband.image_url} alt={husband.name} />
+                          ) : (
+                            <AvatarFallback className="bg-gradient-to-br from-blue-400/30 to-cyan-500/30 text-blue-700 dark:text-blue-300 font-semibold">
+                              {husband.name.slice(0, 2)}
+                            </AvatarFallback>
+                          )}
+                        </Avatar>
+                        <h4 className="font-semibold text-sm text-foreground text-center break-words">{husband.name}</h4>
                         <Badge variant="outline" className="text-xs mt-1 border-blue-200 text-blue-700 dark:text-blue-300">
                           الزوج
                         </Badge>
-                        {(() => {
-                          const fatherId = (husband as any).father_id || (husband as any).fatherId || (husband as any)?.father?.id;
-                          const motherId = (husband as any).mother_id || (husband as any).motherId || (husband as any)?.mother?.id;
-                          if (!fatherId || !motherId) return null;
-                          const fatherMarriages = (marriages || []).filter((m: any) => m.husband_id === fatherId && (m.is_active !== false));
-                          const uniqueWives = new Set(fatherMarriages.map((m: any) => m.wife_id));
-                          if (uniqueWives.size < 2) return null;
-                          const motherMember = (members || []).find((m: any) => m.id === motherId);
-                          const motherName = motherMember?.name as string | undefined;
-                          if (!motherName) return null;
-                          return (
-                            <Badge variant="outline" className="text-xs mt-1 border-blue-200 text-blue-700 dark:text-blue-300">
-                              والدته {motherName}
-                            </Badge>
-                          );
-                        })()}
                       </div>
                     )}
                   </div>
@@ -433,32 +414,16 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                     {/* Husband section - extra compact */}
                     {husband && (
                       <div className="text-center mb-0.5">
-                        <MemberAvatar 
-                          member={husband} 
-                          size="h-8 w-8"
-                          borderColor="border-blue-300"
-                          ringColor="ring-blue-100 dark:ring-blue-900"
-                          fallbackBg="from-blue-400/30 to-cyan-500/30"
-                          fallbackText="text-blue-700 dark:text-blue-300"
-                          textSize="text-xs"
-                        />
-                        <h4 className="font-semibold text-xs text-foreground text-center break-words leading-tight mb-0.5 mt-0.5">{husband.name}</h4>
-                        {(() => {
-                          const fatherId = (husband as any).father_id || (husband as any).fatherId || (husband as any)?.father?.id;
-                          const motherId = (husband as any).mother_id || (husband as any).motherId || (husband as any)?.mother?.id;
-                          if (!fatherId || !motherId) return null;
-                          const fatherMarriages = (marriages || []).filter((m: any) => m.husband_id === fatherId && (m.is_active !== false));
-                          const uniqueWives = new Set(fatherMarriages.map((m: any) => m.wife_id));
-                          if (uniqueWives.size < 2) return null;
-                          const motherMember = (members || []).find((m: any) => m.id === motherId);
-                          const motherName = motherMember?.name as string | undefined;
-                          if (!motherName) return null;
-                          return (
-                            <Badge variant="outline" className="text-[8px] border-blue-200 text-blue-700 dark:text-blue-300 px-0.5 py-0 mt-0.5">
-                              والدته {motherName}
-                            </Badge>
-                          );
-                        })()}
+                        <Avatar className="h-8 w-8 mx-auto mb-0.5 border-2 border-blue-300 ring-1 ring-blue-100 dark:ring-blue-900">
+                          {husband.image_url ? (
+                            <AvatarImage src={husband.image_url} alt={husband.name} />
+                          ) : (
+                            <AvatarFallback className="bg-gradient-to-br from-blue-400/30 to-cyan-500/30 text-blue-700 dark:text-blue-300 font-semibold text-xs">
+                              {husband.name.slice(0, 2)}
+                            </AvatarFallback>
+                          )}
+                        </Avatar>
+                        <h4 className="font-semibold text-xs text-foreground text-center break-words leading-tight mb-0.5">{husband.name}</h4>
                       </div>
                     )}
                     
@@ -476,16 +441,19 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                       }}>
                         {wives.map((wife, index) => (
                           <div key={wife.id} className="text-center py-0.5 px-0.5">
-                            <MemberAvatar 
-                              member={wife} 
-                              size={wives.length <= 4 ? 'h-9 w-9' : wives.length <= 6 ? 'h-8 w-8' : 'h-7 w-7'}
-                              borderColor="border-pink-300"
-                              ringColor="ring-pink-100 dark:ring-pink-900"
-                              fallbackBg="from-pink-400/30 to-rose-500/30"
-                              fallbackText="text-pink-700 dark:text-pink-300"
-                              textSize="text-xs"
-                            />
-                            <h5 className="font-medium text-xs text-foreground text-center break-words leading-tight mb-0.5 mt-0.5"
+                            <Avatar className={`mx-auto mb-0.5 border border-pink-300 ring-1 ring-pink-100 dark:ring-pink-900 ${
+                              wives.length <= 4 ? 'h-9 w-9' : 
+                              wives.length <= 6 ? 'h-8 w-8' : 'h-7 w-7'
+                            }`}>
+                              {wife.image_url ? (
+                                <AvatarImage src={wife.image_url} alt={wife.name} />
+                              ) : (
+                                <AvatarFallback className="bg-gradient-to-br from-pink-400/30 to-rose-500/30 text-pink-700 dark:text-pink-300 font-semibold text-xs">
+                                  {wife.name.slice(0, 2)}
+                                </AvatarFallback>
+                              )}
+                            </Avatar>
+                            <h5 className="font-medium text-xs text-foreground text-center break-words leading-tight mb-0.5" 
                                 style={{ 
                                   fontSize: wives.length <= 4 ? '11px' : wives.length <= 6 ? '10px' : '9px', 
                                   lineHeight: '1.1' 
@@ -518,48 +486,84 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       const member = unit.members[0];
       const isFounder = member.is_founder;
       
-      // Robust mother badge logic using original data with fallback to unit composition
-      const fatherId = (member as any).father_id || (member as any).fatherId || (member as any)?.father?.id;
-      const motherId = (member as any).mother_id || (member as any).motherId || (member as any)?.mother?.id;
-
-      // Parent unit wives count (fallback when marriages data is incomplete)
+      // Determine mother when father has 2+ wives (robust)
       const parentUnit = unit.parentUnitId ? displayUnits.get(unit.parentUnitId) : undefined;
-      const parentWivesCount = parentUnit && (parentUnit as any).type === 'married'
-        ? ((parentUnit as any).members || []).filter((m: any) => m?.gender === 'female').length
-        : 0;
-      
-      // Count unique wives from marriages data
-      const fatherMarriages = fatherId
-        ? marriages.filter((m: any) => m.husband_id === fatherId)
+      const wives = parentUnit && (parentUnit as any).type === 'married'
+        ? (parentUnit as any).members.filter((m: any) => m?.gender === 'female')
         : [];
-      const uniqueWives = new Set(fatherMarriages.map((m: any) => m.wife_id));
-      const fatherHasMultipleWives = uniqueWives.size >= 2 || parentWivesCount >= 2;
-      
-      // Resolve mother name from global members
-      let motherName: string | undefined;
-      if (motherId && fatherHasMultipleWives) {
-        const motherMember = members.find((m: any) => m.id === motherId);
-        motherName = motherMember?.name;
+      const fatherHasMultipleWives = wives.length >= 2;
+
+      // Debug logging for specific members
+      if (member.name === 'شهد' || member.name === 'أحمد') {
+        console.log(`=== DEBUG ${member.name} ===`);
+        console.log('Member:', member);
+        console.log('Parent unit:', parentUnit);
+        console.log('Wives:', wives);
+        console.log('Father has multiple wives:', fatherHasMultipleWives);
       }
 
-      // Enhanced debug for شهد case
-      if ((member?.name || '').includes('شهد') || member?.id === '7e280f45-571b-4eba-be6c-93da2558522b') {
-        console.log('=== [شهد Debug] ===', {
-          memberName: member?.name,
-          memberId: member?.id,
-          fatherId,
-          motherId,
-          marriagesTotal: marriages.length,
-          fatherMarriages,
-          uniqueWivesArray: Array.from(uniqueWives),
-          uniqueWivesCount: uniqueWives.size,
-          parentWivesCount,
-          fatherHasMultipleWives,
-          membersTotal: members.length,
-          motherMember: members.find((m: any) => m.id === motherId),
-          motherName,
-          willShowBadge: fatherHasMultipleWives && motherName ? 'YES' : 'NO'
-        });
+      let motherId: string | undefined =
+        (member as any).motherId ||
+        (member as any).mother_id ||
+        (member as any).motherID ||
+        (member as any)?.mother?.id;
+
+      if (member.name === 'شهد' || member.name === 'أحمد') {
+        console.log('Initial motherId:', motherId);
+      }
+
+      // Try to infer from siblings if missing
+      if (!motherId && parentUnit) {
+        const siblingUnits = ((parentUnit as any).childUnits || [])
+          .map((id: string) => displayUnits.get(id))
+          .filter(Boolean) as FamilyUnit[];
+        const inferred = siblingUnits
+          .map((u: FamilyUnit) => (u as any).members?.[0])
+          .find((s: any) => s && s.id !== (member as any).id && (s.motherId || s.mother_id));
+        const inferredMotherId = inferred?.motherId || inferred?.mother_id;
+        if (inferredMotherId) motherId = inferredMotherId;
+        
+        if (member.name === 'شهد' || member.name === 'أحمد') {
+          console.log('Sibling units:', siblingUnits);
+          console.log('Inferred motherId:', inferredMotherId);
+          console.log('Final motherId after sibling inference:', motherId);
+        }
+      }
+
+      // Match mother by id within wives
+      let motherName: string | undefined;
+      let motherInUnit = motherId ? wives.find((w: any) => (w?.id === motherId)) : undefined;
+      motherName = (motherInUnit?.name as string | undefined);
+
+      if (member.name === 'شهد' || member.name === 'أحمد') {
+        console.log('Mother in unit:', motherInUnit);
+        console.log('Mother name from ID match:', motherName);
+      }
+
+      // Last resort: map via original married units (per-wife child mapping)
+      if (!motherName && parentUnit && (parentUnit as any).originalUnitIds) {
+        const originalIds = ((parentUnit as any).originalUnitIds as string[]) || [];
+        if (member.name === 'شهد' || member.name === 'أحمد') {
+          console.log('Original unit IDs:', originalIds);
+        }
+        
+        for (const oid of originalIds) {
+          const original = familyUnits.get(oid) as any;
+          if (!original) continue;
+          const wife = (original.members || []).find((m: any) => m?.gender === 'female');
+          if ((original.childUnits || []).includes(unit.id)) {
+            motherName = wife?.name;
+            if (member.name === 'شهد' || member.name === 'أحمد') {
+              console.log('Found mother via original unit:', original, 'Wife:', wife, 'Mother name:', motherName);
+            }
+            break;
+          }
+        }
+      }
+
+      if (member.name === 'شهد' || member.name === 'أحمد') {
+        console.log('Final mother name:', motherName);
+        console.log('=== END DEBUG ===');
       }
 
       const motherLabel = (member.gender === 'female' ? 'والدتها ' : 'والدته ');
@@ -574,23 +578,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             width: `${UNIT_WIDTH}px`
           }}
         >
-          <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden relative"
+          <Card className="group hover:shadow-2xl transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-br from-background/95 to-muted/95 backdrop-blur-sm overflow-hidden"
                 style={{ height: `${UNIT_HEIGHT}px` }}>
-            {/* Suggest Edit Button - Shows on hover for public view */}
-            {isPublicView && onSuggestEdit && (
-              <Button
-                size="sm"
-                variant="ghost"
-                className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity h-8 px-2 bg-background/80 hover:bg-background shadow-sm z-20"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onSuggestEdit(member.id, member.name);
-                }}
-              >
-                <Edit3 className="h-3 w-3 ml-1" />
-                <span className="text-xs">اقتراح تعديل</span>
-              </Button>
-            )}
             <CardContent className="p-4 h-full flex flex-col justify-between">
                 {isFounder && (
                   <div className="flex justify-center mb-3">
@@ -602,16 +591,16 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                 )}
                 
                 <div className="text-center">
-                  <MemberAvatar 
-                    member={member} 
-                    size="h-16 w-16"
-                    borderColor="border-primary/30"
-                    ringColor="ring-primary/10"
-                    fallbackBg="from-primary/20 to-primary/30"
-                    fallbackText="text-primary"
-                    textSize="text-lg"
-                  />
-                  <h3 className="font-bold text-lg text-foreground mb-2 mt-3">{member.name}</h3>
+                  <Avatar className="h-16 w-16 mx-auto mb-3 border-2 border-primary/30 ring-2 ring-primary/10">
+                    {member.image_url ? (
+                      <AvatarImage src={member.image_url} alt={member.name} />
+                    ) : (
+                      <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/30 text-primary font-semibold text-lg">
+                        {member.name.slice(0, 2)}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <h3 className="font-bold text-lg text-foreground mb-2">{member.name}</h3>
                   
                   <div className="flex justify-center gap-2 flex-wrap">
                     <Badge variant="outline" className="text-xs">

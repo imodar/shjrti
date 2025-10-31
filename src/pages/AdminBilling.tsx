@@ -34,7 +34,6 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Invoice {
   id: string;
@@ -92,7 +91,6 @@ interface BillingStats {
 
 export default function AdminBilling() {
   const { toast } = useToast();
-  const { direction } = useLanguage();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [stats, setStats] = useState<BillingStats>({
@@ -385,7 +383,7 @@ export default function AdminBilling() {
 
   if (loading) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
       <GlobalHeader />
         <div className="container mx-auto px-6 pt-24 pb-12">
           <div className="flex items-center justify-center h-64">
@@ -398,10 +396,10 @@ export default function AdminBilling() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
       <GlobalHeader />
       
-      <div className="container mx-auto px-6 pt-24 pb-12" dir={direction}>
+      <div className="container mx-auto px-6 pt-24 pb-12" dir="rtl">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">

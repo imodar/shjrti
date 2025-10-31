@@ -7,7 +7,7 @@ import { AlertTriangle, Calendar, Package, CheckCircle, ArrowLeft } from 'lucide
 import { useNavigate } from 'react-router-dom';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Header from '@/components/Header';
-import { GlobalFooter } from '@/components/GlobalFooter';
+import Footer from '@/components/Footer';
 
 export default function RenewSubscription() {
   const { subscription, loading, isExpired, daysUntilExpiry } = useSubscription();
@@ -192,7 +192,7 @@ export default function RenewSubscription() {
         </div>
       </main>
       
-      <GlobalFooter />
+      <Footer />
     </div>
   );
 }

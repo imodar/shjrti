@@ -338,130 +338,91 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                   <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full shadow-lg"></div>
                   اختر {spouseLabel} من القائمة *
                 </Label>
-                
-                {/* Helper function to build full genealogical name */}
-                {(() => {
-                  const buildFullMemberName = (member: any, members: any[]) => {
-                    const firstName = member.first_name || member.firstName || member.name?.split(' ')[0] || '';
-                    const father = members.find(m => m?.id === (member?.father_id ?? member?.fatherId));
-                    const grandfather = father ? members.find(m => m?.id === (father?.father_id ?? father?.fatherId)) : null;
-                    const isInternal = Boolean(father) || Boolean(member.is_founder);
-
-                    if (isInternal && member.gender === 'female' && father) {
-                      const fatherFirst = father.first_name || father.firstName || father.name?.split(' ')[0] || father.name;
-                      if (grandfather) {
-                        const grandFirst = grandfather.first_name || grandfather.firstName || grandfather.name?.split(' ')[0] || grandfather.name;
-                        return `${firstName} بنت ${fatherFirst} بن ${grandFirst}`;
-                      }
-                      return `${firstName} بنت ${fatherFirst}`;
-                    }
-                    if (isInternal && member.gender === 'male' && father) {
-                      const fatherFirst = father.first_name || father.firstName || father.name?.split(' ')[0] || father.name;
-                      if (grandfather) {
-                        const grandFirst = grandfather.first_name || grandfather.firstName || grandfather.name?.split(' ')[0] || grandfather.name;
-                        return `${firstName} ابن ${fatherFirst} ابن ${grandFirst}`;
-                      }
-                      return `${firstName} ابن ${fatherFirst}`;
-                    }
-                    
-                    const lastName = member.last_name || member.lastName;
-                    return lastName ? `${member.first_name || member.firstName || firstName} ${lastName}` : (member.name || firstName);
-                  };
-
-                  const selectedMember = familyMembers.find(m => m.id === spouse.existingFamilyMemberId);
-                  const selectedLabel = selectedMember 
-                    ? buildFullMemberName(selectedMember, familyMembers)
-                    : (spouse.name || "اختر فرد من العائلة...");
-
-                  return (
-                    <Popover open={commandOpen} onOpenChange={onCommandOpenChange}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          aria-expanded={commandOpen}
-                          className="w-full justify-between h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic"
-                        >
-                          {selectedLabel}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-full p-0 bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
-                        <Command>
-                          <CommandInput placeholder="ابحث عن فرد..." className="h-9 font-arabic" />
-                          <CommandList>
-                            <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
-                              لا توجد {isWife ? 'إناث' : 'ذكور'} متاحة من العازبين أو المطلقين.
-                            </CommandEmpty>
-                             <CommandGroup>
-                               {familyMembers.filter(member => {
-                                 const hasValidGender = member.gender === spouseGender;
-                                 const isNotSelf = member.id !== selectedMember?.id;
-                                 const isAvailableForMarriage = 
-                                   member.marital_status === "single" || 
-                                   member.marital_status === "divorced" ||
-                                   member.marital_status === null ||
-                                   member.marital_status === undefined;
-                                 const isOriginalFamilyMember = 
-                                   member.father_id || 
-                                   member.mother_id || 
-                                   member.is_founder || 
-                                   (member.last_name && member.last_name.includes("الشيخ سعيد"));
-                                 
-                                 const isNotAlreadyMarried = member.marital_status !== "married";
-                                 
-                                 console.log('🔍 Spouse filter check for:', member.name, {
-                                   hasValidGender,
-                                   isNotSelf,
-                                   isAvailableForMarriage,
-                                   isOriginalFamilyMember,
-                                   isNotAlreadyMarried,
-                                   maritalStatus: member.marital_status
-                                 });
-                                 
-                                 return hasValidGender && isNotSelf && isAvailableForMarriage && isOriginalFamilyMember && isNotAlreadyMarried;
-                               }).map((member) => {
-                                 const displayName = buildFullMemberName(member, familyMembers);
-
-                                 return (
-                              <CommandItem
-                                key={member.id}
-                                value={member.name}
+                <Popover open={commandOpen} onOpenChange={onCommandOpenChange}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={commandOpen}
+                      className="w-full justify-between h-11 text-sm border-2 border-blue-200/50 dark:border-blue-700/50 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic"
+                    >
+                       {spouse.existingFamilyMemberId && spouse.name ? 
+                         (spouse.firstName && spouse.lastName ? `${spouse.firstName} ${spouse.lastName}` : spouse.name) 
+                         : "اختر فرد من العائلة..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-full p-0 bg-card/95 backdrop-blur-xl border-border/50">
+                    <Command>
+                      <CommandInput placeholder="ابحث عن فرد..." className="h-9 font-arabic" />
+                      <CommandList>
+                         <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
+                           لا توجد {isWife ? 'إناث' : 'ذكور'} متاحة من العازبين أو المطلقين.
+                         </CommandEmpty>
+                        <CommandGroup>
+                            {familyMembers.filter(member => {
+                               const hasValidGender = member.gender === spouseGender;
+                               const isNotSelf = member.id !== selectedMember?.id;
+                               const isAvailableForMarriage = 
+                                 member.marital_status === "single" || 
+                                 member.marital_status === "divorced" ||
+                                 member.marital_status === null ||
+                                 member.marital_status === undefined;
+                               const isOriginalFamilyMember = 
+                                 member.father_id || 
+                                 member.mother_id || 
+                                 member.is_founder || 
+                                 (member.last_name && member.last_name.includes("الشيخ سعيد"));
+                               
+                               // Additional check: exclude if marital_status is explicitly "married"
+                               const isNotAlreadyMarried = member.marital_status !== "married";
+                               
+                               console.log('🔍 Spouse filter check for:', member.name, {
+                                 hasValidGender,
+                                 isNotSelf,
+                                 isAvailableForMarriage,
+                                 isOriginalFamilyMember,
+                                 isNotAlreadyMarried,
+                                 maritalStatus: member.marital_status
+                               });
+                               
+                               return hasValidGender && isNotSelf && isAvailableForMarriage && isOriginalFamilyMember && isNotAlreadyMarried;
+                          }).map((member) => (
+                            <CommandItem
+                              key={member.id}
+                              value={member.name}
                                 onSelect={() => {
-                                  onSpouseChange({
-                                    ...spouse,
-                                    existingFamilyMemberId: member.id,
-                                    firstName: member.first_name || '',
-                                    lastName: member.last_name || '',
-                                    name: displayName,
-                                    birthDate: member.birth_date ? new Date(member.birth_date) : null,
-                                    isAlive: member.is_alive ?? true,
-                                    deathDate: member.death_date ? new Date(member.death_date) : null,
-                                    maritalStatus: member.marital_status || 'single',
-                                    croppedImage: member.image_url || null,
-                                    biography: member.biography || ''
-                                  });
-                                  onCommandOpenChange(false);
-                                }}
-                                className="font-arabic"
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    spouse.existingFamilyMemberId === member.id ? "opacity-100" : "opacity-0"
-                                  )}
-                                />
-                                {displayName}
-                              </CommandItem>
-                            );
-                          })}
+                                 onSpouseChange({
+                                   ...spouse,
+                                   existingFamilyMemberId: member.id,
+                                   firstName: member.first_name || '',
+                                   lastName: member.last_name || '',
+                                   name: member.first_name && member.last_name ? `${member.first_name} ${member.last_name}` : member.name,
+                                   birthDate: member.birth_date ? new Date(member.birth_date) : null,
+                                   isAlive: member.is_alive ?? true,
+                                   deathDate: member.death_date ? new Date(member.death_date) : null,
+                                   maritalStatus: member.marital_status || 'single',
+                                   croppedImage: member.image_url || null,
+                                   biography: member.biography || ''
+                                 });
+                                 onCommandOpenChange(false);
+                               }}
+                              className="font-arabic"
+                            >
+                              <Check
+                                className={cn(
+                                  "mr-2 h-4 w-4",
+                                  spouse.existingFamilyMemberId === member.id ? "opacity-100" : "opacity-0"
+                                )}
+                              />
+                              {member.first_name && member.last_name ? `${member.first_name} ${member.last_name}` : member.name}
+                            </CommandItem>
+                          ))}
                         </CommandGroup>
                       </CommandList>
                     </Command>
-                   </PopoverContent>
-                 </Popover>
-                  );
-                })()}
+                  </PopoverContent>
+                </Popover>
               </div>
 
               {/* Marital Status */}

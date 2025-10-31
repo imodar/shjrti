@@ -6,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useImageUploadPermission } from "@/hooks/useImageUploadPermission";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 import { 
   Upload, 
   Camera, 
@@ -36,13 +35,11 @@ interface Memory {
 interface MemberMemoriesProps {
   memberId: string;
   memberName: string;
-  readOnly?: boolean;
 }
 
 export const MemberMemories: React.FC<MemberMemoriesProps> = ({ 
   memberId, 
-  memberName,
-  readOnly = false
+  memberName 
 }) => {
   const [memories, setMemories] = useState<Memory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,7 +48,6 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
   const [showModal, setShowModal] = useState(false);
   const { toast } = useToast();
   const { isImageUploadEnabled, loading: permissionLoading } = useImageUploadPermission();
-  const navigate = useNavigate();
 
   // Load memories for this member
   const loadMemories = useCallback(async () => {
@@ -283,59 +279,67 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
         ذكريات الأفراد - {memberName}
       </h3>
 
-      {/* Upload Area - Hidden in read-only mode */}
-      {!readOnly && (
-        <>
-          {isImageUploadEnabled ? (
-            <div
-              onDragEnter={handleDragEnter}
-              onDragLeave={handleDragLeave}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              className={`
-                relative border-2 border-dashed rounded-lg p-6 text-center transition-colors
-                ${isDragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}
-                ${uploading ? 'opacity-50 pointer-events-none' : ''}
-              `}
-            >
-              <input
-                type="file"
-                id="memory-upload"
-                multiple
-                accept="image/*"
-                onChange={handleFileSelect}
-                className="hidden"
-                disabled={uploading}
-              />
-              <label htmlFor="memory-upload" className="cursor-pointer">
-                <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-                <p className="text-sm font-medium mb-1">
-                  {uploading ? 'جاري الرفع...' : 'اسحب الصور هنا أو انقر للاختيار'}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  الحد الأقصى: 1 ميجابايت لكل صورة
-                </p>
-              </label>
+      {/* Upload Area */}
+      {!isImageUploadEnabled ? (
+        <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-8 text-center bg-muted/50">
+          <div className="flex flex-col items-center gap-4">
+            <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-full">
+              <Lock className="h-8 w-8 text-amber-600" />
             </div>
-          ) : (
-            <div className="relative border-2 border-dashed border-border rounded-lg p-6 text-center bg-muted/30">
-              <Lock className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-              <p className="text-sm font-medium mb-1">رفع الصور غير متاح</p>
-              <p className="text-xs text-muted-foreground mb-3">
-                يتطلب هذه الميزة ترقية باقتك
+            <div>
+              <h4 className="font-semibold text-muted-foreground mb-1">ميزة غير متاحة</h4>
+              <p className="text-sm text-muted-foreground mb-3">
+                تحتاج إلى ترقية باقتك لتتمكن من رفع صور الذكريات
               </p>
-              <Button 
-                variant="default" 
-                size="sm" 
-                className="gap-2"
-                onClick={() => navigate('/plan-selection')}
-              >
-                <Crown className="h-4 w-4" />
-                ترقية الباقة
-              </Button>
+              <div className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 rounded-full text-xs">
+                <Crown className="h-3 w-3" />
+                باقة مميزة مطلوبة
+              </div>
             </div>
-          )}
-        </>
+          </div>
+        </div>
+      ) : (
+        <div
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
+            isDragActive 
+              ? 'border-primary bg-primary/5' 
+              : uploading 
+              ? 'border-muted-foreground/30 bg-muted/50 cursor-not-allowed'
+              : 'border-muted-foreground/30 hover:border-primary hover:bg-primary/5'
+          }`}
+          onClick={() => {
+            if (!uploading && isImageUploadEnabled) {
+              const input = document.createElement('input');
+              input.type = 'file';
+              input.multiple = true;
+              input.accept = 'image/*';
+              input.onchange = (e) => handleFileSelect(e as unknown as React.ChangeEvent<HTMLInputElement>);
+              input.click();
+            }
+          }}
+        >
+          <div className="flex flex-col items-center gap-4">
+            <div className={`p-3 rounded-full ${uploading ? 'bg-muted' : 'bg-primary/10'}`}>
+              {uploading ? (
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              ) : (
+                <Upload className="h-8 w-8 text-primary" />
+              )}
+            </div>
+            <div>
+              <h4 className="font-semibold mb-1">
+                {uploading ? 'جاري الرفع...' : isDragActive ? 'اتركها هنا' : 'اسحب وأفلت الصور هنا'}
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                أو انقر لتحديد الصور • الحد الأقصى 1 ميجابايت لكل صورة
+              </p>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Memories Grid */}
@@ -370,22 +374,19 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
                   }}
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-lg transition-colors">
-                  {/* Delete button - only show when not in read-only mode */}
-                  {!readOnly && (
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        className="h-8 w-8 p-0"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteMemory(memory);
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="h-8 w-8 p-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteMemory(memory);
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                   <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button
                       variant="secondary"

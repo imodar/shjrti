@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAdmin } from '@/contexts/AdminContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Loader } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -14,10 +14,11 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, requireAdmin = false, requireActiveSubscription = false }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
-  const { isAdmin, loading: adminLoading } = useAdmin();
   const { isExpired, loading: subscriptionLoading } = useSubscription();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminLoading, setAdminLoading] = useState(requireAdmin);
 
   // Remove dangerous development mode bypass for security
   // Instead of bypassing auth completely, use proper development configuration
@@ -29,15 +30,46 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
   }, [user, loading, navigate]);
 
   useEffect(() => {
-    if (requireAdmin && !adminLoading && user && !isAdmin) {
-      toast({
-        title: "غير مسموح",
-        description: "ليس لديك صلاحيات للوصول لهذه الصفحة",
-        variant: "destructive",
-      });
-      navigate('/dashboard');
+    if (requireAdmin && user) {
+      const checkAdminStatus = async () => {
+        try {
+          // Use the secure admin function to prevent RLS issues
+          const { data, error } = await supabase
+            .rpc('is_admin_secure', { user_uuid: user.id });
+
+          if (error) {
+            console.error('Error checking admin status:', error);
+            toast({
+              title: "خطأ",
+              description: "حدث خطأ في التحقق من صلاحيات الإدارة",
+              variant: "destructive",
+            });
+            navigate('/dashboard');
+            return;
+          }
+
+          if (!data) {
+            toast({
+              title: "غير مسموح",
+              description: "ليس لديك صلاحيات للوصول لهذه الصفحة",
+              variant: "destructive",
+            });
+            navigate('/dashboard');
+            return;
+          }
+
+          setIsAdmin(true);
+        } catch (error) {
+          console.error('Error checking admin status:', error);
+          navigate('/dashboard');
+        } finally {
+          setAdminLoading(false);
+        }
+      };
+
+      checkAdminStatus();
     }
-  }, [requireAdmin, isAdmin, adminLoading, user, navigate, toast]);
+  }, [requireAdmin, user, navigate, toast]);
 
   // Check subscription expiration for subscription-protected routes
   useEffect(() => {
@@ -52,7 +84,7 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
     }
   }, [requireActiveSubscription, isExpired, subscriptionLoading, navigate, user]);
 
-  if (loading || (requireAdmin && adminLoading)) {
+  if (loading || adminLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">

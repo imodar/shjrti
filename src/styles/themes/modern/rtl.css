@@ -56,17 +56,8 @@
 [dir="rtl"] input[type="email"],
 [dir="rtl"] input[type="password"],
 [dir="rtl"] input[type="search"],
-[dir="rtl"] input[type="tel"],
 [dir="rtl"] textarea,
-[dir="rtl"] select,
-[dir="rtl"] input {
-  text-align: right !important;
-  direction: rtl;
-}
-
-/* RTL Support for input placeholders */
-[dir="rtl"] input::placeholder,
-[dir="rtl"] textarea::placeholder {
+[dir="rtl"] select {
   text-align: right;
 }
 

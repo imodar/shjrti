@@ -1,8 +1,6 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useLocation } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { 
   TreePine, 
   Crown, 
@@ -20,22 +18,10 @@ import {
   Building2
 } from "lucide-react";
 
-interface PageData {
-  title: any;
-  slug: string;
-}
-
-const getLocalizedText = (jsonbField: any, languageCode: string): string => {
-  if (!jsonbField) return '';
-  if (typeof jsonbField === 'string') return jsonbField;
-  return jsonbField[languageCode] || jsonbField['ar'] || '';
-};
-
 export const GlobalFooter = () => {
-  const { t, currentLanguage } = useLanguage();
+  const { t } = useLanguage();
   const { user } = useAuth();
   const location = useLocation();
-  const [pages, setPages] = useState<PageData[]>([]);
 
   // Function to get page-specific icons
   const getPageIcon = () => {
@@ -71,26 +57,6 @@ export const GlobalFooter = () => {
   };
 
   const PageIcon = getPageIcon();
-
-  useEffect(() => {
-    const loadPages = async () => {
-      const { data } = await supabase
-        .from('pages')
-        .select('title, slug')
-        .in('slug', ['terms-conditions', 'privacy-policy'])
-        .eq('is_active', true);
-      
-      if (data) {
-        setPages(data);
-      }
-    };
-    loadPages();
-  }, []);
-
-  const getPageTitle = (slug: string, fallback: string) => {
-    const page = pages.find(p => p.slug === slug);
-    return page ? getLocalizedText(page.title, currentLanguage) : fallback;
-  };
 
   return (
     <footer className="relative overflow-hidden">
@@ -160,11 +126,11 @@ export const GlobalFooter = () => {
               <div className="space-y-2 md:space-y-3">
                 <Link to="/terms-conditions" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300 text-sm md:text-base">
                   <Shield className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{getPageTitle('terms-conditions', 'الشروط والأحكام')}</span>
+                  <span>{t('footer_link_terms', 'الشروط والأحكام')}</span>
                 </Link>
                 <Link to="/privacy-policy" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300 text-sm md:text-base">
                   <Heart className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>{getPageTitle('privacy-policy', 'سياسة الخصوصية')}</span>
+                  <span>{t('footer_link_privacy', 'سياسة الخصوصية')}</span>
                 </Link>
                 <Link to="/contact-us" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300 text-sm md:text-base">
                   <Users className="h-3 w-3 md:h-4 md:w-4" />

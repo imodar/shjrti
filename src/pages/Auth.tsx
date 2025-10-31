@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,39 +21,9 @@ const Auth = () => {
   const [showOTP, setShowOTP] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [pendingUserData, setPendingUserData] = useState<any>(null);
-  const [showPasswordReset, setShowPasswordReset] = useState<'email' | 'otp' | 'newPassword' | null>(null);
-  const [resetEmail, setResetEmail] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showMagicLink, setShowMagicLink] = useState<'email' | 'otp' | null>(null);
-  const [magicLinkEmail, setMagicLinkEmail] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, direction } = useLanguage();
-
-  // Global OTP cooldown (one timer for all OTP-related requests)
-  const [otpCooldown, setOtpCooldown] = useState(0);
-  // Extra guards to ensure a single network request per click (synchronous)
-  const resetSubmittingRef = useRef(false);
-  const magicSubmittingRef = useRef(false);
-  const resendSubmittingRef = useRef(false);
-
-  const startGlobalCooldown = (seconds: number) => {
-    const until = Date.now() + seconds * 1000;
-    localStorage.setItem('auth_otp_global_until', String(until));
-    setOtpCooldown(seconds);
-  };
-
-  useEffect(() => {
-    const update = () => {
-      const now = Date.now();
-      const g = parseInt(localStorage.getItem('auth_otp_global_until') || '0', 10);
-      setOtpCooldown(Math.max(0, Math.ceil((g - now) / 1000)));
-    };
-    update();
-    const id = setInterval(update, 1000);
-    return () => clearInterval(id);
-  }, []);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -286,16 +256,7 @@ const Auth = () => {
 
   const handleResendOTP = async () => {
     if (!pendingUserData) return;
-    if (resendSubmittingRef.current) return;
-    if (otpCooldown > 0) {
-      toast({
-        title: t('wait_before_retry', 'الرجاء الانتظار'),
-        description: `${t('retry_after', 'يمكنك إعادة الإرسال بعد')} ${otpCooldown}ث`,
-      });
-      return;
-    }
     
-    resendSubmittingRef.current = true;
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.resend({
@@ -307,22 +268,11 @@ const Auth = () => {
       });
 
       if (error) {
-        const msg = (error.message || '').toLowerCase();
-        if (msg.includes('rate limit')) {
-          startGlobalCooldown(300);
-          toast({
-            title: t('too_many_requests', 'طلبات متكررة'),
-            description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل إعادة الإرسال')}`,
-          });
-        } else {
-          toast({
-            title: t('resend_error', 'خطأ في إعادة الإرسال'),
-            description: error.message,
-            variant: "destructive",
-          });
-        }
-        resendSubmittingRef.current = false;
-        setIsLoading(false);
+        toast({
+          title: t('resend_error', 'خطأ في إعادة الإرسال'),
+          description: error.message,
+          variant: "destructive",
+        });
         return;
       }
 
@@ -330,16 +280,13 @@ const Auth = () => {
         title: t('resent_successfully', 'تم إعادة الإرسال'),
         description: t('resent_description', 'تم إرسال رمز تحقق جديد إلى بريدك الإلكتروني'),
       });
-      startGlobalCooldown(300);
-      resendSubmittingRef.current = false;
-      setIsLoading(false);
     } catch (error: any) {
       toast({
         title: t('error', 'خطأ'),
         description: error.message || t('resend_error_general', 'حدث خطأ أثناء إعادة الإرسال'),
         variant: "destructive",
       });
-      resendSubmittingRef.current = false;
+    } finally {
       setIsLoading(false);
     }
   };
@@ -348,263 +295,6 @@ const Auth = () => {
     setShowOTP(false);
     setOtpCode("");
     setPendingUserData(null);
-  };
-
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Prevent multiple submissions
-    if (isLoading || resetSubmittingRef.current) return;
-    // Cooldown guard
-    if (otpCooldown > 0) {
-      toast({
-        title: t('wait_before_retry', 'الرجاء الانتظار'),
-        description: `${t('retry_after', 'يمكنك طلب رمز جديد بعد')} ${otpCooldown}ث`,
-      });
-      return;
-    }
-    
-    resetSubmittingRef.current = true;
-    setIsLoading(true);
-
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/auth`,
-      });
-
-      if (error) {
-        const msg = (error.message || '').toLowerCase();
-        if (msg.includes('rate limit')) {
-          startGlobalCooldown(300);
-          toast({
-            title: t('too_many_requests', 'طلبات متكررة'),
-            description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل طلب رمز جديد')}`,
-          });
-        } else {
-          toast({
-            title: t('error', 'خطأ'),
-            description: error.message,
-            variant: "destructive",
-          });
-        }
-        resetSubmittingRef.current = false;
-        setIsLoading(false);
-        return;
-      }
-
-      toast({
-        title: t('reset_code_sent', 'تم إرسال رمز إعادة التعيين'),
-        description: t('check_email_for_code', 'يرجى التحقق من بريدك الإلكتروني'),
-      });
-
-      // Start 5min cooldown to avoid rate limit
-      startGlobalCooldown(300);
-
-      setShowPasswordReset('otp');
-      resetSubmittingRef.current = false;
-      setIsLoading(false);
-    } catch (error: any) {
-      toast({
-        title: t('error', 'خطأ'),
-        description: error.message,
-        variant: "destructive",
-      });
-      resetSubmittingRef.current = false;
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerifyResetOTP = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        email: resetEmail,
-        token: otpCode,
-        type: 'recovery'
-      });
-
-      if (error) {
-        toast({
-          title: t('verification_error', 'خطأ في التحقق'),
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setShowPasswordReset('newPassword');
-      setOtpCode("");
-    } catch (error: any) {
-      toast({
-        title: t('error', 'خطأ'),
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleUpdatePassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (newPassword !== confirmPassword) {
-      toast({
-        title: t('error', 'خطأ'),
-        description: t('passwords_dont_match', 'كلمات المرور غير متطابقة'),
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsLoading(true);
-
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-
-      if (error) {
-        toast({
-          title: t('error', 'خطأ'),
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      toast({
-        title: t('password_updated', 'تم تحديث كلمة المرور'),
-        description: t('password_updated_success', 'تم تحديث كلمة المرور بنجاح'),
-      });
-
-      // Reset all states
-      setShowPasswordReset(null);
-      setResetEmail("");
-      setNewPassword("");
-      setConfirmPassword("");
-      setOtpCode("");
-
-      // Redirect to dashboard
-      window.location.href = "/dashboard";
-    } catch (error: any) {
-      toast({
-        title: t('error', 'خطأ'),
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleMagicLinkLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Prevent multiple submissions
-    if (isLoading || magicSubmittingRef.current) return;
-    if (otpCooldown > 0) {
-      toast({
-        title: t('wait_before_retry', 'الرجاء الانتظار'),
-        description: `${t('retry_after', 'يمكنك طلب رمز جديد بعد')} ${otpCooldown}ث`,
-      });
-      return;
-    }
-    
-    magicSubmittingRef.current = true;
-    setIsLoading(true);
-
-    try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email: magicLinkEmail,
-        options: {
-          shouldCreateUser: false,
-        }
-      });
-
-      if (error) {
-        const msg = (error.message || '').toLowerCase();
-        if (msg.includes('rate limit')) {
-          startGlobalCooldown(300);
-          toast({
-            title: t('too_many_requests', 'طلبات متكررة'),
-            description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل طلب رمز جديد')}`,
-          });
-        } else {
-          toast({
-            title: t('error', 'خطأ'),
-            description: error.message,
-            variant: "destructive",
-          });
-        }
-        magicSubmittingRef.current = false;
-        setIsLoading(false);
-        return;
-      }
-
-      toast({
-        title: t('code_sent', 'تم إرسال الرمز'),
-        description: t('check_email_for_code', 'تحقق من بريدك الإلكتروني لإدخال الرمز المؤقت'),
-      });
-
-      startGlobalCooldown(300);
-
-      setShowMagicLink('otp');
-      magicSubmittingRef.current = false;
-      setIsLoading(false);
-    } catch (error: any) {
-      toast({
-        title: t('error', 'خطأ'),
-        description: error.message,
-        variant: "destructive",
-      });
-      magicSubmittingRef.current = false;
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerifyMagicLinkOTP = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      const { error } = await supabase.auth.verifyOtp({
-        email: magicLinkEmail,
-        token: otpCode,
-        type: 'email'
-      });
-
-      if (error) {
-        toast({
-          title: t('verification_error', 'خطأ في التحقق'),
-          description: error.message,
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      toast({
-        title: t('login_successful', 'تم تسجيل الدخول بنجاح'),
-        description: t('welcome_back', 'مرحباً بعودتك'),
-      });
-
-      // Clear form and redirect
-      setMagicLinkEmail("");
-      setOtpCode("");
-      setShowMagicLink(null);
-      
-      navigate("/dashboard");
-    } catch (error: any) {
-      toast({
-        title: t('error', 'خطأ'),
-        description: error.message,
-        variant: "destructive",
-      });
-      setIsLoading(false);
-    }
   };
 
   const handleGoogleSignIn = async () => {
@@ -791,7 +481,7 @@ const Auth = () => {
               <CardHeader className="text-center relative z-10">
                 <div className="flex items-center justify-center gap-2 mb-2">
                   <Crown className="h-6 w-6 text-amber-500" />
-                 <CardTitle className="text-3xl bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent pb-1 leading-relaxed">
+                 <CardTitle className="text-3xl bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                     {t('join_my_tree', 'انضم إلى شجرتي')}
                   </CardTitle>
                   <Crown className="h-6 w-6 text-amber-500" />
@@ -801,309 +491,7 @@ const Auth = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="relative z-10">
-                {showMagicLink === 'email' ? (
-                  /* Magic Link Login - Email Entry */
-                  <div className="space-y-6">
-                    <div className="text-center space-y-2">
-                      <div className="flex justify-center">
-                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
-                          <Mail className="w-8 h-8 text-white" />
-                        </div>
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-800">{t('magic_link_login', 'تسجيل الدخول بالرمز المؤقت')}</h3>
-                      <p className="text-gray-600">
-                        {t('enter_email_for_magic_link', 'أدخل بريدك الإلكتروني لإرسال رمز الدخول المؤقت')}
-                      </p>
-                      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p className="text-sm text-blue-800 text-center">
-                          {t('magic_link_info', 'سيصلك رمز مؤقت للبريد المسجل يمكنك استخدامه للدخول مباشرة')}
-                        </p>
-                      </div>
-                    </div>
-
-                    <form onSubmit={handleMagicLinkLogin} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="magicLinkEmail">{t('email', 'البريد الإلكتروني')}</Label>
-                        <div className="relative">
-                          <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id="magicLinkEmail"
-                            type="email"
-                            placeholder={t('email_placeholder', 'example@domain.com')}
-                            className="pr-10"
-                            value={magicLinkEmail}
-                            onChange={(e) => setMagicLinkEmail(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <Button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-                        disabled={isLoading || otpCooldown > 0}
-                      >
-                        {isLoading
-                          ? t('sending', 'جاري الإرسال...')
-                          : otpCooldown > 0
-                            ? `${t('retry_after', 'يمكن الإرسال بعد')} ${otpCooldown}ث`
-                            : t('send_magic_code', 'إرسال الرمز المؤقت')}
-                        <Mail className="mr-2 h-4 w-4" />
-                      </Button>
-                    </form>
-
-                    <Button
-                      onClick={() => {
-                        setShowMagicLink(null);
-                        setMagicLinkEmail("");
-                      }}
-                      variant="ghost"
-                      className="w-full"
-                      disabled={isLoading}
-                    >
-                      <ArrowLeft className="ml-2 h-4 w-4" />
-                      {t('back_to_login', 'العودة إلى تسجيل الدخول')}
-                    </Button>
-                  </div>
-                ) : showMagicLink === 'otp' ? (
-                  /* Magic Link - OTP Verification */
-                  <div className="space-y-6">
-                    <div className="text-center space-y-2">
-                      <div className="flex justify-center">
-                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
-                          <ShieldCheck className="w-8 h-8 text-white" />
-                        </div>
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-800">{t('verify_magic_code', 'أدخل الرمز المؤقت')}</h3>
-                      <p className="text-gray-600">
-                        {t('enter_magic_code', 'أدخل الرمز المرسل إلى')}
-                        <br />
-                        <span className="font-medium text-emerald-600">{magicLinkEmail}</span>
-                      </p>
-                    </div>
-
-                    <form onSubmit={handleVerifyMagicLinkOTP} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="magicOtpCode">{t('verification_code', 'رمز التحقق')}</Label>
-                        <div className="relative">
-                          <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id="magicOtpCode"
-                            type="text"
-                            placeholder={t('enter_6_digit_code', 'أدخل الرمز المكون من 6 أرقام')}
-                            className="pr-10 text-center text-lg tracking-wider"
-                            value={otpCode}
-                            onChange={(e) => setOtpCode(e.target.value)}
-                            maxLength={6}
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <Button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-                        disabled={isLoading || otpCode.length !== 6}
-                      >
-                        {isLoading ? t('verifying', 'جاري التحقق...') : t('login_with_code', 'تسجيل الدخول')}
-                        <ShieldCheck className="mr-2 h-4 w-4" />
-                      </Button>
-                    </form>
-
-                    <Button
-                      onClick={() => {
-                        setShowMagicLink('email');
-                        setOtpCode("");
-                      }}
-                      variant="ghost"
-                      className="w-full"
-                      disabled={isLoading}
-                    >
-                      <ArrowLeft className="ml-2 h-4 w-4" />
-                      {t('back', 'رجوع')}
-                    </Button>
-                  </div>
-                ) : showPasswordReset === 'email' ? (
-                  /* Password Reset - Email Entry */
-                  <div className="space-y-6">
-                    <div className="text-center space-y-2">
-                      <div className="flex justify-center">
-                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
-                          <Lock className="w-8 h-8 text-white" />
-                        </div>
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-800">{t('reset_password', 'إعادة تعيين كلمة المرور')}</h3>
-                      <p className="text-gray-600">
-                        {t('enter_email_for_reset', 'أدخل بريدك الإلكتروني لإرسال رمز إعادة التعيين')}
-                      </p>
-                      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                        <p className="text-sm text-blue-800 text-center">
-                          {t('reset_code_info', 'إذا كنت مسجلاً، سيصلك بريد إلكتروني يحتوي على رمز إعادة التعيين')}
-                        </p>
-                      </div>
-                    </div>
-
-                    <form onSubmit={handleForgotPassword} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="resetEmail">{t('email', 'البريد الإلكتروني')}</Label>
-                        <div className="relative">
-                          <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id="resetEmail"
-                            type="email"
-                            placeholder={t('email_placeholder', 'example@domain.com')}
-                            className="pr-10"
-                            value={resetEmail}
-                            onChange={(e) => setResetEmail(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <Button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-                        disabled={isLoading || otpCooldown > 0}
-                      >
-                        {isLoading
-                          ? t('sending', 'جاري الإرسال...')
-                          : otpCooldown > 0
-                            ? `${t('retry_after', 'أعد المحاولة بعد')} ${otpCooldown}ث`
-                            : t('send_reset_code', 'إرسال رمز إعادة التعيين')}
-                        <Mail className="mr-2 h-4 w-4" />
-                      </Button>
-                    </form>
-
-                    <Button
-                      onClick={() => {
-                        setShowPasswordReset(null);
-                        setResetEmail("");
-                      }}
-                      variant="ghost"
-                      className="w-full"
-                      disabled={isLoading}
-                    >
-                      <ArrowLeft className="ml-2 h-4 w-4" />
-                      {t('back_to_login', 'العودة إلى تسجيل الدخول')}
-                    </Button>
-                  </div>
-                ) : showPasswordReset === 'otp' ? (
-                  /* Password Reset - OTP Verification */
-                  <div className="space-y-6">
-                    <div className="text-center space-y-2">
-                      <div className="flex justify-center">
-                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
-                          <ShieldCheck className="w-8 h-8 text-white" />
-                        </div>
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-800">{t('verify_reset_code', 'تحقق من رمز إعادة التعيين')}</h3>
-                      <p className="text-gray-600">
-                        {t('enter_reset_code', 'أدخل الرمز المرسل إلى')}
-                        <br />
-                        <span className="font-medium text-emerald-600">{resetEmail}</span>
-                      </p>
-                    </div>
-
-                    <form onSubmit={handleVerifyResetOTP} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="resetOtpCode">{t('verification_code', 'رمز التحقق')}</Label>
-                        <div className="relative">
-                          <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id="resetOtpCode"
-                            type="text"
-                            placeholder={t('enter_6_digit_code', 'أدخل الرمز المكون من 6 أرقام')}
-                            className="pr-10 text-center text-lg tracking-wider"
-                            value={otpCode}
-                            onChange={(e) => setOtpCode(e.target.value)}
-                            maxLength={6}
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <Button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-                        disabled={isLoading || otpCode.length !== 6}
-                      >
-                        {isLoading ? t('verifying', 'جاري التحقق...') : t('verify_code', 'تحقق من الرمز')}
-                        <ShieldCheck className="mr-2 h-4 w-4" />
-                      </Button>
-                    </form>
-
-                    <Button
-                      onClick={() => {
-                        setShowPasswordReset('email');
-                        setOtpCode("");
-                      }}
-                      variant="ghost"
-                      className="w-full"
-                      disabled={isLoading}
-                    >
-                      <ArrowLeft className="ml-2 h-4 w-4" />
-                      {t('back', 'رجوع')}
-                    </Button>
-                  </div>
-                ) : showPasswordReset === 'newPassword' ? (
-                  /* Password Reset - New Password Entry */
-                  <div className="space-y-6">
-                    <div className="text-center space-y-2">
-                      <div className="flex justify-center">
-                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
-                          <Lock className="w-8 h-8 text-white" />
-                        </div>
-                      </div>
-                      <h3 className="text-2xl font-bold text-gray-800">{t('new_password', 'كلمة مرور جديدة')}</h3>
-                      <p className="text-gray-600">
-                        {t('enter_new_password', 'أدخل كلمة المرور الجديدة')}
-                      </p>
-                    </div>
-
-                    <form onSubmit={handleUpdatePassword} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="newPassword">{t('new_password', 'كلمة المرور الجديدة')}</Label>
-                        <div className="relative">
-                          <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id="newPassword"
-                            type="password"
-                            placeholder={t('enter_new_password', 'أدخل كلمة المرور الجديدة')}
-                            className="pr-10"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="confirmPassword">{t('confirm_password', 'تأكيد كلمة المرور')}</Label>
-                        <div className="relative">
-                          <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id="confirmPassword"
-                            type="password"
-                            placeholder={t('confirm_new_password', 'أكد كلمة المرور الجديدة')}
-                            className="pr-10"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            required
-                          />
-                        </div>
-                      </div>
-
-                      <Button
-                        type="submit"
-                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
-                        disabled={isLoading}
-                      >
-                        {isLoading ? t('updating', 'جاري التحديث...') : t('update_password', 'تحديث كلمة المرور')}
-                        <Lock className="mr-2 h-4 w-4" />
-                      </Button>
-                    </form>
-                  </div>
-                ) : showOTP ? (
+                {showOTP ? (
                   /* OTP Verification Screen */
                   <div className="space-y-6">
                     <div className="text-center space-y-2">
@@ -1153,11 +541,9 @@ const Auth = () => {
                         onClick={handleResendOTP}
                         variant="outline"
                         className="w-full border-emerald-200 hover:bg-emerald-50"
-                        disabled={isLoading || otpCooldown > 0}
+                        disabled={isLoading}
                       >
-                        {otpCooldown > 0
-                          ? `${t('resend_in', 'إعادة الإرسال خلال')} ${otpCooldown}ث`
-                          : t('resend_code', 'إعادة إرسال الرمز')}
+                        {t('resend_code', 'إعادة إرسال الرمز')}
                         <Mail className="mr-2 h-4 w-4" />
                       </Button>
 
@@ -1198,11 +584,11 @@ const Auth = () => {
                             <div className={`space-y-2 ${direction === 'rtl' ? 'order-2' : 'order-1'}`}>
                               <Label htmlFor="firstName">{t('first_name', 'الاسم الأول')}</Label>
                               <div className="relative">
-                                <User className={`absolute top-3 h-4 w-4 text-muted-foreground ${direction === 'rtl' ? 'right-3' : 'left-3'}`} />
+                                <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                                 <Input
                                   id="firstName"
                                   placeholder={t('enter_first_name', 'أدخل اسمك الأول')}
-                                  className={direction === 'rtl' ? 'pr-10' : 'pl-10'}
+                                  className="pr-10"
                                   value={firstName}
                                   onChange={(e) => setFirstName(e.target.value)}
                                   tabIndex={1}
@@ -1214,11 +600,11 @@ const Auth = () => {
                             <div className={`space-y-2 ${direction === 'rtl' ? 'order-1' : 'order-2'}`}>
                               <Label htmlFor="lastName">{t('last_name', 'اسم العائلة')}</Label>
                               <div className="relative">
-                                <User className={`absolute top-3 h-4 w-4 text-muted-foreground ${direction === 'rtl' ? 'right-3' : 'left-3'}`} />
+                                <User className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                                 <Input
                                   id="lastName"
                                   placeholder={t('enter_last_name', 'أدخل اسم العائلة')}
-                                  className={direction === 'rtl' ? 'pr-10' : 'pl-10'}
+                                  className="pr-10"
                                   value={lastName}
                                   onChange={(e) => setLastName(e.target.value)}
                                   tabIndex={2}
@@ -1325,27 +711,10 @@ const Auth = () => {
                             </div>
                           </div>
 
-                           <div className="flex items-center justify-between text-sm">
-                            <button 
-                              type="button"
-                              onClick={() => {
-                                setShowMagicLink('email');
-                                setMagicLinkEmail(email);
-                              }}
-                              className="text-primary hover:underline font-medium"
-                            >
-                              {t('login_via_otp', 'تسجيل الدخول بواسطة رمز مؤقت')}
-                            </button>
-                            <button 
-                              type="button"
-                              onClick={() => {
-                                setShowPasswordReset('email');
-                                setResetEmail(email);
-                              }}
-                              className="text-primary hover:underline"
-                            >
+                          <div className="flex items-center justify-between text-sm">
+                            <a href="#" className="text-primary hover:underline">
                               {t('forgot_password', 'نسيت كلمة المرور؟')}
-                            </button>
+                            </a>
                           </div>
 
                           <Button
@@ -1373,7 +742,7 @@ const Auth = () => {
                       <Button
                         onClick={handleGoogleSignIn}
                         variant="outline"
-                        className="w-full mt-4 border-2 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                        className="w-full mt-4 border-2 border-emerald-200 hover:bg-emerald-50 hover:border-emerald-300 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
                         disabled={isLoading}
                       >
                         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
