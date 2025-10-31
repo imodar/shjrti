@@ -359,7 +359,6 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
               {/* Content Panel - Col-8 (Right Side in RTL) */}
               <div className="col-span-1 md:col-span-8 order-2 md:order-2">
                 <Card className="relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl shadow-2xl ring-1 ring-white/10 dark:ring-gray-500/10 overflow-hidden">
-                  <CardContent className="relative p-6 bg-white dark:bg-gray-900">
                     {activeSection === 'overview' && (
                       <FamilyOverview 
                         familyData={familyData}
@@ -393,7 +392,6 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                         readOnly={true}
                       />
                     )}
-                  </CardContent>
                 </Card>
               </div>
               
