@@ -3392,6 +3392,19 @@ const FamilyBuilderNew = () => {
                             const grandfather = father ? familyMembers.find(m => m?.id === father?.father_id || m?.id === father?.fatherId) : null;
                             const isInternal = Boolean(father) || Boolean(member.is_founder);
 
+                            console.log('🔍 buildFullName:', {
+                              memberName: member.name,
+                              firstName,
+                              gender: member.gender,
+                              father_id: member.father_id,
+                              fatherFound: !!father,
+                              fatherName: father?.name,
+                              grandfatherFound: !!grandfather,
+                              grandfatherName: grandfather?.name,
+                              isInternal,
+                              isWife
+                            });
+
                             // Internal members use lineage-based naming
                             if (isInternal) {
                               if (isWife) {
