@@ -241,13 +241,14 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const assignGenerationsToUnits = (units: Map<string, FamilyUnit>) => {
     console.log('Assigning generations to units...');
 
-    // Step 1: Find founder units (units containing founders)
-    const founderUnits: string[] = [];
+    // Step 1: Find founder units OR units without parents
+    const rootUnits: string[] = [];
     units.forEach((unit, unitId) => {
-      if (unit.members.some(m => m.is_founder)) {
+      const hasParent = unit.members.some(m => m.father_id || m.mother_id);
+      if (unit.members.some(m => m.is_founder) || !hasParent) {
         unit.generation = 1;
-        founderUnits.push(unitId);
-        console.log(`Set ${unit.members.map(m => m.name).join(' & ')} as generation 1 (founder unit)`);
+        rootUnits.push(unitId);
+        console.log(`Set ${unit.members.map(m => m.name).join(' & ')} as generation 1 (root unit)`);
       }
     });
 
