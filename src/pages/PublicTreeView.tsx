@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,6 +41,19 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
+  
+  const traditionalRef = useRef<HTMLDivElement>(null);
+  const handleRootMarriageChange = (value: string) => {
+    setSelectedRootMarriage(value);
+    setZoomLevel(1);
+    setTimeout(() => {
+      if (traditionalRef.current) {
+        const el = traditionalRef.current;
+        el.scrollLeft = Math.max(0, (el.scrollWidth - el.clientWidth) / 2);
+        el.scrollTop = 0;
+      }
+    }, 0);
+  };
   
   // Suggest Edit Dialog state
   const [suggestEditOpen, setSuggestEditOpen] = useState(false);
@@ -519,10 +532,7 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                               اختر جذر الشجرة
                             </label>
-                            <Select value={selectedRootMarriage} onValueChange={(value) => {
-                              setSelectedRootMarriage(value);
-                              setZoomLevel(1);
-                            }}>
+                          <Select value={selectedRootMarriage} onValueChange={handleRootMarriageChange}>
                               <SelectTrigger className="w-full bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-emerald-200/50 dark:border-emerald-600/50">
                                 <SelectValue placeholder="اختر عائلة لعرضها" />
                               </SelectTrigger>
@@ -561,7 +571,7 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                         </div>
                         
                         {/* Tree Content Area */}
-                        <div className="p-4 min-h-[600px] overflow-auto">
+                        <div ref={traditionalRef} className="p-4 min-h-[600px] overflow-auto">
                           <OrganizationalChart
                             familyUnits={familyUnits}
                             zoomLevel={zoomLevel}
