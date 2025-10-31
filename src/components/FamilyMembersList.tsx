@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Filter, Users, UserPlus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Calendar, MapPin } from "lucide-react";
+import { Crown, Calendar, MapPin, Skull } from "lucide-react";
 import { DateDisplay } from "@/components/DateDisplay";
 import { useResolvedImageUrl } from "@/utils/useResolvedImageUrl";
 
@@ -321,6 +321,13 @@ const SimpleMemberCard: React.FC<SimpleMemberCardProps> = ({
                   <Crown className="h-3 w-3" />
                   <span className="text-xs">مؤسس</span>
                 </div>
+              )}
+              
+              {(member.death_date || member.deathDate || member.is_alive === false) && (
+                <Badge variant="secondary" className="bg-gray-800 text-white border-gray-700 text-xs">
+                  <Skull className="h-3 w-3 ml-1" />
+                  متوفى
+                </Badge>
               )}
             </div>
             

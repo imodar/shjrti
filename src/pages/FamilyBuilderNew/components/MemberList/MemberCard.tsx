@@ -242,7 +242,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   return <TooltipProvider>
     <Card className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden" onClick={() => onViewMember(member)}>
       {/* Black ribbon for deceased members */}
-      {!(member as any).isAlive && <div className="absolute top-0 left-0 z-10">
+      {((member as any).death_date || (member as any).deathDate || (member as any).is_alive === false) && <div className="absolute top-0 left-0 z-10">
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="w-0 h-0 border-l-[40px] border-l-black border-b-[40px] border-b-transparent cursor-help"></div>
