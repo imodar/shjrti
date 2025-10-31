@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Filter, Users, UserPlus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Calendar, MapPin, Skull } from "lucide-react";
+import { Crown, Calendar, MapPin } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { DateDisplay } from "@/components/DateDisplay";
 import { useResolvedImageUrl } from "@/utils/useResolvedImageUrl";
 
@@ -261,9 +262,25 @@ const SimpleMemberCard: React.FC<SimpleMemberCardProps> = ({
 
   return (
     <Card 
-      className="cursor-pointer bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 hover:shadow-lg transition-all"
+      className="relative cursor-pointer bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 hover:shadow-lg transition-all"
       onClick={onClick}
     >
+      {/* Black ribbon for deceased members */}
+      {(member.death_date || member.deathDate || member.is_alive === false) && (
+        <TooltipProvider>
+          <div className="absolute top-0 left-0 z-10">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="w-0 h-0 border-l-[40px] border-l-black border-b-[40px] border-b-transparent cursor-help"></div>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>متوفى</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
+      )}
+      
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
           <Avatar className="h-12 w-12 flex-shrink-0">
@@ -323,12 +340,6 @@ const SimpleMemberCard: React.FC<SimpleMemberCardProps> = ({
                 </div>
               )}
               
-              {(member.death_date || member.deathDate || member.is_alive === false) && (
-                <Badge variant="secondary" className="bg-gray-800 text-white border-gray-700 text-xs">
-                  <Skull className="h-3 w-3 ml-1" />
-                  متوفى
-                </Badge>
-              )}
             </div>
             
             {(member.birth_date || member.birthDate) && (
