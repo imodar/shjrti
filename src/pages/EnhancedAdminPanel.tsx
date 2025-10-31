@@ -968,53 +968,132 @@ export default function EnhancedAdminPanel() {
           </div>
         </div>
 
-        <Tabs defaultValue="packages" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-11 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
-            <TabsTrigger value="packages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-              <Package className="ml-2 h-4 w-4" />
-              الباقات
-            </TabsTrigger>
-            <TabsTrigger value="users" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-              <CircleUserRound className="ml-2 h-4 w-4" />
-              المستخدمين
-            </TabsTrigger>
-            <TabsTrigger value="payments" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-              <CreditCard className="ml-2 h-4 w-4" />
-              الدفع
-            </TabsTrigger>
-            <TabsTrigger value="translations" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-              <MessageSquare className="ml-2 h-4 w-4" />
-              الترجمات
-            </TabsTrigger>
-            <TabsTrigger value="languages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-              <Languages className="ml-2 h-4 w-4" />
-              اللغات
-            </TabsTrigger>
-            <TabsTrigger value="themes" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-              <Palette className="ml-2 h-4 w-4" />
-              المظاهر
-            </TabsTrigger>
-            <TabsTrigger value="pages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-              <FileText className="ml-2 h-4 w-4" />
-              الصفحات
-            </TabsTrigger>
-            <TabsTrigger value="email-templates" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-              <MailOpen className="ml-2 h-4 w-4" />
-              قوالب الإيميل
-            </TabsTrigger>
-            <TabsTrigger value="email-logs" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-              <Mail className="ml-2 h-4 w-4" />
-              سجل الإيميلات
-            </TabsTrigger>
-            <TabsTrigger value="contact" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-              <Mail className="ml-2 h-4 w-4" />
-              الرسائل
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-              <Scale className="ml-2 h-4 w-4" />
-              الإعدادات
-            </TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="packages" className="space-y-8">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 blur-3xl -z-10 rounded-3xl"></div>
+            <TabsList className="grid w-full grid-cols-11 gap-2 bg-gradient-to-br from-white/80 via-emerald-50/30 to-teal-50/30 dark:from-gray-900/80 dark:via-emerald-950/30 dark:to-teal-950/30 backdrop-blur-2xl border-2 border-emerald-200/50 dark:border-emerald-700/50 rounded-2xl p-3 shadow-xl shadow-emerald-500/10">
+              <TabsTrigger 
+                value="packages" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <Package className="h-5 w-5 transition-transform group-hover:rotate-12 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline">الباقات</span>
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="users" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <CircleUserRound className="h-5 w-5 transition-transform group-hover:scale-110 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline">المستخدمين</span>
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="payments" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <CreditCard className="h-5 w-5 transition-transform group-hover:rotate-6 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline">الدفع</span>
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="translations" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <MessageSquare className="h-5 w-5 transition-transform group-hover:-rotate-12 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline">الترجمات</span>
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="languages" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <Languages className="h-5 w-5 transition-transform group-hover:scale-110 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline">اللغات</span>
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="themes" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <Palette className="h-5 w-5 transition-transform group-hover:rotate-180 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline">المظاهر</span>
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="pages" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <FileText className="h-5 w-5 transition-transform group-hover:-rotate-6 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline">الصفحات</span>
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="email-templates" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <MailOpen className="h-5 w-5 transition-transform group-hover:scale-110 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline text-xs">قوالب الإيميل</span>
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="email-logs" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <Mail className="h-5 w-5 transition-transform group-hover:rotate-12 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline text-xs">سجل الإيميلات</span>
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="contact" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <Mail className="h-5 w-5 transition-transform group-hover:-rotate-12 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline">الرسائل</span>
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="settings" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <Scale className="h-5 w-5 transition-transform group-hover:rotate-180 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline">الإعدادات</span>
+                </div>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="packages" className="space-y-6">
             <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30">
