@@ -676,7 +676,7 @@ export default function Payments() {
                         {currentPlan ? getLocalizedPackageField(currentPlanData, 'name') || 'الباقة المدفوعة' : 'الباقة المجانية'}
                       </h3>
                         <p className="text-3xl font-bold text-emerald-600">
-                          {currentPlan ? currentPlanData?.price && currentPlanData.price !== '0' && parseFloat(currentPlanData.price) > 0 ? `${currentPlanData.price} ريال` : 'مجاني للأبد' : 'مجاني للأبد'}
+                          {currentPlan ? currentPlanData?.price && currentPlanData.price !== '0' && parseFloat(currentPlanData.price) > 0 ? `$${currentPlanData.price}` : 'مجاني للأبد' : 'مجاني للأبد'}
                         </p>
                        {currentPlan && currentPlanData?.price && parseFloat(currentPlanData.price) > 0 && <p className="text-muted-foreground">سنوياً</p>}
                     </div>
