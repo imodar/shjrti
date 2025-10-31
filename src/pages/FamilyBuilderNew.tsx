@@ -3399,9 +3399,9 @@ const FamilyBuilderNew = () => {
                                   const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
                                   if (grandfather) {
                                     const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
-                                    return `${firstName} ابنة ${fatherFirstName} ابنة ${grandfatherFirstName}`;
+                                    return `${firstName} بنت ${fatherFirstName} بن ${grandfatherFirstName}`;
                                   }
-                                  return `${firstName} ابنة ${fatherFirstName}`;
+                                  return `${firstName} بنت ${fatherFirstName}`;
                                 }
                                 return firstName;
                               } else {
