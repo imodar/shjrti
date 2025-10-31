@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useToast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,7 +16,7 @@ import { FamilyGalleryView } from "@/components/FamilyGalleryView";
 import { PublicFamilyHeader } from "@/components/PublicFamilyHeader";
 import { FamilyOverview } from "@/components/FamilyOverview";
 import { TreeView } from "@/components/TreeView";
-import { Users, AlertCircle } from "lucide-react";
+import { Users, AlertCircle, Menu } from "lucide-react";
 import { MemberProfileModal } from "@/components/MemberProfileModal";
 
 interface PublicTreeViewProps {
@@ -23,6 +26,7 @@ interface PublicTreeViewProps {
 const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   const [familyMembers, setFamilyMembers] = useState<any[]>([]);
   const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
@@ -34,6 +38,7 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
+  const [isMemberListOpen, setIsMemberListOpen] = useState(false);
   
   // Suggest Edit Dialog state
   const [suggestEditOpen, setSuggestEditOpen] = useState(false);
@@ -339,24 +344,48 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
               
               {/* Member List - Col-4 (Left Side in RTL) */}
               <div className="col-span-1 md:col-span-4 order-1 md:order-1">
-                <Card className="bg-white dark:bg-gray-900 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl shadow-2xl ring-1 ring-white/10 dark:ring-gray-500/10 overflow-hidden sticky top-4">
-                  <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-b border-border/50">
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="h-5 w-5 text-emerald-600" />
-                      <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                        أعضاء العائلة ({familyMembers.length})
-                      </span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="overflow-y-auto max-h-[calc(100vh-16rem)] p-4">
-                    <FamilyMembersList
-                      familyMembers={familyMembers}
-                      familyMarriages={familyMarriages}
-                      readOnly={true}
-                      onMemberClick={handleMemberClick}
-                    />
-                  </CardContent>
-                </Card>
+                {isMobile ? (
+                  <Drawer open={isMemberListOpen} onOpenChange={setIsMemberListOpen}>
+                    <DrawerTrigger asChild>
+                      <Button variant="outline" className="w-full flex items-center gap-2">
+                        <Menu className="h-4 w-4" />
+                        عرض قائمة الأعضاء ({familyMembers.length})
+                      </Button>
+                    </DrawerTrigger>
+                    <DrawerContent className="h-[80vh] flex flex-col">
+                      <div className="flex-1 overflow-y-auto p-4">
+                        <FamilyMembersList
+                          familyMembers={familyMembers}
+                          familyMarriages={familyMarriages}
+                          readOnly={true}
+                          onMemberClick={(member) => {
+                            handleMemberClick(member);
+                            setIsMemberListOpen(false);
+                          }}
+                        />
+                      </div>
+                    </DrawerContent>
+                  </Drawer>
+                ) : (
+                  <Card className="bg-white dark:bg-gray-900 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl shadow-2xl ring-1 ring-white/10 dark:ring-gray-500/10 overflow-hidden sticky top-4">
+                    <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-b border-border/50">
+                      <CardTitle className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-emerald-600" />
+                        <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                          أعضاء العائلة ({familyMembers.length})
+                        </span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="overflow-y-auto max-h-[calc(100vh-16rem)] p-4">
+                      <FamilyMembersList
+                        familyMembers={familyMembers}
+                        familyMarriages={familyMarriages}
+                        readOnly={true}
+                        onMemberClick={handleMemberClick}
+                      />
+                    </CardContent>
+                  </Card>
+                )}
               </div>
               
             </div>
