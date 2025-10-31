@@ -431,7 +431,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                                     existingFamilyMemberId: member.id,
                                     firstName: member.first_name || '',
                                     lastName: member.last_name || '',
-                                    name: member.first_name && member.last_name ? `${member.first_name} ${member.last_name}` : member.name,
+                                    name: displayName,
                                     birthDate: member.birth_date ? new Date(member.birth_date) : null,
                                     isAlive: member.is_alive ?? true,
                                     deathDate: member.death_date ? new Date(member.death_date) : null,
