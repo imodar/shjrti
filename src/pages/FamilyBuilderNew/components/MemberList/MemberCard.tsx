@@ -245,7 +245,12 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       {((member as any).death_date || (member as any).deathDate || (member as any).is_alive === false) && <div className="absolute top-0 left-0 z-10">
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="w-0 h-0 border-l-[40px] border-l-black border-b-[40px] border-b-transparent cursor-help"></div>
+              <div 
+                className="w-12 h-12 bg-black cursor-help rounded-tl-[24px]"
+                style={{
+                  clipPath: 'polygon(0 0, 100% 0, 0 100%)'
+                }}
+              ></div>
             </TooltipTrigger>
             <TooltipContent side="right">
               <p>متوفى</p>
