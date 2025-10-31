@@ -1,10 +1,11 @@
 import React from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { MemberProfileView } from '@/components/MemberProfileView';
 import MemberProfileSkeleton from '@/components/skeletons/MemberProfileSkeleton';
 import { useMemberData } from '@/hooks/useMemberData';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 interface MemberProfileModalProps {
   isOpen: boolean;
@@ -32,6 +33,9 @@ export const MemberProfileModal: React.FC<MemberProfileModalProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+        <VisuallyHidden>
+          <DialogTitle>Member Profile</DialogTitle>
+        </VisuallyHidden>
         {loading && <MemberProfileSkeleton />}
         
         {error && (

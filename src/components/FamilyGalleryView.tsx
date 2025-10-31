@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Image, Calendar, X, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 interface FamilyGalleryViewProps {
   familyId: string;
@@ -183,6 +184,9 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
       {/* Image Viewer Dialog */}
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
         <DialogContent className="max-w-4xl p-0">
+          <VisuallyHidden>
+            <DialogTitle>Image Viewer</DialogTitle>
+          </VisuallyHidden>
           {selectedImage && (
             <div className="relative">
               <Button
