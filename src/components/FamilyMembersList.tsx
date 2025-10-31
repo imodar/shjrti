@@ -217,13 +217,15 @@ const SimpleMemberCard: React.FC<SimpleMemberCardProps> = ({
       (m) => m.id === primaryParent.father_id
     );
 
-    const relationship = member.gender === "male" ? "ابن" : "ابنة";
+    const relationship = member.gender === "male" ? "ابن" : "بنت";
     const parentRelationship = primaryParent.gender === "male" ? "ابن" : "بنت";
+    const grandfatherFirstName = grandfather?.first_name || grandfather?.name?.split(' ')[0] || grandfather?.name;
+    const primaryParentFirstName = primaryParent.first_name || primaryParent.name?.split(' ')[0] || primaryParent.name;
 
     if (grandfather) {
-      return `${relationship} ${primaryParent.first_name || primaryParent.name} ${parentRelationship} ${grandfather.first_name || grandfather.name}`;
+      return `${relationship} ${primaryParentFirstName} ${parentRelationship === "ابن" ? "ابن" : "بن"} ${grandfatherFirstName}`;
     }
-    return `${relationship} ${primaryParent.first_name || primaryParent.name}`;
+    return `${relationship} ${primaryParentFirstName}`;
   };
 
   // Generate spouse info for non-family members
@@ -273,7 +275,36 @@ const SimpleMemberCard: React.FC<SimpleMemberCardProps> = ({
           
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-base truncate">
-              {member.name || `${member.first_name || ""} ${member.last_name || ""}`.trim() || "غير معروف"}
+              {(() => {
+                // Build full genealogical name
+                const firstName = member.first_name || member.name?.split(' ')[0] || '';
+                const father = familyMembers.find(m => m?.id === member?.father_id);
+                const grandfather = father ? familyMembers.find(m => m?.id === father?.father_id) : null;
+                const isInternal = Boolean(father) || Boolean(member.is_founder);
+
+                if (isInternal && member.gender === 'female') {
+                  if (father) {
+                    const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
+                    if (grandfather) {
+                      const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
+                      return `${firstName} بنت ${fatherFirstName} بن ${grandfatherFirstName}`;
+                    }
+                    return `${firstName} بنت ${fatherFirstName}`;
+                  }
+                } else if (isInternal && member.gender === 'male') {
+                  if (father) {
+                    const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
+                    if (grandfather) {
+                      const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
+                      return `${firstName} ابن ${fatherFirstName} ابن ${grandfatherFirstName}`;
+                    }
+                    return `${firstName} ابن ${fatherFirstName}`;
+                  }
+                }
+                
+                const lastName = member.last_name;
+                return lastName ? `${member.first_name || firstName} ${lastName}` : (member.name || firstName || "غير معروف");
+              })()}
             </h3>
             
             <div className="flex items-center gap-2 flex-wrap mt-1">

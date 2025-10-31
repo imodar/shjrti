@@ -98,7 +98,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         const motherGrandfather = familyMembers?.find(m => m?.id === (motherFather.father_id || (motherFather as any).fatherId));
         if (motherGrandfather) {
           const motherGrandfatherName = motherGrandfather.first_name || (motherGrandfather as any).name?.split(' ')[0] || (motherGrandfather as any).name;
-          lineage += ` ابن ${motherGrandfatherName}`;
+          lineage += ` بن ${motherGrandfatherName}`;
         }
       }
       
@@ -116,7 +116,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       
       if (grandfather) {
         const grandfatherName = grandfather.first_name || (grandfather as any).name?.split(' ')[0] || (grandfather as any).name;
-        lineage += ` ابن ${grandfatherName}`;
+        lineage += ` بن ${grandfatherName}`;
       }
       
       return <p className="text-sm text-primary truncate font-arabic">
