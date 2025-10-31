@@ -12,6 +12,7 @@ import { uploadMemberImage } from '@/utils/imageUpload';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ImageUploadModal } from '@/components/ImageUploadModal';
+import { SuggestEditDialog } from '@/components/SuggestEditDialog';
 import { 
   Edit,
   Trash2, 
@@ -74,6 +75,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const [showAllInfo, setShowAllInfo] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [showImageUploadModal, setShowImageUploadModal] = useState(false);
+  const [showSuggestDialog, setShowSuggestDialog] = useState(false);
   const { toast } = useToast();
 
   // Resolve member image to signed URL
@@ -811,9 +813,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       )}
                      </div>
                      
-                     {/* Action Button */}
-                     {!readOnly && onEdit && (
-                       <div className="flex justify-center sm:justify-start mt-4">
+                     {/* Action Buttons */}
+                     <div className="flex justify-center sm:justify-start gap-2 mt-4">
+                       {!readOnly && onEdit && (
                          <Button 
                            onClick={() => {
                              if (isSpouse && onSpouseEditWarning) {
@@ -827,8 +829,16 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                            <Edit className="h-4 w-4 ml-2" />
                            تعديل المعلومات
                          </Button>
-                       </div>
-                     )}
+                       )}
+                       <Button 
+                         onClick={() => setShowSuggestDialog(true)}
+                         variant="outline"
+                         className="px-4 py-2"
+                       >
+                         <MessageCircle className="h-4 w-4 ml-2" />
+                         اقترح تعديل
+                       </Button>
+                     </div>
                    </div>
                  </div>
                </div>
@@ -1351,6 +1361,14 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         onClose={() => setShowImageUploadModal(false)}
         onSave={handleImageSave}
         title="تحديث الصورة الشخصية"
+      />
+      
+      <SuggestEditDialog
+        isOpen={showSuggestDialog}
+        onClose={() => setShowSuggestDialog(false)}
+        familyId={member.family_id}
+        memberId={member.id}
+        memberName={member.name}
       />
     </div>
   );
