@@ -209,14 +209,16 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
         <GlobalHeader />
-        <div className="container mx-auto px-4 sm:px-6 pt-24 pb-12">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-            <p className="text-primary mr-4">جاري تحميل شجرة العائلة...</p>
+        <main className="flex-1 flex items-center justify-center">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              <p className="text-primary mr-4">جاري تحميل شجرة العائلة...</p>
+            </div>
           </div>
-        </div>
+        </main>
         <GlobalFooterSimplified />
       </div>
     );
@@ -224,17 +226,19 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
 
   if (showPasswordModal) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
         <GlobalHeader />
-        <PasswordModal
-          isOpen={showPasswordModal}
-          onClose={() => {
-            setShowPasswordModal(false);
-            setPasswordError(true);
-          }}
-          onSubmit={handlePasswordSubmit}
-          familyName={familyData?.name || ''}
-        />
+        <main className="flex-1">
+          <PasswordModal
+            isOpen={showPasswordModal}
+            onClose={() => {
+              setShowPasswordModal(false);
+              setPasswordError(true);
+            }}
+            onSubmit={handlePasswordSubmit}
+            familyName={familyData?.name || ''}
+          />
+        </main>
         <GlobalFooterSimplified />
       </div>
     );
@@ -244,50 +248,52 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   // Show error page if no family ID is provided
   if (!familyId && !isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
         <GlobalHeader />
-        <div className="container mx-auto px-4 sm:px-6 pt-24 pb-12">
-          <div className="flex flex-col items-center justify-center min-h-[60vh] relative">
-            {/* Decorative background elements */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute top-10 right-20 w-72 h-72 bg-destructive/10 rounded-full blur-3xl animate-pulse"></div>
-              <div className="absolute bottom-10 left-20 w-72 h-72 bg-destructive/5 rounded-full blur-3xl animate-pulse delay-700"></div>
-            </div>
-            
-            <Card className="max-w-lg w-full p-10 sm:p-12 text-center bg-gradient-to-br from-card via-card/95 to-card/90 backdrop-blur-2xl border-2 border-destructive/30 shadow-2xl rounded-3xl relative overflow-hidden animate-scale-in">
-              {/* Top decorative line */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-destructive to-transparent"></div>
-              
-              {/* Icon container with animation */}
-              <div className="relative mb-8">
-                <div className="w-24 h-24 mx-auto bg-gradient-to-br from-destructive via-destructive/90 to-destructive/70 rounded-full flex items-center justify-center shadow-2xl animate-pulse">
-                  <div className="absolute inset-0 bg-gradient-to-br from-destructive to-transparent rounded-full opacity-50 animate-ping"></div>
-                  <AlertCircle className="h-12 w-12 text-destructive-foreground relative z-10" strokeWidth={2.5} />
-                </div>
-                {/* Decorative circles */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 border-2 border-destructive/20 rounded-full"></div>
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 border border-destructive/10 rounded-full"></div>
+        <main className="flex-1 flex items-center justify-center">
+          <div className="container mx-auto px-4 sm:px-6 py-12">
+            <div className="flex flex-col items-center justify-center relative">
+              {/* Decorative background elements */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-10 right-20 w-72 h-72 bg-destructive/10 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute bottom-10 left-20 w-72 h-72 bg-destructive/5 rounded-full blur-3xl animate-pulse delay-700"></div>
               </div>
               
-              <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-destructive via-destructive/90 to-destructive/80 bg-clip-text text-transparent mb-6">
-                رابط غير صحيح
-              </h2>
-              
-              <div className="w-16 h-1 bg-gradient-to-r from-transparent via-destructive/50 to-transparent mx-auto mb-6"></div>
-              
-              <p className="text-muted-foreground text-lg leading-relaxed mb-4">
-                عذراً، يبدو أنك اتبعت رابط غير صحيح.
-              </p>
-              
-              <p className="text-muted-foreground/80 leading-relaxed">
-                إذا كنت فعلاً قد تلقيت رابط الشجرة من أحد أقربائك، اطلب منه أن يعيد مشاركة الرابط مرة أخرى بشكل صحيح.
-              </p>
-              
-              {/* Bottom decorative line */}
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-destructive to-transparent"></div>
-            </Card>
+              <Card className="max-w-lg w-full p-10 sm:p-12 text-center bg-gradient-to-br from-card via-card/95 to-card/90 backdrop-blur-2xl border-2 border-destructive/30 shadow-2xl rounded-3xl relative overflow-hidden animate-scale-in">
+                {/* Top decorative line */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-destructive to-transparent"></div>
+                
+                {/* Icon container with animation */}
+                <div className="relative mb-8">
+                  <div className="w-24 h-24 mx-auto bg-gradient-to-br from-destructive via-destructive/90 to-destructive/70 rounded-full flex items-center justify-center shadow-2xl animate-pulse">
+                    <div className="absolute inset-0 bg-gradient-to-br from-destructive to-transparent rounded-full opacity-50 animate-ping"></div>
+                    <AlertCircle className="h-12 w-12 text-destructive-foreground relative z-10" strokeWidth={2.5} />
+                  </div>
+                  {/* Decorative circles */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 border-2 border-destructive/20 rounded-full"></div>
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 border border-destructive/10 rounded-full"></div>
+                </div>
+                
+                <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-destructive via-destructive/90 to-destructive/80 bg-clip-text text-transparent mb-6">
+                  رابط غير صحيح
+                </h2>
+                
+                <div className="w-16 h-1 bg-gradient-to-r from-transparent via-destructive/50 to-transparent mx-auto mb-6"></div>
+                
+                <p className="text-muted-foreground text-lg leading-relaxed mb-4">
+                  عذراً، يبدو أنك اتبعت رابط غير صحيح.
+                </p>
+                
+                <p className="text-muted-foreground/80 leading-relaxed">
+                  إذا كنت فعلاً قد تلقيت رابط الشجرة من أحد أقربائك، اطلب منه أن يعيد مشاركة الرابط مرة أخرى بشكل صحيح.
+                </p>
+                
+                {/* Bottom decorative line */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-destructive to-transparent"></div>
+              </Card>
+            </div>
           </div>
-        </div>
+        </main>
         <GlobalFooterSimplified />
       </div>
     );
@@ -295,25 +301,27 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
 
   if (passwordError) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
         <GlobalHeader />
-        <div className="container mx-auto px-4 sm:px-6 pt-24 pb-12">
-          <div className="flex flex-col items-center justify-center min-h-[60vh]">
-            <Card className="max-w-md w-full p-8 text-center bg-card/70 backdrop-blur-xl border-2 border-destructive/20 shadow-2xl">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-destructive to-destructive/80 rounded-full flex items-center justify-center shadow-lg">
-                <AlertCircle className="h-10 w-10 text-destructive-foreground" />
-              </div>
-              
-              <h2 className="text-2xl font-bold text-destructive mb-4">
-                الوصول محظور
-              </h2>
-              
-              <p className="text-muted-foreground mb-6 leading-relaxed">
-                عذراً، كلمة المرور المستخدمة للشجرة <span className="font-bold">{familyData?.name}</span> غير صحيحة.
-              </p>
-            </Card>
+        <main className="flex-1 flex items-center justify-center">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="flex flex-col items-center justify-center">
+              <Card className="max-w-md w-full p-8 text-center bg-card/70 backdrop-blur-xl border-2 border-destructive/20 shadow-2xl">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-destructive to-destructive/80 rounded-full flex items-center justify-center shadow-lg">
+                  <AlertCircle className="h-10 w-10 text-destructive-foreground" />
+                </div>
+                
+                <h2 className="text-2xl font-bold text-destructive mb-4">
+                  الوصول محظور
+                </h2>
+                
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  عذراً، كلمة المرور المستخدمة للشجرة <span className="font-bold">{familyData?.name}</span> غير صحيحة.
+                </p>
+              </Card>
+            </div>
           </div>
-        </div>
+        </main>
         <GlobalFooterSimplified />
       </div>
     );
