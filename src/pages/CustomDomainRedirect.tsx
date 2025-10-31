@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AlertTriangle } from 'lucide-react';
+import { FamilyDataProvider } from '@/contexts/FamilyDataContext';
 import PublicTreeView from './PublicTreeView';
 
 const CustomDomainRedirect = () => {
@@ -104,7 +105,11 @@ const CustomDomainRedirect = () => {
 
   // Display PublicTreeView with the found familyId
   if (familyId) {
-    return <PublicTreeView overrideFamilyId={familyId} />;
+    return (
+      <FamilyDataProvider familyId={familyId}>
+        <PublicTreeView overrideFamilyId={familyId} />
+      </FamilyDataProvider>
+    );
   }
 
   return null;

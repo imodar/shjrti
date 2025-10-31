@@ -1269,6 +1269,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 <MemberMemories 
                   memberId={member.id}
                   memberName={member.name}
+                  readOnly={readOnly}
                 />
               </div>
             )}

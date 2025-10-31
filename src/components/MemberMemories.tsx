@@ -36,11 +36,13 @@ interface Memory {
 interface MemberMemoriesProps {
   memberId: string;
   memberName: string;
+  readOnly?: boolean;
 }
 
 export const MemberMemories: React.FC<MemberMemoriesProps> = ({ 
   memberId, 
-  memberName 
+  memberName,
+  readOnly = false
 }) => {
   const [memories, setMemories] = useState<Memory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -281,55 +283,59 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
         ذكريات الأفراد - {memberName}
       </h3>
 
-      {/* Upload Area */}
-      {isImageUploadEnabled ? (
-        <div
-          onDragEnter={handleDragEnter}
-          onDragLeave={handleDragLeave}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-          className={`
-            relative border-2 border-dashed rounded-lg p-6 text-center transition-colors
-            ${isDragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}
-            ${uploading ? 'opacity-50 pointer-events-none' : ''}
-          `}
-        >
-          <input
-            type="file"
-            id="memory-upload"
-            multiple
-            accept="image/*"
-            onChange={handleFileSelect}
-            className="hidden"
-            disabled={uploading}
-          />
-          <label htmlFor="memory-upload" className="cursor-pointer">
-            <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-            <p className="text-sm font-medium mb-1">
-              {uploading ? 'جاري الرفع...' : 'اسحب الصور هنا أو انقر للاختيار'}
-            </p>
-            <p className="text-xs text-muted-foreground">
-              الحد الأقصى: 1 ميجابايت لكل صورة
-            </p>
-          </label>
-        </div>
-      ) : (
-        <div className="relative border-2 border-dashed border-border rounded-lg p-6 text-center bg-muted/30">
-          <Lock className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-          <p className="text-sm font-medium mb-1">رفع الصور غير متاح</p>
-          <p className="text-xs text-muted-foreground mb-3">
-            يتطلب هذه الميزة ترقية باقتك
-          </p>
-          <Button 
-            variant="default" 
-            size="sm" 
-            className="gap-2"
-            onClick={() => navigate('/plan-selection')}
-          >
-            <Crown className="h-4 w-4" />
-            ترقية الباقة
-          </Button>
-        </div>
+      {/* Upload Area - Hidden in read-only mode */}
+      {!readOnly && (
+        <>
+          {isImageUploadEnabled ? (
+            <div
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              className={`
+                relative border-2 border-dashed rounded-lg p-6 text-center transition-colors
+                ${isDragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}
+                ${uploading ? 'opacity-50 pointer-events-none' : ''}
+              `}
+            >
+              <input
+                type="file"
+                id="memory-upload"
+                multiple
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+                disabled={uploading}
+              />
+              <label htmlFor="memory-upload" className="cursor-pointer">
+                <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                <p className="text-sm font-medium mb-1">
+                  {uploading ? 'جاري الرفع...' : 'اسحب الصور هنا أو انقر للاختيار'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  الحد الأقصى: 1 ميجابايت لكل صورة
+                </p>
+              </label>
+            </div>
+          ) : (
+            <div className="relative border-2 border-dashed border-border rounded-lg p-6 text-center bg-muted/30">
+              <Lock className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+              <p className="text-sm font-medium mb-1">رفع الصور غير متاح</p>
+              <p className="text-xs text-muted-foreground mb-3">
+                يتطلب هذه الميزة ترقية باقتك
+              </p>
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="gap-2"
+                onClick={() => navigate('/plan-selection')}
+              >
+                <Crown className="h-4 w-4" />
+                ترقية الباقة
+              </Button>
+            </div>
+          )}
+        </>
       )}
 
       {/* Memories Grid */}
@@ -364,19 +370,22 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
                   }}
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 rounded-lg transition-colors">
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="h-8 w-8 p-0"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteMemory(memory);
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  {/* Delete button - only show when not in read-only mode */}
+                  {!readOnly && (
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="h-8 w-8 p-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteMemory(memory);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                   <div className="absolute bottom-2 left-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button
                       variant="secondary"
