@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Mail, User, FileText } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface SuggestEditDialogProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ export function SuggestEditDialog({
   memberId,
   memberName,
 }: SuggestEditDialogProps) {
+  const { t } = useLanguage();
   const [step, setStep] = useState<"form" | "verify">("form");
   const [loading, setLoading] = useState(false);
   const [suggestionId, setSuggestionId] = useState("");
@@ -49,14 +51,14 @@ export function SuggestEditDialog({
 
   const handleSubmitSuggestion = async () => {
     if (!submitterName.trim() || !submitterEmail.trim() || !suggestionText.trim()) {
-      toast.error("Please fill in all fields");
+      toast.error(t("suggestEdit.fillAllFields"));
       return;
     }
 
     // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(submitterEmail)) {
-      toast.error("Please enter a valid email address");
+      toast.error(t("suggestEdit.invalidEmail"));
       return;
     }
 
@@ -85,10 +87,10 @@ export function SuggestEditDialog({
 
       setSuggestionId(data.suggestionId);
       setStep("verify");
-      toast.success("Verification code sent to your email!");
+      toast.success(t("suggestEdit.codeSent"));
     } catch (error: any) {
       console.error("Submit error:", error);
-      toast.error(error.message || "Failed to submit suggestion. The feature may not be deployed yet. Please try again later.");
+      toast.error(error.message || t("suggestEdit.submitError"));
     } finally {
       setLoading(false);
     }
@@ -96,7 +98,7 @@ export function SuggestEditDialog({
 
   const handleVerifyCode = async () => {
     if (!verificationCode.trim() || verificationCode.trim().length !== 6) {
-      toast.error("Please enter the 6-digit verification code");
+      toast.error(t("suggestEdit.invalidCode"));
       return;
     }
 
@@ -112,16 +114,16 @@ export function SuggestEditDialog({
 
       if (error) throw error;
 
-      toast.success("Your suggestion has been submitted successfully!");
+      toast.success(t("suggestEdit.submitSuccess"));
       handleClose();
     } catch (error: any) {
       console.error("Verify error:", error);
       if (error.message?.includes("expired")) {
-        toast.error("Verification code has expired. Please submit again.");
+        toast.error(t("suggestEdit.codeExpired"));
       } else if (error.message?.includes("Invalid")) {
-        toast.error("Invalid verification code. Please check and try again.");
+        toast.error(t("suggestEdit.wrongCode"));
       } else {
-        toast.error("Failed to verify code. Please try again.");
+        toast.error(t("suggestEdit.verifyError"));
       }
     } finally {
       setLoading(false);
@@ -134,22 +136,22 @@ export function SuggestEditDialog({
         {step === "form" ? (
           <>
             <DialogHeader>
-              <DialogTitle>Suggest an Edit</DialogTitle>
+              <DialogTitle>{t("suggestEdit.title")}</DialogTitle>
               <DialogDescription>
                 {memberName
-                  ? `Suggest changes for ${memberName}`
-                  : "Suggest changes to this family tree"}
+                  ? t("suggestEdit.descriptionWithMember").replace("{memberName}", memberName)
+                  : t("suggestEdit.descriptionGeneral")}
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Your Name</Label>
+                <Label htmlFor="name">{t("suggestEdit.yourName")}</Label>
                 <div className="relative">
                   <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="name"
-                    placeholder="Enter your full name"
+                    placeholder={t("suggestEdit.namePlaceholder")}
                     value={submitterName}
                     onChange={(e) => setSubmitterName(e.target.value)}
                     className="pl-10"
@@ -158,30 +160,30 @@ export function SuggestEditDialog({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Your Email</Label>
+                <Label htmlFor="email">{t("suggestEdit.yourEmail")}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="email"
                     type="email"
-                    placeholder="your.email@example.com"
+                    placeholder={t("suggestEdit.emailPlaceholder")}
                     value={submitterEmail}
                     onChange={(e) => setSubmitterEmail(e.target.value)}
                     className="pl-10"
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  We'll send a verification code to this email
+                  {t("suggestEdit.emailHelper")}
                 </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="suggestion">Your Suggestion</Label>
+                <Label htmlFor="suggestion">{t("suggestEdit.yourSuggestion")}</Label>
                 <div className="relative">
                   <FileText className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                   <Textarea
                     id="suggestion"
-                    placeholder="Describe the changes you'd like to suggest..."
+                    placeholder={t("suggestEdit.suggestionPlaceholder")}
                     value={suggestionText}
                     onChange={(e) => setSuggestionText(e.target.value)}
                     className="pl-10 min-h-[120px]"
@@ -192,47 +194,47 @@ export function SuggestEditDialog({
 
             <div className="flex justify-end gap-3">
               <Button variant="outline" onClick={handleClose} disabled={loading}>
-                Cancel
+                {t("suggestEdit.cancel")}
               </Button>
               <Button onClick={handleSubmitSuggestion} disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Submit Suggestion
+                {t("suggestEdit.submit")}
               </Button>
             </div>
           </>
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle>Verify Your Email</DialogTitle>
+              <DialogTitle>{t("suggestEdit.verifyTitle")}</DialogTitle>
               <DialogDescription>
-                We've sent a 6-digit verification code to {submitterEmail}
+                {t("suggestEdit.verifyDescription").replace("{email}", submitterEmail)}
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="code">Verification Code</Label>
+                <Label htmlFor="code">{t("suggestEdit.verificationCode")}</Label>
                 <Input
                   id="code"
-                  placeholder="Enter 6-digit code"
+                  placeholder={t("suggestEdit.codePlaceholder")}
                   value={verificationCode}
                   onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                   maxLength={6}
                   className="text-center text-2xl tracking-widest"
                 />
                 <p className="text-xs text-muted-foreground">
-                  The code will expire in 10 minutes
+                  {t("suggestEdit.codeExpiry")}
                 </p>
               </div>
             </div>
 
             <div className="flex justify-end gap-3">
               <Button variant="outline" onClick={() => setStep("form")} disabled={loading}>
-                Back
+                {t("suggestEdit.back")}
               </Button>
               <Button onClick={handleVerifyCode} disabled={loading}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Verify & Submit
+                {t("suggestEdit.verifySubmit")}
               </Button>
             </div>
           </>
