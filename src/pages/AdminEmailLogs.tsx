@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Mail, Search, CheckCircle, XCircle, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
+import DOMPurify from 'dompurify';
 import { DirectionWrapper } from "@/components/DirectionWrapper";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -261,7 +262,7 @@ export default function AdminEmailLogs() {
                                     <h4 className="font-semibold mb-2">معاينة المحتوى</h4>
                                     <div
                                       className="bg-white border p-4 rounded max-h-96 overflow-y-auto"
-                                      dangerouslySetInnerHTML={{ __html: selectedLog.body }}
+                                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(selectedLog.body) }}
                                     />
                                   </div>
                                 </div>

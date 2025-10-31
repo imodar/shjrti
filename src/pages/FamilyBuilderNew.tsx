@@ -28,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatDateForDatabase, parseDateFromDatabase } from "@/lib/dateUtils";
 import { useImageUploadPermission } from "@/hooks/useImageUploadPermission";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import DOMPurify from 'dompurify';
 import { Slider } from "@/components/ui/slider";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
@@ -3262,7 +3263,7 @@ const FamilyBuilderNew = () => {
                                   <div className="max-w-2xl mx-auto animate-fade-in delay-300">
                                     <div 
                                       className="text-foreground text-base sm:text-lg leading-relaxed font-medium"
-                                      dangerouslySetInnerHTML={{ __html: familyData.description }}
+                                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(familyData.description) }}
                                     />
                                   </div>
                                 )}

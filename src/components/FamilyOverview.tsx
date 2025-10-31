@@ -2,7 +2,7 @@ import React from "react";
 import { TreePine } from "lucide-react";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { sanitizeHtml } from "@/lib/security";
+import DOMPurify from 'dompurify';
 
 interface FamilyOverviewProps {
   familyData?: {
@@ -51,7 +51,7 @@ export const FamilyOverview: React.FC<FamilyOverviewProps> = ({
             {familyData?.description && (
               <div 
                 className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: sanitizeHtml(familyData.description) }}
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(familyData.description) }}
               />
             )}
           </div>

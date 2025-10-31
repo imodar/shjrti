@@ -7,6 +7,7 @@ import { Calendar, Users, Shield, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { getLocalizedText } from "@/lib/packageUtils";
+import DOMPurify from 'dompurify';
 
 interface PageData {
   id: string;
@@ -190,7 +191,7 @@ export default function TermsConditions() {
                     <div 
                       className="prose prose-lg max-w-none dark:prose-invert"
                       dir={currentLanguage === 'ar' ? 'rtl' : 'ltr'}
-                      dangerouslySetInnerHTML={{ __html: content }}
+                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }}
                     />
                   </ScrollArea>
                 </CardContent>
