@@ -52,36 +52,69 @@ Deno.serve(async (req) => {
 
     console.log('Invoice found and paid. Updating subscription...');
 
-    // Update user subscription to the new package
-    const { data: updatedSub, error: updateError } = await supabaseClient
-      .from('user_subscriptions')
-      .update({
-        package_id: invoice.package_id,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('user_id', invoice.user_id)
-      .eq('status', 'active')
-      .select()
-      .single();
+    // Use the complete_payment_and_upgrade RPC to ensure proper upgrade
+    console.log('Calling complete_payment_and_upgrade RPC...');
+    const { data: upgradeResult, error: upgradeError } = await supabaseClient
+      .rpc('complete_payment_and_upgrade', {
+        p_invoice_id: invoiceId,
+        p_payment_id: invoice.paypal_order_id || invoice.paypal_capture_id || invoice.stripe_payment_intent_id,
+        p_payment_gateway: invoice.payment_gateway || 'paypal',
+      });
 
-    if (updateError) {
-      console.error('Failed to update subscription:', updateError);
+    if (upgradeError) {
+      console.error('Failed to upgrade subscription via RPC:', upgradeError);
       return new Response(
         JSON.stringify({ 
-          error: 'Failed to update subscription',
-          details: updateError 
+          error: 'Failed to upgrade subscription',
+          details: upgradeError 
         }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Subscription updated successfully:', updatedSub);
+    console.log('Subscription upgrade completed. Result:', upgradeResult);
+
+    // Verify the upgrade actually happened
+    const { data: verifySubscription, error: verifyError } = await supabaseClient
+      .from('user_subscriptions')
+      .select('package_id, expires_at, status')
+      .eq('user_id', invoice.user_id)
+      .eq('status', 'active')
+      .single();
+
+    if (verifyError || !verifySubscription) {
+      console.error('Failed to verify subscription:', verifyError);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Upgrade completed but verification failed',
+          details: verifyError 
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (verifySubscription.package_id !== invoice.package_id) {
+      console.error('Package mismatch after upgrade:', {
+        expected: invoice.package_id,
+        actual: verifySubscription.package_id
+      });
+      return new Response(
+        JSON.stringify({ 
+          error: 'Package verification failed',
+          expected: invoice.package_id,
+          actual: verifySubscription.package_id
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log('Subscription verified successfully:', verifySubscription);
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Subscription updated successfully',
-        subscription: updatedSub,
+        message: 'Subscription upgraded and verified successfully',
+        subscription: verifySubscription,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

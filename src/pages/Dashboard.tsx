@@ -80,6 +80,8 @@ const Dashboard = () => {
   const [userSubscription, setUserSubscription] = useState<UserSubscription | null>(null);
   const [loading, setLoading] = useState(true);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [packageMismatch, setPackageMismatch] = useState<{ invoiceId: string; expectedPackage: string } | null>(null);
+  const [fixingSubscription, setFixingSubscription] = useState(false);
 
   // State for TreeDeleteModal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -216,6 +218,104 @@ const Dashboard = () => {
     };
   }, [user?.id, currentLanguage, toast, t]);
 
+  // Check for package mismatch (paid invoice with different package)
+  useEffect(() => {
+    const checkPackageMismatch = async () => {
+      if (!user?.id || !userSubscription) return;
+
+      try {
+        // Get latest paid invoice
+        const { data: latestInvoice, error: invoiceError } = await supabase
+          .from('invoices')
+          .select('id, package_id')
+          .eq('user_id', user.id)
+          .eq('payment_status', 'paid')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (invoiceError || !latestInvoice) return;
+
+        // Get current subscription
+        const { data: subscription, error: subError } = await supabase
+          .from('user_subscriptions')
+          .select('package_id, packages(name)')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .single();
+
+        if (subError || !subscription) return;
+
+        // Check if there's a mismatch
+        if (subscription.package_id !== latestInvoice.package_id) {
+          let packageName = 'Unknown Package';
+          try {
+            const nameObj = typeof subscription.packages?.name === 'string'
+              ? JSON.parse(subscription.packages.name)
+              : subscription.packages?.name;
+            packageName = nameObj?.[currentLanguage] || nameObj?.ar || nameObj?.en || packageName;
+          } catch (e) {
+            packageName = typeof subscription.packages?.name === 'string' 
+              ? subscription.packages.name 
+              : packageName;
+          }
+
+          setPackageMismatch({
+            invoiceId: latestInvoice.id,
+            expectedPackage: packageName
+          });
+        } else {
+          setPackageMismatch(null);
+        }
+      } catch (error) {
+        console.error('Error checking package mismatch:', error);
+      }
+    };
+
+    checkPackageMismatch();
+  }, [user?.id, userSubscription, currentLanguage]);
+
+  // Fix subscription package
+  const handleFixSubscription = async () => {
+    if (!packageMismatch) return;
+    
+    setFixingSubscription(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('fix-paid-subscription', {
+        body: { invoiceId: packageMismatch.invoiceId }
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        toast({
+          title: currentLanguage === 'ar' ? "تم تحديث الباقة بنجاح! ✅" : "Subscription Updated! ✅",
+          description: currentLanguage === 'ar'
+            ? "تم ترقية حسابك إلى الباقة الصحيحة"
+            : "Your account has been upgraded to the correct package",
+        });
+
+        setPackageMismatch(null);
+        
+        // Refresh the page to show updated subscription
+        window.location.reload();
+      } else {
+        throw new Error('Failed to fix subscription');
+      }
+    } catch (error: any) {
+      console.error('Error fixing subscription:', error);
+      toast({
+        title: currentLanguage === 'ar' ? "خطأ في التحديث" : "Update Error",
+        description: currentLanguage === 'ar'
+          ? "فشل في تحديث الباقة. يرجى المحاولة مرة أخرى أو الاتصال بالدعم"
+          : "Failed to update package. Please try again or contact support",
+        variant: "destructive",
+      });
+    } finally {
+      setFixingSubscription(false);
+    }
+  };
+
   // Check if user can create new trees
   const canCreateNewTree = () => {
     if (!userSubscription?.max_trees) return false;
@@ -250,6 +350,48 @@ const Dashboard = () => {
       <GlobalHeader />
       <SubscriptionGuard>
         <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
+          {/* Package Mismatch Alert */}
+          {packageMismatch && (
+            <div className="relative z-50 pt-20">
+              <div className="container mx-auto px-4">
+                <div className="bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-400 dark:border-yellow-600 rounded-lg p-4 mb-4 shadow-lg">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <Shield className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+                      <div>
+                        <h3 className="text-sm font-bold text-yellow-800 dark:text-yellow-200">
+                          {currentLanguage === 'ar' ? '⚠️ الباقة غير محدثة' : '⚠️ Package Not Updated'}
+                        </h3>
+                        <p className="text-xs text-yellow-700 dark:text-yellow-300 mt-1">
+                          {currentLanguage === 'ar' 
+                            ? 'لقد دفعت لكن لم يتم تحديث باقتك. اضغط على زر التحديث لإصلاح ذلك.'
+                            : 'You paid but your package was not updated. Click update to fix this.'}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={handleFixSubscription}
+                      disabled={fixingSubscription}
+                      className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                    >
+                      {fixingSubscription ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin ml-2" />
+                          {currentLanguage === 'ar' ? 'جاري التحديث...' : 'Updating...'}
+                        </>
+                      ) : (
+                        <>
+                          <Shield className="h-4 w-4 ml-2" />
+                          {currentLanguage === 'ar' ? 'تحديث الباقة' : 'Update Package'}
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Floating Background Elements */}
           <div className="absolute inset-0 overflow-hidden">
             <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
