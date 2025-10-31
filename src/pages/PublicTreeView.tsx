@@ -205,7 +205,13 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
     return units;
   }, [familyMembers, familyMarriages, selectedRootMarriage]);
 
-  const familyUnits = useMemo(() => generateFamilyUnits(), [generateFamilyUnits]);
+  const familyUnits = useMemo(() => {
+    const units = generateFamilyUnits();
+    console.log('PublicTreeView - Generated family units:', units.size);
+    console.log('PublicTreeView - Family members:', familyMembers.length);
+    console.log('PublicTreeView - Family marriages:', familyMarriages.length);
+    return units;
+  }, [generateFamilyUnits]);
 
   useEffect(() => {
     if (familyId) {
@@ -572,14 +578,19 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                         
                         {/* Tree Content Area */}
                         <div ref={traditionalRef} className="p-4 min-h-[600px] overflow-auto">
-                          <OrganizationalChart
-                            familyUnits={familyUnits}
-                            zoomLevel={zoomLevel}
-                            isPublicView={true}
-                            onSuggestEdit={handleSuggestEdit}
-                            marriages={familyMarriages}
-                            members={familyMembers}
-                          />
+                          <div 
+                            className="transition-transform duration-300 ease-in-out origin-top-left"
+                            style={{ transform: `scale(${zoomLevel})` }}
+                          >
+                            <OrganizationalChart
+                              familyUnits={familyUnits}
+                              zoomLevel={zoomLevel}
+                              isPublicView={true}
+                              onSuggestEdit={handleSuggestEdit}
+                              marriages={familyMarriages}
+                              members={familyMembers}
+                            />
+                          </div>
                         </div>
                         
                         {familyMembers.length === 0 && (
