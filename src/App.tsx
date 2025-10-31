@@ -41,7 +41,7 @@ import EnhancedAdminPanel from "./pages/EnhancedAdminPanel";
 import AdminBilling from "./pages/AdminBilling";
 import RenewSubscription from "./pages/RenewSubscription";
 import CustomDomainRedirect from "./pages/CustomDomainRedirect";
-import PublicTreeView from "./pages/PublicTreeView";
+import PublicTreeViewWithContext from "./pages/PublicTreeView/PublicTreeViewWithContext";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -165,7 +165,7 @@ const App = () => (
                   <Route path="/terms-conditions" element={<TermsConditions />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/contact" element={<ContactUs />} />
-                  <Route path="/tree" element={<PublicTreeView />} />
+                  <Route path="/tree" element={<PublicTreeViewWithContext />} />
                   {/* Redirect old terms route to new one */}
                   <Route path="/terms" element={<TermsConditions />} />
                   {/* Custom domain route */}
