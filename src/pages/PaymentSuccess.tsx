@@ -270,7 +270,7 @@ export default function PaymentSuccess() {
                   )}
                   <p><strong>{t('payment_success.payment_status')}:</strong> {t('payment_success.paid')}</p>
                   {nextRenewalDate && (
-                    <p><strong>{currentLanguage === 'ar' ? 'تاريخ التجديد التلقائي:' : 'Next Renewal Date:'}</strong> {new Date(nextRenewalDate).toLocaleDateString(currentLanguage === 'ar' ? 'ar-SA' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                    <p><strong>{currentLanguage === 'ar' ? 'تاريخ التجديد التلقائي:' : 'Next Renewal Date:'}</strong> {new Date(nextRenewalDate).toLocaleDateString('en-GB', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
                   )}
                 </div>
               )}
