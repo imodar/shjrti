@@ -198,9 +198,9 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
                 alt={selectedImage.caption || "صورة عائلية"}
                 className="w-full h-auto max-h-[80vh] object-contain"
               />
-              <div className="p-4 bg-white dark:bg-gray-800">
+              <div className="p-4 bg-white dark:bg-gray-800 space-y-2">
                 {selectedImage.caption && (
-                  <p className="text-gray-900 dark:text-gray-100 font-medium mb-2">
+                  <p className="text-gray-900 dark:text-gray-100 font-medium">
                     {selectedImage.caption}
                   </p>
                 )}
@@ -209,8 +209,7 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
                   <span className="text-sm">
                     {selectedImage.photo_date 
                       ? new Date(selectedImage.photo_date).toLocaleDateString('ar-SA')
-                      : 'تاريخ الصورة غير معروف'
-                    }
+                      : 'تاريخ الصورة غير معروف'}
                   </span>
                 </div>
               </div>
