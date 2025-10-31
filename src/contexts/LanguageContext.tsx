@@ -60,12 +60,8 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   const currency = currentLang?.currency || (currentLanguage === 'ar' ? 'SAR' : 'USD');
 
   useEffect(() => {
-    const initializeLanguage = async () => {
-      await loadLanguages();
-      // Language is already set from getInitialLanguage, no need to change it again
-      // unless database has different settings
-    };
-    initializeLanguage();
+    // Load languages asynchronously without blocking render
+    loadLanguages();
   }, []);
 
   useEffect(() => {
@@ -79,34 +75,15 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
 
   const loadLanguages = async () => {
     try {
-      // Add retry logic for network issues
-      let retryCount = 0;
-      const maxRetries = 3;
-      let result;
-      
-      while (retryCount < maxRetries) {
-        try {
-          result = await supabase
-            .from('languages')
-            .select('*')
-            .eq('is_active', true)
-            .order('is_default', { ascending: false });
-          break; // Success, exit retry loop
-        } catch (networkError: any) {
-          retryCount++;
-          if (retryCount >= maxRetries) {
-            throw networkError; // Re-throw after max retries
-          }
-          // Wait before retry
-          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-        }
-      }
+      const { data, error } = await supabase
+        .from('languages')
+        .select('*')
+        .eq('is_active', true)
+        .order('is_default', { ascending: false });
 
-      const { data, error } = result;
       if (error) throw error;
       setLanguages(data || []);
       
-      // Set default language if no saved language preference exists
       const savedLanguage = localStorage.getItem('preferred-language');
       if (!savedLanguage && data && data.length > 0) {
         const defaultLang = data.find(lang => lang.is_default) || data[0];
@@ -114,43 +91,22 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
       }
     } catch (error) {
       console.error('Error loading languages:', error);
-      // Fallback to default configuration if network fails
       setLanguages([
         { code: 'ar', name: 'العربية', direction: 'rtl', is_default: true, is_active: true, currency: 'SAR' },
         { code: 'en', name: 'English', direction: 'ltr', is_default: false, is_active: true, currency: 'USD' }
       ]);
-      const savedLanguage = localStorage.getItem('preferred-language');
-      if (!savedLanguage) {
-        setCurrentLanguage('ar'); // Default fallback
-      }
+    } finally {
+      setLoading(false);
     }
   };
 
   const loadTranslations = async (languageCode: string) => {
     try {
-      // Add retry logic for network issues
-      let retryCount = 0;
-      const maxRetries = 3;
-      let result;
-      
-      while (retryCount < maxRetries) {
-        try {
-          result = await supabase
-            .from('translations')
-            .select('key, value')
-            .eq('language_code', languageCode);
-          break; // Success, exit retry loop
-        } catch (networkError: any) {
-          retryCount++;
-          if (retryCount >= maxRetries) {
-            throw networkError; // Re-throw after max retries
-          }
-          // Wait before retry
-          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-        }
-      }
+      const { data, error } = await supabase
+        .from('translations')
+        .select('key, value')
+        .eq('language_code', languageCode);
 
-      const { data, error } = result;
       if (error) throw error;
       
       const translationMap: Record<string, string> = {};
@@ -159,10 +115,8 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
       });
       
       setTranslations(translationMap);
-      setLoading(false);
     } catch (error) {
       console.error('Error loading translations:', error);
-      setLoading(false);
     }
   };
 
@@ -206,6 +160,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     loading
   };
 
+  // Always render children immediately, don't wait for loading
   return (
     <LanguageContext.Provider value={value}>
       {children}

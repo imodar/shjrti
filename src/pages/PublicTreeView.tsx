@@ -21,6 +21,8 @@ interface PublicTreeViewProps {
 }
 
 const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
+  console.log('🌳 PublicTreeView rendering...');
+  
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   
@@ -45,11 +47,19 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   
   // Get family ID from URL parameters or props
   const familyId = overrideFamilyId || searchParams.get('familyId');
+  
+  console.log('🌳 familyId:', familyId);
+  console.log('🌳 isLoading:', isLoading);
+  console.log('🌳 showPasswordModal:', showPasswordModal);
+  console.log('🌳 passwordError:', passwordError);
 
   useEffect(() => {
+    console.log('🌳 useEffect running - familyId:', familyId);
     if (familyId) {
+      console.log('🌳 Calling checkFamilyAccess...');
       checkFamilyAccess();
     } else {
+      console.log('🌳 No familyId - showing error toast');
       toast({
         title: "خطأ",
         description: "رقم العائلة مطلوب للوصول إلى الشجرة",
@@ -207,7 +217,10 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
     setSuggestEditOpen(true);
   };
 
+  console.log('🌳 Render decision - isLoading:', isLoading);
+  
   if (isLoading) {
+    console.log('🌳 Rendering loading state');
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
         <GlobalHeader />

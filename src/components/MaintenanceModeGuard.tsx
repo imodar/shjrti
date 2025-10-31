@@ -8,8 +8,14 @@ interface MaintenanceModeGuardProps {
 
 export const MaintenanceModeGuard = ({ children }: MaintenanceModeGuardProps) => {
   try {
-    const { isMaintenanceMode } = useMaintenanceMode();
-    const { isAdmin } = useAdmin();
+    const { isMaintenanceMode, loading: maintenanceLoading } = useMaintenanceMode();
+    const { isAdmin, loading: adminLoading } = useAdmin();
+
+    // Show children immediately while loading - don't block the app
+    // This is especially important for public pages like /tree
+    if (maintenanceLoading || adminLoading) {
+      return <>{children}</>;
+    }
 
     // If maintenance mode is enabled and user is not admin, show maintenance page
     if (isMaintenanceMode && !isAdmin) {
