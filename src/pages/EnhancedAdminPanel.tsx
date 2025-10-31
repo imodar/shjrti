@@ -1,5 +1,6 @@
 
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -139,6 +140,7 @@ interface UserSubscription {
 
 export default function EnhancedAdminPanel() {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { currentLanguage, direction } = useLanguage();
   const { currentTheme, setCurrentTheme } = useTheme();
   const [packages, setPackages] = useState<PackageType[]>([]);
@@ -924,7 +926,7 @@ export default function EnhancedAdminPanel() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
         <GlobalHeader />
         <div className="container mx-auto px-6 pt-24 pb-12">
           <div className="flex items-center justify-center h-64">
@@ -937,11 +939,11 @@ export default function EnhancedAdminPanel() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
       <GlobalHeader />
       <Toaster />
       
-      <div className="container mx-auto px-6 pt-24 pb-12" dir="rtl">
+      <div className="container mx-auto px-6 pt-24 pb-12" dir={direction}>
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -1573,7 +1575,7 @@ export default function EnhancedAdminPanel() {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <div className="p-6 border rounded-lg hover:shadow-md transition-shadow cursor-pointer" 
-                       onClick={() => window.open('/admin/billing', '_blank')}>
+                       onClick={() => navigate('/admin/billing')}>
                     <div className="flex items-center gap-4 mb-4">
                       <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
                         <CreditCard className="h-6 w-6 text-emerald-600" />
