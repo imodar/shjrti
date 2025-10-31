@@ -348,7 +348,87 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
       }
     }
 
-    return { tree: [], units };
+    // Ensure generations exist in the current subset
+    let hasAnyGeneration = false;
+    units.forEach(u => { if (u.generation > 0) hasAnyGeneration = true; });
+
+    if (!hasAnyGeneration) {
+      // Determine roots: selected root marriage if provided, otherwise units without parents
+      const roots: string[] = [];
+      if (selectedRootMarriage !== "all") {
+        const rm = familyMarriages.find(m => m.id === selectedRootMarriage);
+        if (rm) roots.push(`married_${rm.id}`);
+      }
+      if (roots.length === 0) {
+        units.forEach((u, id) => { if (!u.parentUnitId) roots.push(id); });
+      }
+
+      // Reset generations and BFS assign
+      units.forEach(u => { u.generation = 0; });
+      const queue: Array<{ id: string; gen: number }> = roots.map(id => ({ id, gen: 1 }));
+      const visited = new Set<string>();
+      while (queue.length) {
+        const { id, gen } = queue.shift()!;
+        if (visited.has(id)) continue;
+        visited.add(id);
+        const u = units.get(id);
+        if (!u) continue;
+        u.generation = gen;
+        u.childUnits.forEach(cid => { if (units.has(cid)) queue.push({ id: cid, gen: gen + 1 }); });
+      }
+    }
+
+    // Group units by generation with sibling grouping
+    const generations = new Map<number, FamilyUnit[][]>();
+    const generationUnits = new Map<number, FamilyUnit[]>();
+    units.forEach(unit => {
+      if (unit.generation > 0) {
+        if (!generationUnits.has(unit.generation)) {
+          generationUnits.set(unit.generation, []);
+        }
+        generationUnits.get(unit.generation)!.push(unit);
+      }
+    });
+
+    // For each generation, group siblings together
+    generationUnits.forEach((units, generation) => {
+      const siblingGroups = groupSiblingsByParent(units);
+      generations.set(generation, siblingGroups);
+    });
+    
+    const result = Array.from(generations.entries()).sort((a, b) => a[0] - b[0]);
+    console.log('Final family tree structure with sibling groups:', result);
+    return {
+      tree: result,
+      units
+    };
+  };
+  
+  // Helper function to group siblings by parent
+  const groupSiblingsByParent = (units: FamilyUnit[]): FamilyUnit[][] => {
+    const groups: FamilyUnit[][] = [];
+    const processed = new Set<string>();
+
+    units.forEach(unit => {
+      if (processed.has(unit.id)) return;
+
+      const siblingGroup: FamilyUnit[] = [unit];
+      processed.add(unit.id);
+
+      // Find siblings (units with same parent)
+      units.forEach(otherUnit => {
+        if (otherUnit.id !== unit.id && !processed.has(otherUnit.id)) {
+          if (unit.parentUnitId && otherUnit.parentUnitId === unit.parentUnitId) {
+            siblingGroup.push(otherUnit);
+            processed.add(otherUnit.id);
+          }
+        }
+      });
+
+      groups.push(siblingGroup);
+    });
+
+    return groups;
   };
 
   const familyTreeData = useMemo(() => generateFamilyTree(), [familyMembers, familyMarriages, selectedRootMarriage]);
