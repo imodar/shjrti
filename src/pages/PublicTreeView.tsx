@@ -160,7 +160,27 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
       });
     }
 
-    // Filter by selected root marriage if needed
+    // Fallback: if no generations assigned (no founders), start from roots (units without parents)
+    let hasAnyGeneration = false;
+    units.forEach((u: any) => { if (u.generation > 0) hasAnyGeneration = true; });
+    if (!hasAnyGeneration) {
+      const roots: string[] = [];
+      units.forEach((u: any, id: string) => { if (!u.parentUnitId) roots.push(id); });
+      // BFS assign
+      units.forEach((u: any) => { u.generation = 0; });
+      const queue: Array<{ id: string; gen: number }> = roots.map(id => ({ id, gen: 1 }));
+      const visited = new Set<string>();
+      while (queue.length) {
+        const { id, gen } = queue.shift()!;
+        if (visited.has(id)) continue;
+        visited.add(id);
+        const u = units.get(id);
+        if (!u) continue;
+        (u as any).generation = gen;
+        (u as any).childUnits.forEach((cid: string) => { if (units.has(cid)) queue.push({ id: cid, gen: gen + 1 }); });
+      }
+    }
+
     if (selectedRootMarriage !== "all") {
       const rootMarriage = familyMarriages.find(m => m.id === selectedRootMarriage);
       if (rootMarriage) {
