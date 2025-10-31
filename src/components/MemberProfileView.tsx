@@ -683,7 +683,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               )}
               
               {/* Black ribbon for deceased members */}
-              {(member.deathDate || member.death_date || !member.isAlive) && (
+              {(member.deathDate || member.death_date || member.is_alive === false) && (
                 <div className="absolute top-0 left-0 z-10">
                   <TooltipProvider>
                     <Tooltip>
