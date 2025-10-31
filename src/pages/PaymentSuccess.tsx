@@ -51,32 +51,60 @@ export default function PaymentSuccess() {
           }
 
           if (data?.success && data.status === 'ACTIVE') {
-            setPaymentStatus('success');
-            // Try to load invoice details for UI
-            if (invoiceId) {
-              const { data: invoice } = await supabase
-                .from('invoices')
-                .select('*, packages(name)')
-                .eq('id', invoiceId)
+            // Get current user
+            const { data: { user } } = await supabase.auth.getUser();
+            
+            // Verify subscription upgrade with retry logic
+            let attempts = 0;
+            const maxAttempts = 3;
+            let upgradeVerified = false;
+
+            while (attempts < maxAttempts && !upgradeVerified) {
+              attempts++;
+              console.log(`Verifying subscription upgrade (attempt ${attempts}/${maxAttempts})...`);
+              
+              if (attempts > 1) {
+                await new Promise(resolve => setTimeout(resolve, 1500));
+              }
+
+              const { data: subscription } = await supabase
+                .from('user_subscriptions')
+                .select('package_id, expires_at')
+                .eq('user_id', user?.id)
+                .eq('status', 'active')
                 .single();
-              if (invoice) setPaymentDetails({ invoice });
+
+              if (subscription && invoiceId) {
+                const { data: invoice } = await supabase
+                  .from('invoices')
+                  .select('package_id, *, packages(name)')
+                  .eq('id', invoiceId)
+                  .single();
+
+                if (subscription.package_id === invoice?.package_id) {
+                  console.log('Subscription upgrade verified successfully!');
+                  upgradeVerified = true;
+                  setPaymentDetails({ invoice });
+                  setNextRenewalDate(subscription.expires_at);
+                } else {
+                  console.warn(`Package mismatch: subscription=${subscription.package_id}, invoice=${invoice?.package_id}`);
+                }
+              }
             }
 
-            // Clear subscription cache and refresh after successful payment
+            if (!upgradeVerified) {
+              toast({
+                title: currentLanguage === 'ar' ? "تحذير" : "Warning",
+                description: currentLanguage === 'ar' 
+                  ? 'الدفع تم بنجاح لكن قد يستغرق تحديث الباقة بضع دقائق. يرجى تحديث الصفحة.'
+                  : 'Payment successful but package upgrade may take a few minutes. Please refresh.',
+                variant: "default",
+              });
+            }
+
+            setPaymentStatus('success');
             clearSubscriptionCache();
             await refreshSubscription();
-
-            // Fetch renewal date from user_subscriptions
-            const { data: subscriptionData } = await supabase
-              .from('user_subscriptions')
-              .select('expires_at')
-              .eq('user_id', (await supabase.auth.getUser()).data.user?.id)
-              .eq('status', 'active')
-              .single();
-            
-            if (subscriptionData?.expires_at) {
-              setNextRenewalDate(subscriptionData.expires_at);
-            }
 
             toast({
               title: currentLanguage === 'ar' ? "تم الدفع بنجاح! 🎉" : "Payment Successful! 🎉",
@@ -105,11 +133,19 @@ export default function PaymentSuccess() {
             setPaymentStatus('success');
             setPaymentDetails(data);
 
-            // Clear subscription cache and refresh after successful payment
+            // Verify and fetch details
+            if (invoiceId) {
+              const { data: invoice } = await supabase
+                .from('invoices')
+                .select('*, packages(name)')
+                .eq('id', invoiceId)
+                .single();
+              if (invoice) setPaymentDetails({ invoice });
+            }
+
             clearSubscriptionCache();
             await refreshSubscription();
 
-            // Fetch renewal date from user_subscriptions
             const { data: subscriptionData } = await supabase
               .from('user_subscriptions')
               .select('expires_at')
@@ -170,11 +206,9 @@ export default function PaymentSuccess() {
           setPaymentStatus('success');
           setPaymentDetails({ invoice });
 
-          // Clear subscription cache and refresh after successful payment
           clearSubscriptionCache();
           await refreshSubscription();
 
-          // Fetch renewal date from user_subscriptions
           const { data: subscriptionData } = await supabase
             .from('user_subscriptions')
             .select('expires_at')

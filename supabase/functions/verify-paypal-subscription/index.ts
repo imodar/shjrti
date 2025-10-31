@@ -116,30 +116,8 @@ Deno.serve(async (req) => {
     if (subscriptionData.status === 'ACTIVE') {
       console.log('Processing active subscription for invoice:', invoiceId);
       
-      // Update invoice
-      const { error: invoiceUpdateError } = await supabaseClient
-        .from('invoices')
-        .update({
-          billing_agreement_id: subscriptionId,
-          payment_status: 'paid',
-          status: 'paid',
-          is_recurring: true,
-          payment_gateway: 'paypal',
-        })
-        .eq('id', invoiceId);
-
-      if (invoiceUpdateError) {
-        console.error('Failed to update invoice:', invoiceUpdateError);
-        return new Response(
-          JSON.stringify({ error: 'Failed to update invoice', details: invoiceUpdateError }),
-          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
-      console.log('Invoice updated successfully');
-
-      // Upgrade subscription using RPC
-      console.log('Calling complete_payment_and_upgrade RPC...');
+      // Upgrade subscription using RPC (this now handles invoice update internally)
+      console.log('Calling complete_payment_and_upgrade RPC with invoice:', invoiceId);
       const { data: upgradeResult, error: upgradeError } = await supabaseClient
         .rpc('complete_payment_and_upgrade', {
           p_invoice_id: invoiceId,
@@ -152,7 +130,7 @@ Deno.serve(async (req) => {
         console.error('Error details:', JSON.stringify(upgradeError, null, 2));
         return new Response(
           JSON.stringify({ 
-            error: 'Subscription created but upgrade failed',
+            error: 'Subscription upgrade failed',
             details: upgradeError,
             message: upgradeError.message 
           }),
@@ -162,11 +140,12 @@ Deno.serve(async (req) => {
 
       console.log('Subscription upgraded successfully. Result:', upgradeResult);
 
-      // Store subscription ID in user_subscriptions
+      // Store PayPal subscription ID in user_subscriptions
       const { error: subUpdateError } = await supabaseClient
         .from('user_subscriptions')
         .update({
           paypal_subscription_id: subscriptionId,
+          billing_agreement_id: subscriptionId,
         })
         .eq('user_id', invoice.user_id)
         .eq('status', 'active');
@@ -177,11 +156,43 @@ Deno.serve(async (req) => {
         console.log('PayPal subscription ID stored successfully');
       }
 
+      // Verify the upgrade actually happened by checking package_id
+      const { data: verifySubscription, error: verifyError } = await supabaseClient
+        .from('user_subscriptions')
+        .select('package_id, expires_at')
+        .eq('user_id', invoice.user_id)
+        .eq('status', 'active')
+        .single();
+
+      if (verifyError || !verifySubscription) {
+        console.error('Failed to verify subscription upgrade:', verifyError);
+      } else if (verifySubscription.package_id !== invoice.package_id) {
+        console.error('CRITICAL: Package mismatch after upgrade!', {
+          expected: invoice.package_id,
+          actual: verifySubscription.package_id
+        });
+        return new Response(
+          JSON.stringify({ 
+            error: 'Package upgrade verification failed',
+            expected: invoice.package_id,
+            actual: verifySubscription.package_id
+          }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      } else {
+        console.log('Subscription upgrade verified successfully:', {
+          package_id: verifySubscription.package_id,
+          expires_at: verifySubscription.expires_at
+        });
+      }
+
       return new Response(
         JSON.stringify({
           success: true,
           subscriptionId,
           status: subscriptionData.status,
+          packageId: verifySubscription?.package_id,
+          expiresAt: verifySubscription?.expires_at,
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );

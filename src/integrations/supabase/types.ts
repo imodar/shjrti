@@ -1268,19 +1268,14 @@ export type Database = {
         Args: { new_expiry_date: string; target_user_id: string }
         Returns: boolean
       }
-      complete_payment_and_upgrade:
-        | {
-            Args: { p_invoice_id: string; p_stripe_payment_intent_id?: string }
-            Returns: boolean
-          }
-        | {
-            Args: {
-              p_invoice_id: string
-              p_payment_gateway?: string
-              p_payment_id?: string
-            }
-            Returns: boolean
-          }
+      complete_payment_and_upgrade: {
+        Args: {
+          p_invoice_id: string
+          p_payment_gateway?: string
+          p_payment_id?: string
+        }
+        Returns: boolean
+      }
       create_admin_user: { Args: { admin_email: string }; Returns: undefined }
       create_invoice: {
         Args: {
