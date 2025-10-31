@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { GlobalHeader } from "@/components/GlobalHeader";
@@ -15,8 +16,8 @@ import { FamilyStatisticsView } from "@/components/FamilyStatisticsView";
 import { FamilyGalleryView } from "@/components/FamilyGalleryView";
 import { PublicFamilyHeader } from "@/components/PublicFamilyHeader";
 import { FamilyOverview } from "@/components/FamilyOverview";
-import { TreeView } from "@/components/TreeView";
-import { Users, AlertCircle, Menu } from "lucide-react";
+import { OrganizationalChart } from "@/components/OrganizationalChart";
+import { Users, AlertCircle, Menu, ZoomIn, ZoomOut } from "lucide-react";
 import { MemberProfileModal } from "@/components/MemberProfileModal";
 
 interface PublicTreeViewProps {
@@ -36,6 +37,7 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const [isPasswordCorrect, setIsPasswordCorrect] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>("all");
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
@@ -369,15 +371,213 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                     )}
                     
                     {activeSection === 'tree' && (
-                      <TreeView 
-                        familyMembers={familyMembers}
-                        familyMarriages={familyMarriages}
-                        zoomLevel={zoomLevel}
-                        onZoomIn={handleZoomIn}
-                        onZoomOut={handleZoomOut}
-                        onResetZoom={handleResetZoom}
-                        onSuggestEdit={handleSuggestEdit}
-                      />
+                      <div className="space-y-4">
+                        {/* Filter Bar and Zoom Controls */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 border-b border-emerald-200/30 dark:border-emerald-600/30 bg-gradient-to-r from-emerald-500/5 via-teal-500/10 to-amber-500/5 rounded-t-lg">
+                          <div className="flex-1 w-full sm:w-auto sm:max-w-md">
+                            <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                              اختر جذر الشجرة
+                            </label>
+                            <Select value={selectedRootMarriage} onValueChange={(value) => {
+                              setSelectedRootMarriage(value);
+                              setZoomLevel(1);
+                            }}>
+                              <SelectTrigger className="w-full bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-emerald-200/50 dark:border-emerald-600/50">
+                                <SelectValue placeholder="اختر عائلة لعرضها" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-emerald-200/50 dark:border-emerald-600/50">
+                                <SelectItem value="all">عرض الشجرة الكاملة</SelectItem>
+                                {familyMarriages
+                                  .filter(marriage => marriage.is_active)
+                                  .map(marriage => {
+                                    const husband = familyMembers.find(m => m.id === marriage.husband_id);
+                                    const wife = familyMembers.find(m => m.id === marriage.wife_id);
+                                    if (husband && wife) {
+                                      return (
+                                        <SelectItem key={marriage.id} value={marriage.id}>
+                                          عائلة {husband.name} و {wife.name}
+                                        </SelectItem>
+                                      );
+                                    }
+                                    return null;
+                                  })}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          
+                          {/* Zoom Controls */}
+                          <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
+                            <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                              <ZoomOut className="h-4 w-4" />
+                            </Button>
+                            <span className="text-sm min-w-[3rem] text-center font-medium">
+                              {Math.round(zoomLevel * 100)}%
+                            </span>
+                            <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                              <ZoomIn className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        {/* Tree Chart with Organizational Chart */}
+                        <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 overflow-auto min-h-[600px]">
+                          <div 
+                            className="transition-transform duration-300 ease-in-out origin-top-left"
+                            style={{ transform: `scale(${zoomLevel})` }}
+                          >
+                            <OrganizationalChart
+                              familyUnits={(() => {
+                                const units = new Map();
+                                const processedMembers = new Set();
+
+                                // Create units for married couples
+                                familyMarriages.forEach(marriage => {
+                                  if (marriage.is_active) {
+                                    const husband = familyMembers.find(m => m.id === marriage.husband_id);
+                                    const wife = familyMembers.find(m => m.id === marriage.wife_id);
+                                    if (husband && wife) {
+                                      const unitId = `married_${marriage.id}`;
+                                      units.set(unitId, {
+                                        id: unitId,
+                                        type: 'married',
+                                        members: [husband, wife],
+                                        generation: 0,
+                                        childUnits: []
+                                      });
+                                      processedMembers.add(husband.id);
+                                      processedMembers.add(wife.id);
+                                    }
+                                  }
+                                });
+
+                                // Create units for single members
+                                familyMembers.forEach(member => {
+                                  if (!processedMembers.has(member.id)) {
+                                    const unitId = `single_${member.id}`;
+                                    units.set(unitId, {
+                                      id: unitId,
+                                      type: 'single',
+                                      members: [member],
+                                      generation: 0,
+                                      childUnits: []
+                                    });
+                                  }
+                                });
+
+                                // Find founder units
+                                const founderUnits = [];
+                                units.forEach((unit, unitId) => {
+                                  if (unit.members.some(m => m.is_founder)) {
+                                    unit.generation = 1;
+                                    founderUnits.push(unitId);
+                                  }
+                                });
+
+                                // Establish parent-child relationships
+                                units.forEach((unit, unitId) => {
+                                  unit.members.forEach(member => {
+                                    if (member.father_id || member.mother_id) {
+                                      const fatherId = member.father_id;
+                                      const motherId = member.mother_id;
+                                      let parentUnit = undefined;
+                                      
+                                      for (const [pId, pUnit] of units.entries()) {
+                                        if (fatherId && pUnit.members.some(m => m.id === fatherId)) {
+                                          parentUnit = pUnit;
+                                          break;
+                                        }
+                                        if (motherId && pUnit.members.some(m => m.id === motherId)) {
+                                          parentUnit = pUnit;
+                                          break;
+                                        }
+                                      }
+                                      
+                                      if (parentUnit && parentUnit.id !== unitId) {
+                                        unit.parentUnitId = parentUnit.id;
+                                        if (!parentUnit.childUnits.includes(unitId)) {
+                                          parentUnit.childUnits.push(unitId);
+                                        }
+                                      }
+                                    }
+                                  });
+                                });
+
+                                // Assign generations
+                                let changed = true;
+                                let iterations = 0;
+                                while (changed && iterations < 20) {
+                                  changed = false;
+                                  iterations++;
+                                  units.forEach((unit) => {
+                                    if (unit.generation === 0 && unit.parentUnitId) {
+                                      const parentUnit = units.get(unit.parentUnitId);
+                                      if (parentUnit && parentUnit.generation > 0) {
+                                        unit.generation = parentUnit.generation + 1;
+                                        changed = true;
+                                      }
+                                    }
+                                  });
+                                }
+
+                                // Filter by selected root marriage if needed
+                                if (selectedRootMarriage !== "all") {
+                                  const rootMarriage = familyMarriages.find(m => m.id === selectedRootMarriage);
+                                  if (rootMarriage) {
+                                    const filteredUnits = new Map();
+                                    const rootUnitId = `married_${rootMarriage.id}`;
+                                    
+                                    const collectDescendants = (unitId, visited = new Set()) => {
+                                      if (visited.has(unitId)) return;
+                                      visited.add(unitId);
+                                      
+                                      const unit = units.get(unitId);
+                                      if (unit) {
+                                        filteredUnits.set(unitId, unit);
+                                        unit.childUnits.forEach(childId => collectDescendants(childId, visited));
+                                      }
+                                    };
+                                    
+                                    collectDescendants(rootUnitId);
+                                    
+                                    // Recompute generations for filtered tree
+                                    filteredUnits.forEach(u => { u.generation = 0; });
+                                    if (filteredUnits.has(rootUnitId)) {
+                                      const queue = [{ id: rootUnitId, gen: 1 }];
+                                      const seen = new Set();
+                                      while (queue.length) {
+                                        const { id, gen } = queue.shift();
+                                        if (seen.has(id)) continue;
+                                        seen.add(id);
+                                        const u = filteredUnits.get(id);
+                                        if (!u) continue;
+                                        u.generation = gen;
+                                        u.childUnits.forEach(cid => {
+                                          if (filteredUnits.has(cid)) queue.push({ id: cid, gen: gen + 1 });
+                                        });
+                                      }
+                                    }
+                                    
+                                    return filteredUnits;
+                                  }
+                                }
+
+                                return units;
+                              })()}
+                              zoomLevel={zoomLevel}
+                              isPublicView={true}
+                              onSuggestEdit={handleSuggestEdit}
+                              marriages={familyMarriages}
+                              members={familyMembers}
+                            />
+                          </div>
+                        </div>
+
+                        {familyMembers.length === 0 && (
+                          <div className="text-center py-12">
+                            <p className="text-muted-foreground">لا توجد أعضاء في شجرة العائلة بعد</p>
+                          </div>
+                        )}
+                      </div>
                     )}
                     
                     {activeSection === 'statistics' && (
