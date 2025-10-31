@@ -34,7 +34,8 @@ import {
   Mail,
   Code,
   Palette,
-  AlertTriangle
+  AlertTriangle,
+  MailOpen
 } from "lucide-react";
 import { PackageEditModal } from '@/components/PackageEditModal';
 import { ChangePackageModal } from '@/components/ChangePackageModal';
@@ -42,6 +43,8 @@ import { ExtendSubscriptionModal } from '@/components/ExtendSubscriptionModal';
 import PageEditor from '@/components/PageEditor';
 import ContactSubmissions from '@/components/ContactSubmissions';
 import { PaymentGatewaySettings } from '@/components/PaymentGatewaySettings';
+import AdminEmailTemplates from './AdminEmailTemplates';
+import AdminEmailLogs from './AdminEmailLogs';
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
@@ -964,7 +967,7 @@ export default function EnhancedAdminPanel() {
         </div>
 
         <Tabs defaultValue="packages" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
+          <TabsList className="grid w-full grid-cols-11 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
             <TabsTrigger value="packages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
               <Package className="ml-2 h-4 w-4" />
               الباقات
@@ -992,6 +995,14 @@ export default function EnhancedAdminPanel() {
             <TabsTrigger value="pages" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
               <FileText className="ml-2 h-4 w-4" />
               الصفحات
+            </TabsTrigger>
+            <TabsTrigger value="email-templates" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <MailOpen className="ml-2 h-4 w-4" />
+              قوالب الإيميل
+            </TabsTrigger>
+            <TabsTrigger value="email-logs" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
+              <Mail className="ml-2 h-4 w-4" />
+              سجل الإيميلات
             </TabsTrigger>
             <TabsTrigger value="contact" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
               <Mail className="ml-2 h-4 w-4" />
@@ -1700,6 +1711,16 @@ export default function EnhancedAdminPanel() {
           {/* Pages Tab */}
           <TabsContent value="pages" className="space-y-6">
             <PageEditor />
+          </TabsContent>
+
+          {/* Email Templates Tab */}
+          <TabsContent value="email-templates" className="space-y-6">
+            <AdminEmailTemplates />
+          </TabsContent>
+
+          {/* Email Logs Tab */}
+          <TabsContent value="email-logs" className="space-y-6">
+            <AdminEmailLogs />
           </TabsContent>
 
           {/* Contact Submissions Tab */}

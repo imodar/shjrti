@@ -131,6 +131,87 @@ export type Database = {
         }
         Relationships: []
       }
+      email_logs: {
+        Row: {
+          body: string
+          created_at: string | null
+          error_message: string | null
+          id: string
+          recipient_email: string
+          recipient_name: string | null
+          sent_at: string | null
+          status: string
+          subject: string
+          template_key: string | null
+          variables: Json | null
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          recipient_email: string
+          recipient_name?: string | null
+          sent_at?: string | null
+          status?: string
+          subject: string
+          template_key?: string | null
+          variables?: Json | null
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          recipient_email?: string
+          recipient_name?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          template_key?: string | null
+          variables?: Json | null
+        }
+        Relationships: []
+      }
+      email_templates: {
+        Row: {
+          body: Json
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          subject: Json
+          template_key: string
+          template_name: Json
+          updated_at: string | null
+          variables: string[] | null
+        }
+        Insert: {
+          body?: Json
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          subject?: Json
+          template_key: string
+          template_name?: Json
+          updated_at?: string | null
+          variables?: string[] | null
+        }
+        Update: {
+          body?: Json
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          subject?: Json
+          template_key?: string
+          template_name?: Json
+          updated_at?: string | null
+          variables?: string[] | null
+        }
+        Relationships: []
+      }
       families: {
         Row: {
           archived_at: string | null
