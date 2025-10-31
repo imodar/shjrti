@@ -55,11 +55,6 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
     if (familyId) {
       checkFamilyAccess();
     } else {
-      toast({
-        title: "خطأ",
-        description: "رقم العائلة مطلوب للوصول إلى الشجرة",
-        variant: "destructive"
-      });
       setIsLoading(false);
     }
   }, [familyId]);
@@ -246,6 +241,33 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   }
 
   // Show error page if password is incorrect
+  // Show error page if no family ID is provided
+  if (!familyId && !isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
+        <GlobalHeader />
+        <div className="container mx-auto px-4 sm:px-6 pt-24 pb-12">
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <Card className="max-w-md w-full p-8 text-center bg-card/70 backdrop-blur-xl border-2 border-destructive/20 shadow-2xl">
+              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-destructive to-destructive/80 rounded-full flex items-center justify-center shadow-lg">
+                <AlertCircle className="h-10 w-10 text-destructive-foreground" />
+              </div>
+              
+              <h2 className="text-2xl font-bold text-destructive mb-4">
+                رابط غير صحيح
+              </h2>
+              
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                عذراً، يبدو أنك اتبعت رابط غير صحيح. إذا كنت فعلاً قد تلقيت رابط الشجرة من أحد أقربائك، اطلب منه أن يعيد مشاركة الرابط مرة أخرى بشكل صحيح.
+              </p>
+            </Card>
+          </div>
+        </div>
+        <GlobalFooterSimplified />
+      </div>
+    );
+  }
+
   if (passwordError) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
