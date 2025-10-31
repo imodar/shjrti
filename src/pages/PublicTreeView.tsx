@@ -329,7 +329,7 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
         // Start from root marriage and collect all descendants
         collectDescendants(rootUnitId);
         
-        // Update units to only filtered ones - preserve the relationships
+        // Update units to only filtered ones
         const originalUnits = new Map(units);
         units.clear();
         filteredUnits.forEach((unit, id) => {
@@ -337,14 +337,37 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
         });
         
         console.log(`Filtered to ${filteredUnits.size} units from original ${originalUnits.size} units`);
-        
-        // Re-calculate generations after filtering
-        const minGen = Math.min(...Array.from(units.values()).map(u => u.generation).filter(g => g > 0));
-        units.forEach(unit => {
-          if (unit.generation > 0) {
-            unit.generation = unit.generation - minGen + 1;
+
+        // Clean up links: remove references to non-existent units
+        units.forEach(u => {
+          u.childUnits = u.childUnits.filter(cid => units.has(cid));
+          if (u.parentUnitId && !units.has(u.parentUnitId)) {
+            u.parentUnitId = undefined;
           }
         });
+
+        // Recompute generations from current roots using BFS
+        units.forEach(u => { u.generation = 0; });
+        const roots: string[] = [];
+        units.forEach((u, id) => {
+          if (!u.parentUnitId) roots.push(id);
+        });
+
+        if (roots.length > 0) {
+          const queue: Array<{ id: string; gen: number }> = roots.map(id => ({ id, gen: 1 }));
+          const visited = new Set<string>();
+          while (queue.length > 0) {
+            const { id, gen } = queue.shift()!;
+            if (visited.has(id)) continue;
+            visited.add(id);
+            const u = units.get(id);
+            if (!u) continue;
+            u.generation = gen;
+            u.childUnits.forEach(cid => {
+              if (units.has(cid)) queue.push({ id: cid, gen: gen + 1 });
+            });
+          }
+        }
       }
     }
 
@@ -695,19 +718,14 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
 
                         {/* Tree Chart */}
                         <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 overflow-auto max-h-[600px]">
-                          <div 
-                            className="transition-transform duration-300 ease-in-out origin-top-left"
-                            style={{ transform: `scale(${zoomLevel})` }}
-                          >
-                            <OrganizationalChart
-                              familyUnits={familyTreeData.units}
-                              zoomLevel={zoomLevel}
-                              isPublicView={true}
-                              onSuggestEdit={handleSuggestEdit}
-                              marriages={familyMarriages}
-                              members={familyMembers}
-                            />
-                          </div>
+                          <OrganizationalChart
+                            familyUnits={familyTreeData.units}
+                            zoomLevel={zoomLevel}
+                            isPublicView={true}
+                            onSuggestEdit={handleSuggestEdit}
+                            marriages={familyMarriages}
+                            members={familyMembers}
+                          />
                         </div>
 
                         {familyMembers.length === 0 && (
