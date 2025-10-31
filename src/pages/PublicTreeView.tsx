@@ -39,7 +39,7 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>("all");
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [activeSection, setActiveSection] = useState('overview');
+  const [activeSection, setActiveSection] = useState('tree');
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
   
   const traditionalRef = useRef<HTMLDivElement>(null);
