@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Image, Calendar, X, Upload } from "lucide-react";
+import { Image, Calendar, X, Upload, FileText } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
@@ -183,52 +183,71 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
 
       {/* Image Viewer Dialog */}
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
-        <DialogContent className="max-w-4xl p-0">
+        <DialogContent className="max-w-5xl p-0 overflow-hidden bg-gradient-to-br from-white via-gray-50 to-emerald-50 dark:from-gray-900 dark:via-gray-800 dark:to-emerald-950 border-2 border-emerald-200/30 dark:border-emerald-800/30">
           <VisuallyHidden>
-            <DialogTitle>Image Viewer</DialogTitle>
+            <DialogTitle>عارض الصور</DialogTitle>
           </VisuallyHidden>
           {selectedImage && (
-            <div className="relative">
+            <div className="relative animate-fade-in">
+              {/* Close Button */}
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-2 left-2 z-10 bg-black/50 hover:bg-black/70 text-white"
+                className="absolute top-4 left-4 z-10 h-10 w-10 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-sm shadow-lg transition-all duration-300 hover:scale-110"
                 onClick={() => setSelectedImage(null)}
               >
                 <X className="h-5 w-5" />
               </Button>
-              <img
-                src={selectedImage.imageUrl}
-                alt={selectedImage.caption || "صورة عائلية"}
-                className="w-full h-auto max-h-[80vh] object-contain"
-              />
-              <div className="p-4 bg-white dark:bg-gray-800 space-y-2">
+              
+              {/* Image Container */}
+              <div className="relative bg-black/5 dark:bg-black/20 p-6">
+                <div className="relative rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/20 dark:ring-white/10">
+                  <img
+                    src={selectedImage.imageUrl}
+                    alt={selectedImage.caption || "صورة عائلية"}
+                    className="w-full h-auto max-h-[70vh] object-contain bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900"
+                  />
+                </div>
+              </div>
+              
+              {/* Info Section */}
+              <div className="relative p-6 space-y-4 bg-gradient-to-br from-white/80 via-emerald-50/50 to-amber-50/30 dark:from-gray-900/80 dark:via-emerald-950/50 dark:to-amber-950/30 backdrop-blur-xl border-t border-emerald-200/30 dark:border-emerald-800/30">
+                {/* Caption Section */}
                 {selectedImage.caption && (
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      الوصف:
-                    </p>
-                    <p className="text-gray-900 dark:text-gray-100">
+                  <div className="group space-y-2 p-4 rounded-xl bg-gradient-to-r from-emerald-50/80 to-teal-50/80 dark:from-emerald-950/40 dark:to-teal-950/40 border border-emerald-200/50 dark:border-emerald-800/30 shadow-sm hover:shadow-md transition-all duration-300">
+                    <div className="flex items-center gap-2">
+                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
+                        <FileText className="h-4 w-4 text-white" />
+                      </div>
+                      <h3 className="text-base font-bold text-emerald-900 dark:text-emerald-100">
+                        الوصف
+                      </h3>
+                    </div>
+                    <p className="text-gray-800 dark:text-gray-200 leading-relaxed pr-10">
                       {selectedImage.caption}
                     </p>
                   </div>
                 )}
-                <div className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
-                  <Calendar className="h-4 w-4 mt-1" />
-                  <div className="flex flex-col">
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      تاريخ الصورة:
-                    </span>
-                    <span className="text-sm">
-                      {selectedImage.photo_date 
-                        ? new Date(selectedImage.photo_date).toLocaleDateString('ar-EG', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })
-                        : 'تاريخ الصورة غير معروف'}
-                    </span>
+                
+                {/* Date Section */}
+                <div className="group space-y-2 p-4 rounded-xl bg-gradient-to-r from-amber-50/80 to-orange-50/80 dark:from-amber-950/40 dark:to-orange-950/40 border border-amber-200/50 dark:border-amber-800/30 shadow-sm hover:shadow-md transition-all duration-300">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-md">
+                      <Calendar className="h-4 w-4 text-white" />
+                    </div>
+                    <h3 className="text-base font-bold text-amber-900 dark:text-amber-100">
+                      تاريخ الصورة
+                    </h3>
                   </div>
+                  <p className="text-gray-800 dark:text-gray-200 text-lg font-medium pr-10">
+                    {selectedImage.photo_date 
+                      ? new Date(selectedImage.photo_date).toLocaleDateString('ar-EG', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })
+                      : 'تاريخ الصورة غير معروف'}
+                  </p>
                 </div>
               </div>
             </div>
