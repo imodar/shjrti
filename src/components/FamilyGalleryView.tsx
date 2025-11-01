@@ -211,43 +211,45 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
               </div>
               
               {/* Info Section */}
-              <div className="relative p-6 space-y-4 bg-gradient-to-br from-white/80 via-emerald-50/50 to-amber-50/30 dark:from-gray-900/80 dark:via-emerald-950/50 dark:to-amber-950/30 backdrop-blur-xl border-t border-emerald-200/30 dark:border-emerald-800/30">
-                {/* Caption Section */}
-                {selectedImage.caption && (
-                  <div className="group space-y-2 p-4 rounded-xl bg-gradient-to-r from-emerald-50/80 to-teal-50/80 dark:from-emerald-950/40 dark:to-teal-950/40 border border-emerald-200/50 dark:border-emerald-800/30 shadow-sm hover:shadow-md transition-all duration-300">
-                    <div className="flex items-center gap-2">
-                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-md">
-                        <FileText className="h-4 w-4 text-white" />
+              <div className="relative p-4 bg-gradient-to-br from-white/80 via-emerald-50/50 to-amber-50/30 dark:from-gray-900/80 dark:via-emerald-950/50 dark:to-amber-950/30 backdrop-blur-xl border-t border-emerald-200/30 dark:border-emerald-800/30">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  {/* Caption Section */}
+                  {selectedImage.caption && (
+                    <div className="flex-1 space-y-2 p-3 rounded-lg bg-gradient-to-r from-emerald-50/80 to-teal-50/80 dark:from-emerald-950/40 dark:to-teal-950/40 border border-emerald-200/50 dark:border-emerald-800/30 shadow-sm hover:shadow-md transition-all duration-300">
+                      <div className="flex items-center gap-2">
+                        <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-sm">
+                          <FileText className="h-3 w-3 text-white" />
+                        </div>
+                        <h3 className="text-sm font-bold text-emerald-900 dark:text-emerald-100">
+                          الوصف
+                        </h3>
                       </div>
-                      <h3 className="text-base font-bold text-emerald-900 dark:text-emerald-100">
-                        الوصف
+                      <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed pr-8">
+                        {selectedImage.caption}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {/* Date Section */}
+                  <div className={`space-y-2 p-3 rounded-lg bg-gradient-to-r from-amber-50/80 to-orange-50/80 dark:from-amber-950/40 dark:to-orange-950/40 border border-amber-200/50 dark:border-amber-800/30 shadow-sm hover:shadow-md transition-all duration-300 ${selectedImage.caption ? 'sm:w-80' : 'flex-1'}`}>
+                    <div className="flex items-center gap-2">
+                      <div className="h-6 w-6 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-sm">
+                        <Calendar className="h-3 w-3 text-white" />
+                      </div>
+                      <h3 className="text-sm font-bold text-amber-900 dark:text-amber-100">
+                        تاريخ الصورة
                       </h3>
                     </div>
-                    <p className="text-gray-800 dark:text-gray-200 leading-relaxed pr-10">
-                      {selectedImage.caption}
+                    <p className="text-sm text-gray-800 dark:text-gray-200 font-medium pr-8">
+                      {selectedImage.photo_date 
+                        ? new Date(selectedImage.photo_date).toLocaleDateString('ar-EG', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })
+                        : 'تاريخ الصورة غير معروف'}
                     </p>
                   </div>
-                )}
-                
-                {/* Date Section */}
-                <div className="group space-y-2 p-4 rounded-xl bg-gradient-to-r from-amber-50/80 to-orange-50/80 dark:from-amber-950/40 dark:to-orange-950/40 border border-amber-200/50 dark:border-amber-800/30 shadow-sm hover:shadow-md transition-all duration-300">
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-md">
-                      <Calendar className="h-4 w-4 text-white" />
-                    </div>
-                    <h3 className="text-base font-bold text-amber-900 dark:text-amber-100">
-                      تاريخ الصورة
-                    </h3>
-                  </div>
-                  <p className="text-gray-800 dark:text-gray-200 text-lg font-medium pr-10">
-                    {selectedImage.photo_date 
-                      ? new Date(selectedImage.photo_date).toLocaleDateString('ar-EG', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })
-                      : 'تاريخ الصورة غير معروف'}
-                  </p>
                 </div>
               </div>
             </div>
