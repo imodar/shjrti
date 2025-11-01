@@ -285,9 +285,12 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
                       </div>
                       <div className="flex-1 p-4 space-y-2">
                         {memory.photo_date && (
-                          <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-semibold">
-                            <Calendar className="h-5 w-5" />
-                            <span className="text-base">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-semibold">
+                              <Calendar className="h-5 w-5" />
+                              <span className="text-sm">تاريخ الصورة:</span>
+                            </div>
+                            <span className="text-base text-gray-900 dark:text-gray-100 pr-7">
                               {new Date(memory.photo_date).toLocaleDateString('ar-EG', {
                                 year: 'numeric',
                                 month: 'long',
@@ -297,9 +300,15 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
                           </div>
                         )}
                         {memory.caption && (
-                          <p className="text-gray-800 dark:text-gray-200">
-                            {memory.caption}
-                          </p>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300 font-semibold">
+                              <FileText className="h-4 w-4" />
+                              <span className="text-sm">الوصف:</span>
+                            </div>
+                            <p className="text-gray-800 dark:text-gray-200 pr-6">
+                              {memory.caption}
+                            </p>
+                          </div>
                         )}
                       </div>
                     </div>
