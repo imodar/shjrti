@@ -83,7 +83,19 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     });
   };
 
-  // Use effect to handle document-level mouse events when dragging
+  // Touch event handlers for mobile dragging
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      setIsDragging(true);
+      setDragStart({
+        x: touch.clientX - panOffset.x,
+        y: touch.clientY - panOffset.y
+      });
+    }
+  };
+
+  // Use effect to handle document-level mouse and touch events when dragging
   useEffect(() => {
     const handleDocumentMouseMove = (e: MouseEvent) => {
       if (!isDragging) return;
@@ -102,14 +114,36 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       }
     };
 
+    const handleDocumentTouchMove = (e: TouchEvent) => {
+      if (!isDragging || e.touches.length !== 1) return;
+      e.preventDefault();
+      
+      const touch = e.touches[0];
+      setPanOffset({
+        x: touch.clientX - dragStart.x,
+        y: touch.clientY - dragStart.y
+      });
+    };
+
+    const handleDocumentTouchEnd = (e: TouchEvent) => {
+      if (isDragging) {
+        e.preventDefault();
+        setIsDragging(false);
+      }
+    };
+
     if (isDragging) {
       document.addEventListener('mousemove', handleDocumentMouseMove);
       document.addEventListener('mouseup', handleDocumentMouseUp);
+      document.addEventListener('touchmove', handleDocumentTouchMove, { passive: false });
+      document.addEventListener('touchend', handleDocumentTouchEnd);
     }
 
     return () => {
       document.removeEventListener('mousemove', handleDocumentMouseMove);
       document.removeEventListener('mouseup', handleDocumentMouseUp);
+      document.removeEventListener('touchmove', handleDocumentTouchMove);
+      document.removeEventListener('touchend', handleDocumentTouchEnd);
     };
   }, [isDragging, dragStart.x, dragStart.y]);
 
@@ -831,6 +865,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           touchAction: 'none'
         }}
         onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
       >
         <div
           className="relative"
