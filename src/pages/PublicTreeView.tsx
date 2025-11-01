@@ -292,12 +292,17 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
           });
         }
         
-        // CRITICAL FIX: Now add ALL marriages for ALL relevant members (not just root)
-        // This ensures descendants' marriages (like صفوح's wives) are also shown
-        marriagesToShow = familyMarriages.filter(marriage => 
-          relevantMemberIds.has(marriage.husband_id) && 
+        // After collecting descendants, include marriages of ALL relevant members
+        const relevantMarriages = familyMarriages.filter(marriage => 
+          relevantMemberIds.has(marriage.husband_id) || 
           relevantMemberIds.has(marriage.wife_id)
         );
+        // Ensure both spouses are included as relevant members
+        relevantMarriages.forEach(m => {
+          relevantMemberIds.add(m.husband_id);
+          relevantMemberIds.add(m.wife_id);
+        });
+        marriagesToShow = relevantMarriages;
         
         console.log('[PublicTreeView] Marriages to show (including descendants):', marriagesToShow.length);
         console.log('[PublicTreeView] Relevant member IDs count:', relevantMemberIds.size);
