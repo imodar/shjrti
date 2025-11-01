@@ -204,17 +204,31 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
               />
               <div className="p-4 bg-white dark:bg-gray-800 space-y-2">
                 {selectedImage.caption && (
-                  <p className="text-gray-900 dark:text-gray-100 font-medium">
-                    {selectedImage.caption}
-                  </p>
+                  <div className="space-y-1">
+                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      الوصف:
+                    </p>
+                    <p className="text-gray-900 dark:text-gray-100">
+                      {selectedImage.caption}
+                    </p>
+                  </div>
                 )}
-                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <Calendar className="h-4 w-4" />
-                  <span className="text-sm">
-                    {selectedImage.photo_date 
-                      ? new Date(selectedImage.photo_date).toLocaleDateString('ar-SA')
-                      : 'تاريخ الصورة غير معروف'}
-                  </span>
+                <div className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+                  <Calendar className="h-4 w-4 mt-1" />
+                  <div className="flex flex-col">
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                      تاريخ الصورة:
+                    </span>
+                    <span className="text-sm">
+                      {selectedImage.photo_date 
+                        ? new Date(selectedImage.photo_date).toLocaleDateString('ar-EG', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })
+                        : 'تاريخ الصورة غير معروف'}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
