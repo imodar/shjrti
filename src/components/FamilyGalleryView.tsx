@@ -291,11 +291,7 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
                               <span className="text-sm">تاريخ الصورة:</span>
                             </div>
                             <span className="text-base text-gray-900 dark:text-gray-100 pr-7">
-                              {new Date(memory.photo_date).toLocaleDateString('ar-EG', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                              })}
+                              {new Date(memory.photo_date).toLocaleDateString('en-GB')}
                             </span>
                           </div>
                         )}
