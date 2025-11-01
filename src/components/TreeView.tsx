@@ -70,50 +70,74 @@ export const TreeView: React.FC<TreeViewProps> = ({
       }
     });
 
-    // Assign generations based on parent-child relationships
-    const assignGenerations = () => {
-      const foundersUnits: string[] = [];
-      
-      units.forEach((unit, unitId) => {
-        const hasParent = unit.members.some((m: any) => m.father_id || m.mother_id);
-        if (!hasParent) {
-          foundersUnits.push(unitId);
-          unit.generation = 0;
-        }
-      });
+    // Clean invalid links
+    units.forEach((u) => {
+      u.childUnits = Array.from(new Set(u.childUnits.filter((cid) => units.has(cid))));
+      if (u.parentUnitId && !units.has(u.parentUnitId)) {
+        u.parentUnitId = undefined;
+      }
+      u.generation = 0;
+    });
 
-      // BFS to assign generations
-      const queue = [...foundersUnits];
-      const visited = new Set<string>();
-
-      while (queue.length > 0) {
-        const currentUnitId = queue.shift()!;
-        if (visited.has(currentUnitId)) continue;
-        visited.add(currentUnitId);
-
-        const currentUnit = units.get(currentUnitId);
-        if (!currentUnit) continue;
-
-        // Find children
-        familyMembers.forEach((member: any) => {
-          const memberParents = currentUnit.members.map((m: any) => m.id);
-          
-          if (memberParents.includes(member.father_id) || memberParents.includes(member.mother_id)) {
-            // Find unit containing this child
-            units.forEach((childUnit, childUnitId) => {
-              if (childUnit.members.some((m: any) => m.id === member.id)) {
-                childUnit.generation = currentUnit.generation + 1;
-                childUnit.parentUnitId = currentUnitId;
-                currentUnit.childUnits.push(childUnitId);
-                queue.push(childUnitId);
-              }
-            });
+    // Recompute generations with BFS
+    const roots: string[] = [];
+    units.forEach((u, id) => {
+      // Consider root if none of its members' parents form an existing unit
+      const hasParentInUnits = u.members.some((m: any) => {
+        const fatherId = m.father_id;
+        const motherId = m.mother_id;
+        // Does any unit include father or mother?
+        let parentFound = false;
+        units.forEach((cand) => {
+          if (cand.members.some((x) => x.id === fatherId || x.id === motherId)) {
+            parentFound = true;
           }
         });
-      }
-    };
+        return parentFound;
+      });
+      if (!hasParentInUnits) roots.push(id);
+    });
 
-    assignGenerations();
+    const q: Array<{ id: string; gen: number }> = roots.map((id) => ({ id, gen: 0 }));
+    const seen = new Set<string>();
+
+    while (q.length) {
+      const { id, gen } = q.shift()!;
+      if (seen.has(id)) continue;
+      seen.add(id);
+      const u = units.get(id);
+      if (!u) continue;
+      u.generation = gen;
+
+      // find children by checking if u.members contains the father/mother of a member
+      familyMembers.forEach((member: any) => {
+        const parentIds = u.members.map((mm: any) => mm.id);
+        if (parentIds.includes(member.father_id) || parentIds.includes(member.mother_id)) {
+          // locate child's unit
+          units.forEach((childUnit, childId) => {
+            if (childUnit.members.some((mm: any) => mm.id === member.id)) {
+              if (childId !== id) {
+                childUnit.parentUnitId = id;
+                childUnit.generation = gen + 1;
+                if (!u.childUnits.includes(childId)) u.childUnits.push(childId);
+                q.push({ id: childId, gen: gen + 1 });
+              }
+            }
+          });
+        }
+      });
+    }
+
+    // Ensure we have at least one root
+    let rootCount = 0;
+    units.forEach((u) => { if (!u.parentUnitId) rootCount++; });
+    if (rootCount === 0) {
+      // force roots by clearing parent on minimal generation units
+      let minGen = Infinity;
+      units.forEach((u) => { minGen = Math.min(minGen, u.generation); });
+      units.forEach((u) => { if (u.generation === minGen) u.parentUnitId = undefined; });
+    }
+
     return units;
   }, [familyMembers, familyMarriages]);
 
@@ -152,19 +176,14 @@ export const TreeView: React.FC<TreeViewProps> = ({
 
       {/* Tree Chart */}
       <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700 overflow-hidden">
-        <div 
-          className="transition-transform duration-300 ease-in-out origin-top-left"
-          style={{ transform: `scale(${zoomLevel})` }}
-        >
-          <OrganizationalChart
-            familyUnits={familyUnits}
-            zoomLevel={zoomLevel}
-            isPublicView={true}
-            onSuggestEdit={onSuggestEdit}
-            marriages={familyMarriages}
-            members={familyMembers}
-          />
-        </div>
+        <OrganizationalChart
+          familyUnits={familyUnits}
+          zoomLevel={zoomLevel}
+          isPublicView={true}
+          onSuggestEdit={onSuggestEdit}
+          marriages={familyMarriages}
+          members={familyMembers}
+        />
       </div>
 
       {familyMembers.length === 0 && (

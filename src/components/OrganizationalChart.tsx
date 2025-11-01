@@ -175,6 +175,21 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   const { displayUnits } = mergeMarriedUnits(familyUnits);
 
+  // Diagnostic logging
+  console.debug('[OrganizationalChart] displayUnits.size:', displayUnits.size);
+  if (displayUnits.size > 0) {
+    const sample = Array.from(displayUnits.values()).slice(0, 3);
+    console.debug('[OrganizationalChart] Sample units:', sample.map(u => ({
+      id: u.id,
+      type: u.type,
+      generation: u.generation,
+      parentUnitId: u.parentUnitId,
+      childUnitsCount: u.childUnits.length
+    })));
+    const rootsCount = Array.from(displayUnits.values()).filter(u => !u.parentUnitId).length;
+    console.debug('[OrganizationalChart] Units without parentUnitId (roots):', rootsCount);
+  }
+
   // Build hierarchical structure
   const buildHierarchy = () => {
     const hierarchy: { [generation: number]: FamilyUnit[] } = {};
@@ -263,6 +278,11 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   };
 
   const positions = calculatePositions();
+  
+  // Diagnostic: check if positions is empty despite having units
+  if (displayUnits.size > 0 && positions.size === 0) {
+    console.warn('[OrganizationalChart] Failed to calculate positions: displayUnits.size =', displayUnits.size, 'but positions.size = 0. This usually means no root units were found.');
+  }
 
   // Center root member in visible area - re-centers when root changes
   const [currentRootId, setCurrentRootId] = useState<string | null>(null);
@@ -771,6 +791,20 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           <Users className="h-16 w-16 mx-auto mb-4 opacity-50" />
           <p className="text-lg font-medium">لا توجد بيانات عائلة لعرضها</p>
           <p className="text-sm mt-2">ابدأ بإضافة أعضاء العائلة لبناء الشجرة</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Visual guardian: if we have units but no positions, show a diagnostic message
+  if (displayUnits.size > 0 && positions.size === 0) {
+    return (
+      <div className="flex items-center justify-center h-64 text-center p-8">
+        <div className="max-w-md">
+          <p className="text-destructive font-semibold mb-2">تعذّر حساب مواضع الرسم (لا جذور).</p>
+          <p className="text-sm text-muted-foreground">
+            يوجد {displayUnits.size} وحدة لكن لم يتم العثور على وحدات جذرية. تحقق من وحدة التحكم للمزيد من التفاصيل.
+          </p>
         </div>
       </div>
     );
