@@ -265,22 +265,11 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
         console.log('[PublicTreeView] Selected root marriage:', selectedRootMarriage);
         console.log('[PublicTreeView] Husband ID:', husbandId);
         console.log('[PublicTreeView] All husband marriages:', allHusbandMarriages.length);
-        console.log('[PublicTreeView] Marriages details:', allHusbandMarriages.map(m => ({ 
-          id: m.id, 
-          wife_id: m.wife_id,
-          wife_name: familyMembers.find(fm => fm.id === m.wife_id)?.name
-        })));
         
         // Add all wives of this husband
         allHusbandMarriages.forEach(marriage => {
           relevantMemberIds.add(marriage.wife_id);
         });
-        
-        // Store marriages to show (all marriages of this husband)
-        marriagesToShow = allHusbandMarriages;
-        
-        console.log('[PublicTreeView] Marriages to show:', marriagesToShow.length);
-        console.log('[PublicTreeView] Relevant member IDs count:', relevantMemberIds.size);
         
         // Use BFS to find all children and descendants from ALL marriages
         const queue = [husbandId];
@@ -302,6 +291,16 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
             }
           });
         }
+        
+        // CRITICAL FIX: Now add ALL marriages for ALL relevant members (not just root)
+        // This ensures descendants' marriages (like صفوح's wives) are also shown
+        marriagesToShow = familyMarriages.filter(marriage => 
+          relevantMemberIds.has(marriage.husband_id) && 
+          relevantMemberIds.has(marriage.wife_id)
+        );
+        
+        console.log('[PublicTreeView] Marriages to show (including descendants):', marriagesToShow.length);
+        console.log('[PublicTreeView] Relevant member IDs count:', relevantMemberIds.size);
       }
     }
     
