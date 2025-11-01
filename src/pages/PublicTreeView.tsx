@@ -1,30 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  ZoomIn, 
-  ZoomOut, 
-  Maximize, 
-  TreePine, 
-  Heart,
-  HeartCrack,
-  Star,
-  Crown
-} from "lucide-react";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { useToast } from "@/hooks/use-toast";
-import { GlobalFooter } from "@/components/GlobalFooter";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { GlobalHeader } from "@/components/GlobalHeader";
-import { OrganizationalChart } from "@/components/OrganizationalChart";
+import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { supabase } from "@/integrations/supabase/client";
 import PasswordModal from "@/components/PasswordModal";
+import { SuggestEditDialog } from "@/components/SuggestEditDialog";
+import { FamilyMembersList } from "@/components/FamilyMembersList";
+import { FamilyStatisticsView } from "@/components/FamilyStatisticsView";
+import { FamilyGalleryView } from "@/components/FamilyGalleryView";
+import { PublicFamilyHeader } from "@/components/PublicFamilyHeader";
+import { FamilyOverview } from "@/components/FamilyOverview";
+import { TreeView } from "@/components/TreeView";
+import { Users, AlertCircle, Menu } from "lucide-react";
+import { MemberProfileModal } from "@/components/MemberProfileModal";
 
-const PublicTreeView = () => {
+interface PublicTreeViewProps {
+  overrideFamilyId?: string;
+}
+
+const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   
   const [familyMembers, setFamilyMembers] = useState<any[]>([]);
   const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
@@ -32,20 +34,27 @@ const PublicTreeView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [isPasswordCorrect, setIsPasswordCorrect] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [activeSection, setActiveSection] = useState('overview');
+  const [isMemberListOpen, setIsMemberListOpen] = useState(false);
   
-  // Get family ID from URL parameters
-  const familyId = searchParams.get('familyId');
+  // Suggest Edit Dialog state
+  const [suggestEditOpen, setSuggestEditOpen] = useState(false);
+  const [suggestEditMemberId, setSuggestEditMemberId] = useState<string>("");
+  const [selectedMemberName, setSelectedMemberName] = useState<string>("");
+  
+  // Member Profile Modal state
+  const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
+  
+  // Get family ID from URL parameters or props
+  const familyId = overrideFamilyId || searchParams.get('familyId');
 
   useEffect(() => {
     if (familyId) {
       checkFamilyAccess();
     } else {
-      toast({
-        title: "خطأ",
-        description: "رقم العائلة مطلوب للوصول إلى الشجرة",
-        variant: "destructive"
-      });
       setIsLoading(false);
     }
   }, [familyId]);
@@ -54,10 +63,10 @@ const PublicTreeView = () => {
     try {
       setIsLoading(true);
       
-      // Check if family exists and get share password
+      // Check if family exists and get share password and gallery sharing
       const { data: family, error: familyError } = await supabase
         .from('families')
-        .select('id, name, description, share_password')
+        .select('id, name, description, share_password, share_gallery')
         .eq('id', familyId)
         .single();
 
@@ -73,62 +82,47 @@ const PublicTreeView = () => {
 
       setFamilyData(family);
 
-      // If family has password protection, show password modal
-      if (family.share_password && !isPasswordCorrect) {
+      // Check if password is required
+      if (family.share_password) {
         setShowPasswordModal(true);
         setIsLoading(false);
-        return;
+      } else {
+        // No password required, proceed to load data
+        await loadFamilyTreeData();
       }
-
-      // Load family tree data
-      await loadFamilyTreeData();
-      
     } catch (error) {
       console.error('Error checking family access:', error);
-      toast({
-        title: "خطأ",
-        description: "حدث خطأ في الوصول إلى البيانات",
-        variant: "destructive"
-      });
       setIsLoading(false);
     }
   };
 
-  const handlePasswordSubmit = (password: string) => {
+  const handlePasswordSubmit = async (password: string) => {
     if (password === familyData?.share_password) {
       setIsPasswordCorrect(true);
       setShowPasswordModal(false);
-      loadFamilyTreeData();
+      await loadFamilyTreeData();
     } else {
-      toast({
-        title: "خطأ",
-        description: "كلمة المرور غير صحيحة",
-        variant: "destructive"
-      });
+      setPasswordError(true);
+      setShowPasswordModal(false);
     }
   };
 
   const loadFamilyTreeData = async () => {
     try {
       setIsLoading(true);
-
-      // Fetch family tree members for the specific family only
+      
+      // Fetch family members
       const { data: members, error: membersError } = await supabase
         .from('family_tree_members')
         .select('*')
-        .eq('family_id', familyId);
+        .eq('family_id', familyId)
+        .order('created_at', { ascending: true });
 
       if (membersError) {
-        console.error('Error fetching family members:', membersError);
-        toast({
-          title: "خطأ",
-          description: "فشل في تحميل بيانات شجرة العائلة",
-          variant: "destructive"
-        });
-        return;
+        console.error('Error fetching members:', membersError);
       }
 
-      // Fetch marriages for the specific family only
+      // Fetch marriages
       const { data: marriages, error: marriagesError } = await supabase
         .from('marriages')
         .select('*')
@@ -153,291 +147,327 @@ const PublicTreeView = () => {
     }
   };
 
-  // Family Units - Core logic for tree structure
-  interface FamilyUnit {
-    id: string;
-    type: 'married' | 'single';
-    members: any[];
-    generation: number;
-    parentUnitId?: string;
-    childUnits: string[];
-  }
-
-  const createFamilyUnits = (): Map<string, FamilyUnit> => {
-    const units = new Map<string, FamilyUnit>();
-    const processedMembers = new Set<string>();
-
-    // Step 1: Create units for married couples
-    familyMarriages.forEach(marriage => {
-      if (marriage.is_active) {
-        const husband = familyMembers.find(m => m.id === marriage.husband_id);
-        const wife = familyMembers.find(m => m.id === marriage.wife_id);
-        
-        if (husband && wife) {
-          const unitId = `married_${marriage.id}`;
-          units.set(unitId, {
-            id: unitId,
-            type: 'married',
-            members: [husband, wife],
-            generation: 0,
-            childUnits: []
-          });
-          
-          processedMembers.add(husband.id);
-          processedMembers.add(wife.id);
-        }
-      }
-    });
-
-    // Step 2: Create units for single members
-    familyMembers.forEach(member => {
-      if (!processedMembers.has(member.id)) {
-        const unitId = `single_${member.id}`;
-        units.set(unitId, {
-          id: unitId,
-          type: 'single',
-          members: [member],
-          generation: 0,
-          childUnits: []
-        });
-      }
-    });
-
-    return units;
+  // Zoom handlers
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 0.1, 2));
   };
 
-  const getUnitByMemberId = (memberId: string, units: Map<string, FamilyUnit>): FamilyUnit | undefined => {
-    for (const unit of units.values()) {
-      if (unit.members.some(m => m.id === memberId)) {
-        return unit;
-      }
-    }
-    return undefined;
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 0.1, 0.5));
   };
 
-  const assignGenerationsToUnits = (units: Map<string, FamilyUnit>) => {
-    // Find founder units
-    const founderUnits: string[] = [];
-    units.forEach((unit, unitId) => {
-      if (unit.members.some(m => m.is_founder)) {
-        unit.generation = 1;
-        founderUnits.push(unitId);
-      }
-    });
-
-    // Establish parent-child relationships between units
-    units.forEach((unit, unitId) => {
-      unit.members.forEach(member => {
-        if (member.father_id || member.mother_id) {
-          const fatherId = member.father_id;
-          const motherId = member.mother_id;
-          
-          const parentUnit = fatherId ? getUnitByMemberId(fatherId, units) : 
-                           motherId ? getUnitByMemberId(motherId, units) : undefined;
-          
-          if (parentUnit && parentUnit.id !== unitId) {
-            unit.parentUnitId = parentUnit.id;
-            if (!parentUnit.childUnits.includes(unitId)) {
-              parentUnit.childUnits.push(unitId);
-            }
-          }
-        }
-      });
-    });
-
-    // Assign generations based on parent-child relationships
-    let changed = true;
-    let iterations = 0;
-    const maxIterations = 20;
-
-    while (changed && iterations < maxIterations) {
-      changed = false;
-      iterations++;
-
-      units.forEach((unit, unitId) => {
-        if (unit.generation === 0 && unit.parentUnitId) {
-          const parentUnit = units.get(unit.parentUnitId);
-          if (parentUnit && parentUnit.generation > 0) {
-            unit.generation = parentUnit.generation + 1;
-            changed = true;
-          }
-        }
-      });
-    }
+  const handleResetZoom = () => {
+    setZoomLevel(1);
   };
 
-  const groupSiblingsByParent = (familyUnits: FamilyUnit[]): FamilyUnit[][] => {
-    const parentGroups = new Map<string, FamilyUnit[]>();
-    const orphanUnits: FamilyUnit[] = [];
-
-    familyUnits.forEach(unit => {
-      if (unit.parentUnitId) {
-        if (!parentGroups.has(unit.parentUnitId)) {
-          parentGroups.set(unit.parentUnitId, []);
-        }
-        parentGroups.get(unit.parentUnitId)!.push(unit);
-      } else {
-        orphanUnits.push(unit);
-      }
-    });
-
-    const result = Array.from(parentGroups.values());
-    if (orphanUnits.length > 0) {
-      result.push(orphanUnits);
-    }
-    return result;
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await loadFamilyTreeData();
+    setIsRefreshing(false);
   };
 
-  // Generate family tree structure
-  const generateFamilyTree = () => {
-    if (familyMembers.length === 0) return { tree: [], units: new Map() };
+  // Calculate generation count
+  const generationCount = useMemo(() => {
+    if (familyMembers.length === 0) return 0;
+    const founders = familyMembers.filter((m: any) => !m.father_id && !m.mother_id);
+    if (founders.length === 0) return 1;
     
-    const units = createFamilyUnits();
-    assignGenerationsToUnits(units);
+    let maxGen = 0;
+    const getGeneration = (member: any, visited = new Set()): number => {
+      if (visited.has(member.id)) return 0;
+      visited.add(member.id);
+      
+      if (!member.father_id && !member.mother_id) return 0;
+      
+      const children = familyMembers.filter((m: any) => 
+        m.father_id === member.id || m.mother_id === member.id
+      );
+      
+      if (children.length === 0) return 0;
+      
+      return 1 + Math.max(...children.map(c => getGeneration(c, visited)));
+    };
     
-    const generations = new Map<number, FamilyUnit[][]>();
-    const generationUnits = new Map<number, FamilyUnit[]>();
+    founders.forEach(f => {
+      maxGen = Math.max(maxGen, getGeneration(f));
+    });
     
-    units.forEach(unit => {
-      if (unit.generation > 0) {
-        if (!generationUnits.has(unit.generation)) {
-          generationUnits.set(unit.generation, []);
-        }
-        generationUnits.get(unit.generation)!.push(unit);
-      }
-    });
+    return maxGen + 1;
+  }, [familyMembers]);
 
-    generationUnits.forEach((units, generation) => {
-      const siblingGroups = groupSiblingsByParent(units);
-      generations.set(generation, siblingGroups);
-    });
-
-    const result = Array.from(generations.entries()).sort((a, b) => a[0] - b[0]);
-    return { tree: result, units };
+  // Handle member click for profile view
+  const handleMemberClick = (member: any) => {
+    setSelectedMemberId(member.id);
   };
 
-  const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.2, 3));
-  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.2, 0.5));
-  const handleResetZoom = () => setZoomLevel(1);
+  // Handle suggest edit
+  const handleSuggestEdit = (memberId: string, memberName: string) => {
+    setSuggestEditMemberId(memberId);
+    setSelectedMemberName(memberName);
+    setSuggestEditOpen(true);
+  };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
         <GlobalHeader />
-        <div className="container mx-auto px-6 pt-24 pb-12">
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
-            <p className="text-emerald-600 mr-4">جاري تحميل شجرة العائلة...</p>
+        <main className="flex-1 flex items-center justify-center">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="flex items-center justify-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+              <p className="text-primary mr-4">جاري تحميل شجرة العائلة...</p>
+            </div>
           </div>
-        </div>
-        <GlobalFooter />
+        </main>
+        <GlobalFooterSimplified />
       </div>
     );
   }
 
   if (showPasswordModal) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
         <GlobalHeader />
-        <PasswordModal
-          isOpen={showPasswordModal}
-          onClose={() => setShowPasswordModal(false)}
-          onSubmit={handlePasswordSubmit}
-          familyName={familyData?.name || ''}
-        />
-        <GlobalFooter />
+        <main className="flex-1">
+          <PasswordModal
+            isOpen={showPasswordModal}
+            onClose={() => {
+              setShowPasswordModal(false);
+              setPasswordError(true);
+            }}
+            onSubmit={handlePasswordSubmit}
+            familyName={familyData?.name || ''}
+          />
+        </main>
+        <GlobalFooterSimplified />
       </div>
     );
   }
 
-  const familyTreeData = generateFamilyTree();
-  const familyTree = familyTreeData.tree;
-  const familyUnits = familyTreeData.units;
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir="rtl">
-      <GlobalHeader />
-      {/* Floating Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
-        <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
-        <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
-      </div>
-
-      <main className="relative z-10 pt-8">
-        {/* Hero Section */}
-        <section className="py-8 relative">
-          <div className="container mx-auto px-6 relative z-10">
-            {/* Header Card */}
-            <div className="relative max-w-5xl mx-auto mb-8">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10 rounded-2xl blur-2xl"></div>
-              
-              <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-6 px-8 shadow-xl ring-1 ring-white/10 dark:ring-gray-500/10">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  {/* Center: Title */}
-                  <div className="text-center flex-1">
-                    <div className="flex items-center justify-center gap-3 mb-2">
-                      <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
-                        <TreePine className="h-6 w-6 text-white" />
-                      </div>
-                      <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                        {familyData?.name || 'شجرة العائلة'}
-                      </h1>
-                    </div>
-                    {familyData?.description && (
-                      <p className="text-gray-600 dark:text-gray-300 mb-2">
-                        {familyData.description}
-                      </p>
-                    )}
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">
-                      عرض عام لشجرة العائلة - {familyTree.length} جيل
-                    </p>
-                  </div>
-
-                  {/* Right: Zoom Controls */}
-                  <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
-                    <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                      <ZoomOut className="h-4 w-4" />
-                    </Button>
-                    <span className="text-sm min-w-[3rem] text-center font-medium">
-                      {Math.round(zoomLevel * 100)}%
-                    </span>
-                    <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                      <ZoomIn className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={handleResetZoom} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
-                      <Maximize className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+  // Show error page if password is incorrect
+  // Show error page if no family ID is provided
+  if (!familyId && !isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
+        <GlobalHeader />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="container mx-auto px-4 sm:px-6 py-12">
+            <div className="flex flex-col items-center justify-center relative">
+              {/* Decorative background elements */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-10 right-20 w-72 h-72 bg-destructive/10 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute bottom-10 left-20 w-72 h-72 bg-destructive/5 rounded-full blur-3xl animate-pulse delay-700"></div>
               </div>
-            </div>
-
-            {/* Tree Container */}
-            <div className="w-full">
-              <Tabs defaultValue="traditional" className="w-full">
-                <TabsList className="grid w-full grid-cols-1 mb-8 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-xl p-2">
-                  <TabsTrigger value="traditional" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-teal-500 data-[state=active]:text-white">
-                    <TreePine className="ml-2 h-4 w-4" />
-                    عرض شجرة العائلة
-                  </TabsTrigger>
-                </TabsList>
+              
+              <Card className="max-w-lg w-full p-10 sm:p-12 text-center bg-gradient-to-br from-card via-card/95 to-card/90 backdrop-blur-2xl border-2 border-destructive/30 shadow-2xl rounded-3xl relative overflow-hidden animate-scale-in">
+                {/* Top decorative line */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-destructive to-transparent"></div>
                 
-                <TabsContent value="traditional">
-                  <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 rounded-2xl p-8 min-h-[600px] overflow-auto shadow-xl">
-                    <OrganizationalChart 
-                      familyUnits={familyUnits} 
-                      zoomLevel={zoomLevel} 
-                    />
+                {/* Icon container with animation */}
+                <div className="relative mb-8">
+                  <div className="w-24 h-24 mx-auto bg-gradient-to-br from-destructive via-destructive/90 to-destructive/70 rounded-full flex items-center justify-center shadow-2xl animate-pulse">
+                    <div className="absolute inset-0 bg-gradient-to-br from-destructive to-transparent rounded-full opacity-50 animate-ping"></div>
+                    <AlertCircle className="h-12 w-12 text-destructive-foreground relative z-10" strokeWidth={2.5} />
                   </div>
-                </TabsContent>
-              </Tabs>
+                  {/* Decorative circles */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 border-2 border-destructive/20 rounded-full"></div>
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 border border-destructive/10 rounded-full"></div>
+                </div>
+                
+                <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-destructive via-destructive/90 to-destructive/80 bg-clip-text text-transparent mb-6">
+                  رابط غير صحيح
+                </h2>
+                
+                <div className="w-16 h-1 bg-gradient-to-r from-transparent via-destructive/50 to-transparent mx-auto mb-6"></div>
+                
+                <p className="text-muted-foreground text-lg leading-relaxed mb-4">
+                  عذراً، يبدو أنك اتبعت رابط غير صحيح.
+                </p>
+                
+                <p className="text-muted-foreground/80 leading-relaxed">
+                  إذا كنت فعلاً قد تلقيت رابط الشجرة من أحد أقربائك، اطلب منه أن يعيد مشاركة الرابط مرة أخرى بشكل صحيح.
+                </p>
+                
+                {/* Bottom decorative line */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-destructive to-transparent"></div>
+              </Card>
             </div>
           </div>
-        </section>
+        </main>
+        <GlobalFooterSimplified />
+      </div>
+    );
+  }
+
+  if (passwordError) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
+        <GlobalHeader />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="flex flex-col items-center justify-center">
+              <Card className="max-w-md w-full p-8 text-center bg-card/70 backdrop-blur-xl border-2 border-destructive/20 shadow-2xl">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-destructive to-destructive/80 rounded-full flex items-center justify-center shadow-lg">
+                  <AlertCircle className="h-10 w-10 text-destructive-foreground" />
+                </div>
+                
+                <h2 className="text-2xl font-bold text-destructive mb-4">
+                  الوصول محظور
+                </h2>
+                
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  عذراً، كلمة المرور المستخدمة للشجرة <span className="font-bold">{familyData?.name}</span> غير صحيحة.
+                </p>
+              </Card>
+            </div>
+          </div>
+        </main>
+        <GlobalFooterSimplified />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
+      <GlobalHeader />
+      
+      <main className="flex-1 relative">
+        {/* Background Effects */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-20 right-10 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 left-10 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-pulse delay-700"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40rem] h-[40rem] bg-amber-500/5 rounded-full blur-3xl"></div>
+        </div>
+        
+        <div className="relative z-10 pt-20">
+          {/* Public Family Header */}
+          <div className="container mx-auto px-4">
+            <PublicFamilyHeader
+              familyData={familyData}
+              familyMembers={familyMembers}
+              generationCount={generationCount}
+              activeSection={activeSection}
+              onSectionChange={setActiveSection}
+              showGallery={familyData?.share_gallery || false}
+            />
+          </div>
+          
+          {/* Main Grid Layout */}
+          <div className="container mx-auto px-4 pt-2 pb-6">
+            <div className="grid gap-6 items-start grid-cols-1 md:grid-cols-12">
+              
+              {/* Content Panel - Col-8 (Right Side in RTL) */}
+              <div className="col-span-1 md:col-span-8 order-2 md:order-2">
+                <Card className="relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl shadow-2xl ring-1 ring-white/10 dark:ring-gray-500/10 overflow-hidden">
+                  <CardContent className="relative p-6 bg-white dark:bg-gray-900">
+                    {activeSection === 'overview' && (
+                      <FamilyOverview 
+                        familyData={familyData}
+                        familyMembers={familyMembers}
+                        generationCount={generationCount}
+                      />
+                    )}
+                    
+                    {activeSection === 'tree' && (
+                      <TreeView 
+                        familyMembers={familyMembers}
+                        familyMarriages={familyMarriages}
+                        zoomLevel={zoomLevel}
+                        onZoomIn={handleZoomIn}
+                        onZoomOut={handleZoomOut}
+                        onResetZoom={handleResetZoom}
+                        onSuggestEdit={handleSuggestEdit}
+                      />
+                    )}
+                    
+                    {activeSection === 'statistics' && (
+                      <FamilyStatisticsView
+                        familyMembers={familyMembers}
+                        familyMarriages={familyMarriages}
+                      />
+                    )}
+                    
+                    {activeSection === 'gallery' && familyData?.share_gallery && (
+                      <FamilyGalleryView
+                        familyId={familyId!}
+                        readOnly={true}
+                      />
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+              
+              {/* Member List - Col-4 (Left Side in RTL) */}
+              <div className="col-span-1 md:col-span-4 order-1 md:order-1">
+                {isMobile ? (
+                  <Drawer open={isMemberListOpen} onOpenChange={setIsMemberListOpen}>
+                    <DrawerTrigger asChild>
+                      <Button variant="outline" className="w-full flex items-center gap-2">
+                        <Menu className="h-4 w-4" />
+                        عرض قائمة الأعضاء ({familyMembers.length})
+                      </Button>
+                    </DrawerTrigger>
+                    <DrawerContent className="h-[80vh] flex flex-col">
+                      <div className="flex-1 overflow-y-auto p-4">
+                        <FamilyMembersList
+                          familyMembers={familyMembers}
+                          familyMarriages={familyMarriages}
+                          readOnly={true}
+                          onMemberClick={(member) => {
+                            handleMemberClick(member);
+                            setIsMemberListOpen(false);
+                          }}
+                        />
+                      </div>
+                    </DrawerContent>
+                  </Drawer>
+                ) : (
+                  <Card className="bg-white dark:bg-gray-900 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl shadow-2xl ring-1 ring-white/10 dark:ring-gray-500/10 overflow-hidden sticky top-4">
+                    <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-b border-border/50">
+                      <CardTitle className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-emerald-600" />
+                        <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                          أعضاء العائلة ({familyMembers.length})
+                        </span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="overflow-y-auto max-h-[calc(100vh-16rem)] p-4">
+                      <FamilyMembersList
+                        familyMembers={familyMembers}
+                        familyMarriages={familyMarriages}
+                        readOnly={true}
+                        onMemberClick={handleMemberClick}
+                      />
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+              
+            </div>
+          </div>
+        </div>
       </main>
       
-      <GlobalFooter />
+      <GlobalFooterSimplified />
+
+      {/* Member Profile Modal */}
+      <MemberProfileModal
+        isOpen={selectedMemberId !== null}
+        onClose={() => setSelectedMemberId(null)}
+        memberId={selectedMemberId}
+        familyId={familyId}
+        readOnly={true}
+        onMemberClick={handleMemberClick}
+      />
+
+      {/* Suggest Edit Dialog */}
+      <SuggestEditDialog
+        isOpen={suggestEditOpen}
+        onClose={() => setSuggestEditOpen(false)}
+        familyId={familyId}
+        memberId={suggestEditMemberId}
+        memberName={selectedMemberName}
+      />
     </div>
   );
 };

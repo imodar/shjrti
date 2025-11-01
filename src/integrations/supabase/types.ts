@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "12.2.3 (519615d)"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
@@ -131,6 +131,87 @@ export type Database = {
         }
         Relationships: []
       }
+      email_logs: {
+        Row: {
+          body: string
+          created_at: string | null
+          error_message: string | null
+          id: string
+          recipient_email: string
+          recipient_name: string | null
+          sent_at: string | null
+          status: string
+          subject: string
+          template_key: string | null
+          variables: Json | null
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          recipient_email: string
+          recipient_name?: string | null
+          sent_at?: string | null
+          status?: string
+          subject: string
+          template_key?: string | null
+          variables?: Json | null
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          recipient_email?: string
+          recipient_name?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          template_key?: string | null
+          variables?: Json | null
+        }
+        Relationships: []
+      }
+      email_templates: {
+        Row: {
+          body: Json
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          subject: Json
+          template_key: string
+          template_name: Json
+          updated_at: string | null
+          variables: string[] | null
+        }
+        Insert: {
+          body?: Json
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          subject?: Json
+          template_key: string
+          template_name?: Json
+          updated_at?: string | null
+          variables?: string[] | null
+        }
+        Update: {
+          body?: Json
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          subject?: Json
+          template_key?: string
+          template_name?: Json
+          updated_at?: string | null
+          variables?: string[] | null
+        }
+        Relationships: []
+      }
       families: {
         Row: {
           archived_at: string | null
@@ -141,6 +222,7 @@ export type Database = {
           id: string
           is_archived: boolean | null
           name: string
+          share_gallery: boolean | null
           share_password: string | null
           updated_at: string
         }
@@ -153,6 +235,7 @@ export type Database = {
           id?: string
           is_archived?: boolean | null
           name: string
+          share_gallery?: boolean | null
           share_password?: string | null
           updated_at?: string
         }
@@ -165,6 +248,7 @@ export type Database = {
           id?: string
           is_archived?: boolean | null
           name?: string
+          share_gallery?: boolean | null
           share_password?: string | null
           updated_at?: string
         }
@@ -198,6 +282,72 @@ export type Database = {
             columns: ["family_id"]
             isOneToOne: false
             referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      family_memories: {
+        Row: {
+          caption: string | null
+          content_type: string
+          created_at: string
+          family_id: string
+          file_path: string
+          file_size: number
+          id: string
+          linked_member_id: string | null
+          original_filename: string
+          photo_date: string | null
+          tags: string[] | null
+          updated_at: string
+          uploaded_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          caption?: string | null
+          content_type: string
+          created_at?: string
+          family_id: string
+          file_path: string
+          file_size: number
+          id?: string
+          linked_member_id?: string | null
+          original_filename: string
+          photo_date?: string | null
+          tags?: string[] | null
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Update: {
+          caption?: string | null
+          content_type?: string
+          created_at?: string
+          family_id?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          linked_member_id?: string | null
+          original_filename?: string
+          photo_date?: string | null
+          tags?: string[] | null
+          updated_at?: string
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_memories_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_memories_linked_member_id_fkey"
+            columns: ["linked_member_id"]
+            isOneToOne: false
+            referencedRelation: "family_tree_members"
             referencedColumns: ["id"]
           },
         ]
@@ -345,14 +495,19 @@ export type Database = {
       invoices: {
         Row: {
           amount: number
+          billing_agreement_id: string | null
           created_at: string
           currency: string | null
           due_date: string | null
           family_id: string | null
           id: string
           invoice_number: string | null
+          is_recurring: boolean | null
           package_id: string | null
+          payment_gateway: string | null
           payment_status: string | null
+          paypal_capture_id: string | null
+          paypal_order_id: string | null
           status: string | null
           stripe_payment_intent_id: string | null
           updated_at: string
@@ -360,14 +515,19 @@ export type Database = {
         }
         Insert: {
           amount: number
+          billing_agreement_id?: string | null
           created_at?: string
           currency?: string | null
           due_date?: string | null
           family_id?: string | null
           id?: string
           invoice_number?: string | null
+          is_recurring?: boolean | null
           package_id?: string | null
+          payment_gateway?: string | null
           payment_status?: string | null
+          paypal_capture_id?: string | null
+          paypal_order_id?: string | null
           status?: string | null
           stripe_payment_intent_id?: string | null
           updated_at?: string
@@ -375,14 +535,19 @@ export type Database = {
         }
         Update: {
           amount?: number
+          billing_agreement_id?: string | null
           created_at?: string
           currency?: string | null
           due_date?: string | null
           family_id?: string | null
           id?: string
           invoice_number?: string | null
+          is_recurring?: boolean | null
           package_id?: string | null
+          payment_gateway?: string | null
           payment_status?: string | null
+          paypal_capture_id?: string | null
+          paypal_order_id?: string | null
           status?: string | null
           stripe_payment_intent_id?: string | null
           updated_at?: string
@@ -669,6 +834,7 @@ export type Database = {
           is_active: boolean
           meta_description: Json | null
           meta_keywords: Json | null
+          quick_info: Json | null
           slug: string
           title: Json
           updated_at: string
@@ -681,6 +847,7 @@ export type Database = {
           is_active?: boolean
           meta_description?: Json | null
           meta_keywords?: Json | null
+          quick_info?: Json | null
           slug: string
           title?: Json
           updated_at?: string
@@ -693,9 +860,79 @@ export type Database = {
           is_active?: boolean
           meta_description?: Json | null
           meta_keywords?: Json | null
+          quick_info?: Json | null
           slug?: string
           title?: Json
           updated_at?: string
+        }
+        Relationships: []
+      }
+      payment_gateway_settings: {
+        Row: {
+          created_at: string | null
+          environment: string
+          gateway_name: string
+          id: string
+          is_active: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          environment?: string
+          gateway_name?: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          environment?: string
+          gateway_name?: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      payment_tokens: {
+        Row: {
+          created_at: string
+          customer_id: string | null
+          id: string
+          metadata: Json | null
+          payment_gateway: string
+          payment_source_type: string | null
+          setup_token_id: string | null
+          status: string
+          token_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_gateway?: string
+          payment_source_type?: string | null
+          setup_token_id?: string | null
+          status?: string
+          token_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string | null
+          id?: string
+          metadata?: Json | null
+          payment_gateway?: string
+          payment_source_type?: string | null
+          setup_token_id?: string | null
+          status?: string
+          token_id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -936,6 +1173,81 @@ export type Database = {
           },
         ]
       }
+      tree_edit_suggestions: {
+        Row: {
+          admin_notes: string | null
+          created_at: string | null
+          family_id: string
+          id: string
+          is_email_verified: boolean | null
+          member_id: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submitter_email: string
+          submitter_name: string
+          suggested_changes: Json | null
+          suggestion_text: string
+          suggestion_type: string
+          updated_at: string | null
+          verification_code: string | null
+          verification_code_expires_at: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string | null
+          family_id: string
+          id?: string
+          is_email_verified?: boolean | null
+          member_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitter_email: string
+          submitter_name: string
+          suggested_changes?: Json | null
+          suggestion_text: string
+          suggestion_type: string
+          updated_at?: string | null
+          verification_code?: string | null
+          verification_code_expires_at?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string | null
+          family_id?: string
+          id?: string
+          is_email_verified?: boolean | null
+          member_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitter_email?: string
+          submitter_name?: string
+          suggested_changes?: Json | null
+          suggestion_text?: string
+          suggestion_type?: string
+          updated_at?: string | null
+          verification_code?: string | null
+          verification_code_expires_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tree_edit_suggestions_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tree_edit_suggestions_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "family_tree_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_status: {
         Row: {
           created_at: string
@@ -972,6 +1284,8 @@ export type Database = {
           expires_at: string | null
           id: string
           package_id: string
+          payment_token_id: string | null
+          paypal_subscription_id: string | null
           started_at: string
           status: string
           updated_at: string
@@ -982,6 +1296,8 @@ export type Database = {
           expires_at?: string | null
           id?: string
           package_id: string
+          payment_token_id?: string | null
+          paypal_subscription_id?: string | null
           started_at?: string
           status?: string
           updated_at?: string
@@ -992,6 +1308,8 @@ export type Database = {
           expires_at?: string | null
           id?: string
           package_id?: string
+          payment_token_id?: string | null
+          paypal_subscription_id?: string | null
           started_at?: string
           status?: string
           updated_at?: string
@@ -1003,6 +1321,13 @@ export type Database = {
             columns: ["package_id"]
             isOneToOne: false
             referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_subscriptions_payment_token_id_fkey"
+            columns: ["payment_token_id"]
+            isOneToOne: false
+            referencedRelation: "payment_tokens"
             referencedColumns: ["id"]
           },
         ]
@@ -1024,18 +1349,19 @@ export type Database = {
         Args: { new_expiry_date: string; target_user_id: string }
         Returns: boolean
       }
-      binary_quantize: {
-        Args: { "": string } | { "": unknown }
-        Returns: unknown
-      }
-      complete_payment_and_upgrade: {
-        Args: { p_invoice_id: string; p_stripe_payment_intent_id?: string }
+      cancel_scheduled_package_change: {
+        Args: { p_scheduled_change_id: string; p_user_id: string }
         Returns: boolean
       }
-      create_admin_user: {
-        Args: { admin_email: string }
-        Returns: undefined
+      complete_payment_and_upgrade: {
+        Args: {
+          p_invoice_id: string
+          p_payment_gateway?: string
+          p_payment_id?: string
+        }
+        Returns: boolean
       }
+      create_admin_user: { Args: { admin_email: string }; Returns: undefined }
       create_invoice: {
         Args: {
           p_amount: number
@@ -1050,12 +1376,9 @@ export type Database = {
         Args: { family_uuid: string }
         Returns: boolean
       }
-      generate_invoice_number: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
+      generate_invoice_number: { Args: never; Returns: string }
       get_all_users_for_admin: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           created_at: string
           email: string
@@ -1092,85 +1415,23 @@ export type Database = {
           subscription_id: string
         }[]
       }
-      halfvec_avg: {
-        Args: { "": number[] }
-        Returns: unknown
-      }
-      halfvec_out: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      halfvec_send: {
-        Args: { "": unknown }
+      is_admin: { Args: { user_uuid: string }; Returns: boolean }
+      is_admin_secure: { Args: { user_uuid: string }; Returns: boolean }
+      is_maintenance_mode_enabled: { Args: never; Returns: boolean }
+      is_subscription_expired: { Args: { user_uuid: string }; Returns: boolean }
+      process_recurring_payment: {
+        Args: {
+          p_amount: number
+          p_currency: string
+          p_package_id: string
+          p_payment_token_id: string
+          p_user_id: string
+        }
         Returns: string
       }
-      halfvec_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
-      }
-      hnsw_bit_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnsw_halfvec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnsw_sparsevec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      hnswhandler: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      is_admin: {
-        Args: { user_uuid: string }
+      process_scheduled_package_change: {
+        Args: { p_scheduled_change_id: string; p_user_id: string }
         Returns: boolean
-      }
-      is_admin_secure: {
-        Args: { user_uuid: string }
-        Returns: boolean
-      }
-      is_maintenance_mode_enabled: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      is_subscription_expired: {
-        Args: { user_uuid: string }
-        Returns: boolean
-      }
-      ivfflat_bit_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      ivfflat_halfvec_support: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      ivfflathandler: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      l2_norm: {
-        Args: { "": unknown } | { "": unknown }
-        Returns: number
-      }
-      l2_normalize: {
-        Args: { "": string } | { "": unknown } | { "": unknown }
-        Returns: string
-      }
-      sparsevec_out: {
-        Args: { "": unknown }
-        Returns: unknown
-      }
-      sparsevec_send: {
-        Args: { "": unknown }
-        Returns: string
-      }
-      sparsevec_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
       }
       update_user_status: {
         Args: {
@@ -1179,30 +1440,6 @@ export type Database = {
           target_user_id: string
         }
         Returns: boolean
-      }
-      vector_avg: {
-        Args: { "": number[] }
-        Returns: string
-      }
-      vector_dims: {
-        Args: { "": string } | { "": unknown }
-        Returns: number
-      }
-      vector_norm: {
-        Args: { "": string }
-        Returns: number
-      }
-      vector_out: {
-        Args: { "": string }
-        Returns: unknown
-      }
-      vector_send: {
-        Args: { "": string }
-        Returns: string
-      }
-      vector_typmod_in: {
-        Args: { "": unknown[] }
-        Returns: number
       }
     }
     Enums: {

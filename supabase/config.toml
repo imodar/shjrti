@@ -41,17 +41,47 @@ verify_jwt = true
 [functions.smart-suggestions]
 verify_jwt = true
 
-[functions.create-payment]
-verify_jwt = true
-
 [functions.delete-user]
 verify_jwt = true
 
-[functions.verify-payment]
+[functions.delete-current-user]
 verify_jwt = true
 
 [functions.cancel-pending-invoices]
 verify_jwt = true
 
+[functions.create-paypal-payment]
+verify_jwt = true
+
+[functions.verify-paypal-payment]
+verify_jwt = true
+
+[functions.create-paypal-subscription]
+verify_jwt = true
+
+[functions.verify-paypal-subscription]
+verify_jwt = true
+
+[functions.get-paypal-client-id]
+verify_jwt = true
+
 [functions.cleanup-old-invoices]
 verify_jwt = true
+
+[functions.submit-edit-suggestion]
+verify_jwt = false
+
+[functions.verify-edit-suggestion]
+verify_jwt = false
+
+[functions.notify-suggestion-status]
+verify_jwt = true
+
+[functions.fix-paid-subscription]
+verify_jwt = true
+
+[functions.process-scheduled-package-changes]
+verify_jwt = false
+
+[functions.send-templated-email]
+verify_jwt = false

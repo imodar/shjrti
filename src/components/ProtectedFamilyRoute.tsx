@@ -8,9 +8,10 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ProtectedFamilyRouteProps {
   children: React.ReactNode;
+  loadingFallback?: React.ReactNode;
 }
 
-export function ProtectedFamilyRoute({ children }: ProtectedFamilyRouteProps) {
+export function ProtectedFamilyRoute({ children, loadingFallback }: ProtectedFamilyRouteProps) {
   const { user, loading: authLoading } = useAuth();
   const { t } = useLanguage();
   const [searchParams] = useSearchParams();
@@ -114,6 +115,12 @@ export function ProtectedFamilyRoute({ children }: ProtectedFamilyRouteProps) {
   }, [user, authLoading, familyId]);
 
   if (loading || authLoading) {
+    // If custom loading fallback is provided, use it
+    if (loadingFallback) {
+      return <>{loadingFallback}</>;
+    }
+
+    // Otherwise, use default loading spinner
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir="rtl">
         <div className="absolute inset-0 overflow-hidden">

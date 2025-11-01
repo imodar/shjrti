@@ -207,8 +207,9 @@ const PlanSelection = () => {
     if (!selectedPackage) return;
 
     try {
-      const packagePrice = getPackagePrice(selectedPackage);
-      const currency = currentLanguage === 'ar' ? 'SAR' : 'USD';
+      // Always use USD for PayPal payments
+      const packagePrice = selectedPackage.price_usd || 0;
+      const currency = 'USD';
 
       const { data: invoiceId, error } = await supabase.rpc('create_invoice', {
         p_user_id: user.id,
@@ -435,14 +436,20 @@ const PlanSelection = () => {
       {/* Creative Floating Back Button */}
       <div className="fixed top-8 left-8 z-50">
         <Button
-          onClick={() => window.history.back()}
           size="lg"
-          className="w-14 h-14 rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 hover:bg-white dark:hover:bg-gray-900 shadow-2xl hover:shadow-emerald-200/30 dark:hover:shadow-emerald-800/30 transition-all duration-300 group hover:scale-110 hover:-translate-y-1"
+          onClick={() => navigate('/dashboard')}
+          className="rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 hover:bg-white dark:hover:bg-gray-900 shadow-2xl hover:shadow-emerald-200/30 dark:hover:shadow-emerald-800/30 transition-all duration-300 group hover:scale-110 hover:-translate-y-1 px-6 py-3 flex items-center gap-2"
         >
           {direction === 'rtl' ? (
-            <ChevronRight className="h-6 w-6 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform duration-200" />
+            <>
+              <ChevronRight className="h-6 w-6 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform duration-200" />
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">عودة لحسابي</span>
+            </>
           ) : (
-            <ArrowLeft className="h-6 w-6 text-emerald-600 dark:text-emerald-400 group-hover:-translate-x-1 transition-transform duration-200" />
+            <>
+              <ArrowLeft className="h-6 w-6 text-emerald-600 dark:text-emerald-400 group-hover:-translate-x-1 transition-transform duration-200" />
+              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Back to Dashboard</span>
+            </>
           )}
         </Button>
       </div>
@@ -496,7 +503,7 @@ const PlanSelection = () => {
             </div>
           )}
         {/* Plans grid with smaller, elegant design */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className={`grid grid-cols-1 gap-6 max-w-5xl mx-auto ${packages.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
           {packages.map((pkg, index) => {
             const PackageIcon = getPackageIcon(index);
             const packagePrice = getPackagePrice(pkg);
@@ -566,17 +573,17 @@ const PlanSelection = () => {
                       <div className="text-center">
                         <div className="flex items-baseline justify-center gap-1 mb-1">
                           <span className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                            {formatPrice(packagePrice)}
+                            ${pkg.price_usd}
                           </span>
                           <span className="text-sm text-gray-600 dark:text-gray-400">
                             {currentLanguage === 'ar' ? '/سنة' : '/year'}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {currentLanguage === 'ar' 
-                            ? `${Math.round(packagePrice / 12)} ريال شهرياً` 
-                            : `$${Math.round(packagePrice / 12)} per month`
-                          }
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          (تقريباً {Math.round((pkg.price_usd || 0) * 3.75)} ريال)
+                        </p>
+                        <p className="text-[9px] text-gray-500 dark:text-gray-500 mt-1">
+                          *المبلغ النهائي يحسب من PayPal
                         </p>
                       </div>
                     )}

@@ -7,8 +7,14 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { MemberMemories } from '@/components/MemberMemories';
+import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
+import { uploadMemberImage } from '@/utils/imageUpload';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { ImageUploadModal } from '@/components/ImageUploadModal';
+import { SuggestEditDialog } from '@/components/SuggestEditDialog';
 import { 
-  Edit, 
+  Edit,
   Trash2, 
   Heart, 
   Users, 
@@ -39,15 +45,16 @@ import {
 
 interface MemberProfileViewProps {
   member: any;
-  onEdit: () => void;
-  onDelete: () => void;
-  onBack: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onBack?: () => void;
   familyMembers: any[];
   marriages?: any[];
   isSpouse?: boolean;
   onSpouseEditWarning?: () => void;
   onSpouseDeleteWarning?: () => void;
   onMemberClick?: (member: any) => void;
+  readOnly?: boolean;
 }
 
 export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
@@ -60,15 +67,70 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   isSpouse = false,
   onSpouseEditWarning,
   onSpouseDeleteWarning,
-  onMemberClick
+  onMemberClick,
+  readOnly = false
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [showAllInfo, setShowAllInfo] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [showImageUploadModal, setShowImageUploadModal] = useState(false);
+  const [showSuggestDialog, setShowSuggestDialog] = useState(false);
+  const { toast } = useToast();
+
+  // Resolve member image to signed URL
+  const memberImageSrc = useResolvedImageUrl(member?.image_url || (member as any)?.image);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  const handleImageSave = async (croppedImageBlob: Blob) => {
+    setIsUploadingImage(true);
+
+    try {
+      // Upload image to storage
+      const filePath = await uploadMemberImage(croppedImageBlob, member.id);
+      
+      if (!filePath) {
+        throw new Error('فشل رفع الصورة');
+      }
+
+      // Update member's image_url in database
+      const { error: updateError } = await supabase
+        .from('family_tree_members')
+        .update({ image_url: filePath })
+        .eq('id', member.id);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      // Update local member object - this will trigger re-render
+      member.image_url = filePath;
+      (member as any).image = filePath;
+
+      toast({
+        title: "تم التحديث بنجاح",
+        description: "تم تحديث صورة العضو بنجاح",
+      });
+
+      // Force component re-render by toggling visibility
+      setIsVisible(false);
+      setTimeout(() => {
+        setIsVisible(true);
+      }, 0);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل تحديث الصورة، يرجى المحاولة مرة أخرى",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingImage(false);
+    }
+  };
 
   if (!member) return null;
 
@@ -76,69 +138,61 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     return gender === 'male' ? 'bg-blue-500' : 'bg-pink-500';
   };
 
-  // Generate timeline events
+  // Generate timeline events with proper logical ordering
   const generateTimelineEvents = () => {
     const events = [];
     const genderText = member.gender === 'male' ? { birth: 'ولد', marry: 'تزوج', death: 'توفي', divorce: 'انفصل' } : { birth: 'ولدت', marry: 'تزوجت', death: 'توفيت', divorce: 'انفصلت' };
 
-    // Birth event
-    if (member.birthDate || member.birth_date) {
-      const birthDate = member.birthDate || member.birth_date;
-      events.push({
-        type: 'birth',
-        date: birthDate,
-        title: `${genderText.birth} ${member.first_name || member.name}`,
-        description: birthDate ? null : 'في تاريخ غير محدد',
-        icon: 'Gift',
-        color: 'text-green-600',
-        bgColor: 'bg-green-50'
-      });
-    } else {
-      events.push({
-        type: 'birth',
-        date: null,
-        title: `${genderText.birth} ${member.first_name || member.name}`,
-        description: 'في تاريخ غير محدد',
-        icon: 'Gift',
-        color: 'text-green-600',
-        bgColor: 'bg-green-50'
-      });
-    }
+    // Birth date as baseline
+    const birthDate = member.birthDate || member.birth_date;
+    const birthTimestamp = birthDate ? new Date(birthDate).getTime() : 0;
 
-    // Marriage events
+    // Birth event - always first
+    events.push({
+      type: 'birth',
+      date: birthDate,
+      sortOrder: 0, // First event
+      sortTimestamp: birthTimestamp,
+      title: `${genderText.birth} ${member.first_name || member.name}`,
+      description: birthDate ? null : 'في تاريخ غير محدد',
+      icon: 'Gift',
+      color: 'text-green-600',
+      bgColor: 'bg-green-50'
+    });
+
+    // Marriage events with children grouped properly
     const spouses = getSpouses();
-    spouses.forEach((spouse, index) => {
+    spouses.forEach((spouse, marriageIndex) => {
       const marriageDate = spouse.marriage_date || spouse.created_at;
-      events.push({
+      const marriageTimestamp = marriageDate ? new Date(marriageDate).getTime() : (birthTimestamp + (marriageIndex + 1) * 1000);
+      
+      // Marriage event
+      const marriageEvent = {
         type: 'marriage',
         date: marriageDate,
+        sortOrder: (marriageIndex + 1) * 100, // Marriage 1: 100, Marriage 2: 200, etc.
+        sortTimestamp: marriageTimestamp,
+        spouseId: spouse.id,
         title: `${genderText.marry} من ${spouse.first_name || spouse.name} ${spouse.last_name || ''}`.trim(),
         description: marriageDate ? null : 'في تاريخ غير محدد',
         icon: 'Heart',
         color: 'text-pink-600',
         bgColor: 'bg-pink-50'
-      });
+      };
+      events.push(marriageEvent);
 
-      // Divorce event if divorced
-      if (spouse.marital_status === 'divorced') {
-        events.push({
-          type: 'divorce',
-          date: null, // We don't have divorce date
-          title: `${genderText.divorce} عن ${spouse.first_name || spouse.name}`,
-          description: 'في تاريخ غير محدد',
-          icon: 'X',
-          color: 'text-orange-600',
-          bgColor: 'bg-orange-50'
-        });
-      }
-
-      // Children with this spouse
+      // Children from this marriage - must be after marriage and before divorce
       const childrenWithSpouse = getChildrenBySpouse(spouse.id);
-      childrenWithSpouse.forEach(child => {
+      childrenWithSpouse.forEach((child, childIndex) => {
         const childBirthDate = child.birthDate || child.birth_date;
+        const childBirthTimestamp = childBirthDate ? new Date(childBirthDate).getTime() : (marriageTimestamp + (childIndex + 1) * 100);
+        
         events.push({
           type: 'child',
           date: childBirthDate,
+          sortOrder: (marriageIndex + 1) * 100 + 10 + childIndex, // After marriage: 110, 111, 112...
+          sortTimestamp: childBirthTimestamp,
+          spouseId: spouse.id,
           title: `ولد لهم ${child.first_name || child.name}`,
           description: childBirthDate ? null : 'في تاريخ غير محدد',
           icon: 'Users',
@@ -146,15 +200,43 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           bgColor: 'bg-blue-50'
         });
       });
+
+      // Divorce event if divorced - comes after all children
+      if (spouse.marital_status === 'divorced') {
+        // Find the last child's date from this marriage or use marriage date
+        const lastChildDate = childrenWithSpouse.length > 0
+          ? Math.max(...childrenWithSpouse.map(c => {
+              const d = c.birthDate || c.birth_date;
+              return d ? new Date(d).getTime() : marriageTimestamp;
+            }))
+          : marriageTimestamp;
+
+        events.push({
+          type: 'divorce',
+          date: null,
+          sortOrder: (marriageIndex + 1) * 100 + 50, // After children: 150, 250, etc.
+          sortTimestamp: lastChildDate + 1000,
+          spouseId: spouse.id,
+          title: `${genderText.divorce} عن ${spouse.first_name || spouse.name}`,
+          description: 'في تاريخ غير محدد',
+          icon: 'X',
+          color: 'text-orange-600',
+          bgColor: 'bg-orange-50'
+        });
+      }
     });
 
-    // Children without specific spouse
+    // Children without specific spouse - after all marriages
     const childrenWithoutSpouse = getChildrenBySpouse();
-    childrenWithoutSpouse.forEach(child => {
+    childrenWithoutSpouse.forEach((child, index) => {
       const childBirthDate = child.birthDate || child.birth_date;
+      const childBirthTimestamp = childBirthDate ? new Date(childBirthDate).getTime() : (birthTimestamp + (spouses.length + 1) * 1000 + index * 100);
+      
       events.push({
         type: 'child',
         date: childBirthDate,
+        sortOrder: 10000 + index, // Very high number to come after all marriages
+        sortTimestamp: childBirthTimestamp,
         title: `ولد له ${child.first_name || child.name}`,
         description: childBirthDate ? null : 'في تاريخ غير محدد',
         icon: 'Users',
@@ -163,12 +245,16 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       });
     });
 
-    // Death event
+    // Death event - always last
     if (member.deathDate || member.death_date) {
       const deathDate = member.deathDate || member.death_date;
+      const deathTimestamp = deathDate ? new Date(deathDate).getTime() : (birthTimestamp + 999999999);
+      
       events.push({
         type: 'death',
         date: deathDate,
+        sortOrder: 999999, // Very high to be last
+        sortTimestamp: deathTimestamp,
         title: `${genderText.death}`,
         description: deathDate ? null : 'في تاريخ غير محدد',
         icon: 'Clock',
@@ -177,12 +263,24 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       });
     }
 
-    // Sort events by date (nulls last)
+    // Sort events: first by actual dates if available, then by logical sortOrder
     return events.sort((a, b) => {
-      if (!a.date && !b.date) return 0;
-      if (!a.date) return 1;
-      if (!b.date) return 1;
-      return new Date(a.date).getTime() - new Date(b.date).getTime();
+      // If both have dates, sort by date
+      if (a.date && b.date) {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      }
+      
+      // If one has date and other doesn't, use sortTimestamp for comparison
+      if (a.date && !b.date) {
+        return new Date(a.date).getTime() - b.sortTimestamp;
+      }
+      
+      if (!a.date && b.date) {
+        return a.sortTimestamp - new Date(b.date).getTime();
+      }
+      
+      // If neither has date, use sortOrder
+      return a.sortOrder - b.sortOrder;
     });
   };
 
@@ -208,8 +306,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       return 'متزوج';
     }
     
-    if (member.relatedPersonId && spouses.length === 0) {
-      const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
+    if ((member.related_person_id || member.relatedPersonId) && spouses.length === 0) {
+      const relatedPerson = familyMembers.find(m => m.id === (member.related_person_id || member.relatedPersonId));
       if (relatedPerson) {
         return 'متزوج';
       }
@@ -236,18 +334,24 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       }).filter(Boolean);
     }
 
-    if (member.relatedPersonId) {
-      const relatedPerson = familyMembers.find(m => m.id === member.relatedPersonId);
+    if (member.related_person_id || member.relatedPersonId) {
+      const relatedPerson = familyMembers.find(m => m.id === (member.related_person_id || member.relatedPersonId));
       if (relatedPerson) {
         return [relatedPerson];
       }
     }
 
-    return familyMembers.filter(m => member.spouseId === m.id || m.spouseId === member.id);
+    return familyMembers.filter(m => 
+      (member.spouse_id || member.spouseId) === m.id || 
+      (m.spouse_id || m.spouseId) === member.id
+    );
   };
 
   const getChildren = () => {
-    return familyMembers.filter(m => m.fatherId === member.id || m.motherId === member.id);
+    return familyMembers.filter(m => 
+      (m.fatherId === member.id || m.father_id === member.id) || 
+      (m.motherId === member.id || m.mother_id === member.id)
+    );
   };
 
   const getGrandchildren = () => {
@@ -255,7 +359,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     let grandchildren = [];
     
     children.forEach(child => {
-      const childGrandchildren = familyMembers.filter(m => m.fatherId === child.id || m.motherId === child.id);
+      const childGrandchildren = familyMembers.filter(m => 
+        (m.fatherId === child.id || m.father_id === child.id) || 
+        (m.motherId === child.id || m.mother_id === child.id)
+      );
       grandchildren.push(...childGrandchildren);
     });
     
@@ -264,21 +371,37 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   
   const getChildrenBySpouse = (spouseId?: string) => {
     const children = getChildren();
-    if (!spouseId) return children.filter(child => (!child.motherId && !child.fatherId) || (child.fatherId === member.id && !child.motherId) || (child.motherId === member.id && !child.fatherId));
+    if (!spouseId) {
+      return children.filter(child => 
+        (!child.motherId && !child.mother_id && !child.fatherId && !child.father_id) || 
+        ((child.fatherId === member.id || child.father_id === member.id) && !child.motherId && !child.mother_id) || 
+        ((child.motherId === member.id || child.mother_id === member.id) && !child.fatherId && !child.father_id)
+      );
+    }
     
     if (member.gender === 'male') {
-      return children.filter(child => child.motherId === spouseId && child.fatherId === member.id);
+      return children.filter(child => 
+        ((child.motherId === spouseId || child.mother_id === spouseId) && 
+         (child.fatherId === member.id || child.father_id === member.id))
+      );
     } else {
-      return children.filter(child => child.fatherId === spouseId && child.motherId === member.id);
+      return children.filter(child => 
+        ((child.fatherId === spouseId || child.father_id === spouseId) && 
+         (child.motherId === member.id || child.mother_id === member.id))
+      );
     }
   };
   
   const getFather = () => {
-    return familyMembers.find(m => m.id === member.father_id);
+    return familyMembers.find(m => 
+      m.id === member.father_id || m.id === member.fatherId
+    );
   };
   
   const getMother = () => {
-    return familyMembers.find(m => m.id === member.mother_id);
+    return familyMembers.find(m => 
+      m.id === member.mother_id || m.id === member.motherId
+    );
   };
 
   // Get lineage display according to the updated rules
@@ -536,7 +659,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   };
 
   return (
-    <div className={`min-h-[50vh] sm:min-h-screen transition-all duration-700 overflow-x-hidden ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+    <div className={`transition-all duration-700 overflow-x-hidden ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
       {/* Header */}
       {/* Header removed */}
 
@@ -550,8 +673,19 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           <div className="relative">
             
             <div className="relative bg-card/95 backdrop-blur-xl rounded-xl sm:rounded-2xl overflow-hidden p-4 sm:p-6 md:p-8 border border-border shadow-xl">
+              {/* Close Button */}
+              {onBack && (
+                <button
+                  onClick={onBack}
+                  className="absolute top-4 right-4 rtl:left-4 rtl:right-auto z-20 h-8 w-8 flex items-center justify-center rounded-full bg-background/80 hover:bg-background border border-border shadow-md transition-all duration-200 hover:scale-110"
+                  aria-label="إغلاق"
+                >
+                  <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
+                </button>
+              )}
+              
               {/* Black ribbon for deceased members */}
-              {(member.deathDate || member.death_date || !member.isAlive) && (
+              {(member.deathDate || member.death_date || member.is_alive === false) && (
                 <div className="absolute top-0 left-0 z-10">
                   <TooltipProvider>
                     <Tooltip>
@@ -579,15 +713,15 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
                 <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 lg:gap-6 flex-1 min-w-0">
                   {/* Profile Avatar - Now first in DOM */}
-                  <div className="relative mx-auto sm:mx-0 flex-shrink-0">
+                  <div className="relative mx-auto sm:mx-0 flex-shrink-0 group">
                     {/* Show gradient background only when there's no profile picture */}
                     {!member.image_url && !member.image && (
                       <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
                     )}
                     <Avatar className="relative h-32 w-32 sm:h-36 sm:w-36 lg:h-40 lg:w-40 border-4 border-white shadow-2xl flex-shrink-0">
-                      {(member.image_url || member.image) ? (
+                      {memberImageSrc ? (
                         <AvatarImage 
-                          src={member.image_url || member.image} 
+                          src={memberImageSrc} 
                           alt={member.name} 
                           className="object-cover w-full h-full"
                         />
@@ -597,6 +731,25 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         </AvatarFallback>
                       )}
                     </Avatar>
+                    
+                    {/* Camera Icon for Quick Image Upload */}
+                    {!readOnly && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowImageUploadModal(true);
+                        }}
+                        disabled={isUploadingImage}
+                        className="absolute bottom-2 right-2 bg-primary hover:bg-primary/90 text-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="تغيير الصورة"
+                      >
+                        {isUploadingImage ? (
+                          <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Camera className="h-4 w-4" />
+                        )}
+                      </button>
+                    )}
                   </div>
 
                   {/* Basic Info - Name and Stats after picture */}
@@ -660,20 +813,30 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       )}
                      </div>
                      
-                     {/* Action Button */}
-                     <div className="flex justify-center sm:justify-start mt-4">
+                     {/* Action Buttons */}
+                     <div className="flex justify-center sm:justify-start gap-2 mt-4">
+                       {!readOnly && onEdit && (
+                         <Button 
+                           onClick={() => {
+                             if (isSpouse && onSpouseEditWarning) {
+                               onSpouseEditWarning();
+                             } else {
+                               onEdit();
+                             }
+                           }}
+                           className="facebook-button-primary px-4 py-2"
+                         >
+                           <Edit className="h-4 w-4 ml-2" />
+                           تعديل المعلومات
+                         </Button>
+                       )}
                        <Button 
-                         onClick={() => {
-                           if (isSpouse && onSpouseEditWarning) {
-                             onSpouseEditWarning();
-                           } else {
-                             onEdit();
-                           }
-                         }}
-                         className="facebook-button-primary px-4 py-2"
+                         onClick={() => setShowSuggestDialog(true)}
+                         variant="outline"
+                         className="px-4 py-2"
                        >
-                         <Edit className="h-4 w-4 ml-2" />
-                         تعديل المعلومات
+                         <MessageCircle className="h-4 w-4 ml-2" />
+                         اقترح تعديل
                        </Button>
                      </div>
                    </div>
@@ -1060,10 +1223,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                               <div className={`bg-card border border-border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow`}>
                                 <div className="flex items-start justify-between gap-4">
                                   <div className="flex-1">
-                                    <h4 className="font-semibold text-foreground mb-1">
+                                     <h4 className="font-semibold text-foreground mb-1">
                                       {event.title}
                                     </h4>
-                                     {event.type !== 'marriage' && (
+                                     {event.type !== 'marriage' && (event.type !== 'divorce' || event.date) && (
                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                          <Calendar className="w-4 h-4" />
                                          {event.date ? (
@@ -1073,7 +1236,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                          )}
                                        </div>
                                      )}
-                                     {event.description && event.type !== 'marriage' && (
+                                     {event.description && event.type !== 'marriage' && event.type !== 'divorce' && (
                                        <p className="text-sm text-muted-foreground mt-2">
                                          {event.description}
                                        </p>
@@ -1116,6 +1279,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 <MemberMemories 
                   memberId={member.id}
                   memberName={member.name}
+                  readOnly={readOnly}
                 />
               </div>
             )}
@@ -1150,42 +1314,62 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             </div>
 
             {/* Delete Action */}
-            <div className="bg-card rounded-xl border border-destructive/20 p-4">
-              <h4 className="font-bold text-sm mb-4 text-destructive">منطقة الخطر</h4>
-              <Button 
-                onClick={() => {
-                  if (isSpouse && onSpouseDeleteWarning) {
-                    onSpouseDeleteWarning();
-                  } else {
-                    onDelete();
-                  }
-                }}
-                variant="destructive" 
-                className="w-full"
-                size="sm"
-              >
-                <Trash2 className="h-4 w-4 ml-2" />
-                حذف العضو
-              </Button>
-              <p className="text-xs text-destructive/70 mt-2 text-center">
-                هذا الإجراء لا يمكن التراجع عنه
-              </p>
-            </div>
+            {!readOnly && onDelete && (
+              <div className="bg-card rounded-xl border border-destructive/20 p-4">
+                <h4 className="font-bold text-sm mb-4 text-destructive">منطقة الخطر</h4>
+                <Button 
+                  onClick={() => {
+                    if (isSpouse && onSpouseDeleteWarning) {
+                      onSpouseDeleteWarning();
+                    } else {
+                      onDelete();
+                    }
+                  }}
+                  variant="destructive" 
+                  className="w-full"
+                  size="sm"
+                >
+                  <Trash2 className="h-4 w-4 ml-2" />
+                  حذف العضو
+                </Button>
+                <p className="text-xs text-destructive/70 mt-2 text-center">
+                  هذا الإجراء لا يمكن التراجع عنه
+                </p>
+              </div>
+            )}
           </div>
         </div>
         
         {/* Back Button */}
-        <div className="flex justify-center mt-8 pt-6 border-t border-border">
-          <Button
-            onClick={onBack}
-            variant="ghost"
-            className="flex items-center gap-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl px-6 py-3 transition-all duration-300 group"
-          >
-            <ArrowRight className="h-4 w-4 group-hover:-translate-x-1 transition-transform duration-200" />
-            <span className="font-medium">العودة</span>
-          </Button>
-        </div>
+        {onBack && (
+          <div className="flex justify-center mt-8 pt-6 border-t border-border">
+            <Button
+              onClick={onBack}
+              variant="ghost"
+              className="flex items-center gap-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl px-6 py-3 transition-all duration-300 group"
+            >
+              <ArrowRight className="h-4 w-4 group-hover:-translate-x-1 transition-transform duration-200" />
+              <span className="font-medium">العودة</span>
+            </Button>
+          </div>
+        )}
       </div>
+
+      {/* Image Upload Modal */}
+      <ImageUploadModal
+        isOpen={showImageUploadModal}
+        onClose={() => setShowImageUploadModal(false)}
+        onSave={handleImageSave}
+        title="تحديث الصورة الشخصية"
+      />
+      
+      <SuggestEditDialog
+        isOpen={showSuggestDialog}
+        onClose={() => setShowSuggestDialog(false)}
+        familyId={member.family_id}
+        memberId={member.id}
+        memberName={member.name}
+      />
     </div>
   );
 };

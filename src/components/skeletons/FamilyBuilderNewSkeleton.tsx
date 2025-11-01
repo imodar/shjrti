@@ -15,11 +15,11 @@ const ListItemSkeleton: React.FC = () => (
 const FamilyBuilderNewSkeleton: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
-      {/* Floating Background Elements */}
+      {/* Floating Background Elements - Optimized (removed heavy animations) */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
-        <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
-        <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20"></div>
+        <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20"></div>
+        <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20"></div>
       </div>
 
       <div className="relative z-10 pt-20">
@@ -77,9 +77,9 @@ const FamilyBuilderNewSkeleton: React.FC = () => {
                 {/* View Mode - Family Overview */}
                 <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
                   <div className="py-8 px-6">
-                    {/* Animated Background Orbs */}
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
-                    <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-secondary/10 via-secondary/5 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
+                    {/* Animated Background Orbs - Optimized */}
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl"></div>
+                    <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-secondary/10 via-secondary/5 to-transparent rounded-full blur-3xl"></div>
                     
                     <div className="relative z-10 pt-4">
                       {/* Hero Content */}

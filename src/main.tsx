@@ -8,6 +8,7 @@ import { AuthProvider } from './contexts/AuthContext'
 import { SubscriptionProvider } from './contexts/SubscriptionContext'
 import { DatePreferenceProvider } from './contexts/DatePreferenceContext'
 import { ThemeProvider } from './contexts/ThemeContext'
+import { PaymentGatewayProvider } from './contexts/PaymentGatewayContext'
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -15,7 +16,9 @@ createRoot(document.getElementById("root")!).render(
       <AuthProvider>
         <DatePreferenceProvider>
           <SubscriptionProvider>
-            <App />
+            <PaymentGatewayProvider>
+              <App />
+            </PaymentGatewayProvider>
           </SubscriptionProvider>
         </DatePreferenceProvider>
       </AuthProvider>

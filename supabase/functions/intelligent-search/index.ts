@@ -36,7 +36,52 @@ serve(async (req) => {
       );
     }
 
+    // Verify user authentication and family access
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+
     const supabase = createClient(supabaseUrl, supabaseKey);
+    
+    // Extract and verify JWT token
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      console.error('Authentication error:', authError);
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired token' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+
+    // Check if user has access to the requested family
+    const { data: familyAccess, error: accessError } = await supabase
+      .rpc('get_user_family_ids', { user_uuid: user.id });
+    
+    if (accessError) {
+      console.error('Family access check error:', accessError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to verify family access' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
+    }
+
+    const userFamilyIds = familyAccess?.map((f: any) => f.family_id) || [];
+    
+    if (!userFamilyIds.includes(familyId)) {
+      console.log('Access denied: User does not have access to family', familyId);
+      return new Response(
+        JSON.stringify({ error: 'Access denied: You do not have permission to search this family' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+      );
+    }
+
+    console.log('Authorization successful for user:', user.id, 'family:', familyId);
     
     // احصل على رأس التصريح من الطلب - Note: setAuth is deprecated in newer Supabase versions
     // Authentication will be handled automatically by the client with proper headers

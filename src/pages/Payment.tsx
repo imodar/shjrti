@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, CreditCard, Receipt, Clock, CheckCircle, Sparkles, Heart, Users, Star, Shield, Crown, Gem } from 'lucide-react';
 import familyTreeLogo from '@/assets/family-tree-logo.png';
+import { PayPalButton } from '@/components/PayPalButton';
 
 interface Package {
   id: string;
@@ -123,65 +124,25 @@ const Payment = () => {
     return String(value || '');
   };
 
-  const simulatePayment = async () => {
-    if (!invoice) return;
+  const handlePaymentSuccess = (orderId: string) => {
+    navigate(`/payment-success?invoice_id=${invoice?.id}&order_id=${orderId}`);
+  };
 
-    try {
-      setProcessing(true);
+  const handlePaymentError = (error: string) => {
+    toast({
+      title: currentLanguage === 'ar' ? "خطأ في الدفع" : "Payment Error",
+      description: error,
+      variant: "destructive",
+    });
+  };
 
-      // Simulate payment processing delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Complete payment and upgrade subscription
-      const { data: success, error } = await supabase.rpc('complete_payment_and_upgrade', {
-        p_invoice_id: invoice.id,
-        p_stripe_payment_intent_id: `sim_${Date.now()}` // Simulated payment intent ID
-      });
-
-      if (error) {
-        console.error('Error completing payment:', error);
-        toast({
-          title: currentLanguage === 'ar' ? "خطأ في الدفع" : "Payment Error",
-          description: currentLanguage === 'ar' 
-            ? "حدث خطأ في معالجة الدفع" 
-            : "Error processing payment",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (success) {
-        toast({
-          title: currentLanguage === 'ar' ? "تم الدفع بنجاح" : "Payment Successful",
-          description: currentLanguage === 'ar' 
-            ? "تم تفعيل اشتراكك بنجاح" 
-            : "Your subscription has been activated successfully",
-        });
-
-        // Redirect to dashboard after successful payment
-        navigate('/dashboard');
-      } else {
-        toast({
-          title: currentLanguage === 'ar' ? "خطأ في تأكيد الدفع" : "Payment Confirmation Error",
-          description: currentLanguage === 'ar' 
-            ? "لم يتم تأكيد الدفع" 
-            : "Payment could not be confirmed",
-          variant: "destructive",
-        });
-      }
-
-    } catch (error) {
-      console.error('Error in simulatePayment:', error);
-      toast({
-        title: currentLanguage === 'ar' ? "خطأ" : "Error",
-        description: currentLanguage === 'ar' 
-          ? "حدث خطأ في معالجة طلبك" 
-          : "Error processing your request",
-        variant: "destructive",
-      });
-    } finally {
-      setProcessing(false);
-    }
+  const handlePaymentCancel = () => {
+    toast({
+      title: currentLanguage === 'ar' ? "تم إلغاء الدفع" : "Payment Cancelled",
+      description: currentLanguage === 'ar' 
+        ? "يمكنك المحاولة مرة أخرى في أي وقت" 
+        : "You can try again anytime",
+    });
   };
 
   if (loading) {
@@ -318,10 +279,20 @@ const Payment = () => {
                       </div>
                       
                       <div className="border-t border-emerald-200/30 dark:border-emerald-700/30 pt-2 mt-2">
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center mb-1">
                           <span className="font-semibold">{currentLanguage === 'ar' ? 'المجموع' : 'Total'}</span>
-                          <span className="font-bold text-lg bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{formatPrice(invoice.amount)}</span>
+                          <div className="text-right">
+                            <div className="font-bold text-lg bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                              ${invoice.amount}
+                            </div>
+                            <div className="text-[10px] text-gray-500 dark:text-gray-400">
+                              (تقريباً {Math.round(invoice.amount * 3.75)} ريال)
+                            </div>
+                          </div>
                         </div>
+                        <p className="text-[9px] text-gray-500 dark:text-gray-500 mt-1 text-center">
+                          *المبلغ النهائي يحسب من PayPal
+                        </p>
                       </div>
                       
                       <div className="flex items-center gap-2 text-xs text-orange-600">
@@ -345,86 +316,42 @@ const Payment = () => {
                   </div>
                 </div>
 
-                {/* Right Side - Payment Methods */}
+                {/* Right Side - PayPal Payment */}
                 <div className="space-y-4">
-                  <div className="bg-gradient-to-br from-gray-50/50 via-white/50 to-slate-50/50 dark:from-gray-950/20 dark:via-gray-800/50 dark:to-slate-950/20 rounded-xl p-4 border border-gray-200/30 dark:border-gray-700/30">
-                    <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
-                      <CreditCard className="h-4 w-4 text-gray-600" />
-                      {currentLanguage === 'ar' ? 'طرق الدفع' : 'Payment Methods'}
+                  <div className="bg-gradient-to-br from-blue-50/50 via-white/50 to-indigo-50/50 dark:from-blue-950/20 dark:via-gray-800/50 dark:to-indigo-950/20 rounded-xl p-6 border border-blue-200/30 dark:border-blue-700/30">
+                    <h3 className="font-semibold text-base mb-4 flex items-center gap-2 text-center justify-center">
+                      <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">PP</span>
+                      </div>
+                      {currentLanguage === 'ar' ? 'الدفع عبر PayPal' : 'Pay with PayPal'}
                     </h3>
                     
-                    <div className="space-y-3">
-                      {/* Credit Cards */}
-                      <div className="flex items-center gap-3 p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg border border-gray-200/30 dark:border-gray-600/30 hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors cursor-pointer">
-                        <div className="flex gap-2">
-                          {/* Visa */}
-                          <div className="w-8 h-5 bg-blue-600 rounded flex items-center justify-center">
-                            <span className="text-white text-xs font-bold">VISA</span>
-                          </div>
-                          {/* Mastercard */}
-                          <div className="w-8 h-5 bg-gradient-to-r from-red-500 to-orange-500 rounded flex items-center justify-center">
-                            <span className="text-white text-xs font-bold">MC</span>
-                          </div>
-                        </div>
-                        <span className="text-sm font-medium">{currentLanguage === 'ar' ? 'بطاقة ائتمان' : 'Credit Card'}</span>
-                      </div>
-
-                      {/* PayPal */}
-                      <div className="flex items-center gap-3 p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg border border-gray-200/30 dark:border-gray-600/30 hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors cursor-pointer">
-                        <div className="w-8 h-5 bg-blue-500 rounded flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">PP</span>
-                        </div>
-                        <span className="text-sm font-medium">PayPal</span>
-                      </div>
-
-                      {/* Apple Pay */}
-                      <div className="flex items-center gap-3 p-3 bg-white/50 dark:bg-gray-800/50 rounded-lg border border-gray-200/30 dark:border-gray-600/30 hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors cursor-pointer">
-                        <div className="w-8 h-5 bg-black rounded flex items-center justify-center">
-                          <span className="text-white text-xs font-bold">🍎</span>
-                        </div>
-                        <span className="text-sm font-medium">Apple Pay</span>
-                      </div>
-                    </div>
-
-                    <div className="mt-3 p-2 bg-green-50/50 dark:bg-green-950/20 rounded-lg border border-green-200/30 dark:border-green-700/30">
-                      <div className="flex items-center gap-2">
-                        <Shield className="h-4 w-4 text-green-600" />
-                        <span className="text-xs text-green-700 dark:text-green-300 font-medium">
-                          {currentLanguage === 'ar' ? 'مدفوعات آمنة ومحمية' : 'Secure & Protected Payments'}
-                        </span>
-                      </div>
+                    {invoice && (
+                      <PayPalButton
+                        invoiceId={invoice.id}
+                        packageId={invoice.package_id}
+                        amount={invoice.amount}
+                        currency={invoice.currency}
+                        onSuccess={handlePaymentSuccess}
+                        onError={handlePaymentError}
+                        onCancel={handlePaymentCancel}
+                      />
+                    )}
+                    
+                    <div className="mt-4 text-xs text-center text-gray-500 dark:text-gray-400">
+                      {currentLanguage === 'ar' 
+                        ? 'الدفع آمن ومحمي عبر PayPal'
+                        : 'Secure payment powered by PayPal'
+                      }
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Payment Button */}
-              <Button 
-                onClick={simulatePayment}
-                disabled={processing}
-                className="w-full h-12 text-lg font-semibold bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 hover:shadow-lg text-white transition-all duration-300 hover:scale-105"
-              >
-                {processing ? (
-                  <div className="flex items-center gap-3">
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    <span>
-                      {currentLanguage === 'ar' ? 'جاري معالجة الدفع...' : 'Processing Payment...'}
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-3">
-                    <CreditCard className="h-5 w-5" />
-                    <span>
-                      {currentLanguage === 'ar' ? `ادفع ${formatPrice(invoice.amount)}` : `Pay ${formatPrice(invoice.amount)}`}
-                    </span>
-                  </div>
-                )}
-              </Button>
-
               {/* Cancel Button */}
               <Button 
                 variant="outline" 
-                onClick={() => navigate('/plan-selection')}
+                onClick={() => navigate(-1)}
                 className="w-full border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 hover:border-emerald-300 dark:hover:border-emerald-600 transition-all duration-300"
                 disabled={processing}
               >

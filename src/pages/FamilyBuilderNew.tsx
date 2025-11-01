@@ -28,6 +28,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatDateForDatabase, parseDateFromDatabase } from "@/lib/dateUtils";
 import { useImageUploadPermission } from "@/hooks/useImageUploadPermission";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import DOMPurify from 'dompurify';
 import { Slider } from "@/components/ui/slider";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
@@ -38,7 +39,9 @@ import { SuggestionPanel } from "@/components/SuggestionPanel";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
+import { SubscriptionGuard } from "@/components/SubscriptionGuard";
 import { supabase } from "@/integrations/supabase/client";
+import { uploadMemberImage, getMemberImageUrl, deleteMemberImage } from "@/utils/imageUpload";
 import Cropper from "react-easy-crop";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { SpouseForm, SpouseData } from "@/components/SpouseForm";
@@ -50,6 +53,7 @@ import { TreeSettingsButton } from "@/pages/FamilyBuilderNew/components/TreeSett
 import { MemberCard } from "@/pages/FamilyBuilderNew/components/MemberList/MemberCard";
 import { TreeSettingsView } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsView";
 import { CustomDomainCard } from "@/pages/FamilyBuilderNew/components/TreeSettings/CustomDomainCard";
+import { useFamilyData } from "@/contexts/FamilyDataContext";
 
 
 const FamilyBuilderNew = () => {
@@ -60,52 +64,22 @@ const FamilyBuilderNew = () => {
     hasAIFeatures
   } = useSubscription();
   const isMobile = useIsMobile();
-  const getGenerationStats = () => {
-    if (familyMembers.length === 0) return [];
-    const generationMap = new Map();
-
-    // Step 1: Assign generation 1 to founders and members without parents
-    familyMembers.forEach(member => {
-      if (member.isFounder || !member.fatherId && !member.motherId) {
-        generationMap.set(member.id, 1);
-      }
-    });
-
-    // Step 2: Calculate generations based on parent-child relationships
-    let changed = true;
-    let maxIterations = familyMembers.length * 2;
-    let iterations = 0;
-    while (changed && iterations < maxIterations) {
-      changed = false;
-      iterations++;
-      familyMembers.forEach(member => {
-        if (generationMap.has(member.id)) return;
-        if (!member.fatherId && !member.motherId) {
-          generationMap.set(member.id, 1);
-          changed = true;
-          return;
-        }
-        const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : null;
-        const motherGeneration = member.motherId ? generationMap.get(member.motherId) : null;
-        if (fatherGeneration !== undefined || motherGeneration !== undefined) {
-          const parentGeneration = Math.max(fatherGeneration || 0, motherGeneration || 0);
-          generationMap.set(member.id, parentGeneration + 1);
-          changed = true;
-        }
-      });
-    }
-    const generationCounts = new Map();
-    generationMap.forEach(generation => {
-      generationCounts.set(generation, (generationCounts.get(generation) || 0) + 1);
-    });
-    return Array.from(generationCounts.entries()).sort((a, b) => a[0] - b[0]);
-  };
+  
+  // ✅ Use FamilyDataContext for shared data (no duplicate queries!)
+  const { 
+    familyData: contextFamilyData, 
+    familyMembers: contextMembers, 
+    marriages: contextMarriages,
+    loading: contextLoading,
+    refetch: refetchFamilyData 
+  } = useFamilyData();
 
   // Image Upload and Crop Component (consolidated states)
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
   const [showCropDialog, setShowCropDialog] = useState(false);
   const [imageChanged, setImageChanged] = useState(false);
+  const [editingMemberImageUrl, setEditingMemberImageUrl] = useState<string | null>(null);
   const [crop, setCrop] = useState({
     x: 0,
     y: 0
@@ -120,21 +94,38 @@ const FamilyBuilderNew = () => {
     image.setAttribute('crossOrigin', 'anonymous');
     image.src = url;
   });
-  const getCroppedImg = async (imageSrc: string, pixelCrop: any) => {
+  const getCroppedImg = async (imageSrc: string, pixelCrop: any): Promise<Blob | null> => {
     const image = await createImage(imageSrc);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
-    ctx.drawImage(image, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, pixelCrop.width, pixelCrop.height);
-    return new Promise<string>(resolve => {
+
+    // Calculate scale factor to keep image under max size (1200px)
+    const MAX_SIZE = 1200;
+    const scale = Math.min(MAX_SIZE / pixelCrop.width, MAX_SIZE / pixelCrop.height, 1);
+    
+    // Set canvas dimensions based on scaled size
+    canvas.width = pixelCrop.width * scale;
+    canvas.height = pixelCrop.height * scale;
+
+    // Draw image with scaling
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    // Compress to JPEG with quality 0.8
+    return new Promise<Blob | null>(resolve => {
       canvas.toBlob(blob => {
-        if (!blob) return;
-        const reader = new FileReader();
-        reader.addEventListener('load', () => resolve(reader.result as string));
-        reader.readAsDataURL(blob);
-      }, 'image/jpeg', 0.95);
+        resolve(blob);
+      }, 'image/jpeg', 0.8); // Lower quality for smaller file size
     });
   };
   const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
@@ -154,25 +145,88 @@ const FamilyBuilderNew = () => {
   };
   const handleCropSave = async () => {
     if (selectedImage && croppedAreaPixels) {
-      const croppedImg = await getCroppedImg(selectedImage, croppedAreaPixels);
-      if (croppedImg) {
-        setCroppedImage(croppedImg);
+      const croppedBlob = await getCroppedImg(selectedImage, croppedAreaPixels);
+      if (croppedBlob) {
+        // Store blob for upload, create preview URL for display
+        const previewUrl = URL.createObjectURL(croppedBlob);
+        setCroppedImage(previewUrl);
         setImageChanged(true);
         setShowCropDialog(false);
+        // Store blob in a ref or state for later upload
+        (window as any).__croppedImageBlob = croppedBlob;
       }
     }
   };
-  const handleDeleteImage = () => {
-    setCroppedImage(null);
-    setSelectedImage(null);
-    setImageChanged(true);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+  const handleDeleteImage = async () => {
+    try {
+      // 1) Determine current image path
+      let currentPath: string | null = editingMember?.image || null;
+      if (!currentPath && editingMember?.id) {
+        const { data } = await supabase
+          .from('family_tree_members')
+          .select('image_url')
+          .eq('id', editingMember.id)
+          .maybeSingle();
+        currentPath = data?.image_url ?? null;
+      }
+
+      // 2) Delete preview URL if exists
+      if (croppedImage && croppedImage.startsWith('blob:')) {
+        URL.revokeObjectURL(croppedImage);
+      }
+
+      // 3) Remove from storage if it's a storage path
+      if (currentPath && !currentPath.startsWith('data:image/') && !currentPath.startsWith('blob:')) {
+        await deleteMemberImage(currentPath);
+      }
+
+      // 4) Update DB to null image_url if editing an existing member
+      if (editingMember?.id) {
+        await supabase
+          .from('family_tree_members')
+          .update({ image_url: null, updated_at: new Date().toISOString() })
+          .eq('id', editingMember.id);
+      }
+
+      // 5) Update local state to reflect deletion immediately
+      setCroppedImage(null);
+      setSelectedImage(null);
+      setImageChanged(true);
+      (window as any).__croppedImageBlob = null;
+
+      if (editingMember) {
+        setEditingMember({ ...editingMember, image: null });
+      }
+      setFamilyMembers(prev => prev.map((m: any) => m.id === editingMember?.id ? { ...m, image: null } : m));
+
+      // 6) Reset file input to allow re-upload
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+
+      // 7) Toast
+      toast({
+        title: 'تم حذف الصورة',
+        description: 'تم حذف صورة العضو بنجاح',
+      });
+    } catch (err) {
+      console.error('Failed to delete image', err);
+      toast({
+        title: 'فشل حذف الصورة',
+        description: 'حدث خطأ أثناء حذف الصورة. حاول مجددًا.',
+        variant: 'destructive',
+      });
     }
   };
+
   const handleEditImage = () => {
+    // If we have the original image, show crop dialog
     if (selectedImage) {
       setShowCropDialog(true);
+    } 
+    // If editing existing image, trigger file upload
+    else if (croppedImage || editingMemberImageUrl) {
+      fileInputRef.current?.click();
     }
   };
 
@@ -193,9 +247,8 @@ const FamilyBuilderNew = () => {
     profile
   } = useDashboardData();
 
-  // Package and subscription data
-  const [packageData, setPackageData] = useState(null);
-  const [subscriptionData, setSubscriptionData] = useState(null);
+  // Get subscription from context
+  const { subscription } = useSubscription();
   const familyId = searchParams.get('family');
   const treeId = searchParams.get('treeId');
   const isNew = searchParams.get('new') === 'true';
@@ -209,6 +262,72 @@ const FamilyBuilderNew = () => {
   const [memberListLoading, setMemberListLoading] = useState(false);
   const [profileLoading, setProfileLoading] = useState(false);
   const [memberProfileData, setMemberProfileData] = useState(null);
+
+  // Keep marriages in sync with Context after it loads
+  useEffect(() => {
+    // If no marriages in context yet, clear local state
+    if (!contextMarriages || contextMarriages.length === 0) {
+      setFamilyMarriages([]);
+      return;
+    }
+
+    // If members not loaded yet, set basic marriages without embedded member objects
+    if (familyMembers.length === 0) {
+      setFamilyMarriages(
+        contextMarriages.map((marriage: any) => ({
+          ...marriage,
+          husband: null,
+          wife: null,
+        }))
+      );
+      return;
+    }
+
+    // Map marriages to include embedded husband/wife from current member list
+    const marriagesWithMembers = contextMarriages.map((marriage: any) => {
+      const husband = (familyMembers as any[]).find(m => m.id === marriage.husband_id);
+      const wife = (familyMembers as any[]).find(m => m.id === marriage.wife_id);
+      return {
+        ...marriage,
+        husband: husband
+          ? {
+              id: husband.id,
+              name: husband.name,
+              first_name: husband.first_name,
+              last_name: husband.last_name,
+              father_id: husband.fatherId,
+              mother_id: husband.motherId,
+              gender: husband.gender,
+              birth_date: husband.birthDate,
+              is_alive: husband.isAlive,
+              death_date: husband.deathDate,
+              image_url: husband.image,
+              biography: husband.bio,
+              marital_status: husband.marital_status,
+            }
+          : null,
+        wife: wife
+          ? {
+              id: wife.id,
+              name: wife.name,
+              first_name: wife.first_name,
+              last_name: wife.last_name,
+              father_id: wife.fatherId,
+              mother_id: wife.motherId,
+              gender: wife.gender,
+              birth_date: wife.birthDate,
+              is_alive: wife.isAlive,
+              death_date: wife.deathDate,
+              image_url: wife.image,
+              biography: wife.bio,
+              marital_status: wife.marital_status,
+            }
+          : null,
+      };
+    });
+
+    setFamilyMarriages(marriagesWithMembers);
+  }, [contextMarriages, familyMembers]);
 
   // Memoized generation count calculation
   const generationCount = useMemo(() => {
@@ -282,6 +401,48 @@ const FamilyBuilderNew = () => {
   }, [familyMembers, familyMarriages, loading]);
   const calculateGenerationCount = () => generationCount;
 
+  // Memoized generation stats calculation to prevent re-computation on every render
+  const getGenerationStats = useMemo(() => {
+    if (familyMembers.length === 0) return [];
+    const generationMap = new Map();
+
+    // Step 1: Assign generation 1 to founders and members without parents
+    familyMembers.forEach(member => {
+      if (member.isFounder || !member.fatherId && !member.motherId) {
+        generationMap.set(member.id, 1);
+      }
+    });
+
+    // Step 2: Calculate generations based on parent-child relationships
+    let changed = true;
+    let maxIterations = familyMembers.length * 2;
+    let iterations = 0;
+    while (changed && iterations < maxIterations) {
+      changed = false;
+      iterations++;
+      familyMembers.forEach(member => {
+        if (generationMap.has(member.id)) return;
+        if (!member.fatherId && !member.motherId) {
+          generationMap.set(member.id, 1);
+          changed = true;
+          return;
+        }
+        const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : null;
+        const motherGeneration = member.motherId ? generationMap.get(member.motherId) : null;
+        if (fatherGeneration !== undefined || motherGeneration !== undefined) {
+          const parentGeneration = Math.max(fatherGeneration || 0, motherGeneration || 0);
+          generationMap.set(member.id, parentGeneration + 1);
+          changed = true;
+        }
+      });
+    }
+    const generationCounts = new Map();
+    generationMap.forEach(generation => {
+      generationCounts.set(generation, (generationCounts.get(generation) || 0) + 1);
+    });
+    return Array.from(generationCounts.entries()).sort((a, b) => a[0] - b[0]);
+  }, [familyMembers]);
+
   // Form panel states
   const [formMode, setFormMode] = useState<'view' | 'add' | 'edit' | 'profile' | 'tree-settings'>(() => {
     // Check if settings parameter is present in URL
@@ -297,6 +458,9 @@ const FamilyBuilderNew = () => {
   // Mobile drawer state
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
   const fetchFamilyData = async () => {
+    const startTime = performance.now();
+    console.log('🚀 Starting family data fetch...');
+    
     try {
       setLoading(true);
       const {
@@ -305,30 +469,7 @@ const FamilyBuilderNew = () => {
         }
       } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
-      const {
-        data: userSubscription,
-        error: subError
-      } = await supabase.from('user_subscriptions').select(`
-          *,
-          packages:package_id (
-            id,
-            name,
-            max_family_members,
-            max_family_trees,
-            features
-          )
-        `).eq('user_id', user.id).eq('status', 'active').order('created_at', {
-        ascending: false
-      }).limit(1).single();
-      if (userSubscription && userSubscription.packages) {
-        setPackageData(userSubscription.packages);
-        setSubscriptionData(userSubscription);
-      } else {
-        const {
-          data: freePackage
-        } = await supabase.from('packages').select('*').ilike('name->en', 'Free').single();
-        if (freePackage) setPackageData(freePackage);
-      }
+      // Subscription check is now handled by SubscriptionGuard wrapper
       if (!familyId) {
         throw new Error('No family ID provided');
       }
@@ -348,10 +489,15 @@ const FamilyBuilderNew = () => {
       const {
         data: members,
         error: membersError
-      } = await supabase.from('family_tree_members').select('*').eq('family_id', familyToUse.id);
+      } = await supabase.from('family_tree_members')
+        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, related_person_id, is_founder, gender, birth_date, is_alive, death_date, marital_status, image_url')
+        .eq('family_id', familyToUse.id);
       if (membersError) throw membersError;
+      
+      // Transform members data (declare at function scope for use in marriages)
+      let transformedMembers = [];
       if (members) {
-        const transformedMembers = members.map(member => ({
+        transformedMembers = members.map(member => ({
           id: member.id,
           name: member.name,
           first_name: member.first_name,
@@ -366,40 +512,64 @@ const FamilyBuilderNew = () => {
           isAlive: member.is_alive,
           deathDate: member.death_date || null,
           image: member.image_url || null,
-          bio: member.biography || '',
+          bio: '',
           marital_status: member.marital_status || 'single',
           relation: ""
         }));
         setFamilyMembers(transformedMembers);
+        console.log(`✅ Members loaded with images: ${transformedMembers.filter(m => m.image).length}/${transformedMembers.length}`);
       }
-      const {
-        data: marriages,
-        error: marriagesError
-      } = await supabase.from('marriages').select(`
-          id,
-          husband_id,
-          wife_id,
-          is_active,
-          marital_status
-        `).eq('family_id', familyToUse.id).eq('is_active', true);
-      if (marriagesError) throw marriagesError;
-
-      // Get detailed marriage data with member info
+      
+      // ✅ Use marriages from Context (NO extra query!)
       let marriagesWithMembers = [];
-      if (marriages) {
-        marriagesWithMembers = await Promise.all(marriages.map(async marriage => {
-          const [husbandResult, wifeResult] = await Promise.all([supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(), supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()]);
+      if (contextMarriages && transformedMembers.length > 0) {
+        marriagesWithMembers = contextMarriages.map(marriage => {
+          const husband = transformedMembers.find(m => m.id === marriage.husband_id);
+          const wife = transformedMembers.find(m => m.id === marriage.wife_id);
           return {
             ...marriage,
-            husband: husbandResult.data,
-            wife: wifeResult.data
+            husband: husband ? {
+              id: husband.id,
+              name: husband.name,
+              first_name: husband.first_name,
+              last_name: husband.last_name,
+              father_id: husband.fatherId,
+              mother_id: husband.motherId,
+              gender: husband.gender,
+              birth_date: husband.birthDate,
+              is_alive: husband.isAlive,
+              death_date: husband.deathDate,
+              image_url: husband.image,
+              biography: husband.bio,
+              marital_status: husband.marital_status
+            } : null,
+            wife: wife ? {
+              id: wife.id,
+              name: wife.name,
+              first_name: wife.first_name,
+              last_name: wife.last_name,
+              father_id: wife.fatherId,
+              mother_id: wife.motherId,
+              gender: wife.gender,
+              birth_date: wife.birthDate,
+              is_alive: wife.isAlive,
+              death_date: wife.deathDate,
+              image_url: wife.image,
+              biography: wife.bio,
+              marital_status: wife.marital_status
+            } : null
           };
-        }));
+        });
       }
-      if (marriagesError) throw marriagesError;
+      
       if (marriagesWithMembers) {
         setFamilyMarriages(marriagesWithMembers);
       }
+      
+      const endTime = performance.now();
+      console.log(`✅ Family data loaded in ${(endTime - startTime).toFixed(0)}ms`);
+      console.log(`📊 Stats: ${transformedMembers.length} members, ${marriagesWithMembers.length} marriages`);
+
     } catch (error) {
       console.error('Error fetching family data:', error);
       toast({
@@ -460,40 +630,24 @@ const FamilyBuilderNew = () => {
         fatherId: member.father_id,
         motherId: member.mother_id,
         spouseId: null,
-        // Will be filled from marriages
         relatedPersonId: null,
         isFounder: member.is_founder,
         gender: member.gender,
-        birthDate: "",
-        // Will be loaded when profile is viewed
-        isAlive: true,
-        deathDate: null,
-        image: null,
-        // Will be loaded when profile is viewed
-        bio: "",
-        // Will be loaded when profile is viewed
+        birthDate: member.birth_date || "",
+        isAlive: member.is_alive !== false,
+        deathDate: member.death_date || null,
+        image: member.image_url || null,
+        bio: member.biography || "",
         marital_status: member.marital_status || 'single',
         relation: ""
       }));
       setFamilyMembers(transformedMembers);
 
-      // Fetch minimal marriage data for initial load
-      const {
-        data: marriages,
-        error: marriagesError
-      } = await supabase.from('marriages').select(`
-          id,
-          husband_id,
-          wife_id,
-          is_active,
-          marital_status
-        `).eq('family_id', family.id).eq('is_active', true);
-      if (marriagesError) throw marriagesError;
-
-      // Create simplified marriage objects for initial load
+      
+      // ✅ Use marriages from Context (NO extra query!)
       let marriagesWithMembers = [];
-      if (marriages) {
-        marriagesWithMembers = marriages.map(marriage => ({
+      if (contextMarriages) {
+        marriagesWithMembers = contextMarriages.map(marriage => ({
           ...marriage,
           husband: {
             id: marriage.husband_id,
@@ -542,6 +696,22 @@ const FamilyBuilderNew = () => {
       loadExistingSpouses(editingMember);
     }
   }, [editingMember?.id, familyMarriages?.length, familyMembers?.length]);
+
+  // Load signed URL for editing member's image if it's a storage path
+  useEffect(() => {
+    const loadEditingMemberImage = async () => {
+      if (editingMember?.image && !editingMember.image.startsWith('data:image/') && !editingMember.image.startsWith('blob:')) {
+        // It's a storage path, fetch signed URL
+        const signedUrl = await getMemberImageUrl(editingMember.image);
+        setEditingMemberImageUrl(signedUrl);
+      } else {
+        // It's Base64 or blob URL, use directly
+        setEditingMemberImageUrl(editingMember?.image || null);
+      }
+    };
+    
+    loadEditingMemberImage();
+  }, [editingMember?.image]);
 
   // Search and filter states
   const [selectedMember, setSelectedMember] = useState<any>(null);
@@ -1616,8 +1786,8 @@ const FamilyBuilderNew = () => {
 
   // Form panel actions
   const handleAddMember = () => {
-    // Check if user has reached package limit
-    if (packageData && familyMembers.length >= packageData.max_family_members) {
+    // Check if user has reached package limit using subscription from context
+    if (subscription?.package_name && familyMembers.length >= subscription.package_name.max_family_members) {
       setShowUpgradeModal(true);
       return;
     }
@@ -1641,23 +1811,20 @@ const FamilyBuilderNew = () => {
       if (memberError) throw memberError;
 
       // Fetch member's marriages with spouse details
-      const {
-        data: marriages,
-        error: marriagesError
-      } = await supabase.from('marriages').select(`
-          id,
-          husband_id,
-          wife_id,
-          is_active,
-          marital_status
-        `).eq('family_id', familyId).eq('is_active', true).or(`husband_id.eq.${memberId},wife_id.eq.${memberId}`);
-      if (marriagesError) throw marriagesError;
-
-      // Get detailed marriage data with member info
+      
+      // ✅ Use marriages from Context (NO extra query!)
       let memberMarriages = [];
-      if (marriages) {
-        memberMarriages = await Promise.all(marriages.map(async marriage => {
-          const [husbandResult, wifeResult] = await Promise.all([supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(), supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()]);
+      if (contextMarriages) {
+        const memberMarriagesData = contextMarriages.filter(
+          m => m.husband_id === memberId || m.wife_id === memberId
+        );
+        
+        // Get detailed marriage data with member info from Context
+        memberMarriages = await Promise.all(memberMarriagesData.map(async marriage => {
+          const [husbandResult, wifeResult] = await Promise.all([
+            supabase.from('family_tree_members').select('*').eq('id', marriage.husband_id).single(),
+            supabase.from('family_tree_members').select('*').eq('id', marriage.wife_id).single()
+          ]);
           return {
             ...marriage,
             husband: husbandResult.data,
@@ -1765,6 +1932,7 @@ const FamilyBuilderNew = () => {
     setCroppedImage(null);
     setSelectedImage(null);
     setImageChanged(false);
+    setEditingMemberImageUrl(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -2060,12 +2228,28 @@ const FamilyBuilderNew = () => {
       data: currentSpouse
     } = await supabase.from('family_tree_members').select('image_url').eq('id', spouse.existingFamilyMemberId).maybeSingle();
 
-    // Handle image state properly - preserve existing image if no new image provided
+    // Handle image state properly - upload to storage if new image provided
     let imageUrl;
-    // Check if there's a new image or if we should preserve the existing one
     if (spouse.croppedImage && spouse.croppedImage !== currentSpouse?.image_url) {
-      // New image provided
-      imageUrl = spouse.croppedImage;
+      // Check if this is a blob URL (new image)
+      if (spouse.croppedImage.startsWith('blob:')) {
+        // Delete old image from storage if exists
+        if (currentSpouse?.image_url && !currentSpouse.image_url.startsWith('data:image/')) {
+          await deleteMemberImage(currentSpouse.image_url);
+        }
+        
+        // Upload new image to storage
+        const croppedBlob = (window as any).__croppedImageBlob;
+        if (croppedBlob) {
+          imageUrl = await uploadMemberImage(croppedBlob, spouse.existingFamilyMemberId);
+          console.log('✅ Spouse image uploaded to storage:', imageUrl);
+        } else {
+          imageUrl = currentSpouse?.image_url || null;
+        }
+      } else {
+        // New Base64 image provided (legacy)
+        imageUrl = spouse.croppedImage;
+      }
     } else {
       // No new image, preserve existing
       imageUrl = currentSpouse?.image_url || null;
@@ -2216,10 +2400,13 @@ const FamilyBuilderNew = () => {
         husband: submissionData.gender === "female" && husband ? husband : null
       };
 
-      // Handle image state properly for edits:
-      // - If imageChanged is true, use croppedImage (user modified the image)
-      // - If imageChanged is false, keep existing image (user didn't touch the image)
+      // Handle image uploads with safer flow:
+      // 1. Upload new image first (if provided)
+      // 2. Update DB with new image_url
+      // 3. Delete old image only after successful DB update
       let finalImageUrl;
+      let oldImagePath = null;
+      
       if (formMode === 'edit' && editingMember) {
         console.log('🚨 Image preservation check:', {
           imageChanged,
@@ -2227,13 +2414,50 @@ const FamilyBuilderNew = () => {
           existingImage: editingMember.image,
           editingMember: editingMember
         });
+        
         if (imageChanged) {
-          finalImageUrl = submissionData.croppedImage || null;
+          // Store old image path for later deletion
+          if (editingMember.image && !editingMember.image.startsWith('data:image/') && !editingMember.image.startsWith('blob:')) {
+            oldImagePath = editingMember.image;
+          }
+          
+          // Upload new image FIRST before updating DB
+          const croppedBlob = (window as any).__croppedImageBlob;
+          if (croppedBlob) {
+            try {
+              finalImageUrl = await uploadMemberImage(croppedBlob, editingMember.id);
+              console.log('✅ Image uploaded to storage (edit):', finalImageUrl);
+              
+              if (!finalImageUrl) {
+                // Upload failed - keep existing image
+                toast({
+                  title: "تحذير",
+                  description: "فشل رفع الصورة. تم الاحتفاظ بالصورة القديمة.",
+                  variant: "destructive"
+                });
+                finalImageUrl = editingMember.image || null;
+                oldImagePath = null; // Don't delete old image
+              }
+            } catch (error) {
+              console.error('Image upload error:', error);
+              toast({
+                title: "خطأ في رفع الصورة",
+                description: "حجم الصورة كبير جداً. تم الاحتفاظ بالصورة القديمة.",
+                variant: "destructive"
+              });
+              finalImageUrl = editingMember.image || null;
+              oldImagePath = null; // Don't delete old image
+            }
+          } else {
+            finalImageUrl = null;
+          }
         } else {
+          // Keep existing image path (storage path or Base64 for legacy data)
           finalImageUrl = editingMember.image || null;
         }
       } else {
-        finalImageUrl = submissionData.croppedImage || null;
+        // Add mode - will be handled below
+        finalImageUrl = null;
       }
 
       // Call the existing submission logic (same as modal)
@@ -2315,6 +2539,8 @@ const FamilyBuilderNew = () => {
 
         // Ensure name field is properly constructed
         const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName;
+        
+        // Insert member first WITHOUT image
         const {
           data: newMember,
           error: memberError
@@ -2327,7 +2553,7 @@ const FamilyBuilderNew = () => {
           is_alive: submissionData.isAlive,
           death_date: !submissionData.isAlive ? formatDateForDatabase(submissionData.deathDate) : null,
           biography: submissionData.bio || null,
-          image_url: submissionData.croppedImage || null,
+          image_url: null, // Will be updated below if image exists
           father_id: fatherId,
           mother_id: motherId,
           related_person_id: relatedPersonId,
@@ -2336,11 +2562,45 @@ const FamilyBuilderNew = () => {
           is_founder: submissionData.isFounder || false,
           marital_status: finalData.maritalStatus || 'single'
         }).select().single();
+        
         if (memberError) {
           console.error('Error adding family member:', memberError);
           throw memberError;
         }
+        
         memberData = newMember;
+        
+        // Now upload image using the real member ID
+        const croppedBlob = (window as any).__croppedImageBlob;
+        if (croppedBlob && imageChanged) {
+          try {
+            const imageStoragePath = await uploadMemberImage(croppedBlob, memberData.id);
+            console.log('✅ Image uploaded to storage:', imageStoragePath);
+            
+            if (imageStoragePath) {
+              // Update member with image path
+              const { error: imageUpdateError } = await supabase
+                .from('family_tree_members')
+                .update({ image_url: imageStoragePath })
+                .eq('id', memberData.id);
+                
+              if (imageUpdateError) {
+                console.error('Error updating member with image:', imageUpdateError);
+              } else {
+                // Update memberData with the image path
+                memberData.image_url = imageStoragePath;
+                finalImageUrl = imageStoragePath;
+              }
+            }
+          } catch (error) {
+            console.error('Image upload error:', error);
+            toast({
+              title: "تحذير",
+              description: "فشل رفع الصورة. تم حفظ العضو بدون صورة.",
+              variant: "default"
+            });
+          }
+        }
       }
 
       // Track successful marriages for toast message
@@ -2781,7 +3041,7 @@ const FamilyBuilderNew = () => {
       isSavingRef.current = false;
       setIsSaving(false);
     }
-  }, [formData, familyData, wives, husband, packageData, subscriptionData, editingMember, toast, t, refreshFamilyData]);
+  }, [formData, familyData, wives, husband, subscription, editingMember, toast, t, refreshFamilyData]);
   const nextStep = () => {
     // Validate required fields for step 1
     if (currentStep === 1) {
@@ -2855,7 +3115,8 @@ const FamilyBuilderNew = () => {
       </div>;
 
   }
-  return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
+  return <SubscriptionGuard requireActiveSubscription={true}>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
       <GlobalHeader />
       <main className="flex-1 relative">
       
@@ -2904,10 +3165,10 @@ const FamilyBuilderNew = () => {
 
         {/* Main Content */}
         <div className="container mx-auto px-4 pt-2 pb-6">
-          <div className={cn("grid gap-6 items-stretch", isMobile ? "grid-cols-1" : "grid-cols-12")}>
+          <div className={cn("grid gap-6 items-start", isMobile ? "grid-cols-1" : "grid-cols-12")}>
             {/* Form Panel - Right Side on Desktop */}
-            <div className={cn("space-y-6 h-full min-h-0", isMobile ? "order-2" : "col-span-8 order-2")}>
-               <Card className="h-fit relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border-white/30 dark:border-gray-600/30 shadow-xl">
+            <div className={cn("space-y-6", isMobile ? "order-2" : "col-span-8 order-2")}>
+               <Card className="relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border-white/30 dark:border-gray-600/30 shadow-xl">
                  <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 dark:from-gray-500/10 dark:to-gray-500/5 rounded-lg"></div>
                   <CardHeader className={cn("relative", (formMode === 'view' || formMode === 'profile' || formMode === 'tree-settings') && "hidden")}>
                        <CardTitle className="flex items-center justify-between flex-row-reverse">
@@ -2946,7 +3207,7 @@ const FamilyBuilderNew = () => {
                       </CardTitle>
 
                   </CardHeader>
-                <CardContent className="relative p-2 sm:p-4 md:p-6 overflow-hidden bg-white">
+                <CardContent className="relative p-2 sm:p-4 md:p-6 bg-white">
                   {formMode === 'view' ? <div className="py-8 px-6">
                        {/* Family Overview Header - Redesigned */}
                           
@@ -2997,18 +3258,13 @@ const FamilyBuilderNew = () => {
                                   </div>
                                 </div>
                                 
-                                {/* Family Description with Glass Morphism */}
+                                {/* Family Description */}
                                 {familyData?.description && (
                                   <div className="max-w-2xl mx-auto animate-fade-in delay-300">
-                                    <div className="relative group">
-                                      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-card/20 to-secondary/10 rounded-2xl blur-sm group-hover:blur-md transition-all duration-300"></div>
-                                      <div className="relative bg-card/60 backdrop-blur-md rounded-2xl p-6 border border-border/30 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
-                                        <div 
-                                          className="text-muted-foreground text-base sm:text-lg leading-relaxed font-medium"
-                                          dangerouslySetInnerHTML={{ __html: familyData.description }}
-                                        />
-                                      </div>
-                                    </div>
+                                    <div 
+                                      className="text-foreground text-base sm:text-lg leading-relaxed font-medium"
+                                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(familyData.description) }}
+                                    />
                                   </div>
                                 )}
                                 
@@ -3137,12 +3393,29 @@ const FamilyBuilderNew = () => {
                             const grandfather = father ? familyMembers.find(m => m?.id === father?.father_id || m?.id === father?.fatherId) : null;
                             const isInternal = Boolean(father) || Boolean(member.is_founder);
 
+                            console.log('🔍 buildFullName:', {
+                              memberName: member.name,
+                              firstName,
+                              gender: member.gender,
+                              father_id: member.father_id,
+                              fatherFound: !!father,
+                              fatherName: father?.name,
+                              grandfatherFound: !!grandfather,
+                              grandfatherName: grandfather?.name,
+                              isInternal,
+                              isWife
+                            });
+
                             // Internal members use lineage-based naming
                             if (isInternal) {
                               if (isWife) {
                                 if (father) {
                                   const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
-                                  return `${firstName} ابنة ${fatherFirstName}`;
+                                  if (grandfather) {
+                                    const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
+                                    return `${firstName} بنت ${fatherFirstName} بن ${grandfatherFirstName}`;
+                                  }
+                                  return `${firstName} بنت ${fatherFirstName}`;
                                 }
                                 return firstName;
                               } else {
@@ -3247,12 +3520,12 @@ const FamilyBuilderNew = () => {
                                    الصورة الشخصية
                                  </Label>
                               
-                              {croppedImage || editingMember && editingMember.image ? <div className="space-y-3">
-                                  <div className="relative group flex justify-center">
-                                    <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3">
-                                       <img src={croppedImage || editingMember && editingMember.image} alt="صورة العضو" className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg" />
-                                    </div>
-                                  </div>
+                               {croppedImage || editingMemberImageUrl ? <div className="space-y-3">
+                                   <div className="relative group flex justify-center">
+                                     <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-background to-muted/20 p-3">
+                                        <img src={croppedImage || editingMemberImageUrl} alt="صورة العضو" className="w-24 h-24 object-cover rounded-xl border-2 border-white shadow-lg" />
+                                     </div>
+                                   </div>
                                   
                                    {isImageUploadEnabled && <div className="flex justify-center gap-2">
                                      <Button type="button" size="sm" variant="secondary" onClick={handleEditImage} className="h-8 px-3">
@@ -3598,23 +3871,23 @@ const FamilyBuilderNew = () => {
                       عرض قائمة الأعضاء ({familyMembers.length})
                     </Button>
                   </DrawerTrigger>
-                  <DrawerContent className="h-[80vh]">
-                    <div className="p-4">
-                        <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={packageData} />
+                  <DrawerContent className="h-[80vh] flex flex-col">
+                    <div className="flex-1 overflow-y-auto mobile-smooth-scroll p-4">
+                        <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={contextLoading || memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={subscription?.package_name} />
                     </div>
                   </DrawerContent>
                 </Drawer> : <Card className="bg-white backdrop-blur-xl border-white/30 shadow-xl h-full min-h-0 flex flex-col">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-lg"></div>
-                  <CardHeader className="pb-4 relative shrink-0">
-                    <CardTitle className="flex items-center gap-2">
-                      <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                       <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                         أعضاء العائلة ({familyMembers.length})
-                       </span>
-                     </CardTitle>
-                  </CardHeader>
-                  <CardContent className="relative overflow-y-auto flex-1 min-h-0">
-                      <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={packageData} />
+                   <CardHeader className="pb-4 relative shrink-0">
+                     <CardTitle className="flex items-center gap-2">
+                       <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                        <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                          {t('family_builder.members_title')} ({familyMembers.length})
+                        </span>
+                      </CardTitle>
+                   </CardHeader>
+                  <CardContent className="relative overflow-y-auto flex-1 min-h-0 pt-2">
+                      <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={contextLoading || memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={subscription?.package_name} />
                   </CardContent>
                 </Card>}
             </div>
@@ -3917,11 +4190,11 @@ const FamilyBuilderNew = () => {
               <div className="flex items-center gap-2 mb-2">
                 <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                 <span className="font-semibold text-amber-800 dark:text-amber-300">
-                  الحد الأقصى: {packageData?.max_family_members || 0} عضو
+                  الحد الأقصى: {subscription?.package_name?.max_family_members || 0} عضو
                 </span>
               </div>
               <p className="text-sm text-amber-700 dark:text-amber-400">
-                باقتك الحالية تسمح بإضافة {packageData?.max_family_members || 0} أعضاء فقط.
+                باقتك الحالية تسمح بإضافة {subscription?.package_name?.max_family_members || 0} أعضاء فقط.
               </p>
             </div>
 
@@ -3947,7 +4220,8 @@ const FamilyBuilderNew = () => {
 
       </main>
       <GlobalFooterSimplified />
-    </div>;
+    </div>
+  </SubscriptionGuard>;
 };
 
 // Member List Component
@@ -3971,32 +4245,80 @@ const MemberList = ({
   onAddMember,
   packageData
 }: any) => {
-  return <div className="space-y-4 h-full min-h-0 flex flex-col">
+  const { t } = useLanguage();
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [maxHeight, setMaxHeight] = React.useState<number | null>(null);
+
+  React.useEffect(() => {
+    if (!containerRef.current) return;
+
+    const updateHeight = () => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      // Get parent CardContent height
+      const parent = container.closest('.relative.overflow-y-auto');
+      if (!parent) return;
+
+      const parentHeight = parent.clientHeight;
+      
+      // Calculate heights of other elements (search row + button + gaps)
+      const searchRow = container.querySelector('.flex.gap-3');
+      const addButton = container.querySelector('button');
+      
+      const searchHeight = searchRow?.clientHeight || 0;
+      const buttonHeight = formMode === 'view' ? (addButton?.clientHeight || 0) : 0;
+      const gaps = formMode === 'view' ? 32 : 16; // gap-4 = 1rem = 16px
+      
+      const availableHeight = parentHeight - searchHeight - buttonHeight - gaps;
+      setMaxHeight(availableHeight > 0 ? availableHeight : null);
+    };
+
+    // Initial calculation
+    updateHeight();
+
+    // Watch for resize
+    const resizeObserver = new ResizeObserver(updateHeight);
+    const parent = containerRef.current.closest('.relative.overflow-y-auto');
+    if (parent) {
+      resizeObserver.observe(parent);
+    }
+
+    // Watch for window resize
+    window.addEventListener('resize', updateHeight);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', updateHeight);
+    };
+  }, [formMode]);
+
+  return <div ref={containerRef} className="flex flex-col overflow-hidden gap-4" style={maxHeight ? { maxHeight: `${maxHeight}px` } : undefined}>
       {/* Search and Filter on the same row */}
       <div className="flex gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="ابحث عن عضو..." value={searchTerm} onChange={e => onSearchChange(e.target.value)} className="pl-10" />
+          <Input placeholder={t('family_builder.search_placeholder')} value={searchTerm} onChange={e => onSearchChange(e.target.value)} className="pl-10" />
         </div>
         <div className="flex-1">
           <Select value={selectedFilter} onValueChange={onFilterChange}>
         <SelectTrigger>
-          <SelectValue placeholder="تصفية حسب..." />
+          <SelectValue placeholder={t('family_builder.filter_placeholder')} />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">جميع الأعضاء</SelectItem>
-          <SelectItem value="alive">الأحياء</SelectItem>
-          <SelectItem value="deceased">المتوفين</SelectItem>
-          <SelectItem value="male">الذكور</SelectItem>
-          <SelectItem value="female">الإناث</SelectItem>
-          <SelectItem value="founders">المؤسسون</SelectItem>
+          <SelectItem value="all">{t('family_builder.filter_all')}</SelectItem>
+          <SelectItem value="alive">{t('family_builder.filter_alive')}</SelectItem>
+          <SelectItem value="deceased">{t('family_builder.filter_deceased')}</SelectItem>
+          <SelectItem value="male">{t('family_builder.filter_male')}</SelectItem>
+          <SelectItem value="female">{t('family_builder.filter_female')}</SelectItem>
+          <SelectItem value="founders">{t('family_builder.filter_founders')}</SelectItem>
         </SelectContent>
       </Select>
         </div>
       </div>
 
       {/* Add Member Button */}
-      {formMode === 'view' && <TooltipProvider>
+      {(formMode === 'view' || formMode === 'profile') && <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <Button onClick={onAddMember} className="w-full flex items-center gap-2">
@@ -4021,7 +4343,7 @@ const MemberList = ({
         </TooltipProvider>}
 
       {/* Member List */}
-      <div className="space-y-3 max-h-[calc(100vh-20rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
+      <div className="space-y-3 flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
         {memberListLoading ?
       // Loading skeletons
       Array.from({
