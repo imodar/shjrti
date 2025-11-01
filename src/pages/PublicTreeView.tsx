@@ -621,14 +621,16 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
               
               {/* Content Panel - Col-8 (Right Side in RTL) */}
               <div className="col-span-1 md:col-span-8 order-2 md:order-2">
-                <Card className="relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl shadow-2xl ring-1 ring-white/10 dark:ring-gray-500/10 overflow-hidden">
-                  <CardContent className="relative p-6 bg-white dark:bg-gray-900">
+                <Card className="relative bg-white/20 dark:bg-gray-800/20 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl shadow-2xl ring-1 ring-white/10 dark:ring-gray-500/10 overflow-hidden min-h-[calc(100vh-16rem)]">
+                  <CardContent className="relative p-0 bg-white dark:bg-gray-900 h-full">
                     {activeSection === 'overview' && (
-                      <FamilyOverview 
-                        familyData={familyData}
-                        familyMembers={familyMembers}
-                        generationCount={generationCount}
-                      />
+                      <div className="p-6">
+                        <FamilyOverview 
+                          familyData={familyData}
+                          familyMembers={familyMembers}
+                          generationCount={generationCount}
+                        />
+                      </div>
                     )}
 
                     {activeSection === 'tree' && (
@@ -722,17 +724,21 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                     )}
                     
                     {activeSection === 'statistics' && (
-                      <FamilyStatisticsView
-                        familyMembers={familyMembers}
-                        familyMarriages={familyMarriages}
-                      />
+                      <div className="p-6">
+                        <FamilyStatisticsView
+                          familyMembers={familyMembers}
+                          familyMarriages={familyMarriages}
+                        />
+                      </div>
                     )}
                     
                     {activeSection === 'gallery' && familyData?.share_gallery && (
-                      <FamilyGalleryView
-                        familyId={familyId!}
-                        readOnly={true}
-                      />
+                      <div className="p-6">
+                        <FamilyGalleryView
+                          familyId={familyId!}
+                          readOnly={true}
+                        />
+                      </div>
                     )}
                   </CardContent>
                 </Card>
