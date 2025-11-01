@@ -1,8 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { GlobalHeader } from "@/components/GlobalHeader";
@@ -15,8 +17,8 @@ import { FamilyStatisticsView } from "@/components/FamilyStatisticsView";
 import { FamilyGalleryView } from "@/components/FamilyGalleryView";
 import { PublicFamilyHeader } from "@/components/PublicFamilyHeader";
 import { FamilyOverview } from "@/components/FamilyOverview";
-import { TreeView } from "@/components/TreeView";
-import { Users, AlertCircle, Menu } from "lucide-react";
+import { OrganizationalChart } from "@/components/OrganizationalChart";
+import { Users, AlertCircle, Menu, ZoomIn, ZoomOut, Maximize, Minimize } from "lucide-react";
 import { MemberProfileModal } from "@/components/MemberProfileModal";
 
 interface PublicTreeViewProps {
@@ -39,6 +41,10 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
   const [isMemberListOpen, setIsMemberListOpen] = useState(false);
+  const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState("traditional");
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const traditionalRef = useRef<HTMLDivElement>(null);
   
   // Suggest Edit Dialog state
   const [suggestEditOpen, setSuggestEditOpen] = useState(false);
@@ -207,6 +213,141 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
     setSuggestEditOpen(true);
   };
 
+  // Handle root marriage change
+  const handleRootMarriageChange = (value: string) => {
+    setSelectedRootMarriage(value);
+  };
+
+  // Toggle fullscreen
+  const handleToggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      traditionalRef.current?.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+
+  // Generate family units for organizational chart
+  interface FamilyUnit {
+    id: string;
+    type: 'married' | 'single';
+    members: any[];
+    generation: number;
+    parentUnitId?: string;
+    childUnits: string[];
+  }
+
+  const familyUnits = useMemo(() => {
+    const units = new Map<string, FamilyUnit>();
+
+    // Filter marriages if specific root is selected
+    const filteredMarriages = selectedRootMarriage === "all" 
+      ? familyMarriages 
+      : familyMarriages.filter(m => m.id === selectedRootMarriage);
+
+    // Create units for married couples
+    filteredMarriages.forEach((marriage: any) => {
+      const husband = familyMembers.find((m: any) => m.id === marriage.husband_id);
+      const wife = familyMembers.find((m: any) => m.id === marriage.wife_id);
+
+      if (husband && wife) {
+        const unitId = `marriage-${marriage.id}`;
+        units.set(unitId, {
+          id: unitId,
+          type: 'married',
+          members: [husband, wife],
+          generation: 0,
+          childUnits: []
+        });
+      }
+    });
+
+    // Create units for single members (not in any marriage)
+    familyMembers.forEach((member: any) => {
+      const isInMarriage = familyMarriages.some(
+        (m: any) => m.husband_id === member.id || m.wife_id === member.id
+      );
+
+      if (!isInMarriage) {
+        const unitId = `single-${member.id}`;
+        units.set(unitId, {
+          id: unitId,
+          type: 'single',
+          members: [member],
+          generation: 0,
+          childUnits: []
+        });
+      }
+    });
+
+    // Clean invalid links
+    units.forEach((u) => {
+      u.childUnits = Array.from(new Set(u.childUnits.filter((cid) => units.has(cid))));
+      if (u.parentUnitId && !units.has(u.parentUnitId)) {
+        u.parentUnitId = undefined;
+      }
+      u.generation = 0;
+    });
+
+    // Recompute generations with BFS
+    const roots: string[] = [];
+    units.forEach((u, id) => {
+      const hasParentInUnits = u.members.some((m: any) => {
+        const fatherId = m.father_id;
+        const motherId = m.mother_id;
+        let parentFound = false;
+        units.forEach((cand) => {
+          if (cand.members.some((x) => x.id === fatherId || x.id === motherId)) {
+            parentFound = true;
+          }
+        });
+        return parentFound;
+      });
+      if (!hasParentInUnits) roots.push(id);
+    });
+
+    const q: Array<{ id: string; gen: number }> = roots.map((id) => ({ id, gen: 0 }));
+    const seen = new Set<string>();
+
+    while (q.length) {
+      const { id, gen } = q.shift()!;
+      if (seen.has(id)) continue;
+      seen.add(id);
+      const u = units.get(id);
+      if (!u) continue;
+      u.generation = gen;
+
+      familyMembers.forEach((member: any) => {
+        const parentIds = u.members.map((mm: any) => mm.id);
+        if (parentIds.includes(member.father_id) || parentIds.includes(member.mother_id)) {
+          units.forEach((childUnit, childId) => {
+            if (childUnit.members.some((mm: any) => mm.id === member.id)) {
+              if (childId !== id) {
+                childUnit.parentUnitId = id;
+                childUnit.generation = gen + 1;
+                if (!u.childUnits.includes(childId)) u.childUnits.push(childId);
+                q.push({ id: childId, gen: gen + 1 });
+              }
+            }
+          });
+        }
+      });
+    }
+
+    // Ensure we have at least one root
+    let rootCount = 0;
+    units.forEach((u) => { if (!u.parentUnitId) rootCount++; });
+    if (rootCount === 0) {
+      let minGen = Infinity;
+      units.forEach((u) => { minGen = Math.min(minGen, u.generation); });
+      units.forEach((u) => { if (u.generation === minGen) u.parentUnitId = undefined; });
+    }
+
+    return units;
+  }, [familyMembers, familyMarriages, selectedRootMarriage]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir="rtl">
@@ -366,6 +507,79 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                         familyMembers={familyMembers}
                         generationCount={generationCount}
                       />
+                    )}
+
+                    {activeSection === 'tree' && (
+                      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                        <TabsList className="hidden">
+                          <TabsTrigger value="traditional">
+                            العرض التقليدي
+                          </TabsTrigger>
+                        </TabsList>
+                        
+                        <TabsContent value="traditional">
+                          <div ref={traditionalRef} className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-xl shadow-lg overflow-hidden">
+                            {/* Filter Bar at Top */}
+                            <div className="flex items-center justify-between p-4 border-b border-white/40 dark:border-gray-600/40 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10">
+                              <div className="flex-1 max-w-md">
+                                <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                                  اختر الجذر
+                                </label>
+                                <Select value={selectedRootMarriage} onValueChange={handleRootMarriageChange}>
+                                  <SelectTrigger className="w-full bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-emerald-200/50 dark:border-emerald-600/50">
+                                    <SelectValue placeholder="اختر زواجاً لعرضه" />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-emerald-200/50 dark:border-emerald-600/50">
+                                    <SelectItem value="all">عرض الشجرة الكاملة</SelectItem>
+                                    {familyMarriages
+                                      .filter(marriage => marriage.is_active)
+                                      .map(marriage => {
+                                        const husband = familyMembers.find(m => m.id === marriage.husband_id);
+                                        const wife = familyMembers.find(m => m.id === marriage.wife_id);
+                                        if (husband && wife) {
+                                          return (
+                                            <SelectItem key={marriage.id} value={marriage.id}>
+                                              عائلة {husband.name} و {wife.name}
+                                            </SelectItem>
+                                          );
+                                        }
+                                        return null;
+                                      })}
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              
+                              {/* Zoom Controls */}
+                              <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
+                                <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                                  <ZoomOut className="h-4 w-4" />
+                                </Button>
+                                <span className="text-sm min-w-[3rem] text-center font-medium">
+                                  {Math.round(zoomLevel * 100)}%
+                                </span>
+                                <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                                  <ZoomIn className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="sm" onClick={handleToggleFullscreen} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                                  {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+                                </Button>
+                              </div>
+                            </div>
+                            
+                            {/* Tree Content Area */}
+                            <div className="p-4 min-h-[600px] overflow-auto">
+                              <OrganizationalChart 
+                                familyUnits={familyUnits} 
+                                zoomLevel={zoomLevel}
+                                isPublicView={true}
+                                onSuggestEdit={handleSuggestEdit}
+                                marriages={familyMarriages}
+                                members={familyMembers}
+                              />
+                            </div>
+                          </div>
+                        </TabsContent>
+                      </Tabs>
                     )}
                     
                     {activeSection === 'statistics' && (
