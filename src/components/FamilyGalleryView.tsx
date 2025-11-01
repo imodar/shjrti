@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { Image, Calendar, X, Upload, FileText } from "lucide-react";
+import { Image, Calendar, X, Upload, FileText, LayoutGrid, List, Clock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+
+type ViewMode = 'grid' | 'list' | 'timeline';
 
 interface FamilyGalleryViewProps {
   familyId: string;
@@ -22,6 +24,7 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
   const [memories, setMemories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
   useEffect(() => {
     loadGalleryMemories();
@@ -133,52 +136,179 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
               </p>
             </div>
           </div>
-          {!readOnly && onUploadClick && (
-            <Button
-              onClick={onUploadClick}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-            >
-              <Upload className="h-5 w-5 ml-2" />
-              رفع صور
-            </Button>
-          )}
+          
+          <div className="flex items-center gap-2">
+            {/* View Mode Toggle Buttons */}
+            <div className="flex items-center gap-1 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-1 border border-gray-200/30 dark:border-gray-700/30">
+              <Button
+                variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('grid')}
+                className={viewMode === 'grid' ? 'bg-gradient-to-r from-purple-500 to-pink-500' : ''}
+              >
+                <LayoutGrid className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('list')}
+                className={viewMode === 'list' ? 'bg-gradient-to-r from-purple-500 to-pink-500' : ''}
+              >
+                <List className="h-4 w-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'timeline' ? 'default' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('timeline')}
+                className={viewMode === 'timeline' ? 'bg-gradient-to-r from-purple-500 to-pink-500' : ''}
+              >
+                <Clock className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            {!readOnly && onUploadClick && (
+              <Button
+                onClick={onUploadClick}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+              >
+                <Upload className="h-5 w-5 ml-2" />
+                رفع صور
+              </Button>
+            )}
+          </div>
         </div>
 
-        {/* Gallery Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {memories.map((memory) => (
-            <Card
-              key={memory.id}
-              className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-gray-200/30 dark:border-gray-700/30 overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
-              onClick={() => setSelectedImage(memory)}
-            >
-              <CardContent className="p-0">
-                <div className="aspect-square relative">
-                  <img
-                    src={memory.imageUrl}
-                    alt={memory.caption || "صورة عائلية"}
-                    className="w-full h-full object-cover"
-                  />
-                  {memory.caption && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                      <p className="text-white text-sm font-medium">
-                        {memory.caption}
-                      </p>
+
+        {/* Gallery Views */}
+        {viewMode === 'grid' && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {memories.map((memory) => (
+              <Card
+                key={memory.id}
+                className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-gray-200/30 dark:border-gray-700/30 overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200"
+                onClick={() => setSelectedImage(memory)}
+              >
+                <CardContent className="p-0">
+                  <div className="aspect-square relative">
+                    <img
+                      src={memory.imageUrl}
+                      alt={memory.caption || "صورة عائلية"}
+                      className="w-full h-full object-cover"
+                    />
+                    {memory.caption && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                        <p className="text-white text-sm font-medium">
+                          {memory.caption}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  {memory.photo_date && (
+                    <div className="p-3 flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                      <Calendar className="h-4 w-4" />
+                      <span className="text-xs">
+                        {new Date(memory.photo_date).toLocaleDateString('ar-SA')}
+                      </span>
                     </div>
                   )}
-                </div>
-                {memory.photo_date && (
-                  <div className="p-3 flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                    <Calendar className="h-4 w-4" />
-                    <span className="text-xs">
-                      {new Date(memory.photo_date).toLocaleDateString('ar-SA')}
-                    </span>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {viewMode === 'list' && (
+          <div className="space-y-4">
+            {memories.map((memory) => (
+              <Card
+                key={memory.id}
+                className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-gray-200/30 dark:border-gray-700/30 overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200"
+                onClick={() => setSelectedImage(memory)}
+              >
+                <CardContent className="p-0">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="md:w-64 h-48 md:h-auto relative flex-shrink-0">
+                      <img
+                        src={memory.imageUrl}
+                        alt={memory.caption || "صورة عائلية"}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 p-4 space-y-2">
+                      {memory.caption && (
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                          {memory.caption}
+                        </h3>
+                      )}
+                      {memory.photo_date && (
+                        <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                          <Calendar className="h-4 w-4" />
+                          <span className="text-sm">
+                            {new Date(memory.photo_date).toLocaleDateString('ar-EG', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {viewMode === 'timeline' && (
+          <div className="space-y-8 relative">
+            {/* Timeline Line */}
+            <div className="absolute right-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-purple-500 via-pink-500 to-purple-500" />
+            
+            {memories.map((memory, index) => (
+              <div key={memory.id} className="relative pr-12">
+                {/* Timeline Dot */}
+                <div className="absolute right-3.5 top-0 w-5 h-5 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 border-4 border-white dark:border-gray-900 shadow-lg" />
+                
+                <Card
+                  className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-gray-200/30 dark:border-gray-700/30 overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-200"
+                  onClick={() => setSelectedImage(memory)}
+                >
+                  <CardContent className="p-0">
+                    <div className="flex flex-col md:flex-row">
+                      <div className="md:w-64 h-48 md:h-auto relative flex-shrink-0">
+                        <img
+                          src={memory.imageUrl}
+                          alt={memory.caption || "صورة عائلية"}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 p-4 space-y-2">
+                        {memory.photo_date && (
+                          <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-semibold">
+                            <Calendar className="h-5 w-5" />
+                            <span className="text-base">
+                              {new Date(memory.photo_date).toLocaleDateString('ar-EG', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                        )}
+                        {memory.caption && (
+                          <p className="text-gray-800 dark:text-gray-200">
+                            {memory.caption}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Image Viewer Dialog */}
