@@ -642,8 +642,8 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                         <TabsContent value="traditional">
                           <div ref={traditionalRef} className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-xl shadow-lg overflow-hidden">
                             {/* Filter Bar at Top */}
-                            <div className="flex items-center justify-between p-4 border-b border-white/40 dark:border-gray-600/40 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10">
-                              <div className="flex-1 max-w-md">
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 border-b border-white/40 dark:border-gray-600/40 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10">
+                              <div className="flex-1 w-full md:max-w-md">
                                 <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                                   اختر الجذر
                                 </label>
@@ -689,17 +689,17 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                               </div>
                               
                               {/* Zoom Controls */}
-                              <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
-                                <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                              <div className="flex items-center justify-center md:justify-end gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30 w-full md:w-auto">
+                                <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20 h-8 w-8 md:h-auto md:w-auto p-2">
                                   <ZoomOut className="h-4 w-4" />
                                 </Button>
                                 <span className="text-sm min-w-[3rem] text-center font-medium">
                                   {Math.round(zoomLevel * 100)}%
                                 </span>
-                                <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                                <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20 h-8 w-8 md:h-auto md:w-auto p-2">
                                   <ZoomIn className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="sm" onClick={handleToggleFullscreen} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                                <Button variant="ghost" size="sm" onClick={handleToggleFullscreen} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20 h-8 w-8 md:h-auto md:w-auto p-2">
                                   {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
                                 </Button>
                               </div>
