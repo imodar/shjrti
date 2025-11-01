@@ -207,7 +207,7 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
                     <div className="p-3 flex items-center gap-2 text-gray-600 dark:text-gray-400">
                       <Calendar className="h-4 w-4" />
                       <span className="text-xs">
-                        {new Date(memory.photo_date).toLocaleDateString('ar-SA')}
+                        {new Date(memory.photo_date).toLocaleDateString('en-GB')}
                       </span>
                     </div>
                   )}
@@ -244,11 +244,7 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
                         <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                           <Calendar className="h-4 w-4" />
                           <span className="text-sm">
-                            {new Date(memory.photo_date).toLocaleDateString('ar-EG', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })}
+                            {new Date(memory.photo_date).toLocaleDateString('en-GB')}
                           </span>
                         </div>
                       )}
@@ -377,11 +373,7 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
                     </div>
                     <p className="text-sm text-gray-800 dark:text-gray-200 font-medium pr-8">
                       {selectedImage.photo_date 
-                        ? new Date(selectedImage.photo_date).toLocaleDateString('ar-EG', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          })
+                        ? new Date(selectedImage.photo_date).toLocaleDateString('en-GB')
                         : 'تاريخ الصورة غير معروف'}
                     </p>
                   </div>
