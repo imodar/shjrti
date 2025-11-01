@@ -242,27 +242,37 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const familyUnits = useMemo(() => {
     const units = new Map<string, FamilyUnit>();
 
-    // Filter marriages if specific root is selected
-    const filteredMarriages = selectedRootMarriage === "all" 
-      ? familyMarriages 
-      : familyMarriages.filter(m => m.id === selectedRootMarriage);
-
-    // Determine relevant members only
+    // Determine relevant members and marriages based on selected root
     let relevantMemberIds = new Set<string>();
+    let marriagesToShow: any[] = [];
     
     if (selectedRootMarriage === "all") {
-      // If showing full tree, include all members
+      // If showing full tree, include all members and marriages
       familyMembers.forEach(m => relevantMemberIds.add(m.id));
+      marriagesToShow = familyMarriages;
     } else {
       // Find the specific marriage
       const rootMarriage = familyMarriages.find(m => m.id === selectedRootMarriage);
       if (rootMarriage) {
-        // Add husband and wife
-        relevantMemberIds.add(rootMarriage.husband_id);
-        relevantMemberIds.add(rootMarriage.wife_id);
+        const husbandId = rootMarriage.husband_id;
         
-        // Use BFS to find all children and descendants
-        const queue = [rootMarriage.husband_id, rootMarriage.wife_id];
+        // Add husband
+        relevantMemberIds.add(husbandId);
+        
+        // Find ALL marriages of this husband (not just the selected one)
+        const allHusbandMarriages = familyMarriages.filter(m => m.husband_id === husbandId);
+        
+        // Add all wives of this husband
+        allHusbandMarriages.forEach(marriage => {
+          relevantMemberIds.add(marriage.wife_id);
+        });
+        
+        // Store marriages to show (all marriages of this husband)
+        marriagesToShow = allHusbandMarriages;
+        
+        // Use BFS to find all children and descendants from ALL marriages
+        const queue = [husbandId];
+        allHusbandMarriages.forEach(m => queue.push(m.wife_id));
         const visited = new Set<string>();
         
         while (queue.length > 0) {
@@ -288,7 +298,7 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
 
     // Create units for married couples - group by husband to show all wives together
     const marriagesByHusband = new Map<string, any[]>();
-    filteredMarriages.forEach((marriage: any) => {
+    marriagesToShow.forEach((marriage: any) => {
       if (!marriagesByHusband.has(marriage.husband_id)) {
         marriagesByHusband.set(marriage.husband_id, []);
       }
@@ -318,7 +328,7 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
 
     // Create units for single members - only from relevantMembers
     relevantMembers.forEach((member: any) => {
-      const isInMarriage = filteredMarriages.some(
+      const isInMarriage = marriagesToShow.some(
         (m: any) => m.husband_id === member.id || m.wife_id === member.id
       );
 
