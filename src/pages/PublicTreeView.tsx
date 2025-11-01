@@ -368,18 +368,6 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                       />
                     )}
                     
-                    {activeSection === 'tree' && (
-                      <TreeView 
-                        familyMembers={familyMembers}
-                        familyMarriages={familyMarriages}
-                        zoomLevel={zoomLevel}
-                        onZoomIn={handleZoomIn}
-                        onZoomOut={handleZoomOut}
-                        onResetZoom={handleResetZoom}
-                        onSuggestEdit={handleSuggestEdit}
-                      />
-                    )}
-                    
                     {activeSection === 'statistics' && (
                       <FamilyStatisticsView
                         familyMembers={familyMembers}
