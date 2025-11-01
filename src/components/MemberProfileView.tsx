@@ -903,7 +903,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <div>
                           <div className="text-sm text-blue-700">تاريخ الميلاد</div>
                           <div className="font-semibold">
-                            {member.birthDate ? <DateDisplay date={member.birthDate} className="inline" /> : 'غير محدد'}
+                            {member.birth_date ? <DateDisplay date={member.birth_date} className="inline" /> : 'غير محدد'}
                           </div>
                         </div>
                       </div>
@@ -934,13 +934,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     </div>
 
                     {/* Death Date - if applicable */}
-                    {member.deathDate && (
+                    {member.death_date && (
                       <div className="flex items-center gap-3 p-4 bg-red-50 rounded-xl border border-red-200">
                         <Calendar className="h-5 w-5 text-red-600" />
                         <div>
                           <div className="text-sm text-red-700">تاريخ الوفاة</div>
                           <div className="font-semibold">
-                            <DateDisplay date={member.deathDate} className="inline" />
+                            <DateDisplay date={member.death_date} className="inline" />
                           </div>
                         </div>
                       </div>
