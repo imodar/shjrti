@@ -286,17 +286,30 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
     // Filter members
     const relevantMembers = familyMembers.filter(m => relevantMemberIds.has(m.id));
 
-    // Create units for married couples
+    // Create units for married couples - group by husband to show all wives together
+    const marriagesByHusband = new Map<string, any[]>();
     filteredMarriages.forEach((marriage: any) => {
-      const husband = relevantMembers.find((m: any) => m.id === marriage.husband_id);
-      const wife = relevantMembers.find((m: any) => m.id === marriage.wife_id);
+      if (!marriagesByHusband.has(marriage.husband_id)) {
+        marriagesByHusband.set(marriage.husband_id, []);
+      }
+      marriagesByHusband.get(marriage.husband_id)!.push(marriage);
+    });
 
-      if (husband && wife) {
-        const unitId = `marriage-${marriage.id}`;
+    marriagesByHusband.forEach((marriages, husbandId) => {
+      const husband = relevantMembers.find((m: any) => m.id === husbandId);
+      if (!husband) return;
+
+      const wives = marriages
+        .map(m => relevantMembers.find((w: any) => w.id === m.wife_id))
+        .filter(Boolean) as any[];
+
+      if (wives.length > 0) {
+        // Use the first marriage ID as the unit ID
+        const unitId = `marriage-${marriages[0].id}`;
         units.set(unitId, {
           id: unitId,
           type: 'married',
-          members: [husband, wife],
+          members: [husband, ...wives],
           generation: 0,
           childUnits: []
         });
