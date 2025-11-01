@@ -247,10 +247,49 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
       ? familyMarriages 
       : familyMarriages.filter(m => m.id === selectedRootMarriage);
 
+    // Determine relevant members only
+    let relevantMemberIds = new Set<string>();
+    
+    if (selectedRootMarriage === "all") {
+      // If showing full tree, include all members
+      familyMembers.forEach(m => relevantMemberIds.add(m.id));
+    } else {
+      // Find the specific marriage
+      const rootMarriage = familyMarriages.find(m => m.id === selectedRootMarriage);
+      if (rootMarriage) {
+        // Add husband and wife
+        relevantMemberIds.add(rootMarriage.husband_id);
+        relevantMemberIds.add(rootMarriage.wife_id);
+        
+        // Use BFS to find all children and descendants
+        const queue = [rootMarriage.husband_id, rootMarriage.wife_id];
+        const visited = new Set<string>();
+        
+        while (queue.length > 0) {
+          const parentId = queue.shift()!;
+          if (visited.has(parentId)) continue;
+          visited.add(parentId);
+          
+          // Find all children
+          familyMembers.forEach(member => {
+            if (member.father_id === parentId || member.mother_id === parentId) {
+              if (!relevantMemberIds.has(member.id)) {
+                relevantMemberIds.add(member.id);
+                queue.push(member.id);
+              }
+            }
+          });
+        }
+      }
+    }
+    
+    // Filter members
+    const relevantMembers = familyMembers.filter(m => relevantMemberIds.has(m.id));
+
     // Create units for married couples
     filteredMarriages.forEach((marriage: any) => {
-      const husband = familyMembers.find((m: any) => m.id === marriage.husband_id);
-      const wife = familyMembers.find((m: any) => m.id === marriage.wife_id);
+      const husband = relevantMembers.find((m: any) => m.id === marriage.husband_id);
+      const wife = relevantMembers.find((m: any) => m.id === marriage.wife_id);
 
       if (husband && wife) {
         const unitId = `marriage-${marriage.id}`;
@@ -264,9 +303,9 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
       }
     });
 
-    // Create units for single members (not in any marriage)
-    familyMembers.forEach((member: any) => {
-      const isInMarriage = familyMarriages.some(
+    // Create units for single members - only from relevantMembers
+    relevantMembers.forEach((member: any) => {
+      const isInMarriage = filteredMarriages.some(
         (m: any) => m.husband_id === member.id || m.wife_id === member.id
       );
 
@@ -319,7 +358,8 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
       if (!u) continue;
       u.generation = gen;
 
-      familyMembers.forEach((member: any) => {
+      // Use relevantMembers instead of familyMembers
+      relevantMembers.forEach((member: any) => {
         const parentIds = u.members.map((mm: any) => mm.id);
         if (parentIds.includes(member.father_id) || parentIds.includes(member.mother_id)) {
           units.forEach((childUnit, childId) => {
