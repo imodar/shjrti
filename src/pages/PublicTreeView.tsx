@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { GlobalHeader } from "@/components/GlobalHeader";
@@ -18,8 +20,9 @@ import { FamilyGalleryView } from "@/components/FamilyGalleryView";
 import { PublicFamilyHeader } from "@/components/PublicFamilyHeader";
 import { FamilyOverview } from "@/components/FamilyOverview";
 import { OrganizationalChart } from "@/components/OrganizationalChart";
-import { Users, AlertCircle, Menu, ZoomIn, ZoomOut, Maximize, Minimize } from "lucide-react";
+import { Users, AlertCircle, Menu, ZoomIn, ZoomOut, Maximize, Minimize, Check, ChevronsUpDown } from "lucide-react";
 import { MemberProfileModal } from "@/components/MemberProfileModal";
+import { cn } from "@/lib/utils";
 
 interface PublicTreeViewProps {
   overrideFamilyId?: string;
@@ -44,6 +47,7 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>("all");
   const [activeTab, setActiveTab] = useState("traditional");
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [openCombobox, setOpenCombobox] = useState(false);
   const traditionalRef = useRef<HTMLDivElement>(null);
   
   // Suggest Edit Dialog state
@@ -216,7 +220,31 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   // Handle root marriage change
   const handleRootMarriageChange = (value: string) => {
     setSelectedRootMarriage(value);
+    setOpenCombobox(false);
   };
+  
+  // Prepare marriage options for combobox
+  const marriageOptions = useMemo(() => {
+    const options = [{ value: "all", label: "عرض الشجرة الكاملة" }];
+    
+    familyMarriages
+      .filter(marriage => marriage.is_active)
+      .forEach(marriage => {
+        const husband = familyMembers.find(m => m.id === marriage.husband_id);
+        const wife = familyMembers.find(m => m.id === marriage.wife_id);
+        if (husband && wife) {
+          options.push({
+            value: marriage.id,
+            label: `عائلة ${husband.name} و ${wife.name}`
+          });
+        }
+      });
+    
+    return options;
+  }, [familyMarriages, familyMembers]);
+  
+  // Get selected label
+  const selectedLabel = marriageOptions.find(opt => opt.value === selectedRootMarriage)?.label || "اختر زواجاً لعرضه";
 
   // Toggle fullscreen
   const handleToggleFullscreen = () => {
@@ -619,28 +647,45 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
                                 <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
                                   اختر الجذر
                                 </label>
-                                <Select value={selectedRootMarriage} onValueChange={handleRootMarriageChange}>
-                                  <SelectTrigger className="w-full bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-emerald-200/50 dark:border-emerald-600/50">
-                                    <SelectValue placeholder="اختر زواجاً لعرضه" />
-                                  </SelectTrigger>
-                                  <SelectContent className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-emerald-200/50 dark:border-emerald-600/50">
-                                    <SelectItem value="all">عرض الشجرة الكاملة</SelectItem>
-                                    {familyMarriages
-                                      .filter(marriage => marriage.is_active)
-                                      .map(marriage => {
-                                        const husband = familyMembers.find(m => m.id === marriage.husband_id);
-                                        const wife = familyMembers.find(m => m.id === marriage.wife_id);
-                                        if (husband && wife) {
-                                          return (
-                                            <SelectItem key={marriage.id} value={marriage.id}>
-                                              عائلة {husband.name} و {wife.name}
-                                            </SelectItem>
-                                          );
-                                        }
-                                        return null;
-                                      })}
-                                  </SelectContent>
-                                </Select>
+                                <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      role="combobox"
+                                      aria-expanded={openCombobox}
+                                      className="w-full justify-between bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-emerald-200/50 dark:border-emerald-600/50"
+                                    >
+                                      {selectedLabel}
+                                      <ChevronsUpDown className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-[400px] p-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-emerald-200/50 dark:border-emerald-600/50">
+                                    <Command className="bg-transparent">
+                                      <CommandInput placeholder="ابحث عن عائلة..." className="h-9" />
+                                      <CommandList>
+                                        <CommandEmpty>لم يتم العثور على نتائج</CommandEmpty>
+                                        <CommandGroup>
+                                          {marriageOptions.map((option) => (
+                                            <CommandItem
+                                              key={option.value}
+                                              value={option.label}
+                                              onSelect={() => handleRootMarriageChange(option.value)}
+                                              className="cursor-pointer"
+                                            >
+                                              <Check
+                                                className={cn(
+                                                  "ml-2 h-4 w-4",
+                                                  selectedRootMarriage === option.value ? "opacity-100" : "opacity-0"
+                                                )}
+                                              />
+                                              {option.label}
+                                            </CommandItem>
+                                          ))}
+                                        </CommandGroup>
+                                      </CommandList>
+                                    </Command>
+                                  </PopoverContent>
+                                </Popover>
                               </div>
                               
                               {/* Zoom Controls */}
