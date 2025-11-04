@@ -1,5 +1,6 @@
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCookieConsent } from "@/hooks/useCookieConsent";
 import { Link, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,6 +35,7 @@ const getLocalizedText = (jsonbField: any, languageCode: string): string => {
 export const GlobalFooter = () => {
   const { t, currentLanguage } = useLanguage();
   const { user } = useAuth();
+  const { setShowBanner } = useCookieConsent();
   const location = useLocation();
   const [pages, setPages] = useState<PageData[]>([]);
 
@@ -170,6 +172,13 @@ export const GlobalFooter = () => {
                   <Users className="h-3 w-3 md:h-4 md:w-4" />
                   <span>{t('footer_link_contact', 'تواصل معنا')}</span>
                 </Link>
+                <button 
+                  onClick={() => setShowBanner(true)}
+                  className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300 text-sm md:text-base text-start"
+                >
+                  <Shield className="h-3 w-3 md:h-4 md:w-4" />
+                  <span>{t('cookie_settings_link', 'إعدادات الكوكيز')}</span>
+                </button>
               </div>
             </div>
             

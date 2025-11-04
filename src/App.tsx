@@ -16,6 +16,7 @@ import { MaintenanceModeGuard } from "@/components/MaintenanceModeGuard";
 import { SkeletonLayoutForBuilder } from "@/components/SkeletonLayoutForBuilder";
 import ScrollToTop from "@/components/ScrollToTop";
 import CustomScriptInjector from "@/components/CustomScriptInjector";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -173,6 +174,7 @@ const App = () => (
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                   </Routes>
+                  <CookieConsentBanner />
                 </BrowserRouter>
                 </MaintenanceModeGuard>
               </SubscriptionProvider>

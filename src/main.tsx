@@ -9,18 +9,21 @@ import { SubscriptionProvider } from './contexts/SubscriptionContext'
 import { DatePreferenceProvider } from './contexts/DatePreferenceContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { PaymentGatewayProvider } from './contexts/PaymentGatewayContext'
+import { CookieConsentProvider } from './contexts/CookieConsentContext'
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ThemeProvider>
       <AuthProvider>
-        <DatePreferenceProvider>
-          <SubscriptionProvider>
-            <PaymentGatewayProvider>
-              <App />
-            </PaymentGatewayProvider>
-          </SubscriptionProvider>
-        </DatePreferenceProvider>
+        <CookieConsentProvider>
+          <DatePreferenceProvider>
+            <SubscriptionProvider>
+              <PaymentGatewayProvider>
+                <App />
+              </PaymentGatewayProvider>
+            </SubscriptionProvider>
+          </DatePreferenceProvider>
+        </CookieConsentProvider>
       </AuthProvider>
     </ThemeProvider>
   </React.StrictMode>
