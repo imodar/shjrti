@@ -1248,6 +1248,39 @@ export type Database = {
           },
         ]
       }
+      user_cookie_preferences: {
+        Row: {
+          analytics: boolean
+          consent_date: string
+          id: string
+          marketing: boolean
+          necessary: boolean
+          preferences: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          analytics?: boolean
+          consent_date?: string
+          id?: string
+          marketing?: boolean
+          necessary?: boolean
+          preferences?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          analytics?: boolean
+          consent_date?: string
+          id?: string
+          marketing?: boolean
+          necessary?: boolean
+          preferences?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_status: {
         Row: {
           created_at: string
