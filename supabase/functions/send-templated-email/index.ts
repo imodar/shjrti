@@ -1,8 +1,18 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Resend } from "npm:resend@2.0.0";
+import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
 
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const smtpClient = new SMTPClient({
+  connection: {
+    hostname: Deno.env.get("SMTP_HOST") || "",
+    port: parseInt(Deno.env.get("SMTP_PORT") || "465"),
+    tls: true,
+    auth: {
+      username: Deno.env.get("SMTP_USERNAME") || "",
+      password: Deno.env.get("SMTP_PASSWORD") || "",
+    },
+  },
+});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -93,10 +103,11 @@ serve(async (req) => {
 
     // Send email
     try {
-      await resend.emails.send({
-        from: "Family Tree <onboarding@resend.dev>",
-        to: [recipientEmail],
+      await smtpClient.send({
+        from: Deno.env.get("SMTP_FROM_EMAIL") || "no-reply@shjrti.com",
+        to: recipientEmail,
         subject: finalSubject,
+        content: "auto",
         html: finalBody,
       });
 
