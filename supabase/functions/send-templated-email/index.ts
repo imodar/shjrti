@@ -1,10 +1,14 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { Resend } from "npm:resend@2.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Initialize Resend client once
+const resend = new Resend(Deno.env.get("RESEND_API_KEY") || "");
 
 // Replace variables in template
 function replaceVariables(template: string, variables: Record<string, string>): string {
@@ -88,41 +92,18 @@ serve(async (req) => {
 
     console.log(`Sending email to ${recipientEmail} using template ${templateKey}`);
 
-    // Send email via SMTP
+    // Send email via Resend (recommended for serverless)
     try {
-      const smtpHost = Deno.env.get("SMTP_HOST") || "";
-      const smtpPort = parseInt(Deno.env.get("SMTP_PORT") || "465");
-      const smtpUser = Deno.env.get("SMTP_USERNAME") || "";
-      const smtpPass = Deno.env.get("SMTP_PASSWORD") || "";
-      const smtpFrom = Deno.env.get("SMTP_FROM_EMAIL") || "no-reply@shjrti.com";
+      const fromEmail = Deno.env.get("SMTP_FROM_EMAIL") || "no-reply@shjrti.com";
 
-      console.log(`SMTP Config: ${smtpHost}:${smtpPort}, User: ${smtpUser}`);
-
-      // Use native fetch to send via SMTP relay or use nodemailer-compatible approach
-      // For now, using a simple SMTP library
-      const { SMTPClient } = await import("https://deno.land/x/denomailer@1.6.0/mod.ts");
-      
-      const client = new SMTPClient({
-        connection: {
-          hostname: smtpHost,
-          port: smtpPort,
-          tls: true,
-          auth: {
-            username: smtpUser,
-            password: smtpPass,
-          },
-        },
-      });
-
-      await client.send({
-        from: smtpFrom,
-        to: recipientEmail,
+      const emailResponse = await resend.emails.send({
+        from: fromEmail,
+        to: [recipientEmail],
         subject: finalSubject,
-        content: "auto",
         html: finalBody,
       });
 
-      await client.close();
+      console.log("Resend response:", emailResponse);
 
       // Log successful email
       await supabase.from("email_logs").insert({
@@ -145,7 +126,7 @@ serve(async (req) => {
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     } catch (emailError) {
-      console.error("Email sending error:", emailError);
+      console.error("Email sending error (Resend):", emailError);
 
       // Log failed email
       await supabase.from("email_logs").insert({
@@ -156,7 +137,7 @@ serve(async (req) => {
         body: finalBody,
         variables,
         status: "failed",
-        error_message: emailError.message
+        error_message: (emailError as any)?.message ?? JSON.stringify(emailError),
       });
 
       return new Response(
