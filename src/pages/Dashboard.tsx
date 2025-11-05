@@ -410,7 +410,7 @@ const Dashboard = () => {
             <Star className="h-8 w-8 text-yellow-400 opacity-60" />
           </div>
 
-          <main className="relative z-10 pt-20">
+          <main className="relative z-10">
             {/* Hero Section */}
             <section className="py-4 relative">
                 <div className="container mx-auto px-4 relative z-10">
