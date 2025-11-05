@@ -1,8 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Resend } from "npm:resend@2.0.0";
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -85,22 +82,20 @@ serve(async (req) => {
       );
     }
 
-    // Send confirmation email to submitter
+    // Send confirmation email to submitter using templated email service
     try {
-      await resend.emails.send({
-        from: "Family Tree <onboarding@resend.dev>",
-        to: [suggestion.submitter_email],
-        subject: "Your Edit Suggestion Has Been Submitted",
-        html: `
-          <h1>Suggestion Submitted Successfully</h1>
-          <p>Hello ${suggestion.submitter_name},</p>
-          <p>Thank you for your suggestion to ${suggestion.families?.name || "the family tree"}.</p>
-          <p>Your suggestion has been submitted and the tree owner will review it shortly.</p>
-          <p>We'll send you an email when your suggestion is reviewed.</p>
-          <br>
-          <p><strong>Your Suggestion:</strong></p>
-          <p>${suggestion.suggestion_text}</p>
-        `,
+      await supabase.functions.invoke('send-templated-email', {
+        body: {
+          templateKey: 'edit_suggestion_confirmed',
+          recipientEmail: suggestion.submitter_email,
+          recipientName: suggestion.submitter_name,
+          variables: {
+            submitter_name: suggestion.submitter_name,
+            family_name: suggestion.families?.name || 'the family tree',
+            suggestion_text: suggestion.suggestion_text,
+          },
+          languageCode: 'ar', // Default to Arabic, could be made dynamic
+        },
       });
     } catch (emailError) {
       console.error("Confirmation email error:", emailError);

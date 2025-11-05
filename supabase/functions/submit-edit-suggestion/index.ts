@@ -1,8 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Resend } from "npm:resend@2.0.0";
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -80,21 +77,20 @@ serve(async (req) => {
       .eq("id", familyId)
       .single();
 
-    // Send verification email
+    // Send verification email using templated email service
     try {
-      await resend.emails.send({
-        from: "Family Tree <onboarding@resend.dev>",
-        to: [submitterEmail],
-        subject: `Verify Your Edit Suggestion for ${family?.name || "Family Tree"}`,
-        html: `
-          <h1>Verify Your Edit Suggestion</h1>
-          <p>Hello ${submitterName},</p>
-          <p>Thank you for suggesting an edit to the ${family?.name || "family tree"}.</p>
-          <p>Please use the following verification code to confirm your submission:</p>
-          <h2 style="font-size: 32px; letter-spacing: 4px; color: #2563eb;">${verificationCode}</h2>
-          <p>This code will expire in 10 minutes.</p>
-          <p>If you didn't make this request, you can safely ignore this email.</p>
-        `,
+      await supabase.functions.invoke('send-templated-email', {
+        body: {
+          templateKey: 'edit_suggestion_verification',
+          recipientEmail: submitterEmail,
+          recipientName: submitterName,
+          variables: {
+            submitter_name: submitterName,
+            family_name: family?.name || 'Family Tree',
+            verification_code: verificationCode,
+          },
+          languageCode: 'ar', // Default to Arabic, could be made dynamic
+        },
       });
     } catch (emailError) {
       console.error("Email sending error:", emailError);
