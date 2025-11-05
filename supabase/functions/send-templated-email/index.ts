@@ -1,18 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { SMTPClient } from "https://deno.land/x/denomailer@1.6.0/mod.ts";
-
-const smtpClient = new SMTPClient({
-  connection: {
-    hostname: Deno.env.get("SMTP_HOST") || "",
-    port: parseInt(Deno.env.get("SMTP_PORT") || "465"),
-    tls: true,
-    auth: {
-      username: Deno.env.get("SMTP_USERNAME") || "",
-      password: Deno.env.get("SMTP_PASSWORD") || "",
-    },
-  },
-});
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -101,15 +88,41 @@ serve(async (req) => {
 
     console.log(`Sending email to ${recipientEmail} using template ${templateKey}`);
 
-    // Send email
+    // Send email via SMTP
     try {
-      await smtpClient.send({
-        from: Deno.env.get("SMTP_FROM_EMAIL") || "no-reply@shjrti.com",
+      const smtpHost = Deno.env.get("SMTP_HOST") || "";
+      const smtpPort = parseInt(Deno.env.get("SMTP_PORT") || "465");
+      const smtpUser = Deno.env.get("SMTP_USERNAME") || "";
+      const smtpPass = Deno.env.get("SMTP_PASSWORD") || "";
+      const smtpFrom = Deno.env.get("SMTP_FROM_EMAIL") || "no-reply@shjrti.com";
+
+      console.log(`SMTP Config: ${smtpHost}:${smtpPort}, User: ${smtpUser}`);
+
+      // Use native fetch to send via SMTP relay or use nodemailer-compatible approach
+      // For now, using a simple SMTP library
+      const { SMTPClient } = await import("https://deno.land/x/denomailer@1.6.0/mod.ts");
+      
+      const client = new SMTPClient({
+        connection: {
+          hostname: smtpHost,
+          port: smtpPort,
+          tls: true,
+          auth: {
+            username: smtpUser,
+            password: smtpPass,
+          },
+        },
+      });
+
+      await client.send({
+        from: smtpFrom,
         to: recipientEmail,
         subject: finalSubject,
         content: "auto",
         html: finalBody,
       });
+
+      await client.close();
 
       // Log successful email
       await supabase.from("email_logs").insert({
