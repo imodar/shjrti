@@ -1,11 +1,22 @@
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { useCookieConsent } from '@/hooks/useCookieConsent';
 
+/**
+ * Legacy component - loads all custom scripts without consent checking
+ * Use ConsentAwareScriptInjector for consent-aware script loading
+ */
 export const CustomScriptInjector = () => {
+  const { hasConsent } = useCookieConsent();
   useEffect(() => {
     let scriptContainer: HTMLDivElement | null = null;
 
     const loadAndInjectScript = async () => {
+      // Wait for user to provide consent before loading any scripts
+      if (!hasConsent()) {
+        return;
+      }
+
       try {
         // Load custom JavaScript from admin settings
         const { data, error } = await supabase
@@ -46,7 +57,7 @@ export const CustomScriptInjector = () => {
       }
     };
 
-    // Load scripts on component mount
+    // Load scripts on component mount and when consent changes
     loadAndInjectScript();
 
     // Cleanup function to remove scripts when component unmounts
@@ -55,7 +66,7 @@ export const CustomScriptInjector = () => {
         scriptContainer.parentNode.removeChild(scriptContainer);
       }
     };
-  }, []);
+  }, [hasConsent]);
 
   // This component doesn't render anything
   return null;
