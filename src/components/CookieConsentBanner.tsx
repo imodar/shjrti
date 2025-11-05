@@ -44,10 +44,10 @@ export const CookieConsentBanner = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-foreground mb-2">
-                    {t('cookie_banner_title', 'نستخدم ملفات تعريف الارتباط')}
+                    {t('cookie_banner_title', 'We use cookies')}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
-                    {t('cookie_banner_description', 'نستخدم ملفات تعريف الارتباط لتحسين تجربتك وتحليل استخدام الموقع. يمكنك اختيار الموافقة على جميع الملفات أو تخصيص تفضيلاتك.')}
+                    {t('cookie_banner_description', 'We use cookies to improve your experience and analyze site usage. You can accept all cookies or customize your preferences.')}
                   </p>
                 </div>
               </div>
@@ -60,21 +60,21 @@ export const CookieConsentBanner = () => {
                   className="flex items-center gap-2"
                 >
                   <Settings className="h-4 w-4" />
-                  {t('cookie_customize', 'تخصيص')}
+                  {t('cookie_customize', 'Customize')}
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleRejectAll}
                 >
-                  {t('cookie_reject_all', 'رفض الكل')}
+                  {t('cookie_reject_all', 'Reject All')}
                 </Button>
                 <Button
                   size="sm"
                   onClick={handleAcceptAll}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  {t('cookie_accept_all', 'قبول الكل')}
+                  {t('cookie_accept_all', 'Accept All')}
                 </Button>
               </div>
             </div>

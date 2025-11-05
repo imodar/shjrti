@@ -49,29 +49,29 @@ export const CookieSettingsModal = ({ open, onOpenChange }: CookieSettingsModalP
     {
       key: 'necessary' as const,
       icon: Shield,
-      title: t('cookie_necessary_title', 'ضرورية'),
-      description: t('cookie_necessary_desc', 'ملفات تعريف الارتباط الضرورية مطلوبة لتشغيل الموقع بشكل صحيح ولا يمكن تعطيلها.'),
+      title: t('cookie_necessary_title', 'Necessary'),
+      description: t('cookie_necessary_desc', 'Necessary cookies are required for the site to function properly and cannot be disabled.'),
       required: true,
     },
     {
       key: 'analytics' as const,
       icon: BarChart3,
-      title: t('cookie_analytics_title', 'تحليلية'),
-      description: t('cookie_analytics_desc', 'تساعدنا هذه الملفات في فهم كيفية استخدامك للموقع لتحسين الأداء والمحتوى.'),
+      title: t('cookie_analytics_title', 'Analytics'),
+      description: t('cookie_analytics_desc', 'These cookies help us understand how you use the site to improve performance and content.'),
       required: false,
     },
     {
       key: 'marketing' as const,
       icon: Megaphone,
-      title: t('cookie_marketing_title', 'تسويقية'),
-      description: t('cookie_marketing_desc', 'تُستخدم لعرض إعلانات ذات صلة بك وقياس فعالية حملاتنا التسويقية.'),
+      title: t('cookie_marketing_title', 'Marketing'),
+      description: t('cookie_marketing_desc', 'Used to show relevant ads and measure the effectiveness of our marketing campaigns.'),
       required: false,
     },
     {
       key: 'preferences' as const,
       icon: Settings,
-      title: t('cookie_preferences_title', 'تفضيلات'),
-      description: t('cookie_preferences_desc', 'تحفظ هذه الملفات تفضيلاتك مثل اللغة والثيم لتوفير تجربة مخصصة.'),
+      title: t('cookie_preferences_title', 'Preferences'),
+      description: t('cookie_preferences_desc', 'These cookies store your preferences like language and theme to provide a personalized experience.'),
       required: false,
     },
   ];
@@ -81,10 +81,10 @@ export const CookieSettingsModal = ({ open, onOpenChange }: CookieSettingsModalP
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl">
-            {t('cookie_settings_title', 'إعدادات ملفات تعريف الارتباط')}
+            {t('cookie_settings_title', 'Cookie Settings')}
           </DialogTitle>
           <DialogDescription>
-            {t('cookie_settings_description', 'يمكنك التحكم في أنواع ملفات تعريف الارتباط التي نستخدمها. اختر التفضيلات التي تناسبك.')}
+            {t('cookie_settings_description', 'You can control the types of cookies we use. Choose the preferences that suit you.')}
           </DialogDescription>
         </DialogHeader>
 
@@ -121,7 +121,7 @@ export const CookieSettingsModal = ({ open, onOpenChange }: CookieSettingsModalP
                   </p>
                   {type.required && (
                     <p className="text-xs text-muted-foreground italic">
-                      {t('cookie_always_active', 'نشطة دائماً')}
+                      {t('cookie_always_active', 'Always Active')}
                     </p>
                   )}
                 </div>
@@ -132,10 +132,10 @@ export const CookieSettingsModal = ({ open, onOpenChange }: CookieSettingsModalP
 
         <DialogFooter className="gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {t('cookie_cancel', 'إلغاء')}
+            {t('cookie_cancel', 'Cancel')}
           </Button>
           <Button onClick={handleSave}>
-            {t('cookie_save_preferences', 'حفظ التفضيلات')}
+            {t('cookie_save_preferences', 'Save Preferences')}
           </Button>
         </DialogFooter>
       </DialogContent>
