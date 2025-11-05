@@ -10,10 +10,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Mail, Edit, Save, X, Plus } from "lucide-react";
+import { Mail, Edit, Save, X, Plus, Send } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { DirectionWrapper } from "@/components/DirectionWrapper";
+import { z } from "zod";
 
 interface EmailTemplate {
   id: string;
@@ -28,12 +29,19 @@ interface EmailTemplate {
   updated_at: string;
 }
 
+const testEmailSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+});
+
 export default function AdminEmailTemplates() {
   const { currentLanguage } = useLanguage();
   const queryClient = useQueryClient();
   const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [editLang, setEditLang] = useState<'en' | 'ar'>('en');
+  const [testEmailOpen, setTestEmailOpen] = useState(false);
+  const [testEmail, setTestEmail] = useState("");
+  const [testVariables, setTestVariables] = useState<Record<string, string>>({});
 
   const { data: templates, isLoading } = useQuery({
     queryKey: ["email-templates"],
@@ -75,6 +83,48 @@ export default function AdminEmailTemplates() {
       body: selectedTemplate.body,
       is_active: selectedTemplate.is_active,
     });
+  };
+
+  const sendTestEmailMutation = useMutation({
+    mutationFn: async () => {
+      const validation = testEmailSchema.safeParse({ email: testEmail });
+      if (!validation.success) {
+        throw new Error(validation.error.errors[0].message);
+      }
+
+      const { error } = await supabase.functions.invoke('send-templated-email', {
+        body: {
+          templateKey: selectedTemplate?.template_key,
+          recipientEmail: testEmail,
+          recipientName: 'Test User',
+          variables: testVariables,
+          languageCode: editLang,
+        },
+      });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(`تم إرسال الإيميل التجريبي إلى ${testEmail}`);
+      setTestEmailOpen(false);
+      setTestEmail("");
+      setTestVariables({});
+    },
+    onError: (error: Error) => {
+      toast.error("فشل إرسال الإيميل: " + error.message);
+    },
+  });
+
+  const handleOpenTestDialog = () => {
+    if (!selectedTemplate) return;
+    
+    // Initialize test variables with empty strings
+    const initialVars: Record<string, string> = {};
+    selectedTemplate.variables?.forEach((variable) => {
+      initialVars[variable] = "";
+    });
+    setTestVariables(initialVars);
+    setTestEmailOpen(true);
   };
 
   if (isLoading) {
@@ -175,10 +225,16 @@ export default function AdminEmailTemplates() {
                         </Button>
                       </>
                     ) : (
-                      <Button onClick={() => setEditMode(true)} size="sm">
-                        <Edit className="h-4 w-4 mr-2" />
-                        تحرير
-                      </Button>
+                      <>
+                        <Button onClick={handleOpenTestDialog} size="sm" variant="outline">
+                          <Send className="h-4 w-4 mr-2" />
+                          اختبار
+                        </Button>
+                        <Button onClick={() => setEditMode(true)} size="sm">
+                          <Edit className="h-4 w-4 mr-2" />
+                          تحرير
+                        </Button>
+                      </>
                     )}
                   </div>
                 )}
@@ -279,6 +335,76 @@ export default function AdminEmailTemplates() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Test Email Dialog */}
+        <Dialog open={testEmailOpen} onOpenChange={setTestEmailOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>إرسال إيميل تجريبي</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="test-email">البريد الإلكتروني</Label>
+                <Input
+                  id="test-email"
+                  type="email"
+                  placeholder="test@example.com"
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                />
+              </div>
+
+              {selectedTemplate?.variables && selectedTemplate.variables.length > 0 && (
+                <div className="space-y-2">
+                  <Label>قيم المتغيرات (اختياري)</Label>
+                  <div className="space-y-3 p-4 bg-accent rounded-lg">
+                    {selectedTemplate.variables.map((variable) => (
+                      <div key={variable} className="space-y-1">
+                        <Label htmlFor={`var-${variable}`} className="text-xs">
+                          {variable}
+                        </Label>
+                        <Input
+                          id={`var-${variable}`}
+                          placeholder={`قيمة ${variable}`}
+                          value={testVariables[variable] || ""}
+                          onChange={(e) =>
+                            setTestVariables({
+                              ...testVariables,
+                              [variable]: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-2 justify-end">
+                <Button
+                  variant="outline"
+                  onClick={() => setTestEmailOpen(false)}
+                  disabled={sendTestEmailMutation.isPending}
+                >
+                  إلغاء
+                </Button>
+                <Button
+                  onClick={() => sendTestEmailMutation.mutate()}
+                  disabled={sendTestEmailMutation.isPending || !testEmail}
+                >
+                  {sendTestEmailMutation.isPending ? (
+                    <>جاري الإرسال...</>
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4 mr-2" />
+                      إرسال
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </DirectionWrapper>
   );
