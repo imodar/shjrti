@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { DateDisplay, LifespanDisplay } from '@/components/DateDisplay';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -77,6 +78,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const [showImageUploadModal, setShowImageUploadModal] = useState(false);
   const [showSuggestDialog, setShowSuggestDialog] = useState(false);
   const { toast } = useToast();
+  const location = useLocation();
 
   // Resolve member image to signed URL
   const memberImageSrc = useResolvedImageUrl(member?.image_url || (member as any)?.image);
@@ -829,15 +831,17 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                            <Edit className="h-4 w-4 ml-2" />
                            تعديل المعلومات
                          </Button>
-                       )}
-                       <Button 
-                         onClick={() => setShowSuggestDialog(true)}
-                         variant="outline"
-                         className="px-4 py-2"
-                       >
-                         <MessageCircle className="h-4 w-4 ml-2" />
-                         اقترح تعديل
-                       </Button>
+                        )}
+                        {!location.pathname.includes('family-builder-new') && (
+                          <Button 
+                            onClick={() => setShowSuggestDialog(true)}
+                            variant="outline"
+                            className="px-4 py-2"
+                          >
+                            <MessageCircle className="h-4 w-4 ml-2" />
+                            اقترح تعديل
+                          </Button>
+                        )}
                      </div>
                    </div>
                  </div>
