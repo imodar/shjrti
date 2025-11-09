@@ -50,13 +50,20 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     return saved || 'ar'; // Default to Arabic to match index.html
   };
 
-  const [currentLanguage, setCurrentLanguage] = useState<string>(getInitialLanguage());
+  const initialLanguage = getInitialLanguage();
+  
+  // Set document attributes immediately to prevent flash
+  const initialDirection = initialLanguage === 'ar' ? 'rtl' : 'ltr';
+  document.documentElement.dir = initialDirection;
+  document.documentElement.lang = initialLanguage;
+
+  const [currentLanguage, setCurrentLanguage] = useState<string>(initialLanguage);
   const [languages, setLanguages] = useState<Language[]>([]);
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
 
   const currentLang = languages.find(lang => lang.code === currentLanguage);
-  const direction = (currentLang?.direction as 'ltr' | 'rtl') || (currentLanguage === 'ar' ? 'rtl' : 'ltr');
+  const direction = (currentLang?.direction as 'ltr' | 'rtl') || initialDirection;
   const currency = currentLang?.currency || (currentLanguage === 'ar' ? 'SAR' : 'USD');
 
   useEffect(() => {
