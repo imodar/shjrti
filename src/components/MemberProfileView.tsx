@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ImageUploadModal } from '@/components/ImageUploadModal';
 import { SuggestEditDialog } from '@/components/SuggestEditDialog';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   Edit,
   Trash2, 
@@ -81,6 +82,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const [showSuggestDialog, setShowSuggestDialog] = useState(false);
   const { toast } = useToast();
   const location = useLocation();
+  const { t } = useLanguage();
 
   // Resolve member image to signed URL
   const memberImageSrc = useResolvedImageUrl(member?.image_url || (member as any)?.image);
@@ -1111,17 +1113,14 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                          className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors duration-200 border border-dashed border-primary/30 hover:border-primary/50"
                                          onClick={() => onAddChild(member)}
                                        >
-                                         <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/30 text-primary">
-                                           <Users className="h-4 w-4" />
-                                         </div>
-                                         <div className="flex-1 min-w-0">
-                                           <p className="font-medium text-sm text-primary">
-                                             إضافة ابن أو ابنة
-                                           </p>
-                                           <p className="text-xs text-muted-foreground">
-                                             Add new child
-                                           </p>
-                                         </div>
+                                          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/30 text-primary">
+                                            <Users className="h-4 w-4" />
+                                          </div>
+                                          <div className="flex-1 min-w-0">
+                                            <p className="font-medium text-sm text-primary">
+                                              {t('family_builder.add_child')}
+                                            </p>
+                                          </div>
                                        </div>
                                      )}
                                   </div>
