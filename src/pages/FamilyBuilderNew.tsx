@@ -712,7 +712,7 @@ const FamilyBuilderNew = () => {
     isFounder: false
   });
   const [wives, setWives] = useState<SpouseData[]>([]);
-  const [husbands, setHusbands] = useState<SpouseData[]>([]);
+  const [husband, setHusband] = useState<SpouseData | null>(null);
 
   // Sync croppedImage with formData when croppedImage changes
   useEffect(() => {
@@ -979,35 +979,11 @@ const FamilyBuilderNew = () => {
         }
         setEditingWifeIndex(null);
       } else {
-        // Update husband (same logic as wives)
-        console.log('🔍 HUSBAND SAVE - Determining index logic...');
-        let husbandIndex = husbands.findIndex(h => h.id === currentSpouse.id);
+        // Update husband
+        setHusband(updatedSpouse);
         
-        if (husbandIndex >= 0) {
-          // Update existing husband
-          console.log('🔍 UPDATING existing husband at index:', husbandIndex);
-          const existingHusband = husbands[husbandIndex];
-          const updatedHusband = {
-            ...updatedSpouse,
-            id: existingHusband.id || updatedSpouse.id,
-            existingFamilyMemberId: existingHusband.existingFamilyMemberId || updatedSpouse.existingFamilyMemberId,
-            isSaved: true
-          };
-          const updatedHusbands = [...husbands];
-          updatedHusbands[husbandIndex] = updatedHusband;
-          setHusbands(updatedHusbands);
-          
-          // Save updated husbands list to localStorage
-          saveSpouseDataToLocalStorage('husband', updatedHusbands);
-        } else {
-          // Add new husband
-          console.log('🔍 ADDING new husband');
-          const newHusbands = [...husbands, updatedSpouse];
-          setHusbands(newHusbands);
-          
-          // Save updated husbands list to localStorage
-          saveSpouseDataToLocalStorage('husband', newHusbands);
-        }
+        // Save husband to localStorage
+        saveSpouseDataToLocalStorage('husband', updatedSpouse);
       }
 
       // Reset form state
@@ -1064,10 +1040,16 @@ const FamilyBuilderNew = () => {
     }
     
     if (activeSpouseType === 'husband' && showSpouseForm) {
-      console.log('Closing husband form, current husbands before close:', husbands);
+      console.log('Closing husband form, current husband before close:', husband);
 
-      // No need to do anything here as husbands array is already managed
-      console.log('Husband form closed');
+      // Ensure husband is marked as saved when closing
+      if (husband) {
+        setHusband({
+          ...husband,
+          isSaved: true
+        });
+      }
+      console.log('Husband form closed, husband marked as saved');
     }
 
     // Close the form
@@ -1124,12 +1106,11 @@ const FamilyBuilderNew = () => {
       setWives(updatedWives);
       setEditingWifeIndex(index);
     } else {
-      // Add new husband to array
-      setHusbands([...husbands, {
+      setHusband({
         ...normalizedSpouseData,
         isSaved: false,
         isFamilyMember: isSpouseFamilyMember
-      }]);
+      });
     }
     
     // Set unified spouse state with normalized data
@@ -1632,62 +1613,57 @@ const FamilyBuilderNew = () => {
     try {
       if (index === -1) {
         // This is a husband deletion
-        console.log('🚨 DELETING HUSBANDS');
+        console.log('🚨 DELETING HUSBAND');
         
-        // Delete all husbands and their marriages
-        if (husbands.length > 0 && editingMember) {
-          for (const husband of husbands) {
-            if (husband.isSaved) {
-              const husbandId = husband.id || husband.existingFamilyMemberId;
+        if (husband && husband.isSaved && editingMember) {
+          const husbandId = husband.id || husband.existingFamilyMemberId;
+          
+          // Delete marriage record
+          const { error: marriageDeleteError } = await supabase
+            .from('marriages')
+            .delete()
+            .eq('wife_id', editingMember.id)
+            .eq('husband_id', husbandId);
+            
+          if (marriageDeleteError) {
+            console.error('Error deleting marriage:', marriageDeleteError);
+            toast({
+              title: "خطأ في الحذف",
+              description: "فشل في حذف علاقة الزواج",
+              variant: "destructive"
+            });
+            return;
+          }
+          
+          // If husband is not a family member, delete his record
+          if (!husband.isFamilyMember) {
+            const { error: husbandDeleteError } = await supabase
+              .from('family_tree_members')
+              .delete()
+              .eq('id', husbandId);
               
-              // Delete marriage record
-              const { error: marriageDeleteError } = await supabase
-                .from('marriages')
-                .delete()
-                .eq('wife_id', editingMember.id)
-                .eq('husband_id', husbandId);
-                
-              if (marriageDeleteError) {
-                console.error('Error deleting marriage:', marriageDeleteError);
-                toast({
-                  title: "خطأ في الحذف",
-                  description: "فشل في حذف علاقة الزواج",
-                  variant: "destructive"
-                });
-                return;
-              }
-              
-              // If husband is not a family member, delete his record
-              if (!husband.isFamilyMember) {
-                const { error: husbandDeleteError } = await supabase
-                  .from('family_tree_members')
-                  .delete()
-                  .eq('id', husbandId);
-                  
-                if (husbandDeleteError) {
-                  console.error('Error deleting husband member:', husbandDeleteError);
-                  toast({
-                    title: "خطأ في الحذف",
-                    description: "فشل في حذف بيانات الزوج",
-                    variant: "destructive"
-                  });
-                  return;
-                }
-              } else {
-                // Update family member husband to single
-                await supabase
-                  .from('family_tree_members')
-                  .update({ marital_status: 'single' })
-                  .eq('id', husbandId);
-              }
+            if (husbandDeleteError) {
+              console.error('Error deleting husband member:', husbandDeleteError);
+              toast({
+                title: "خطأ في الحذف",
+                description: "فشل في حذف بيانات الزوج",
+                variant: "destructive"
+              });
+              return;
             }
+          } else {
+            // Update family member husband to single
+            await supabase
+              .from('family_tree_members')
+              .update({ marital_status: 'single' })
+              .eq('id', husbandId);
           }
         }
         
-        setHusbands([]);
+        setHusband(null);
         toast({
           title: "تم الحذف بنجاح",
-          description: "تم حذف الأزواج نهائياً",
+          description: "تم حذف الزوج نهائياً",
           variant: "default"
         });
       } else {
@@ -1928,9 +1904,9 @@ const FamilyBuilderNew = () => {
     });
     setParentsLocked(false);
     setWives([]);
-    setHusbands([]);
+    setHusband(null);
     setOriginalWivesData([]);
-    setOriginalHusbandData([]);
+    setOriginalHusbandData(null);
     // Clear image states
     setCroppedImage(null);
     setSelectedImage(null);
@@ -1969,9 +1945,9 @@ const FamilyBuilderNew = () => {
 
     // Reset spouse states first
     setWives([]);
-    setHusbands([]);
+    setHusband(null);
     setOriginalWivesData([]);
-    setOriginalHusbandData([]);
+    setOriginalHusbandData(null);
     if (member.gender === "male") {
       // Load wives for male member
       const memberMarriages = familyMarriages.filter(marriage => marriage.husband?.id === member.id);
@@ -2057,11 +2033,13 @@ const FamilyBuilderNew = () => {
           existingFamilyMemberId: husbandMember ? husbandMember.id : '',
           isSaved: true // Mark existing husband as saved
         };
-        setHusbands([husbandData]);
-        setOriginalHusbandData([husbandData]); // Store original data for change detection
+        setHusband(husbandData);
+        setOriginalHusbandData({
+          ...husbandData
+        }); // Store original data for change detection
       } else {
-        setHusbands([]);
-        setOriginalHusbandData([]);
+        setHusband(null);
+        setOriginalHusbandData(null);
       }
     }
   };
@@ -2089,14 +2067,13 @@ const FamilyBuilderNew = () => {
       }
     }
 
-    // Handle husbands for female members
-    if (submissionData.gender === 'female' && husbands.length > 0) {
-      for (const husband of husbands.filter(h => h.isSaved === true)) {
-        await processSpouse({
-          spouse: husband,
+    // Handle husband for female members
+    if (submissionData.gender === 'female' && husband && husband.isSaved === true) {
+      await processSpouse({
+        spouse: husband,
         spouseType: 'husband',
-          memberData,
-          familyId,
+        memberData,
+        familyId,
         familyData,
         marriageResults,
         activeMarriageIds,
@@ -2392,7 +2369,7 @@ const FamilyBuilderNew = () => {
       setIsSaving(true);
 
       // Determine marital status based on presence of spouses
-      const hasSpouses = submissionData.gender === "male" && wives.length > 0 || submissionData.gender === "female" && husbands.length > 0;
+      const hasSpouses = submissionData.gender === "male" && wives.length > 0 || submissionData.gender === "female" && husband;
 
       // Prepare final submission data matching modal structure
       const finalData = {

@@ -130,7 +130,7 @@ export const ModernFamilyMemberModal = ({
   const [imageChanged, setImageChanged] = useState(false);
   const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
   const [wives, setWives] = useState<Wife[]>([]);
-  const [husbands, setHusbands] = useState<Husband[]>([]);
+  const [husband, setHusband] = useState<Husband | null>(null);
   const [commandOpen, setCommandOpen] = useState(false);
   const [newWife, setNewWife] = useState({
     name: "",
@@ -231,15 +231,16 @@ export const ModernFamilyMemberModal = ({
       }).filter(wife => wife.id);
       console.log('🔥 Setting wives for edit:', memberWives);
       setWives(memberWives);
-      setHusbands([]);
+      setHusband(null);
     } else if (editMember.gender === "female") {
-      console.log('🔥 Loading husbands for female member:', editMember.id);
+      console.log('🔥 Loading husband for female member:', editMember.id);
       const memberMarriages = marriages.filter(m => m.wife?.id === editMember.id);
       console.log('🔥 Found member marriages:', memberMarriages);
-      const memberHusbands = memberMarriages.map(marriage => {
+      if (memberMarriages.length > 0) {
+        const marriage = memberMarriages[0]; // Take the first marriage
         const husbandMember = familyMembers.find(fm => fm.id === marriage.husband?.id);
         console.log('🔥 Processing husband from marriage:', marriage, 'found husband member:', husbandMember);
-        return {
+        const husbandData = {
           id: husbandMember?.id || marriage.husband?.id,
           name: marriage.husband?.name || "",
           birthDate: husbandMember?.birthDate ? new Date(husbandMember.birthDate) : null,
@@ -247,13 +248,11 @@ export const ModernFamilyMemberModal = ({
           isAlive: husbandMember?.isAlive ?? true,
           deathDate: husbandMember?.deathDate ? new Date(husbandMember.deathDate) : null,
           image: null,
-          croppedImage: husbandMember?.image,
-          isExistingFamilyMember: husbandMember ? true : false,
-          existingFamilyMemberId: husbandMember?.id || ""
+          croppedImage: husbandMember?.image
         };
-      }).filter(husband => husband.id);
-      console.log('🔥 Setting husbands for edit:', memberHusbands);
-      setHusbands(memberHusbands);
+        console.log('🔥 Setting husband for edit:', husbandData);
+        setHusband(husbandData);
+      }
       setWives([]);
     }
   };
@@ -361,7 +360,7 @@ export const ModernFamilyMemberModal = ({
     console.log('🔥 Modal handleSubmit called');
     console.log('🔥 Member data:', memberData);
     console.log('🔥 Wives:', wives);
-    console.log('🔥 Husbands:', husbands);
+    console.log('🔥 Husband:', husband);
 
     // Validate and sanitize name input
     const sanitizedName = sanitizeInput(memberData.name);
@@ -391,7 +390,7 @@ export const ModernFamilyMemberModal = ({
     setIsSubmitting(true);
     try {
       // Determine marital status based on presence of spouses
-      const hasSpouses = memberData.gender === "male" && wives.length > 0 || memberData.gender === "female" && husbands.length > 0;
+      const hasSpouses = memberData.gender === "male" && wives.length > 0 || memberData.gender === "female" && husband;
 
       // Determine family relationship info based on selectedParent
       let fatherId = null;
@@ -442,19 +441,18 @@ export const ModernFamilyMemberModal = ({
           existingFamilyMemberId: wife.existingFamilyMemberId || null
         })) : [],
         // Always include wives array for males
-        husbands: memberData.gender === "female" ? husbands.map(husband => ({
+        husband: memberData.gender === "female" && husband ? {
           ...husband,
           name: sanitizeInput(husband.name || ""),
           isExistingFamilyMember: husband.isExistingFamilyMember || false,
           existingFamilyMemberId: husband.existingFamilyMemberId || null
-        })) : [],
-        // Always include husbands array for females
+        } : null // Always include husband for females
       });
       const submitData = sanitizedData;
       console.log('🔥 Final submit data:', submitData);
       console.log('🔥 Marital status set to:', submitData.maritalStatus);
       console.log('🔥 Will include wives for male:', memberData.gender === "male", wives.length);
-      console.log('🔥 Will include husbands for female:', memberData.gender === "female", husbands.length);
+      console.log('🔥 Will include husband for female:', memberData.gender === "female", !!husband);
       console.log('🔥 About to call onSubmit...');
       await onSubmit(submitData);
       console.log('🔥 onSubmit completed successfully');
@@ -486,7 +484,7 @@ export const ModernFamilyMemberModal = ({
       hasMultipleWives: false
     });
     setWives([]);
-    setHusbands([]);
+    setHusband(null);
     setNewWife({
       name: "",
       birthDate: "",
@@ -534,24 +532,21 @@ export const ModernFamilyMemberModal = ({
     }
   };
   const addHusband = () => {
-    console.log('🔥 addHusband called, newHusband:', newHusband);
-    if (newHusband.name.trim()) {
+    console.log('🔥 addHusband called, newWife:', newWife);
+    if (newWife.name.trim()) {
       const husbandToAdd = {
-        id: newHusband.isFamilyMember && newHusband.existingFamilyMemberId ? newHusband.existingFamilyMemberId : crypto.randomUUID(),
-        name: newHusband.name,
-        birthDate: newHusband.birthDate ? new Date(newHusband.birthDate) : null,
-        maritalStatus: newHusband.maritalStatus,
-        isAlive: newHusband.isAlive,
-        deathDate: newHusband.deathDate ? new Date(newHusband.deathDate) : null,
+        id: crypto.randomUUID(),
+        name: newWife.name,
+        birthDate: newWife.birthDate ? new Date(newWife.birthDate) : null,
+        maritalStatus: newWife.maritalStatus,
+        isAlive: newWife.isAlive,
+        deathDate: newWife.deathDate ? new Date(newWife.deathDate) : null,
         image: null,
-        croppedImage: newHusband.imageUrl || null,
-        isExistingFamilyMember: newHusband.isFamilyMember,
-        existingFamilyMemberId: newHusband.existingFamilyMemberId
+        croppedImage: newWife.imageUrl || null
       };
-      console.log('🔥 Adding husband to array:', husbandToAdd);
-      setHusbands([...husbands, husbandToAdd]);
-      console.log('🔥 Current husbands array after adding:', [...husbands, husbandToAdd]);
-      setNewHusband({
+      console.log('🔥 Setting husband:', husbandToAdd);
+      setHusband(husbandToAdd);
+      setNewWife({
         name: "",
         birthDate: "",
         maritalStatus: "married",
@@ -561,25 +556,7 @@ export const ModernFamilyMemberModal = ({
         isFamilyMember: false,
         existingFamilyMemberId: ""
       });
-      setCommandOpen(false); // Close the command when a husband is added
     }
-  };
-  const removeHusband = (index: number) => {
-    setHusbands(husbands.filter((_, i) => i !== index));
-  };
-  const editHusband = (index: number) => {
-    const husband = husbands[index];
-    setNewHusband({
-      name: husband.name,
-      birthDate: husband.birthDate ? husband.birthDate.toISOString().split('T')[0] : "",
-      maritalStatus: husband.maritalStatus || "married",
-      isAlive: husband.isAlive,
-      deathDate: husband.deathDate ? husband.deathDate.toISOString().split('T')[0] : "",
-      imageUrl: husband.croppedImage || "",
-      isFamilyMember: husband.isExistingFamilyMember || false,
-      existingFamilyMemberId: husband.existingFamilyMemberId || ""
-    });
-    removeHusband(index);
   };
   const removeWife = (index: number) => {
     setWives(wives.filter((_, i) => i !== index));
@@ -1660,13 +1637,12 @@ export const ModernFamilyMemberModal = ({
                             </div>
                             
                             <div className="space-y-4 max-h-96 overflow-y-auto pr-2">
-                              {husbands.length === 0 ? <div className="text-center py-8 px-4 bg-white/50 dark:bg-gray-900/50 rounded-xl border border-sky-200/30 dark:border-sky-800/30">
+                              {!husband ? <div className="text-center py-8 px-4 bg-white/50 dark:bg-gray-900/50 rounded-xl border border-sky-200/30 dark:border-sky-800/30">
                                   <div className="w-16 h-16 bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-900/30 dark:to-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <Heart className="w-8 h-8 text-sky-400" />
                                   </div>
                                   <p className="text-sky-600 dark:text-sky-400 font-medium">لم يتم إضافة زوج بعد</p>
-                                </div> : husbands.map((husband, index) => (
-                                <div key={index} className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-sky-200/50 dark:border-sky-800/30 rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-200 group">
+                                </div> : <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-sky-200/50 dark:border-sky-800/30 rounded-xl p-4 shadow-md hover:shadow-lg transition-all duration-200 group">
                                   <div className="flex items-start justify-between">
                                      <div className="flex items-center space-x-4">
                                        {husband.croppedImage ? <div className="relative">
@@ -1691,19 +1667,153 @@ export const ModernFamilyMemberModal = ({
                                        </div>
                                     </div>
                                      <div className="flex space-x-reverse space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                       <Button type="button" variant="outline" size="sm" onClick={() => editHusband(index)} className="border-sky-300 text-sky-600 hover:bg-sky-50 hover:border-sky-400 bg-sky-50/50 dark:bg-sky-950/20">
+                                       <Button type="button" variant="outline" size="sm" onClick={() => {
+                              // Set husband data to the form for editing
+                              setNewWife({
+                                name: husband.name,
+                                birthDate: husband.birthDate ? husband.birthDate.toISOString().split('T')[0] : "",
+                                maritalStatus: husband.maritalStatus || "married",
+                                isAlive: husband.isAlive,
+                                deathDate: husband.deathDate ? husband.deathDate.toISOString().split('T')[0] : "",
+                                imageUrl: husband.croppedImage || "",
+                                isFamilyMember: false,
+                                existingFamilyMemberId: ""
+                              });
+                              // Clear current husband to allow re-adding
+                              setHusband(null);
+                            }} className="border-sky-300 text-sky-600 hover:bg-sky-50 hover:border-sky-400 bg-sky-50/50 dark:bg-sky-950/20">
                                          <Edit3 className="w-4 h-4" />
                                        </Button>
-                                       <Button type="button" variant="outline" size="sm" onClick={() => removeHusband(index)} className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 bg-red-50/50 dark:bg-red-950/20">
+                                       <Button type="button" variant="outline" size="sm" onClick={() => setHusband(null)} className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 bg-red-50/50 dark:bg-red-950/20">
                                          <Trash2 className="w-4 h-4" />
                                        </Button>
                                      </div>
                                   </div>
-                                </div>
-                              ))}
+                                </div>}
                             </div>
                           </div>
                         </div>
+                      </div>}
+
+                    {/* Original Female Section (to be replaced by above) */}
+                    {false && memberData.gender === "female" && <div className="p-6 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
+                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-4">معلومات الزوج</h4>
+                         <div className="space-y-4">
+                           {/* Husband Name and Birth Date - Combined in one row */}
+                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                             {/* Husband Name - 2/3 width */}
+                             <div className="sm:col-span-2">
+                               <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">اسم الزوج</Label>
+                               <Input value={husband?.name || ""} onChange={e => setHusband(husband ? {
+                        ...husband,
+                        name: e.target.value
+                      } : {
+                        id: crypto.randomUUID(),
+                        name: e.target.value,
+                        birthDate: null,
+                        isAlive: true,
+                        deathDate: null,
+                        image: null,
+                        croppedImage: null,
+                        maritalStatus: "married"
+                      })} placeholder="اسم الزوج" className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-gray-200/50 focus:border-emerald-500" />
+                             </div>
+
+                             {/* Husband Birth Date - 1/3 width */}
+                             <div>
+                               <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">تاريخ الميلاد</Label>
+                               <div className="relative z-[10001]">
+                                 <EnhancedDatePicker value={husband?.birthDate || null} onChange={date => setHusband(husband ? {
+                          ...husband,
+                          birthDate: date
+                        } : {
+                          id: crypto.randomUUID(),
+                          name: "",
+                          birthDate: date,
+                          isAlive: true,
+                          deathDate: null,
+                          image: null,
+                          croppedImage: null,
+                          maritalStatus: "married"
+                        })} placeholder="التاريخ" className="h-10 text-sm border-2 border-gray-200/50 focus:border-emerald-500" />
+                               </div>
+                             </div>
+                           </div>
+
+                           {/* Marital Status - Full width row */}
+                           <div>
+                             <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">الحالة الاجتماعية</Label>
+                             <div className="relative z-[10001]">
+                               <Select value={husband?.maritalStatus || "married"} onValueChange={value => setHusband(husband ? {
+                        ...husband,
+                        maritalStatus: value
+                      } : {
+                        id: crypto.randomUUID(),
+                        name: "",
+                        birthDate: null,
+                        isAlive: true,
+                        deathDate: null,
+                        image: null,
+                        croppedImage: null,
+                        maritalStatus: value
+                      })}>
+                                 <SelectTrigger className="h-12 sm:h-14 text-base sm:text-lg lg:text-xl border-2 border-gray-200/50 focus:border-emerald-500">
+                                   <SelectValue placeholder="اختر الحالة الاجتماعية" />
+                                 </SelectTrigger>
+                                 <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                   <SelectItem value="single" className="font-arabic text-base sm:text-lg lg:text-xl">أعزب</SelectItem>
+                                   <SelectItem value="married" className="font-arabic text-base sm:text-lg lg:text-xl">متزوج</SelectItem>
+                                   <SelectItem value="divorced" className="font-arabic text-base sm:text-lg lg:text-xl">مطلق</SelectItem>
+                                   <SelectItem value="widowed" className="font-arabic text-base sm:text-lg lg:text-xl">أرمل</SelectItem>
+                                   <SelectItem value="engaged" className="font-arabic text-base sm:text-lg lg:text-xl">مخطوب</SelectItem>
+                                 </SelectContent>
+                               </Select>
+                             </div>
+                           </div>
+
+                           {/* Life Status and Death Date - Combined in one row */}
+                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                             {/* Life Status */}
+                             <div>
+                               <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">الحالة الحيوية</Label>
+                               <div className="relative z-[10001]">
+                                 <Select value={husband?.isAlive ? "alive" : "deceased"} onValueChange={value => setHusband(husband ? {
+                          ...husband,
+                          isAlive: value === "alive",
+                          deathDate: value === "alive" ? null : husband.deathDate
+                        } : {
+                          id: crypto.randomUUID(),
+                          name: "",
+                          birthDate: null,
+                          isAlive: value === "alive",
+                          deathDate: null,
+                          image: null,
+                          croppedImage: null,
+                          maritalStatus: "married"
+                        })}>
+                                   <SelectTrigger className="h-10 text-sm border-2 border-gray-200/50 focus:border-emerald-500">
+                                     <SelectValue placeholder="الحالة" />
+                                   </SelectTrigger>
+                                   <SelectContent className="bg-card/95 backdrop-blur-xl border-border/50 z-[10002]">
+                                     <SelectItem value="alive" className="font-arabic text-sm">على قيد الحياة</SelectItem>
+                                     <SelectItem value="deceased" className="font-arabic text-sm">متوفى</SelectItem>
+                                   </SelectContent>
+                                 </Select>
+                               </div>
+                             </div>
+
+                             {/* Death Date (if deceased) */}
+                             {husband && !husband.isAlive && <div className="animate-fade-in">
+                                 <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">تاريخ الوفاة</Label>
+                                 <div className="relative z-[10000]">
+                                   <EnhancedDatePicker value={husband?.deathDate || null} onChange={date => setHusband(husband ? {
+                          ...husband,
+                          deathDate: date
+                        } : null)} placeholder="اختر تاريخ الوفاة" className="h-10 text-sm border-2 border-gray-200/50 focus:border-emerald-500" />
+                                 </div>
+                               </div>}
+                           </div>
+                         </div>
                       </div>}
                   </div>
               </div>}
