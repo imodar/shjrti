@@ -82,7 +82,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const [showSuggestDialog, setShowSuggestDialog] = useState(false);
   const { toast } = useToast();
   const location = useLocation();
-  const { t } = useLanguage();
+  const { t, direction } = useLanguage();
 
   // Resolve member image to signed URL
   const memberImageSrc = useResolvedImageUrl(member?.image_url || (member as any)?.image);
@@ -769,7 +769,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   </div>
 
                   {/* Basic Info - Name and Stats after picture */}
-                  <div className="space-y-1 text-center sm:text-right flex-[3]">
+                  <div className={`space-y-1 text-center ${direction === 'rtl' ? 'sm:text-right' : 'sm:text-left'} flex-[3]`}>
                     <div>
                       {/* Member Name */}
                       <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2 w-full max-w-none">
