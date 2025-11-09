@@ -279,23 +279,17 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       });
     }
 
-    // Sort events: first by actual dates if available, then by logical sortOrder
+    // Sort events: birth always first, death always last, rest in logical order
     return events.sort((a, b) => {
-      // If both have dates, sort by date
-      if (a.date && b.date) {
-        return new Date(a.date).getTime() - new Date(b.date).getTime();
-      }
+      // Birth always first
+      if (a.type === 'birth') return -1;
+      if (b.type === 'birth') return 1;
       
-      // If one has date and other doesn't, use sortTimestamp for comparison
-      if (a.date && !b.date) {
-        return new Date(a.date).getTime() - b.sortTimestamp;
-      }
+      // Death always last
+      if (a.type === 'death') return 1;
+      if (b.type === 'death') return -1;
       
-      if (!a.date && b.date) {
-        return a.sortTimestamp - new Date(b.date).getTime();
-      }
-      
-      // If neither has date, use sortOrder
+      // For other events, use sortOrder for logical ordering
       return a.sortOrder - b.sortOrder;
     });
   };
