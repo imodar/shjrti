@@ -581,18 +581,76 @@ const FamilyBuilderNew = () => {
       setLoading(false);
     }
   };
+  // ✅ Sync Context data to local state immediately
   useEffect(() => {
-    let isCancelled = false;
-    const loadData = async () => {
-      if (!isCancelled) {
-        await fetchFamilyData();
-      }
-    };
-    loadData();
-    return () => {
-      isCancelled = true;
-    };
-  }, []);
+    if (contextLoading) return;
+    
+    // 1) Update family data
+    setFamilyData(contextFamilyData || null);
+    
+    // 2) Transform members from context to local state structure
+    const transformedMembers = (contextMembers || []).map(member => ({
+      id: member.id,
+      name: member.name,
+      first_name: member.first_name,
+      last_name: member.last_name,
+      fatherId: member.father_id,
+      motherId: member.mother_id,
+      spouseId: member.spouse_id,
+      relatedPersonId: member.related_person_id,
+      isFounder: member.is_founder,
+      gender: member.gender || 'male',
+      birthDate: member.birth_date || '',
+      isAlive: member.is_alive !== false,
+      deathDate: member.death_date || null,
+      image: member.image_url || null,
+      bio: member.biography || '',
+      marital_status: member.marital_status || 'single',
+      relation: ""
+    }));
+    setFamilyMembers(transformedMembers);
+    
+    // 3) Link marriages with members from transformed list
+    const marriagesWithMembers = (contextMarriages || []).map((marriage: any) => {
+      const husband = transformedMembers.find(m => m.id === marriage.husband_id) || null;
+      const wife = transformedMembers.find(m => m.id === marriage.wife_id) || null;
+      
+      return {
+        ...marriage,
+        husband: husband ? {
+          id: husband.id,
+          name: husband.name,
+          first_name: husband.first_name,
+          last_name: husband.last_name,
+          father_id: husband.fatherId,
+          mother_id: husband.motherId,
+          gender: husband.gender,
+          birth_date: husband.birthDate,
+          is_alive: husband.isAlive,
+          death_date: husband.deathDate,
+          image_url: husband.image,
+          biography: husband.bio,
+          marital_status: husband.marital_status
+        } : null,
+        wife: wife ? {
+          id: wife.id,
+          name: wife.name,
+          first_name: wife.first_name,
+          last_name: wife.last_name,
+          father_id: wife.fatherId,
+          mother_id: wife.motherId,
+          gender: wife.gender,
+          birth_date: wife.birthDate,
+          is_alive: wife.isAlive,
+          death_date: wife.deathDate,
+          image_url: wife.image,
+          biography: wife.bio,
+          marital_status: wife.marital_status
+        } : null
+      };
+    });
+    setFamilyMarriages(marriagesWithMembers);
+  }, [contextFamilyData, contextMembers, contextMarriages, contextLoading]);
 
   // Auto-add member when autoAdd parameter is true and data is loaded
   useEffect(() => {
@@ -1395,7 +1453,7 @@ const FamilyBuilderNew = () => {
       });
 
       // Refresh family data to reflect changes in the member list
-      await fetchFamilyData();
+      await refetchFamilyData();
     } catch (error) {
       console.error('Error in cascading delete:', error);
       throw error;
@@ -1679,7 +1737,7 @@ const FamilyBuilderNew = () => {
       }
       
       // Refresh family data to reflect changes
-      await fetchFamilyData();
+      await refetchFamilyData();
       
     } catch (error) {
       console.error('Error during spouse deletion:', error);
