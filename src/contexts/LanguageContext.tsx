@@ -56,10 +56,23 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   const [languages, setLanguages] = useState<Language[]>([]);
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [translationsLoading, setTranslationsLoading] = useState(true);
 
   const currentLang = languages.find(lang => lang.code === currentLanguage);
   const direction = (currentLang?.direction as 'ltr' | 'rtl') || (currentLanguage === 'ar' ? 'rtl' : 'ltr');
   const currency = currentLang?.currency || (currentLanguage === 'ar' ? 'SAR' : 'USD');
+
+  useEffect(() => {
+    // Pre-hydrate translations from cache to avoid flash
+    try {
+      const cached = localStorage.getItem(`translations-${initialLanguage}`);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        setTranslations(parsed);
+        setTranslationsLoading(false);
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     // Load languages asynchronously without blocking render
@@ -103,6 +116,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   };
 
   const loadTranslations = async (languageCode: string) => {
+    setTranslationsLoading(true);
     try {
       const { data, error } = await supabase
         .from('translations')
@@ -117,14 +131,34 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
       });
       
       setTranslations(translationMap);
+      // Cache translations for instant next loads
+      try { localStorage.setItem(`translations-${languageCode}`, JSON.stringify(translationMap)); } catch {}
     } catch (error) {
       console.error('Error loading translations:', error);
+    } finally {
+      setTranslationsLoading(false);
     }
   };
 
   const setLanguage = (code: string) => {
     setCurrentLanguage(code);
     localStorage.setItem('preferred-language', code);
+
+    // Pre-hydrate cached translations for instant UI switch
+    try {
+      const cached = localStorage.getItem(`translations-${code}`);
+      if (cached) {
+        setTranslations(JSON.parse(cached));
+        setTranslationsLoading(false);
+      } else {
+        setTranslationsLoading(true);
+      }
+    } catch {
+      setTranslationsLoading(true);
+    }
+
+    // Fetch latest translations in background
+    loadTranslations(code);
   };
 
   const t = (key: string, fallback?: string): string => {
@@ -163,7 +197,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   };
 
   // Show loader until translations are fetched
-  if (loading) {
+  if (loading || translationsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
         <div className="text-center space-y-4">
