@@ -1105,7 +1105,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                          }`}>
                                            {child.gender === 'female' ? '♀' : '♂'}
                                          </div>
-                                         <div className="flex-1 min-w-0">
+                                          <div className="flex-1 min-w-0 ps-3">
                                            <p className="font-medium text-sm text-foreground truncate">
                                              {child.first_name}
                                            </p>
