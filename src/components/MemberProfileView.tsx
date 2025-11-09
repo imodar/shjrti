@@ -420,17 +420,17 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     );
   };
 
-  // Get lineage display according to the updated rules
-  const getLineageDisplay = () => {
+  // Helper function to get lineage display for any member
+  const getLineageDisplayForMember = (targetMember: any) => {
     // 1. Founder: No lineage
-    if (member.is_founder) return [];
+    if (targetMember.is_founder) return [];
     
     const lineages = [];
-    const genderTerm = member.gender === 'female' ? t('profile.daughter_of') : t('profile.son_of');
+    const genderTerm = targetMember.gender === 'female' ? t('profile.daughter_of') : t('profile.son_of');
     
     // 2. Members with father_id (original family members) - HIGHEST PRIORITY
-    if (member.father_id) {
-      const father = familyMembers?.find(f => f.id === member.father_id);
+    if (targetMember.father_id) {
+      const father = familyMembers?.find(f => f.id === targetMember.father_id);
       if (father) {
         const fatherFirstName = father.first_name || father.name.split(' ')[0];
         
@@ -459,7 +459,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         const children = familyMembers?.filter(child => 
           child.fatherId === parent.id || child.motherId === parent.id
         );
-        return children?.some(child => child.id === member.id);
+        return children?.some(child => child.id === targetMember.id);
       });
       
       if (parentRelation) {
@@ -484,8 +484,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       }
       
       // 4. Maternal grandchildren (members with mother_id but no father_id)
-      else if (member.mother_id) {
-        const mother = familyMembers?.find(m => m.id === member.mother_id);
+      else if (targetMember.mother_id) {
+        const mother = familyMembers?.find(m => m.id === targetMember.mother_id);
         if (mother && mother.father_id) {
           const motherFirstName = mother.first_name || mother.name.split(' ')[0];
           const maternalGrandfather = familyMembers?.find(f => f.id === mother.father_id);
@@ -500,19 +500,19 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     
     // 5. Check for spouses from outside family (regardless of other conditions)
     const marriage = marriages?.find(m => 
-      m.husband_id === member.id || m.wife_id === member.id
+      m.husband_id === targetMember.id || m.wife_id === targetMember.id
     );
     
     if (marriage) {
-      const spouseId = member.id === marriage.husband_id ? marriage.wife_id : marriage.husband_id;
+      const spouseId = targetMember.id === marriage.husband_id ? marriage.wife_id : marriage.husband_id;
       const spouse = familyMembers?.find(s => s.id === spouseId);
       
       if (spouse) {
         // Check if this member is from outside the family (no father_id in family)
-        const memberHasFamilyFather = (member.father_id || member.fatherId) && 
-          familyMembers?.find(m => m.id === (member.father_id || member.fatherId));
+        const memberHasFamilyFather = (targetMember.father_id || targetMember.fatherId) && 
+          familyMembers?.find(m => m.id === (targetMember.father_id || targetMember.fatherId));
         
-        if (!memberHasFamilyFather && !member.is_founder) {
+        if (!memberHasFamilyFather && !targetMember.is_founder) {
           const spouseFirstName = spouse.first_name || spouse.name.split(' ')[0];
           
           // Get spouse's lineage - include grandfather if available
@@ -543,7 +543,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           }
           
           // Build the marriage lineage
-          if (member.gender === 'male') {
+          if (targetMember.gender === 'male') {
             lineages.push(`${t('profile.husband_of')} ${spouseFirstName}${spouseLineage}`);
           } else {
             lineages.push(`${t('profile.wife_of')} ${spouseFirstName}${spouseLineage}`);
@@ -553,6 +553,11 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     }
     
     return lineages;
+  };
+
+  // Get lineage display for the current member
+  const getLineageDisplay = () => {
+    return getLineageDisplayForMember(member);
   };
 
   const getGenerationName = (generationNumber: number): string => {
@@ -1070,10 +1075,18 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-semibold">
                                   {spouse.gender === 'female' ? '♀' : '♂'}
                                 </div>
-                                <div className="flex-1 ps-3">
+                                 <div className="flex-1 ps-3">
                                   <h4 className="font-semibold text-foreground text-lg">
                                     {spouse.first_name} {spouse.last_name}
                                   </h4>
+                                  {(() => {
+                                    const spouseLineages = getLineageDisplayForMember(spouse);
+                                    return spouseLineages.length > 0 ? (
+                                      <p className="text-sm text-muted-foreground mt-0.5">
+                                        {spouseLineages[0]}
+                                      </p>
+                                    ) : null;
+                                  })()}
                                 </div>
                                 <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                                   spouse.marital_status === 'divorced' 
