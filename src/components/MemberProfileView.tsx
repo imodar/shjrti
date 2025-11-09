@@ -1080,12 +1080,19 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                     {spouse.first_name} {spouse.last_name}
                                   </h4>
                                   {(() => {
-                                    const spouseLineages = getLineageDisplayForMember(spouse);
-                                    return spouseLineages.length > 0 ? (
-                                      <p className="text-sm text-muted-foreground mt-0.5">
-                                        {spouseLineages[0]}
-                                      </p>
-                                    ) : null;
+                                    // Only show lineage if spouse is from the same family (has father_id in current family)
+                                    const spouseHasFamilyFather = (spouse.father_id || spouse.fatherId) && 
+                                      familyMembers?.find(m => m.id === (spouse.father_id || spouse.fatherId));
+                                    
+                                    if (spouseHasFamilyFather) {
+                                      const spouseLineages = getLineageDisplayForMember(spouse);
+                                      return spouseLineages.length > 0 ? (
+                                        <p className="text-sm text-muted-foreground mt-0.5">
+                                          {spouseLineages[0]}
+                                        </p>
+                                      ) : null;
+                                    }
+                                    return null;
                                   })()}
                                 </div>
                                 <div className={`px-3 py-1 rounded-full text-xs font-medium ${
