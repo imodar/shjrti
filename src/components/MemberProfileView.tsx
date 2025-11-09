@@ -1070,7 +1070,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-semibold">
                                   {spouse.gender === 'female' ? '♀' : '♂'}
                                 </div>
-                                <div className="flex-1">
+                                <div className="flex-1 ps-3">
                                   <h4 className="font-semibold text-foreground text-lg">
                                     {spouse.first_name} {spouse.last_name}
                                   </h4>
