@@ -583,7 +583,10 @@ const FamilyBuilderNew = () => {
   };
   // ✅ Sync Context data to local state immediately
   useEffect(() => {
-    if (contextLoading) return;
+    if (contextLoading) {
+      setLoading(true);
+      return;
+    }
     
     // 1) Update family data
     setFamilyData(contextFamilyData || null);
@@ -650,6 +653,7 @@ const FamilyBuilderNew = () => {
       };
     });
     setFamilyMarriages(marriagesWithMembers);
+    setLoading(false);
   }, [contextFamilyData, contextMembers, contextMarriages, contextLoading]);
 
   // Auto-add member when autoAdd parameter is true and data is loaded
