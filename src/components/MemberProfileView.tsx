@@ -1075,24 +1075,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                               {/* Children */}
                               {childrenWithSpouse.length > 0 && (
                                 <div className="mt-4 pt-4 border-t border-border/50">
-                                  <div className="flex items-center justify-between mb-3">
-                                    <h5 className="font-medium text-foreground flex items-center">
-                                      <span className="mr-2">👶</span>
-                                      الأبناء ({childrenWithSpouse.length})
-                                    </h5>
-                                    {!readOnly && onAddChild && (
-                                      <Button
-                                        onClick={() => onAddChild(member)}
-                                        size="sm"
-                                        variant="outline"
-                                        className="h-8 text-xs"
-                                      >
-                                        <Users className="h-3 w-3 ml-1" />
-                                        <span className="hidden sm:inline">إضافة ابن أو ابنة</span>
-                                        <span className="sm:hidden">إضافة</span>
-                                      </Button>
-                                    )}
-                                  </div>
+                                  <h5 className="font-medium text-foreground mb-3 flex items-center">
+                                    <span className="mr-2">👶</span>
+                                    الأبناء ({childrenWithSpouse.length})
+                                  </h5>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                      {childrenWithSpouse.map((child) => (
                                        <div 
@@ -1119,6 +1105,25 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                          </div>
                                        </div>
                                      ))}
+                                     
+                                     {!readOnly && onAddChild && (
+                                       <div 
+                                         className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors duration-200 border border-dashed border-primary/30 hover:border-primary/50"
+                                         onClick={() => onAddChild(member)}
+                                       >
+                                         <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/30 text-primary">
+                                           <Users className="h-4 w-4" />
+                                         </div>
+                                         <div className="flex-1 min-w-0">
+                                           <p className="font-medium text-sm text-primary">
+                                             إضافة ابن أو ابنة
+                                           </p>
+                                           <p className="text-xs text-muted-foreground">
+                                             Add new child
+                                           </p>
+                                         </div>
+                                       </div>
+                                     )}
                                   </div>
                                 </div>
                               )}
@@ -1129,15 +1134,21 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                     <p className="text-sm text-muted-foreground">لا يوجد أطفال مسجلون</p>
                                   </div>
                                   {!readOnly && onAddChild && (
-                                    <div className="flex justify-center">
-                                      <Button
-                                        onClick={() => onAddChild(member)}
-                                        size="sm"
-                                        variant="outline"
-                                      >
-                                        <Users className="h-4 w-4 ml-2" />
-                                        إضافة ابن أو ابنة
-                                      </Button>
+                                    <div 
+                                      className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors duration-200 border border-dashed border-primary/30 hover:border-primary/50"
+                                      onClick={() => onAddChild(member)}
+                                    >
+                                      <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/30 text-primary">
+                                        <Users className="h-4 w-4" />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="font-medium text-sm text-primary">
+                                          إضافة ابن أو ابنة
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                          Add new child
+                                        </p>
+                                      </div>
                                     </div>
                                   )}
                                 </div>
