@@ -51,11 +51,6 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   };
 
   const initialLanguage = getInitialLanguage();
-  
-  // Set document attributes immediately to prevent flash
-  const initialDirection = initialLanguage === 'ar' ? 'rtl' : 'ltr';
-  document.documentElement.dir = initialDirection;
-  document.documentElement.lang = initialLanguage;
 
   const [currentLanguage, setCurrentLanguage] = useState<string>(initialLanguage);
   const [languages, setLanguages] = useState<Language[]>([]);
@@ -63,7 +58,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   const [loading, setLoading] = useState(true);
 
   const currentLang = languages.find(lang => lang.code === currentLanguage);
-  const direction = (currentLang?.direction as 'ltr' | 'rtl') || initialDirection;
+  const direction = (currentLang?.direction as 'ltr' | 'rtl') || (currentLanguage === 'ar' ? 'rtl' : 'ltr');
   const currency = currentLang?.currency || (currentLanguage === 'ar' ? 'SAR' : 'USD');
 
   useEffect(() => {
