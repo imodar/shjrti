@@ -4300,7 +4300,7 @@ const MemberList = ({
     };
   }, [formMode]);
 
-  return <div ref={containerRef} className="flex flex-col overflow-hidden gap-4" style={maxHeight ? { maxHeight: `${maxHeight}px` } : undefined}>
+  return <div ref={containerRef} className="flex flex-col overflow-hidden gap-4 px-2 pt-2" style={maxHeight ? { maxHeight: `${maxHeight}px` } : undefined}>
       {/* Search and Filter on the same row */}
       <div className="flex gap-3">
         <div className="relative flex-1">
