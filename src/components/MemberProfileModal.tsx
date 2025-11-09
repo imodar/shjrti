@@ -16,6 +16,7 @@ interface MemberProfileModalProps {
   onEdit?: () => void;
   onDelete?: () => void;
   onMemberClick?: (member: any) => void;
+  onAddChild?: (parentMember: any) => void;
 }
 
 export const MemberProfileModal: React.FC<MemberProfileModalProps> = ({
@@ -26,7 +27,8 @@ export const MemberProfileModal: React.FC<MemberProfileModalProps> = ({
   readOnly = false,
   onEdit,
   onDelete,
-  onMemberClick
+  onMemberClick,
+  onAddChild
 }) => {
   const { data, loading, error } = useMemberData(memberId, familyId);
 
@@ -55,6 +57,7 @@ export const MemberProfileModal: React.FC<MemberProfileModalProps> = ({
             onDelete={onDelete}
             onBack={onClose}
             onMemberClick={onMemberClick}
+            onAddChild={onAddChild}
           />
         )}
       </DialogContent>

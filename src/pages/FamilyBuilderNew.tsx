@@ -763,6 +763,7 @@ const FamilyBuilderNew = () => {
   const [spouseCommandOpen, setSpouseCommandOpen] = useState(false);
   const [spouseFamilyStatus, setSpouseFamilyStatus] = useState<'yes' | 'no' | null>(null);
   const [editingWifeIndex, setEditingWifeIndex] = useState<number | null>(null);
+  const [parentsLocked, setParentsLocked] = useState(false);
 
   // Legacy state getters for backward compatibility
   const currentWife = activeSpouseType === 'wife' ? currentSpouse : null;
@@ -1924,6 +1925,7 @@ const FamilyBuilderNew = () => {
       croppedImage: null,
       isFounder: false
     });
+    setParentsLocked(false);
     setWives([]);
     setHusband(null);
     setOriginalWivesData([]);
@@ -3299,6 +3301,34 @@ const FamilyBuilderNew = () => {
                   setEditingMember(member);
                   setFormMode('profile');
                   await fetchMemberProfile(member.id);
+                }} onAddChild={(parentMember) => {
+                  // Reset form for new child with pre-selected parent
+                  const selectedMarriage = familyMarriages.find(m => 
+                    (m.husband?.id === parentMember.id) || (m.wife?.id === parentMember.id)
+                  );
+                  
+                  setFormData({
+                    name: "",
+                    first_name: "",
+                    relation: "child",
+                    relatedPersonId: selectedMarriage?.id || null,
+                    selectedParent: selectedMarriage?.id || null,
+                    gender: "male",
+                    birthDate: null,
+                    isAlive: true,
+                    deathDate: null,
+                    bio: "",
+                    imageUrl: "",
+                    croppedImage: null,
+                    isFounder: false
+                  });
+                  setWives([]);
+                  setHusband(null);
+                  setEditingMember(null);
+                  setFormMode('add');
+                  setCurrentStep(1);
+                  setCroppedImage(null);
+                  setParentsLocked(true);
                 }} /> : formMode === 'tree-settings' ? <TreeSettingsView familyData={familyData} onBack={() => setFormMode('view')} /> : <div className="space-y-6">
 
                       {/* Step Content */}
@@ -3462,10 +3492,10 @@ const FamilyBuilderNew = () => {
                           value: "no-data",
                           label: "لا توجد زيجات مسجلة في هذه العائلة",
                           disabled: true
-                        }]} value={formData.selectedParent || ""} onValueChange={value => setFormData({
+                                        }]} value={formData.selectedParent || ""} onValueChange={value => setFormData({
                           ...formData,
                           selectedParent: value === "none" ? null : value
-                        })} disabled={loading || !familyMarriages || !familyMembers || formData.isFounder} placeholder={loading ? "جاري التحميل..." : formData.isFounder ? "مؤسس العائلة - لا يحتاج لوالدين" : "اختر الوالدين"} searchPlaceholder="ابحث عن الوالدين..." emptyMessage="لا توجد نتائج تطابق البحث" />
+                        })} disabled={loading || !familyMarriages || !familyMembers || formData.isFounder || parentsLocked} placeholder={loading ? "جاري التحميل..." : formData.isFounder ? "مؤسس العائلة - لا يحتاج لوالدين" : parentsLocked ? "تم اختيار الوالدين تلقائياً" : "اختر الوالدين"} searchPlaceholder="ابحث عن الوالدين..." emptyMessage="لا توجد نتائج تطابق البحث" />
                                </div>
                               
                                <div className="col-span-6 md:col-span-3">
