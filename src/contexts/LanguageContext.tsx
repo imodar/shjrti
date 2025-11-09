@@ -160,7 +160,20 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     loading
   };
 
-  // Always render children immediately, don't wait for loading
+  // Show loader until translations are fetched
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 mx-auto border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+          <p className="text-sm text-muted-foreground animate-pulse">
+            {currentLanguage === 'ar' ? 'جاري التحميل...' : 'Loading...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <LanguageContext.Provider value={value}>
       {children}
