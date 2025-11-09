@@ -99,7 +99,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       const filePath = await uploadMemberImage(croppedImageBlob, member.id);
       
       if (!filePath) {
-        throw new Error('فشل رفع الصورة');
+        throw new Error(t('profile.image_upload_failed'));
       }
 
       // Update member's image_url in database
@@ -117,8 +117,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       (member as any).image = filePath;
 
       toast({
-        title: "تم التحديث بنجاح",
-        description: "تم تحديث صورة العضو بنجاح",
+        title: t('profile.update_success'),
+        description: t('profile.image_update_success'),
       });
 
       // Force component re-render by toggling visibility
@@ -129,8 +129,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     } catch (error) {
       console.error('Error uploading image:', error);
       toast({
-        title: "خطأ",
-        description: "فشل تحديث الصورة، يرجى المحاولة مرة أخرى",
+        title: t('common.error'),
+        description: t('profile.image_update_failed'),
         variant: "destructive",
       });
     } finally {
@@ -147,7 +147,17 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   // Generate timeline events with proper logical ordering
   const generateTimelineEvents = () => {
     const events = [];
-    const genderText = member.gender === 'male' ? { birth: 'ولد', marry: 'تزوج', death: 'توفي', divorce: 'انفصل' } : { birth: 'ولدت', marry: 'تزوجت', death: 'توفيت', divorce: 'انفصلت' };
+    const genderText = member.gender === 'male' ? { 
+      birth: t('profile.was_born_male'), 
+      marry: t('profile.married_male'), 
+      death: t('profile.died_male'), 
+      divorce: t('profile.divorced_male') 
+    } : { 
+      birth: t('profile.was_born_female'), 
+      marry: t('profile.married_female'), 
+      death: t('profile.died_female'), 
+      divorce: t('profile.divorced_female') 
+    };
 
     // Birth date as baseline
     const birthDate = member.birthDate || member.birth_date;
@@ -160,7 +170,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       sortOrder: 0, // First event
       sortTimestamp: birthTimestamp,
       title: `${genderText.birth} ${member.first_name || member.name}`,
-      description: birthDate ? null : 'في تاريخ غير محدد',
+      description: birthDate ? null : t('profile.date_unknown'),
       icon: 'Gift',
       color: 'text-green-600',
       bgColor: 'bg-green-50'
@@ -179,8 +189,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         sortOrder: (marriageIndex + 1) * 100, // Marriage 1: 100, Marriage 2: 200, etc.
         sortTimestamp: marriageTimestamp,
         spouseId: spouse.id,
-        title: `${genderText.marry} من ${spouse.first_name || spouse.name} ${spouse.last_name || ''}`.trim(),
-        description: marriageDate ? null : 'في تاريخ غير محدد',
+        title: `${genderText.marry} ${t('common.from')} ${spouse.first_name || spouse.name} ${spouse.last_name || ''}`.trim(),
+        description: marriageDate ? null : t('profile.date_unknown'),
         icon: 'Heart',
         color: 'text-pink-600',
         bgColor: 'bg-pink-50'
@@ -199,8 +209,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           sortOrder: (marriageIndex + 1) * 100 + 10 + childIndex, // After marriage: 110, 111, 112...
           sortTimestamp: childBirthTimestamp,
           spouseId: spouse.id,
-          title: `ولد لهم ${child.first_name || child.name}`,
-          description: childBirthDate ? null : 'في تاريخ غير محدد',
+          title: `${t('profile.born_to_them')} ${child.first_name || child.name}`,
+          description: childBirthDate ? null : t('profile.date_unknown'),
           icon: 'Users',
           color: 'text-blue-600',
           bgColor: 'bg-blue-50'
@@ -223,8 +233,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           sortOrder: (marriageIndex + 1) * 100 + 50, // After children: 150, 250, etc.
           sortTimestamp: lastChildDate + 1000,
           spouseId: spouse.id,
-          title: `${genderText.divorce} عن ${spouse.first_name || spouse.name}`,
-          description: 'في تاريخ غير محدد',
+          title: `${genderText.divorce} ${t('common.from')} ${spouse.first_name || spouse.name}`,
+          description: t('profile.date_unknown'),
           icon: 'X',
           color: 'text-orange-600',
           bgColor: 'bg-orange-50'
@@ -243,8 +253,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         date: childBirthDate,
         sortOrder: 10000 + index, // Very high number to come after all marriages
         sortTimestamp: childBirthTimestamp,
-        title: `ولد له ${child.first_name || child.name}`,
-        description: childBirthDate ? null : 'في تاريخ غير محدد',
+        title: `${t('profile.born_to_him')} ${child.first_name || child.name}`,
+        description: childBirthDate ? null : t('profile.date_unknown'),
         icon: 'Users',
         color: 'text-blue-600',
         bgColor: 'bg-blue-50'
@@ -262,7 +272,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         sortOrder: 999999, // Very high to be last
         sortTimestamp: deathTimestamp,
         title: `${genderText.death}`,
-        description: deathDate ? null : 'في تاريخ غير محدد',
+        description: deathDate ? null : t('profile.date_unknown'),
         icon: 'Clock',
         color: 'text-gray-600',
         bgColor: 'bg-gray-50'
@@ -303,23 +313,23 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
   const getMaritalStatus = (spouse?: any) => {
     if (spouse && spouse.marital_status === 'divorced') {
-      return 'مطلق';
+      return t('profile.divorced');
     }
     const spouses = getSpouses();
     const children = getChildren();
     
     if (children.length > 0) {
-      return 'متزوج';
+      return t('profile.married');
     }
     
     if ((member.related_person_id || member.relatedPersonId) && spouses.length === 0) {
       const relatedPerson = familyMembers.find(m => m.id === (member.related_person_id || member.relatedPersonId));
       if (relatedPerson) {
-        return 'متزوج';
+        return t('profile.married');
       }
     }
     
-    return spouses.length > 0 ? 'متزوج' : 'أعزب';
+    return spouses.length > 0 ? t('profile.married') : t('profile.single');
   };
 
   const getSpouses = () => {
@@ -416,7 +426,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     if (member.is_founder) return [];
     
     const lineages = [];
-    const genderTerm = member.gender === 'female' ? 'ابنة' : 'ابن';
+    const genderTerm = member.gender === 'female' ? t('profile.daughter_of') : t('profile.son_of');
     
     // 2. Members with father_id (original family members) - HIGHEST PRIORITY
     if (member.father_id) {
@@ -434,7 +444,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           if (grandfather) {
             const grandfatherFirstName = grandfather.first_name || grandfather.name.split(' ')[0];
             // Use gender-aware term for father's relation to grandfather
-            const fatherChildTerm = father.gender === 'female' ? 'بنت' : 'ابن';
+            const fatherChildTerm = father.gender === 'female' ? t('profile.daughter_of_short') : t('profile.son_of_short');
             lineages.push(`${genderTerm} ${fatherFirstName} ${fatherChildTerm} ${grandfatherFirstName}`);
           } else {
             lineages.push(`${genderTerm} ${fatherFirstName}`);
@@ -465,7 +475,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           if (grandParent) {
             const grandParentFirstName = grandParent.first_name || grandParent.name.split(' ')[0];
             // Use gender-aware term for parent's relation to grandparent
-            const parentChildTerm = parentRelation.gender === 'female' ? 'بنت' : 'ابن';
+            const parentChildTerm = parentRelation.gender === 'female' ? t('profile.daughter_of_short') : t('profile.son_of_short');
             lineages.push(`${genderTerm} ${parentFirstName} ${parentChildTerm} ${grandParentFirstName}`);
           } else {
             lineages.push(`${genderTerm} ${parentFirstName}`);
@@ -481,7 +491,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           const maternalGrandfather = familyMembers?.find(f => f.id === mother.father_id);
           if (maternalGrandfather) {
             const maternalGrandfatherFirstName = maternalGrandfather.first_name || maternalGrandfather.name.split(' ')[0];
-            lineages.push(`${genderTerm} ${motherFirstName} بنت ${maternalGrandfatherFirstName}`);
+            lineages.push(`${genderTerm} ${motherFirstName} ${t('profile.daughter_of_short')} ${maternalGrandfatherFirstName}`);
           }
         }
       }
@@ -514,7 +524,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               const spouseFatherFirstName = spouseFather.first_name || spouseFather.name.split(' ')[0];
 
               // Use gender-aware term for child-of: female => "ابنة", male => "ابن"
-              const childOfTerm = spouse.gender === 'female' ? 'ابنة' : 'ابن';
+              const childOfTerm = spouse.gender === 'female' ? t('profile.daughter_of') : t('profile.son_of');
               
               // Check if grandfather exists for the spouse's father
               const spouseGrandfatherId = spouseFather.father_id || spouseFather.fatherId;
@@ -522,7 +532,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 const spouseGrandfather = familyMembers?.find(f => f.id === spouseGrandfatherId);
                 if (spouseGrandfather) {
                   const spouseGrandfatherFirstName = spouseGrandfather.first_name || spouseGrandfather.name.split(' ')[0];
-                  spouseLineage = ` ${childOfTerm} ${spouseFatherFirstName} ابن ${spouseGrandfatherFirstName}`;
+                  spouseLineage = ` ${childOfTerm} ${spouseFatherFirstName} ${t('profile.son_of_short')} ${spouseGrandfatherFirstName}`;
                 } else {
                   spouseLineage = ` ${childOfTerm} ${spouseFatherFirstName}`;
                 }
@@ -534,9 +544,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           
           // Build the marriage lineage
           if (member.gender === 'male') {
-            lineages.push(`زوج ${spouseFirstName}${spouseLineage}`);
+            lineages.push(`${t('profile.husband_of')} ${spouseFirstName}${spouseLineage}`);
           } else {
-            lineages.push(`زوجة ${spouseFirstName}${spouseLineage}`);
+            lineages.push(`${t('profile.wife_of')} ${spouseFirstName}${spouseLineage}`);
           }
         }
       }
@@ -547,19 +557,19 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
   const getGenerationName = (generationNumber: number): string => {
     const generationNames = {
-      1: 'الأول',
-      2: 'الثاني', 
-      3: 'الثالث',
-      4: 'الرابع',
-      5: 'الخامس',
-      6: 'السادس',
-      7: 'السابع',
-      8: 'الثامن',
-      9: 'التاسع',
-      10: 'العاشر'
+      1: t('profile.generation_1'),
+      2: t('profile.generation_2'), 
+      3: t('profile.generation_3'),
+      4: t('profile.generation_4'),
+      5: t('profile.generation_5'),
+      6: t('profile.generation_6'),
+      7: t('profile.generation_7'),
+      8: t('profile.generation_8'),
+      9: t('profile.generation_9'),
+      10: t('profile.generation_10')
     };
     
-    return generationNames[generationNumber] || `الجيل ${generationNumber}`;
+    return generationNames[generationNumber] || `${t('profile.generation')} ${generationNumber}`;
   };
 
   const calculateMemberGeneration = () => {
@@ -650,10 +660,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const memberGeneration = calculateMemberGeneration();
 
   const tabItems = [
-    { id: 'overview', label: 'نظرة عامة', icon: User },
-    { id: 'family', label: 'العائلة', icon: Users },
-    { id: 'timeline', label: 'الأحداث', icon: Clock },
-    { id: 'media', label: 'الصور', icon: Camera }
+    { id: 'overview', label: t('profile.tab_overview'), icon: User },
+    { id: 'family', label: t('profile.tab_family'), icon: Users },
+    { id: 'timeline', label: t('profile.tab_timeline'), icon: Clock },
+    { id: 'media', label: t('profile.tab_media'), icon: Camera }
   ];
 
   const getAge = () => {
@@ -684,7 +694,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 <button
                   onClick={onBack}
                   className="absolute top-4 right-4 rtl:left-4 rtl:right-auto z-20 h-8 w-8 flex items-center justify-center rounded-full bg-background/80 hover:bg-background border border-border shadow-md transition-all duration-200 hover:scale-110"
-                  aria-label="إغلاق"
+                  aria-label={t('common.close')}
                 >
                   <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
                 </button>
@@ -710,7 +720,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         </svg>
                       </TooltipTrigger>
                       <TooltipContent side="right">
-                        <p>متوفى</p>
+                        <p>{t('profile.deceased')}</p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -747,7 +757,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         }}
                         disabled={isUploadingImage}
                         className="absolute bottom-2 right-2 bg-primary hover:bg-primary/90 text-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
-                        title="تغيير الصورة"
+                        title={t('profile.change_photo')}
                       >
                         {isUploadingImage ? (
                           <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -771,7 +781,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <div className="flex items-center justify-center sm:justify-start gap-1 mb-2">
                           <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
                             <Crown className="h-4 w-4 text-yellow-600" />
-                            <span className="text-xs text-yellow-700 font-medium font-arabic">المؤسس</span>
+                            <span className="text-xs text-yellow-700 font-medium font-arabic">{t('profile.founder')}</span>
                           </div>
                         </div>
                       ) : (
@@ -796,25 +806,25 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       {Boolean(getAge()) && (
                         <div className="text-center">
                           <div className="text-2xl font-bold text-accent">{getAge()}</div>
-                          <div className="text-sm text-muted-foreground">سنة</div>
+                          <div className="text-sm text-muted-foreground">{t('profile.years')}</div>
                         </div>
                       )}
                       {spouses && spouses.length > 0 && (
                         <div className="text-center">
                           <div className="text-2xl font-bold text-blue-600">{spouses.length}</div>
-                          <div className="text-sm text-muted-foreground">الأزواج</div>
+                          <div className="text-sm text-muted-foreground">{t('profile.spouses')}</div>
                         </div>
                       )}
                       {children && children.length > 0 && (
                         <div className="text-center">
                           <div className="text-2xl font-bold text-primary">{children.length}</div>
-                          <div className="text-sm text-muted-foreground">الأطفال</div>
+                          <div className="text-sm text-muted-foreground">{t('profile.children')}</div>
                         </div>
                       )}
                       {grandchildren && grandchildren.length > 0 && (
                         <div className="text-center">
                           <div className="text-2xl font-bold text-green-600">{grandchildren.length}</div>
-                          <div className="text-sm text-muted-foreground">الأحفاد</div>
+                          <div className="text-sm text-muted-foreground">{t('profile.grandchildren')}</div>
                         </div>
                       )}
                      </div>
@@ -822,30 +832,30 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                      {/* Action Buttons */}
                      <div className="flex justify-center sm:justify-start gap-2 mt-4">
                        {!readOnly && onEdit && (
-                         <Button 
-                           onClick={() => {
-                             if (isSpouse && onSpouseEditWarning) {
-                               onSpouseEditWarning();
-                             } else {
-                               onEdit();
-                             }
-                           }}
-                           className="facebook-button-primary px-4 py-2"
-                         >
-                           <Edit className="h-4 w-4 ml-2" />
-                           تعديل المعلومات
-                         </Button>
-                        )}
-                        {!location.pathname.includes('family-builder-new') && (
                           <Button 
-                            onClick={() => setShowSuggestDialog(true)}
-                            variant="outline"
-                            className="px-4 py-2"
+                            onClick={() => {
+                              if (isSpouse && onSpouseEditWarning) {
+                                onSpouseEditWarning();
+                              } else {
+                                onEdit();
+                              }
+                            }}
+                            className="facebook-button-primary px-4 py-2"
                           >
-                            <MessageCircle className="h-4 w-4 ml-2" />
-                            اقترح تعديل
+                            <Edit className="h-4 w-4 ml-2" />
+                            {t('profile.edit_info')}
                           </Button>
                         )}
+                         {!location.pathname.includes('family-builder-new') && (
+                           <Button 
+                             onClick={() => setShowSuggestDialog(true)}
+                             variant="outline"
+                             className="px-4 py-2"
+                           >
+                             <MessageCircle className="h-4 w-4 ml-2" />
+                             {t('profile.suggest_edit')}
+                           </Button>
+                         )}
                      </div>
                    </div>
                  </div>
@@ -889,8 +899,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <User className="h-6 w-6 text-primary" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-lg">المعلومات الشخصية</h3>
-                        <p className="text-sm text-muted-foreground">البيانات الأساسية</p>
+                        <h3 className="font-bold text-lg">{t('profile.personal_info')}</h3>
+                        <p className="text-sm text-muted-foreground">{t('profile.basic_data')}</p>
                       </div>
                     </div>
                     <Button 
@@ -909,9 +919,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl">
                         <Calendar className="h-5 w-5 text-blue-600" />
                         <div>
-                          <div className="text-sm text-blue-700">تاريخ الميلاد</div>
+                          <div className="text-sm text-blue-700">{t('profile.birth_date')}</div>
                           <div className="font-semibold">
-                            {member.birth_date ? <DateDisplay date={member.birth_date} className="inline" /> : 'غير محدد'}
+                            {member.birth_date ? <DateDisplay date={member.birth_date} className="inline" /> : t('common.not_specified')}
                           </div>
                         </div>
                       </div>
@@ -919,15 +929,15 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl">
                         <MapPin className="h-5 w-5 text-green-600" />
                         <div>
-                          <div className="text-sm text-green-700">مكان الميلاد</div>
-                          <div className="font-semibold">{member.birthPlace || 'غير محدد'}</div>
+                          <div className="text-sm text-green-700">{t('profile.birth_place')}</div>
+                          <div className="font-semibold">{member.birthPlace || t('common.not_specified')}</div>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl">
                         <Heart className="h-5 w-5 text-purple-600" />
                         <div>
-                          <div className="text-sm text-purple-700">الحالة الاجتماعية</div>
+                          <div className="text-sm text-purple-700">{t('profile.marital_status')}</div>
                           <div className="font-semibold">{getMaritalStatus()}</div>
                         </div>
                       </div>
@@ -935,8 +945,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       <div className="flex items-center gap-3 p-4 bg-orange-50 rounded-xl">
                         <Award className="h-5 w-5 text-orange-600" />
                         <div>
-                          <div className="text-sm text-orange-700">النوع</div>
-                          <div className="font-semibold">{member.gender === 'male' ? 'ذكر' : 'أنثى'}</div>
+                          <div className="text-sm text-orange-700">{t('profile.gender')}</div>
+                          <div className="font-semibold">{member.gender === 'male' ? t('profile.male') : t('profile.female')}</div>
                         </div>
                       </div>
                     </div>
@@ -946,7 +956,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       <div className="flex items-center gap-3 p-4 bg-red-50 rounded-xl border border-red-200">
                         <Calendar className="h-5 w-5 text-red-600" />
                         <div>
-                          <div className="text-sm text-red-700">تاريخ الوفاة</div>
+                          <div className="text-sm text-red-700">{t('profile.death_date')}</div>
                           <div className="font-semibold">
                             <DateDisplay date={member.death_date} className="inline" />
                           </div>
@@ -961,16 +971,16 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
                             <Phone className="h-5 w-5 text-gray-600" />
                             <div>
-                              <div className="text-sm text-gray-700">رقم الهاتف</div>
-                              <div className="font-semibold">{member.phone || 'غير محدد'}</div>
+                              <div className="text-sm text-gray-700">{t('profile.phone')}</div>
+                              <div className="font-semibold">{member.phone || t('common.not_specified')}</div>
                             </div>
                           </div>
 
                           <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
                             <Mail className="h-5 w-5 text-gray-600" />
                             <div>
-                              <div className="text-sm text-gray-700">البريد الإلكتروني</div>
-                              <div className="font-semibold">{member.email || 'غير محدد'}</div>
+                              <div className="text-sm text-gray-700">{t('profile.email')}</div>
+                              <div className="font-semibold">{member.email || t('common.not_specified')}</div>
                             </div>
                           </div>
                         </div>
@@ -987,7 +997,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 {/* Parents Section - Only show if member has parent information */}
                 {(getFather() || getMother()) && (
                   <div className="bg-card rounded-xl border border-border p-6">
-                    <h3 className="font-bold text-lg mb-4 text-primary">الوالدان</h3>
+                    <h3 className="font-bold text-lg mb-4 text-primary">{t('profile.parents')}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* Father */}
                        <div 
@@ -998,9 +1008,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                            ♂
                          </div>
                          <div>
-                           <p className="text-sm text-muted-foreground">الأب</p>
+                           <p className="text-sm text-muted-foreground">{t('profile.father')}</p>
                            <p className="font-semibold text-foreground">
-                             {getFather()?.first_name || 'غير محدد'}
+                             {getFather()?.first_name || t('common.not_specified')}
                            </p>
                          </div>
                        </div>
@@ -1014,9 +1024,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                            ♀
                          </div>
                          <div>
-                           <p className="text-sm text-muted-foreground">الأم</p>
+                           <p className="text-sm text-muted-foreground">{t('profile.mother')}</p>
                            <p className="font-semibold text-foreground">
-                             {getMother() ? `${getMother()?.first_name} ${getMother()?.last_name || ''}`.trim() : 'غير محدد'}
+                             {getMother() ? `${getMother()?.first_name} ${getMother()?.last_name || ''}`.trim() : t('common.not_specified')}
                            </p>
                          </div>
                        </div>
@@ -1031,13 +1041,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   if (spouses.length === 0) {
                     return (
                       <div className="bg-card rounded-xl border border-border p-6">
-                        <h3 className="font-bold text-lg mb-4 text-primary">الحالة الاجتماعية</h3>
+                        <h3 className="font-bold text-lg mb-4 text-primary">{t('profile.marital_status')}</h3>
                         <div className="text-center p-8">
                           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
                             <Heart className="h-8 w-8 text-muted-foreground" />
                           </div>
-                          <p className="text-muted-foreground text-lg">غير متزوج</p>
-                          <p className="text-sm text-muted-foreground mt-2">لا توجد علاقات زواج مسجلة</p>
+                          <p className="text-muted-foreground text-lg">{t('profile.not_married')}</p>
+                          <p className="text-sm text-muted-foreground mt-2">{t('profile.no_marriage_records')}</p>
                         </div>
                       </div>
                     );
@@ -1045,13 +1055,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   
                   return (
                     <div className="bg-card rounded-xl border border-border p-6">
-                      <h3 className="font-bold text-lg mb-4 text-primary">الزوجات والأبناء</h3>
+                      <h3 className="font-bold text-lg mb-4 text-primary">{t('profile.spouses_and_children')}</h3>
                       <div className="space-y-6">
                         {spouses.map((spouse, index) => {
                           const childrenWithSpouse = getChildrenBySpouse(spouse.id);
                            const maritalStatusText = spouse.marital_status === 'divorced' 
-                             ? (spouse.gender === 'male' ? 'مطلق' : 'مطلقة') 
-                             : (spouse.gender === 'male' ? 'متزوج' : 'متزوجة');
+                             ? (spouse.gender === 'male' ? t('profile.divorced_male') : t('profile.divorced_female')) 
+                             : (spouse.gender === 'male' ? t('profile.married_male') : t('profile.married_female'));
                           
                           return (
                             <div key={spouse.id || index} className="bg-muted/50 border border-border/30 shadow-sm rounded-lg p-4">
@@ -1079,7 +1089,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                 <div className="mt-4 pt-4 border-t border-border/50">
                                   <h5 className="font-medium text-foreground mb-3 flex items-center">
                                     <span className="mr-2">👶</span>
-                                    الأبناء ({childrenWithSpouse.length})
+                                    {t('profile.children')} ({childrenWithSpouse.length})
                                   </h5>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                      {childrenWithSpouse.map((child) => (
@@ -1100,10 +1110,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                              {child.first_name}
                                            </p>
                                            {child.birth_date && (
-                                             <p className="text-xs text-muted-foreground">
-                                               {new Date().getFullYear() - new Date(child.birth_date).getFullYear()} سنة
-                                             </p>
-                                           )}
+                                              <p className="text-xs text-muted-foreground">
+                                                {new Date().getFullYear() - new Date(child.birth_date).getFullYear()} {t('profile.years')}
+                                              </p>
+                                            )}
                                          </div>
                                        </div>
                                      ))}
@@ -1130,7 +1140,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                               {childrenWithSpouse.length === 0 && (
                                 <div className="mt-4 pt-4 border-t border-border/50">
                                   <div className="text-center mb-3">
-                                    <p className="text-sm text-muted-foreground">لا يوجد أطفال مسجلون</p>
+                                    <p className="text-sm text-muted-foreground">{t('profile.no_children_registered')}</p>
                                   </div>
                                   {!readOnly && onAddChild && (
                                     <div 
@@ -1142,10 +1152,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                       </div>
                                       <div className="flex-1 min-w-0">
                                         <p className="font-medium text-sm text-primary">
-                                          إضافة ابن أو ابنة
-                                        </p>
-                                        <p className="text-xs text-muted-foreground">
-                                          Add new child
+                                          {t('family_builder.add_child')}
                                         </p>
                                       </div>
                                     </div>
@@ -1166,7 +1173,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   if (childrenWithoutSpouse.length > 0) {
                     return (
                       <div className="bg-card rounded-xl border border-border p-6">
-                        <h3 className="font-bold text-lg mb-4 text-primary">أبناء آخرون</h3>
+                        <h3 className="font-bold text-lg mb-4 text-primary">{t('profile.other_children')}</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                           {childrenWithoutSpouse.map((child) => (
                             <div key={child.id} className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-accent/30">
@@ -1181,7 +1188,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                 <p className="font-semibold text-foreground">{child.first_name}</p>
                                 {child.birth_date && (
                                   <p className="text-sm text-muted-foreground">
-                                    {new Date().getFullYear() - new Date(child.birth_date).getFullYear()} سنة
+                                    {new Date().getFullYear() - new Date(child.birth_date).getFullYear()} {t('profile.years')}
                                   </p>
                                 )}
                               </div>
@@ -1200,7 +1207,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   if (grandchildren.length > 0) {
                     return (
                       <div className="bg-card rounded-xl border border-border p-6">
-                        <h3 className="font-bold text-lg mb-4 text-primary">الأحفاد</h3>
+                        <h3 className="font-bold text-lg mb-4 text-primary">{t('profile.grandchildren')}</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                            {grandchildren.map((grandchild) => (
                              <div 
@@ -1216,12 +1223,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                  {grandchild.gender === 'female' ? '♀' : '♂'}
                                </div>
                                <div className="flex-1">
-                                 <p className="font-semibold text-foreground">{grandchild.first_name}</p>
-                                 {grandchild.birth_date && (
-                                   <p className="text-sm text-muted-foreground">
-                                     {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} سنة
-                                   </p>
-                                 )}
+                                <p className="font-semibold text-foreground">{grandchild.first_name}</p>
+                                  {grandchild.birth_date && (
+                                    <p className="text-sm text-muted-foreground">
+                                      {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} {t('profile.years')}
+                                    </p>
+                                  )}
                                </div>
                              </div>
                            ))}
@@ -1243,8 +1250,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       <Clock className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="font-bold text-lg">الأحداث المهمة</h3>
-                      <p className="text-sm text-muted-foreground">تسلسل زمني لأهم أحداث الحياة</p>
+                      <h3 className="font-bold text-lg">{t('profile.important_events')}</h3>
+                      <p className="text-sm text-muted-foreground">{t('profile.timeline_description')}</p>
                     </div>
                   </div>
                   
@@ -1273,11 +1280,11 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                      {event.type !== 'marriage' && (event.type !== 'divorce' || event.date) && (
                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                          <Calendar className="w-4 h-4" />
-                                         {event.date ? (
-                                           <DateDisplay date={event.date} className="inline" />
-                                         ) : (
-                                           <span>تاريخ غير محدد</span>
-                                         )}
+                                          {event.date ? (
+                                            <DateDisplay date={event.date} className="inline" />
+                                          ) : (
+                                            <span>{t('profile.date_unknown')}</span>
+                                          )}
                                        </div>
                                      )}
                                      {event.description && event.type !== 'marriage' && event.type !== 'divorce' && (
@@ -1289,11 +1296,11 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                   
                                   {/* Event Type Badge */}
                                   <div className={`px-2 py-1 rounded-full text-xs font-medium ${event.bgColor} ${event.color}`}>
-                                    {event.type === 'birth' && 'ميلاد'}
-                                    {event.type === 'marriage' && 'زواج'}
-                                    {event.type === 'divorce' && 'انفصال'}
-                                    {event.type === 'child' && 'إنجاب'}
-                                    {event.type === 'death' && 'وفاة'}
+                                    {event.type === 'birth' && t('profile.event_birth')}
+                                    {event.type === 'marriage' && t('profile.event_marriage')}
+                                    {event.type === 'divorce' && t('profile.event_divorce')}
+                                    {event.type === 'child' && t('profile.event_childbirth')}
+                                    {event.type === 'death' && t('profile.event_death')}
                                   </div>
                                 </div>
                               </div>
@@ -1305,9 +1312,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                       {generateTimelineEvents().length === 0 && (
                         <div className="text-center py-12">
                           <Clock className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
-                          <p className="text-muted-foreground">لا توجد أحداث مسجلة</p>
+                          <p className="text-muted-foreground">{t('profile.no_events')}</p>
                           <p className="text-sm text-muted-foreground/70 mt-1">
-                            سيتم عرض الأحداث المهمة عند توفر البيانات
+                            {t('profile.events_will_appear')}
                           </p>
                         </div>
                       )}
@@ -1334,22 +1341,22 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
             {/* Family Stats */}
             <div className="bg-card rounded-xl border border-border p-4">
-              <h4 className="font-bold text-sm mb-4">إحصائيات العائلة</h4>
+              <h4 className="font-bold text-sm mb-4">{t('profile.family_stats')}</h4>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">الأطفال</span>
+                  <span className="text-sm text-muted-foreground">{t('profile.children')}</span>
                   <span className="font-semibold">{children.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">الأزواج</span>
+                  <span className="text-sm text-muted-foreground">{t('profile.spouses')}</span>
                   <span className="font-semibold">{spouses.length}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">الأحفاد</span>
+                  <span className="text-sm text-muted-foreground">{t('profile.grandchildren')}</span>
                   <span className="font-semibold">{grandchildren.length}</span>
                 </div>
                  <div className="flex justify-between">
-                   <span className="text-sm text-muted-foreground">الجيل</span>
+                   <span className="text-sm text-muted-foreground">{t('profile.generation')}</span>
                    <span className="font-semibold">
                      {getGenerationName(memberGeneration)}
                    </span>
@@ -1360,7 +1367,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             {/* Delete Action */}
             {!readOnly && onDelete && (
               <div className="bg-card rounded-xl border border-destructive/20 p-4">
-                <h4 className="font-bold text-sm mb-4 text-destructive">منطقة الخطر</h4>
+                <h4 className="font-bold text-sm mb-4 text-destructive">{t('profile.danger_zone')}</h4>
                 <Button 
                   onClick={() => {
                     if (isSpouse && onSpouseDeleteWarning) {
@@ -1374,10 +1381,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   size="sm"
                 >
                   <Trash2 className="h-4 w-4 ml-2" />
-                  حذف العضو
+                  {t('profile.delete_member')}
                 </Button>
                 <p className="text-xs text-destructive/70 mt-2 text-center">
-                  هذا الإجراء لا يمكن التراجع عنه
+                  {t('profile.cannot_undo')}
                 </p>
               </div>
             )}
@@ -1393,7 +1400,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
               className="flex items-center gap-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-xl px-6 py-3 transition-all duration-300 group"
             >
               <ArrowRight className="h-4 w-4 group-hover:-translate-x-1 transition-transform duration-200" />
-              <span className="font-medium">العودة</span>
+              <span className="font-medium">{t('common.back')}</span>
             </Button>
           </div>
         )}
@@ -1404,7 +1411,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         isOpen={showImageUploadModal}
         onClose={() => setShowImageUploadModal(false)}
         onSave={handleImageSave}
-        title="تحديث الصورة الشخصية"
+        title={t('profile.update_profile_picture')}
       />
       
       <SuggestEditDialog
