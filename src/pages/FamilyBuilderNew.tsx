@@ -581,91 +581,6 @@ const FamilyBuilderNew = () => {
       setLoading(false);
     }
   };
-  const refreshFamilyData = async () => {
-    try {
-      const {
-        data: {
-          user
-        }
-      } = await supabase.auth.getUser();
-      if (!user) {
-        navigate('/auth');
-        return;
-      }
-      const familyId = new URLSearchParams(window.location.search).get('family');
-      if (!familyId) throw new Error('Family ID not found in URL');
-      const {
-        data: family,
-        error: familyError
-      } = await supabase.from('families').select('*').eq('id', familyId).single();
-      if (familyError) throw familyError;
-      setFamilyData(family);
-
-      // Fetch only essential member data for initial load
-      const {
-        data: members,
-        error: membersError
-      } = await supabase.from('family_tree_members').select(`
-          id,
-          name,
-          first_name,
-          last_name,
-          father_id,
-          mother_id,
-          is_founder,
-          gender,
-          marital_status,
-          biography,
-          birth_date,
-          death_date,
-          is_alive,
-          image_url
-        `).eq('family_id', family.id);
-      if (membersError) throw membersError;
-      const transformedMembers = members.map(member => ({
-        id: member.id,
-        name: member.name,
-        first_name: member.first_name,
-        last_name: member.last_name,
-        fatherId: member.father_id,
-        motherId: member.mother_id,
-        spouseId: null,
-        relatedPersonId: null,
-        isFounder: member.is_founder,
-        gender: member.gender,
-        birthDate: member.birth_date || "",
-        isAlive: member.is_alive !== false,
-        deathDate: member.death_date || null,
-        image: member.image_url || null,
-        bio: member.biography || "",
-        marital_status: member.marital_status || 'single',
-        relation: ""
-      }));
-      setFamilyMembers(transformedMembers);
-
-      
-      // ✅ Use marriages from Context (NO extra query!)
-      let marriagesWithMembers = [];
-      if (contextMarriages) {
-        marriagesWithMembers = contextMarriages.map(marriage => ({
-          ...marriage,
-          husband: {
-            id: marriage.husband_id,
-            name: "Loading..."
-          },
-          wife: {
-            id: marriage.wife_id,
-            name: "Loading..."
-          }
-        }));
-      }
-      if (marriagesWithMembers) {
-        setFamilyMarriages(marriagesWithMembers);
-      }
-    } catch (error) {
-      console.error('Error refreshing family data:', error);
-    }
-  };
   useEffect(() => {
     let isCancelled = false;
     const loadData = async () => {
@@ -2981,7 +2896,7 @@ const FamilyBuilderNew = () => {
       clearSpouseDataFromLocalStorage();
 
       // Refresh family data to show updated information
-      await refreshFamilyData();
+      await refetchFamilyData();
 
       // Reset form state
       setFormMode('view');
@@ -3021,7 +2936,7 @@ const FamilyBuilderNew = () => {
       }
 
       // Refresh family data to reflect all changes in the member list
-      await fetchFamilyData();
+      await refetchFamilyData();
     } catch (error) {
       console.error('Error submitting form:', error);
       let errorMessage = "حدث خطأ أثناء حفظ البيانات";
@@ -3043,7 +2958,7 @@ const FamilyBuilderNew = () => {
       isSavingRef.current = false;
       setIsSaving(false);
     }
-  }, [formData, familyData, wives, husband, subscription, editingMember, toast, t, refreshFamilyData]);
+  }, [formData, familyData, wives, husband, subscription, editingMember, toast, t, refetchFamilyData]);
   const nextStep = () => {
     // Validate required fields for step 1
     if (currentStep === 1) {
