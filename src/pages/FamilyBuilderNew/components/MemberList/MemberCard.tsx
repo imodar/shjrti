@@ -8,6 +8,7 @@ import { DateDisplay } from "@/components/DateDisplay";
 import { Member, Marriage } from "../../types/family.types";
 import { useResolvedImageUrl } from "@/utils/useResolvedImageUrl";
 import { differenceInYears, parseISO } from 'date-fns';
+import { useLanguage } from '@/contexts/LanguageContext';
 interface MemberCardProps {
   member: Member;
   familyMembers: Member[];
@@ -32,6 +33,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 }) => {
   // Resolve member image to signed URL with lazy loading
   const memberImageSrc = useResolvedImageUrl((member as any).image || member.image_url, true);
+  const { t } = useLanguage();
 
   const generateMemberDisplayName = () => {
     // Check if this member is married into the family (actual spouse from outside)
@@ -182,12 +184,12 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     
     // حالة 2: يوجد تاريخ وفاة فقط (بدون تاريخ ولادة)
     if (!birthDate && deathDate) {
-      const deathText = gender === 'female' ? 'توفيت' : 'توفي';
+      const deathText = gender === 'female' ? t('member.died_female', 'توفيت') : t('member.died_male', 'توفي');
       return (
         <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
           <Skull className="h-3 w-3 text-gray-600 dark:text-gray-400" />
           <span className="text-xs text-gray-700 dark:text-gray-300 font-arabic">
-            {deathText} في <DateDisplay date={deathDate} />
+            {deathText} {t('member.in', 'في')} <DateDisplay date={deathDate} />
           </span>
         </div>
       );
@@ -195,12 +197,12 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     
     // حالة 3: يوجد تاريخ ولادة + العضو متوفي + لا يوجد تاريخ وفاة
     if (birthDate && !isAlive && !deathDate) {
-      const birthText = gender === 'female' ? 'ولدت' : 'ولد';
+      const birthText = gender === 'female' ? t('member.born_female', 'ولدت') : t('member.born_male', 'ولد');
       return (
         <div className="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-full">
           <Calendar className="h-3 w-3 text-blue-600 dark:text-blue-400" />
           <span className="text-xs text-blue-700 dark:text-blue-300 font-arabic">
-            {birthText} في <DateDisplay date={birthDate} />
+            {birthText} {t('member.in', 'في')} <DateDisplay date={birthDate} />
           </span>
         </div>
       );
@@ -208,13 +210,13 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     
     // حالة 4: يوجد تاريخ ولادة + العضو على قيد الحياة
     if (birthDate && isAlive) {
-      const birthText = gender === 'female' ? 'ولدت' : 'ولد';
+      const birthText = gender === 'female' ? t('member.born_female', 'ولدت') : t('member.born_male', 'ولد');
       const age = differenceInYears(new Date(), parseISO(birthDate));
       return (
         <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-full">
           <Calendar className="h-3 w-3 text-green-600 dark:text-green-400" />
           <span className="text-xs text-green-700 dark:text-green-300 font-arabic">
-            {birthText} في <DateDisplay date={birthDate} /> - {age} سنة
+            {birthText} {t('member.in', 'في')} <DateDisplay date={birthDate} /> - {age} {t('member.years', 'سنة')}
           </span>
         </div>
       );
@@ -222,8 +224,8 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     
     // حالة 5: يوجد تاريخ ولادة + تاريخ وفاة
     if (birthDate && deathDate) {
-      const birthText = gender === 'female' ? 'ولدت' : 'ولد';
-      const deathText = gender === 'female' ? 'توفيت' : 'توفي';
+      const birthText = gender === 'female' ? t('member.born_female', 'ولدت') : t('member.born_male', 'ولد');
+      const deathText = gender === 'female' ? t('member.died_female', 'توفيت') : t('member.died_male', 'توفي');
       const age = differenceInYears(parseISO(deathDate), parseISO(birthDate));
       const birthYear = parseISO(birthDate).getFullYear();
       const deathYear = parseISO(deathDate).getFullYear();
@@ -231,7 +233,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         <div className="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-full">
           <Calendar className="h-3 w-3 text-amber-600 dark:text-amber-400" />
           <span className="text-xs text-amber-700 dark:text-amber-300 font-arabic">
-            {birthText} في {birthYear} - {deathText} في {deathYear} - {age} سنة
+            {birthText} {t('member.in', 'في')} {birthYear} - {deathText} {t('member.in', 'في')} {deathYear} - {age} {t('member.years', 'سنة')}
           </span>
         </div>
       );
