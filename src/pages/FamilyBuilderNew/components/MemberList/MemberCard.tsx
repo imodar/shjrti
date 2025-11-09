@@ -33,7 +33,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 }) => {
   // Resolve member image to signed URL with lazy loading
   const memberImageSrc = useResolvedImageUrl((member as any).image || member.image_url, true);
-  const { t } = useLanguage();
+  const { t, direction } = useLanguage();
 
   const generateMemberDisplayName = () => {
     // Check if this member is married into the family (actual spouse from outside)
@@ -244,18 +244,18 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   return <TooltipProvider>
     <Card className="relative cursor-pointer bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 hover:bg-white/95 dark:hover:bg-gray-800/95 transition-all duration-300 hover:shadow-lg rounded-3xl overflow-hidden" onClick={() => onViewMember(member)}>
       {/* Black ribbon for deceased members */}
-      {((member as any).death_date || (member as any).deathDate || (member as any).is_alive === false) && <div className="absolute top-0 left-0 z-10">
+      {((member as any).death_date || (member as any).deathDate || (member as any).is_alive === false) && <div className={`absolute top-0 ${direction === 'rtl' ? 'left-0' : 'right-0'} z-10`}>
           <Tooltip>
             <TooltipTrigger asChild>
               <div 
-                className="w-12 h-12 bg-black cursor-help rounded-tl-[24px]"
+                className={`w-12 h-12 bg-black cursor-help ${direction === 'rtl' ? 'rounded-tl-[24px]' : 'rounded-tr-[24px]'}`}
                 style={{
-                  clipPath: 'polygon(0 0, 100% 0, 0 100%)'
+                  clipPath: direction === 'rtl' ? 'polygon(0 0, 100% 0, 0 100%)' : 'polygon(0 0, 100% 0, 100% 100%)'
                 }}
               ></div>
             </TooltipTrigger>
-            <TooltipContent side="right">
-              <p>متوفى</p>
+            <TooltipContent side={direction === 'rtl' ? 'right' : 'left'}>
+              <p>{t('member.deceased', 'متوفى')}</p>
             </TooltipContent>
           </Tooltip>
         </div>}
