@@ -1,5 +1,5 @@
-
 import * as React from "react";
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -45,6 +45,7 @@ import RenewSubscription from "./pages/RenewSubscription";
 import CustomDomainRedirect from "./pages/CustomDomainRedirect";
 import PublicTreeViewWithContext from "./pages/PublicTreeView/PublicTreeViewWithContext";
 import NotFound from "./pages/NotFound";
+import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient();
 
@@ -53,7 +54,31 @@ if ('scrollRestoration' in window.history) {
   window.history.scrollRestoration = 'manual';
 }
 
-const App = () => (
+const App = () => {
+  const [gaId, setGaId] = useState<string>('');
+
+  useEffect(() => {
+    // Fetch Google Analytics ID from admin settings
+    const fetchGAId = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('admin_settings')
+          .select('setting_value')
+          .eq('setting_key', 'google_analytics_id')
+          .single();
+
+        if (!error && data?.setting_value) {
+          setGaId(String(data.setting_value));
+        }
+      } catch (error) {
+        console.error('Error fetching GA ID:', error);
+      }
+    };
+
+    fetchGAId();
+  }, []);
+
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <LanguageProvider>
@@ -67,7 +92,7 @@ const App = () => (
                 <BrowserRouter>
                   <ScrollToTop />
                   <ConsentAwareScriptInjector />
-                  <GoogleAnalytics measurementId="G-4MHYZ9D4L4" />
+                  {gaId && <GoogleAnalytics measurementId={gaId} />}
                   <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
@@ -187,5 +212,6 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
+};
 
 export default App;

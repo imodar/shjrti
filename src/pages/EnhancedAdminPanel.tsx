@@ -204,6 +204,10 @@ export default function EnhancedAdminPanel() {
   const [customJavaScript, setCustomJavaScript] = useState('');
   const [savingJavaScript, setSavingJavaScript] = useState(false);
   
+  // Google Analytics management state
+  const [googleAnalyticsId, setGoogleAnalyticsId] = useState('');
+  const [savingAnalyticsId, setSavingAnalyticsId] = useState(false);
+  
   // Maintenance mode management state
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [savingMaintenanceMode, setSavingMaintenanceMode] = useState(false);
@@ -318,6 +322,25 @@ export default function EnhancedAdminPanel() {
     }
   };
 
+  // Load Google Analytics ID from admin settings
+  const loadGoogleAnalyticsId = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('admin_settings')
+        .select('setting_value')
+        .eq('setting_key', 'google_analytics_id')
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      
+      if (data?.setting_value) {
+        setGoogleAnalyticsId(String(data.setting_value));
+      }
+    } catch (error) {
+      console.error('Error loading Google Analytics ID:', error);
+    }
+  };
+
   // Save custom JavaScript to admin settings
   const saveCustomJavaScript = async () => {
     setSavingJavaScript(true);
@@ -347,6 +370,38 @@ export default function EnhancedAdminPanel() {
       });
     } finally {
       setSavingJavaScript(false);
+    }
+  };
+
+  // Save Google Analytics ID to admin settings
+  const saveGoogleAnalyticsId = async () => {
+    setSavingAnalyticsId(true);
+    try {
+      const { error } = await supabase
+        .from('admin_settings')
+        .upsert({
+          setting_key: 'google_analytics_id',
+          setting_value: googleAnalyticsId,
+          description: 'Google Analytics Measurement ID (e.g., G-XXXXXXXXXX)'
+        }, {
+          onConflict: 'setting_key'
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "تم الحفظ",
+        description: "تم حفظ معرف Google Analytics بنجاح"
+      });
+    } catch (error) {
+      console.error('Error saving Google Analytics ID:', error);
+      toast({
+        title: "خطأ",
+        description: "فشل في حفظ معرف Google Analytics",
+        variant: "destructive"
+      });
+    } finally {
+      setSavingAnalyticsId(false);
     }
   };
 
@@ -453,7 +508,16 @@ export default function EnhancedAdminPanel() {
 
   useEffect(() => {
     setLoading(true);
-    Promise.all([loadPackages(), loadTranslations(), loadLanguages(), loadUsers(), loadUserSubscriptions(), loadCustomJavaScript(), loadMaintenanceMode()]).finally(() => {
+    Promise.all([
+      loadPackages(), 
+      loadTranslations(), 
+      loadLanguages(), 
+      loadUsers(), 
+      loadUserSubscriptions(), 
+      loadCustomJavaScript(), 
+      loadGoogleAnalyticsId(),
+      loadMaintenanceMode()
+    ]).finally(() => {
       setLoading(false);
     });
   }, []);
@@ -961,7 +1025,16 @@ export default function EnhancedAdminPanel() {
               </div>
             </div>
             
-            <Button onClick={() => { loadPackages(); loadTranslations(); loadLanguages(); loadUsers(); loadUserSubscriptions(); loadCustomJavaScript(); }} disabled={loading} className="bg-gradient-to-r from-emerald-500 to-teal-500">
+            <Button onClick={() => { 
+              loadPackages(); 
+              loadTranslations(); 
+              loadLanguages(); 
+              loadUsers(); 
+              loadUserSubscriptions(); 
+              loadCustomJavaScript(); 
+              loadGoogleAnalyticsId();
+              loadMaintenanceMode();
+            }} disabled={loading} className="bg-gradient-to-r from-emerald-500 to-teal-500">
               <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               تحديث البيانات
             </Button>
@@ -1867,6 +1940,55 @@ export default function EnhancedAdminPanel() {
                     </ul>
                   </div>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Google Analytics Card */}
+            <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-blue-200/30 dark:border-blue-700/30">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-xl font-bold text-blue-600">
+                  <Globe className="h-5 w-5" />
+                  Google Analytics
+                </CardTitle>
+                <CardDescription>
+                  إدارة معرف Google Analytics للموقع
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="ga-id">معرف القياس (Measurement ID)</Label>
+                  <Input
+                    id="ga-id"
+                    placeholder="G-XXXXXXXXXX"
+                    value={googleAnalyticsId}
+                    onChange={(e) => setGoogleAnalyticsId(e.target.value)}
+                    className="font-mono"
+                  />
+                  <p className="text-sm text-muted-foreground">
+                    أدخل معرف Google Analytics الخاص بك (مثال: G-4MHYZ9D4L4)
+                  </p>
+                </div>
+                <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">ملاحظات مهمة:</h4>
+                  <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                    <li>• سيتم تحميل Google Analytics تلقائياً عند موافقة المستخدم على ملفات تعريف الارتباط التحليلية</li>
+                    <li>• يمكن اختبار التفعيل من Developer Tools → Network → تصفية "gtag"</li>
+                    <li>• قد تستغرق البيانات 24-48 ساعة للظهور في لوحة تحكم Google Analytics</li>
+                    <li>• يمكنك استخدام Google Tag Assistant لاختبار التثبيت فوراً</li>
+                  </ul>
+                </div>
+                <Button 
+                  onClick={saveGoogleAnalyticsId} 
+                  disabled={savingAnalyticsId}
+                  className="bg-gradient-to-r from-blue-500 to-cyan-500"
+                >
+                  {savingAnalyticsId ? (
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4 mr-2" />
+                  )}
+                  حفظ المعرف
+                </Button>
               </CardContent>
             </Card>
 
