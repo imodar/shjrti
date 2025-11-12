@@ -52,6 +52,14 @@ export const GoogleAnalytics = ({ measurementId }: GoogleAnalyticsProps) => {
     script.id = 'ga-script';
     script.async = true;
     script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+    script.onload = () => {
+      if (window.gtag) {
+        window.gtag('config', measurementId, {
+          anonymize_ip: true,
+          cookie_flags: 'SameSite=None;Secure',
+        });
+      }
+    };
     document.head.appendChild(script);
 
     // Cleanup function

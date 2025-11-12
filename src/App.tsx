@@ -69,14 +69,21 @@ const App = () => {
           .from('admin_settings')
           .select('setting_value')
           .eq('setting_key', 'google_analytics_id')
-          .single();
+          .maybeSingle();
 
         if (!error && data?.setting_value) {
           setGaId(String(data.setting_value));
+        } else {
+          // Fallback to env var if DB setting is not found
+          const envId = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
+          if (envId) setGaId(envId);
         }
       } catch (error) {
         // Silently fail - GA is optional
         console.debug('GA ID not loaded:', error);
+        // Final fallback to env var
+        const envId = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
+        if (envId) setGaId(envId);
       }
     };
 
