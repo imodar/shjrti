@@ -20,33 +20,16 @@ export const useTheme = () => {
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentTheme, setCurrentTheme] = useState<ThemeVariant>('modern');
-  const [currentStyleElement, setCurrentStyleElement] = useState<HTMLLinkElement | null>(null);
 
   const themes: Record<ThemeVariant, string> = {
     modern: 'theme-modern',
     professional: 'theme-professional'
   };
 
-  const loadThemeCSS = async (theme: ThemeVariant) => {
+  const applyTheme = (theme: ThemeVariant) => {
     // Remove existing theme classes
     document.documentElement.classList.remove('theme-modern', 'theme-professional');
-    
-    // Remove existing theme CSS
-    if (currentStyleElement) {
-      currentStyleElement.remove();
-      setCurrentStyleElement(null);
-    }
-    
-    // Load the theme-specific CSS
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = `/src/styles/themes/${theme}/index.css`;
-    link.setAttribute('data-theme', theme);
-    
-    document.head.appendChild(link);
-    setCurrentStyleElement(link);
-    
-    // Apply theme class
+    // Apply new theme class
     document.documentElement.classList.add(themes[theme]);
   };
 
@@ -59,8 +42,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   useEffect(() => {
-    // Load the appropriate theme CSS
-    loadThemeCSS(currentTheme);
+    // Apply the appropriate theme class
+    applyTheme(currentTheme);
     // Save to localStorage
     localStorage.setItem('selected-theme', currentTheme);
   }, [currentTheme]);
