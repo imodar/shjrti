@@ -15,7 +15,8 @@ import { ProtectedFamilyRoute } from "@/components/ProtectedFamilyRoute";
 import { MaintenanceModeGuard } from "@/components/MaintenanceModeGuard";
 import { SkeletonLayoutForBuilder } from "@/components/SkeletonLayoutForBuilder";
 import ScrollToTop from "@/components/ScrollToTop";
-import CustomScriptInjector from "@/components/CustomScriptInjector";
+import ConsentAwareScriptInjector from "@/components/ConsentAwareScriptInjector";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -65,7 +66,8 @@ const App = () => (
                 <Sonner />
                 <BrowserRouter>
                   <ScrollToTop />
-                  <CustomScriptInjector />
+                  <ConsentAwareScriptInjector />
+                  <GoogleAnalytics measurementId="G-4MHYZ9D4L4" />
                   <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
