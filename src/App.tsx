@@ -58,9 +58,13 @@ const App = () => {
   const [gaId, setGaId] = useState<string>('');
 
   useEffect(() => {
-    // Fetch Google Analytics ID from admin settings
+    // Fetch Google Analytics ID from admin settings with a small delay
+    // to ensure Supabase client is fully initialized
     const fetchGAId = async () => {
       try {
+        // Small delay to ensure client is ready
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         const { data, error } = await supabase
           .from('admin_settings')
           .select('setting_value')
@@ -71,7 +75,8 @@ const App = () => {
           setGaId(String(data.setting_value));
         }
       } catch (error) {
-        console.error('Error fetching GA ID:', error);
+        // Silently fail - GA is optional
+        console.debug('GA ID not loaded:', error);
       }
     };
 
