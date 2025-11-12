@@ -10,6 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useToast } from "@/hooks/use-toast";
 import { usePackageTransition } from "@/hooks/usePackageTransition";
+import { usePaymentTracking } from "@/hooks/usePaymentTracking";
 import familyTreeLogo from "@/assets/family-tree-logo.png";
 
 interface Package {
@@ -50,6 +51,7 @@ const PlanSelection = () => {
   const { refreshSubscription } = useSubscription();
   const { toast } = useToast();
   const { processPackageTransition, loading: transitionLoading } = usePackageTransition();
+  const { logViewPackages, logUpgradeClick, logPackageSelection, logPaymentInitiation } = usePaymentTracking();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
@@ -58,6 +60,9 @@ const PlanSelection = () => {
   const [packageWarning, setPackageWarning] = useState<string>("");
 
   useEffect(() => {
+    // Track page view
+    logViewPackages();
+    
     fetchPackages();
     if (user) {
       fetchUserSubscription();
@@ -210,6 +215,9 @@ const PlanSelection = () => {
       // Always use USD for PayPal payments
       const packagePrice = selectedPackage.price_usd || 0;
       const currency = 'USD';
+      
+      // Track payment initiation
+      logPaymentInitiation(packageId, packagePrice, currency, 'paypal');
 
       const { data: invoiceId, error } = await supabase.rpc('create_invoice', {
         p_user_id: user.id,
@@ -253,6 +261,9 @@ const PlanSelection = () => {
   };
 
   const handlePlanSelect = async (planId: string) => {
+    // Track upgrade button click
+    logUpgradeClick();
+    
     if (!user) {
       toast({
         title: currentLanguage === 'ar' ? "تسجيل الدخول مطلوب" : "Login Required",
@@ -276,6 +287,10 @@ const PlanSelection = () => {
       });
       return;
     }
+
+    // Track package selection
+    const packagePrice = getPackagePrice(selectedPackage);
+    logPackageSelection(planId, packagePrice, currency);
 
     // تحليل عملية التنقل بين الباقات
     const transitionResult = await processPackageTransition(selectedPackage, userSubscription, packages);
@@ -320,8 +335,6 @@ const PlanSelection = () => {
     }
 
     // التعامل مع الباقات المجانية
-    const packagePrice = getPackagePrice(selectedPackage);
-    
     if (packagePrice === 0) {
       try {
         const { error } = await supabase

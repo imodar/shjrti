@@ -36,7 +36,8 @@ import {
   Code,
   Palette,
   AlertTriangle,
-  MailOpen
+  MailOpen,
+  TrendingUp
 } from "lucide-react";
 import { PackageEditModal } from '@/components/PackageEditModal';
 import { ChangePackageModal } from '@/components/ChangePackageModal';
@@ -46,6 +47,7 @@ import ContactSubmissions from '@/components/ContactSubmissions';
 import { PaymentGatewaySettings } from '@/components/PaymentGatewaySettings';
 import AdminEmailTemplates from './AdminEmailTemplates';
 import AdminEmailLogs from './AdminEmailLogs';
+import AdminPaymentAnalytics from './AdminPaymentAnalytics';
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
@@ -1044,7 +1046,7 @@ export default function EnhancedAdminPanel() {
         <Tabs defaultValue="packages" className="space-y-8">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 blur-3xl -z-10 rounded-3xl"></div>
-            <TabsList className="grid w-full grid-cols-11 gap-2 bg-gradient-to-br from-white/80 via-emerald-50/30 to-teal-50/30 dark:from-gray-900/80 dark:via-emerald-950/30 dark:to-teal-950/30 backdrop-blur-2xl border-2 border-emerald-200/50 dark:border-emerald-700/50 rounded-2xl p-3 shadow-xl shadow-emerald-500/10">
+            <TabsList className="grid w-full grid-cols-12 gap-2 bg-gradient-to-br from-white/80 via-emerald-50/30 to-teal-50/30 dark:from-gray-900/80 dark:via-emerald-950/30 dark:to-teal-950/30 backdrop-blur-2xl border-2 border-emerald-200/50 dark:border-emerald-700/50 rounded-2xl p-3 shadow-xl shadow-emerald-500/10">
               <TabsTrigger 
                 value="packages" 
                 className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
@@ -1079,7 +1081,18 @@ export default function EnhancedAdminPanel() {
               </TabsTrigger>
               
               <TabsTrigger 
-                value="translations" 
+                value="analytics" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <TrendingUp className="h-5 w-5 transition-transform group-hover:scale-110 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline text-xs">التحليلات</span>
+                </div>
+              </TabsTrigger>
+              
+              <TabsTrigger 
+                value="translations"
                 className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
@@ -1885,6 +1898,11 @@ export default function EnhancedAdminPanel() {
           {/* Payment Gateway Settings Tab */}
           <TabsContent value="payments" className="space-y-6">
             <PaymentGatewaySettings />
+          </TabsContent>
+
+          {/* Payment Analytics Tab */}
+          <TabsContent value="analytics" className="space-y-6">
+            <AdminPaymentAnalytics />
           </TabsContent>
 
           {/* Settings Tab */}

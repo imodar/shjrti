@@ -867,6 +867,53 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_funnel_events: {
+        Row: {
+          amount: number | null
+          created_at: string
+          currency: string | null
+          event_type: Database["public"]["Enums"]["payment_event_type"]
+          failure_reason: string | null
+          id: string
+          metadata: Json | null
+          package_id: string | null
+          payment_gateway: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          event_type: Database["public"]["Enums"]["payment_event_type"]
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          package_id?: string | null
+          payment_gateway?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string
+          currency?: string | null
+          event_type?: Database["public"]["Enums"]["payment_event_type"]
+          failure_reason?: string | null
+          id?: string
+          metadata?: Json | null
+          package_id?: string | null
+          payment_gateway?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_funnel_events_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_gateway_settings: {
         Row: {
           created_at: string | null
@@ -1430,6 +1477,25 @@ export type Database = {
           user_status: Database["public"]["Enums"]["user_status_type"]
         }[]
       }
+      get_payment_funnel_analytics: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: {
+          avg_transaction_value: number
+          conversion_rate_click_to_initiate: number
+          conversion_rate_initiate_to_success: number
+          conversion_rate_overall: number
+          top_failure_reason: string
+          top_package_id: string
+          top_package_name: Json
+          total_package_selections: number
+          total_package_views: number
+          total_payment_failures: number
+          total_payment_initiations: number
+          total_payment_successes: number
+          total_revenue: number
+          total_upgrade_clicks: number
+        }[]
+      }
       get_user_family_ids: {
         Args: { user_uuid: string }
         Returns: {
@@ -1452,6 +1518,18 @@ export type Database = {
       is_admin_secure: { Args: { user_uuid: string }; Returns: boolean }
       is_maintenance_mode_enabled: { Args: never; Returns: boolean }
       is_subscription_expired: { Args: { user_uuid: string }; Returns: boolean }
+      log_payment_event: {
+        Args: {
+          p_amount?: number
+          p_currency?: string
+          p_event_type: Database["public"]["Enums"]["payment_event_type"]
+          p_failure_reason?: string
+          p_metadata?: Json
+          p_package_id?: string
+          p_payment_gateway?: string
+        }
+        Returns: string
+      }
       process_recurring_payment: {
         Args: {
           p_amount: number
@@ -1476,6 +1554,13 @@ export type Database = {
       }
     }
     Enums: {
+      payment_event_type:
+        | "view_packages"
+        | "click_upgrade"
+        | "select_package"
+        | "initiate_payment"
+        | "payment_success"
+        | "payment_failed"
       user_status_type: "active" | "pending" | "suspended" | "inactive"
     }
     CompositeTypes: {
@@ -1604,6 +1689,14 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      payment_event_type: [
+        "view_packages",
+        "click_upgrade",
+        "select_package",
+        "initiate_payment",
+        "payment_success",
+        "payment_failed",
+      ],
       user_status_type: ["active", "pending", "suspended", "inactive"],
     },
   },
