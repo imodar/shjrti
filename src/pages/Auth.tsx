@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import familyTreeLogo from "@/assets/family-tree-logo.png";
+import { sendAuthEmail, canSendAuthEmail } from "@/services/authService";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,10 +34,6 @@ const Auth = () => {
 
   // Global OTP cooldown (one timer for all OTP-related requests)
   const [otpCooldown, setOtpCooldown] = useState(0);
-  // Extra guards to ensure a single network request per click (synchronous)
-  const resetSubmittingRef = useRef(false);
-  const magicSubmittingRef = useRef(false);
-  const resendSubmittingRef = useRef(false);
 
   const startGlobalCooldown = (seconds: number) => {
     const until = Date.now() + seconds * 1000;
@@ -179,6 +176,18 @@ const Auth = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+
+    if (!canSendAuthEmail(otpCooldown)) {
+      if (otpCooldown > 0) {
+        toast({
+          title: t('wait_before_retry', 'الرجاء الانتظار'),
+          description: `${t('retry_after', 'يمكنك طلب رمز جديد بعد')} ${otpCooldown}ث`,
+        });
+      }
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -189,28 +198,37 @@ const Auth = () => {
         // Continue even if this fails
       }
 
-      const redirectUrl = `${window.location.origin}/`;
-      
-      const { data, error } = await supabase.auth.signUp({
+      const result = await sendAuthEmail({
+        type: 'signup',
         email,
         password,
-        options: {
-          emailRedirectTo: redirectUrl,
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-            full_name: `${firstName} ${lastName}`.trim(),
-            phone: phone,
-          }
-        }
+        userData: {
+          first_name: firstName,
+          last_name: lastName,
+          full_name: `${firstName} ${lastName}`.trim(),
+          phone: phone,
+        },
+        onProgress: (msg) => console.log('Signup progress:', msg)
       });
 
-      if (error) {
-        toast({
-          title: t('register_error', 'خطأ في إنشاء الحساب'),
-          description: error.message,
-          variant: "destructive",
-        });
+      if (result.error) {
+        if (result.error.message === 'DUPLICATE_REQUEST') {
+          return; // Silently ignore
+        }
+        
+        if (result.error.message === 'REQUEST_TIMEOUT') {
+          toast({
+            title: t('request_timeout', 'انتهت مهلة الطلب'),
+            description: t('try_again', 'يرجى المحاولة مرة أخرى'),
+            variant: 'destructive'
+          });
+        } else {
+          toast({
+            title: t('register_error', 'خطأ في إنشاء الحساب'),
+            description: result.error.message,
+            variant: "destructive",
+          });
+        }
         setIsLoading(false);
         return;
       }
@@ -223,7 +241,7 @@ const Auth = () => {
         description: t('enter_code_instruction', 'يرجى التحقق من بريدك الإلكتروني وإدخال رمز التحقق'),
       });
 
-      // Show OTP screen
+      startGlobalCooldown(60);
       setShowOTP(true);
       setIsLoading(false);
     } catch (error: any) {
@@ -286,42 +304,54 @@ const Auth = () => {
 
   const handleResendOTP = async () => {
     if (!pendingUserData) return;
-    if (resendSubmittingRef.current) return;
-    if (otpCooldown > 0) {
-      toast({
-        title: t('wait_before_retry', 'الرجاء الانتظار'),
-        description: `${t('retry_after', 'يمكنك إعادة الإرسال بعد')} ${otpCooldown}ث`,
-      });
+    
+    if (!canSendAuthEmail(otpCooldown)) {
+      if (otpCooldown > 0) {
+        toast({
+          title: t('wait_before_retry', 'الرجاء الانتظار'),
+          description: `${t('retry_after', 'يمكنك إعادة الإرسال بعد')} ${otpCooldown}ث`,
+        });
+      }
       return;
     }
     
-    resendSubmittingRef.current = true;
     setIsLoading(true);
+    
     try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
+      const result = await sendAuthEmail({
+        type: 'resend',
         email: pendingUserData.email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`
-        }
+        onProgress: (msg) => console.log('Resend progress:', msg)
       });
 
-      if (error) {
-        const msg = (error.message || '').toLowerCase();
-        if (msg.includes('rate limit')) {
-          startGlobalCooldown(300);
+      if (result.error) {
+        if (result.error.message === 'DUPLICATE_REQUEST') {
+          setIsLoading(false);
+          return;
+        }
+        
+        if (result.error.message === 'REQUEST_TIMEOUT') {
           toast({
-            title: t('too_many_requests', 'طلبات متكررة'),
-            description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل إعادة الإرسال')}`,
+            title: t('request_timeout', 'انتهت مهلة الطلب'),
+            description: t('try_again', 'يرجى المحاولة مرة أخرى'),
+            variant: 'destructive'
           });
         } else {
-          toast({
-            title: t('resend_error', 'خطأ في إعادة الإرسال'),
-            description: error.message,
-            variant: "destructive",
-          });
+          const msg = (result.error.message || '').toLowerCase();
+          if (msg.includes('rate limit')) {
+            startGlobalCooldown(300);
+            toast({
+              title: t('too_many_requests', 'طلبات متكررة'),
+              description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل إعادة الإرسال')}`,
+            });
+          } else {
+            toast({
+              title: t('resend_error', 'خطأ في إعادة الإرسال'),
+              description: result.error.message,
+              variant: "destructive",
+            });
+          }
         }
-        resendSubmittingRef.current = false;
         setIsLoading(false);
         return;
       }
@@ -330,8 +360,7 @@ const Auth = () => {
         title: t('resent_successfully', 'تم إعادة الإرسال'),
         description: t('resent_description', 'تم إرسال رمز تحقق جديد إلى بريدك الإلكتروني'),
       });
-      startGlobalCooldown(300);
-      resendSubmittingRef.current = false;
+      startGlobalCooldown(60);
       setIsLoading(false);
     } catch (error: any) {
       toast({
@@ -339,7 +368,6 @@ const Auth = () => {
         description: error.message || t('resend_error_general', 'حدث خطأ أثناء إعادة الإرسال'),
         variant: "destructive",
       });
-      resendSubmittingRef.current = false;
       setIsLoading(false);
     }
   };
@@ -352,42 +380,55 @@ const Auth = () => {
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
-    // Prevent multiple submissions
-    if (isLoading || resetSubmittingRef.current) return;
-    // Cooldown guard
-    if (otpCooldown > 0) {
-      toast({
-        title: t('wait_before_retry', 'الرجاء الانتظار'),
-        description: `${t('retry_after', 'يمكنك طلب رمز جديد بعد')} ${otpCooldown}ث`,
-      });
+    if (!canSendAuthEmail(otpCooldown)) {
+      if (otpCooldown > 0) {
+        toast({
+          title: t('wait_before_retry', 'الرجاء الانتظار'),
+          description: `${t('retry_after', 'يمكنك طلب رمز جديد بعد')} ${otpCooldown}ث`,
+        });
+      }
       return;
     }
     
-    resetSubmittingRef.current = true;
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
-        redirectTo: `${window.location.origin}/auth`,
+      const result = await sendAuthEmail({
+        type: 'reset',
+        email: resetEmail,
+        onProgress: (msg) => console.log('Reset progress:', msg)
       });
 
-      if (error) {
-        const msg = (error.message || '').toLowerCase();
-        if (msg.includes('rate limit')) {
-          startGlobalCooldown(300);
+      if (result.error) {
+        if (result.error.message === 'DUPLICATE_REQUEST') {
+          setIsLoading(false);
+          return;
+        }
+        
+        if (result.error.message === 'REQUEST_TIMEOUT') {
           toast({
-            title: t('too_many_requests', 'طلبات متكررة'),
-            description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل طلب رمز جديد')}`,
+            title: t('request_timeout', 'انتهت مهلة الطلب'),
+            description: t('try_again', 'يرجى المحاولة مرة أخرى'),
+            variant: 'destructive'
           });
         } else {
-          toast({
-            title: t('error', 'خطأ'),
-            description: error.message,
-            variant: "destructive",
-          });
+          const msg = (result.error.message || '').toLowerCase();
+          if (msg.includes('rate limit')) {
+            startGlobalCooldown(300);
+            toast({
+              title: t('too_many_requests', 'طلبات متكررة'),
+              description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل طلب رمز جديد')}`,
+            });
+          } else {
+            toast({
+              title: t('error', 'خطأ'),
+              description: result.error.message,
+              variant: "destructive",
+            });
+          }
         }
-        resetSubmittingRef.current = false;
         setIsLoading(false);
         return;
       }
@@ -397,11 +438,8 @@ const Auth = () => {
         description: t('check_email_for_code', 'يرجى التحقق من بريدك الإلكتروني'),
       });
 
-      // Start 5min cooldown to avoid rate limit
-      startGlobalCooldown(300);
-
+      startGlobalCooldown(60);
       setShowPasswordReset('otp');
-      resetSubmittingRef.current = false;
       setIsLoading(false);
     } catch (error: any) {
       toast({
@@ -409,7 +447,6 @@ const Auth = () => {
         description: error.message,
         variant: "destructive",
       });
-      resetSubmittingRef.current = false;
       setIsLoading(false);
     }
   };
@@ -502,44 +539,55 @@ const Auth = () => {
 
   const handleMagicLinkLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
-    // Prevent multiple submissions
-    if (isLoading || magicSubmittingRef.current) return;
-    if (otpCooldown > 0) {
-      toast({
-        title: t('wait_before_retry', 'الرجاء الانتظار'),
-        description: `${t('retry_after', 'يمكنك طلب رمز جديد بعد')} ${otpCooldown}ث`,
-      });
+    if (!canSendAuthEmail(otpCooldown)) {
+      if (otpCooldown > 0) {
+        toast({
+          title: t('wait_before_retry', 'الرجاء الانتظار'),
+          description: `${t('retry_after', 'يمكنك طلب رمز جديد بعد')} ${otpCooldown}ث`,
+        });
+      }
       return;
     }
     
-    magicSubmittingRef.current = true;
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithOtp({
+      const result = await sendAuthEmail({
+        type: 'magiclink',
         email: magicLinkEmail,
-        options: {
-          shouldCreateUser: false,
-        }
+        onProgress: (msg) => console.log('Magic link progress:', msg)
       });
 
-      if (error) {
-        const msg = (error.message || '').toLowerCase();
-        if (msg.includes('rate limit')) {
-          startGlobalCooldown(300);
+      if (result.error) {
+        if (result.error.message === 'DUPLICATE_REQUEST') {
+          setIsLoading(false);
+          return;
+        }
+        
+        if (result.error.message === 'REQUEST_TIMEOUT') {
           toast({
-            title: t('too_many_requests', 'طلبات متكررة'),
-            description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل طلب رمز جديد')}`,
+            title: t('request_timeout', 'انتهت مهلة الطلب'),
+            description: t('try_again', 'يرجى المحاولة مرة أخرى'),
+            variant: 'destructive'
           });
         } else {
-          toast({
-            title: t('error', 'خطأ'),
-            description: error.message,
-            variant: "destructive",
-          });
+          const msg = (result.error.message || '').toLowerCase();
+          if (msg.includes('rate limit')) {
+            startGlobalCooldown(300);
+            toast({
+              title: t('too_many_requests', 'طلبات متكررة'),
+              description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل طلب رمز جديد')}`,
+            });
+          } else {
+            toast({
+              title: t('error', 'خطأ'),
+              description: result.error.message,
+              variant: "destructive",
+            });
+          }
         }
-        magicSubmittingRef.current = false;
         setIsLoading(false);
         return;
       }
@@ -549,10 +597,8 @@ const Auth = () => {
         description: t('check_email_for_code', 'تحقق من بريدك الإلكتروني لإدخال الرمز المؤقت'),
       });
 
-      startGlobalCooldown(300);
-
+      startGlobalCooldown(60);
       setShowMagicLink('otp');
-      magicSubmittingRef.current = false;
       setIsLoading(false);
     } catch (error: any) {
       toast({
@@ -560,7 +606,6 @@ const Auth = () => {
         description: error.message,
         variant: "destructive",
       });
-      magicSubmittingRef.current = false;
       setIsLoading(false);
     }
   };
