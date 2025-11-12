@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Language {
@@ -57,10 +57,22 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   const [translations, setTranslations] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [hasCachedTranslations, setHasCachedTranslations] = useState(false);
+  const lastLoadedLanguageRef = useRef<string | null>(null);
 
-  const currentLang = languages.find(lang => lang.code === currentLanguage);
-  const direction = (currentLang?.direction as 'ltr' | 'rtl') || (currentLanguage === 'ar' ? 'rtl' : 'ltr');
-  const currency = currentLang?.currency || (currentLanguage === 'ar' ? 'SAR' : 'USD');
+  const currentLang = useMemo(
+    () => languages.find(lang => lang.code === currentLanguage),
+    [languages, currentLanguage]
+  );
+
+  const direction = useMemo(
+    () => (currentLang?.direction as 'ltr' | 'rtl') || (currentLanguage === 'ar' ? 'rtl' : 'ltr'),
+    [currentLang, currentLanguage]
+  );
+
+  const currency = useMemo(
+    () => currentLang?.currency || (currentLanguage === 'ar' ? 'SAR' : 'USD'),
+    [currentLang, currentLanguage]
+  );
 
   useEffect(() => {
     // Pre-hydrate translations from cache to avoid flash
@@ -86,7 +98,7 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
       document.documentElement.dir = direction;
       document.documentElement.lang = currentLanguage;
     }
-  }, [currentLanguage, languages, direction]);
+  }, [currentLanguage, languages]);
 
   const loadLanguages = async () => {
     try {
@@ -116,6 +128,13 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   };
 
   const loadTranslations = async (languageCode: string) => {
+    // Prevent duplicate calls for the same language
+    if (lastLoadedLanguageRef.current === languageCode) {
+      return;
+    }
+    
+    lastLoadedLanguageRef.current = languageCode;
+    
     try {
       const { data, error } = await supabase
         .from('translations')
@@ -135,12 +154,19 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
       try { localStorage.setItem(`translations-${languageCode}`, JSON.stringify(translationMap)); } catch {}
     } catch (error) {
       console.error('Error loading translations:', error);
+      lastLoadedLanguageRef.current = null;
     }
   };
 
   const setLanguage = (code: string) => {
+    // Prevent setting the same language
+    if (code === currentLanguage) {
+      return;
+    }
+    
     setCurrentLanguage(code);
     localStorage.setItem('preferred-language', code);
+    lastLoadedLanguageRef.current = null; // Reset to allow fresh loading
 
     // Pre-hydrate cached translations for instant UI switch
     try {
