@@ -6,6 +6,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import Theme Styles */
+@import './styles/themes/modern/index.css';
+@import './styles/themes/professional/index.css';
+
 /* Shared styles that don't depend on themes - only base Tailwind overrides */
 @layer base {
   * {
