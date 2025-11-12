@@ -6,18 +6,145 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Import Theme Styles */
-@import './styles/themes/modern/index.css';
-@import './styles/themes/professional/index.css';
-
-/* Shared styles that don't depend on themes - only base Tailwind overrides */
+/* Theme Variables */
 @layer base {
+  /* Modern Theme */
+  .theme-modern {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222.2 84% 4.9%;
+    --primary: 160 84% 39%;
+    --primary-foreground: 210 40% 98%;
+    --sidebar-primary: 160 84% 39%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --accent: 173 80% 40%;
+    --accent-foreground: 210 40% 98%;
+    --sidebar-accent: 173 80% 40%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --sidebar-border: 214.3 31.8% 91.4%;
+    --ring: 160 84% 39%;
+    --sidebar-ring: 160 84% 39%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --radius: 0.5rem;
+    --tree-primary: 160 84% 39%;
+    --tree-secondary: 173 80% 40%;
+    --tree-accent: 158 64% 52%;
+    --tree-background: 0 0% 100%;
+    --tree-foreground: 222.2 84% 4.9%;
+    --tree-gradient: linear-gradient(135deg, hsl(var(--tree-primary)), hsl(var(--tree-secondary)));
+    --tree-shadow: 0 10px 30px -5px hsl(var(--tree-primary) / 0.2);
+  }
+
+  .theme-modern.dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --sidebar-background: 222.2 84% 4.9%;
+    --sidebar-foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --tree-background: 222.2 84% 4.9%;
+    --tree-foreground: 210 40% 98%;
+  }
+
+  /* Professional Theme */
+  .theme-professional {
+    --background: 240 10% 96%;
+    --foreground: 0 0% 13%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 0 0% 13%;
+    --primary: 214 89% 53%;
+    --primary-foreground: 0 0% 100%;
+    --sidebar-primary: 214 89% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --secondary: 240 12% 95%;
+    --secondary-foreground: 0 0% 13%;
+    --accent: 240 12% 95%;
+    --accent-foreground: 0 0% 13%;
+    --sidebar-accent: 240 12% 95%;
+    --sidebar-accent-foreground: 0 0% 13%;
+    --muted: 240 10% 91%;
+    --muted-foreground: 0 0% 45%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 13%;
+    --border: 240 6% 90%;
+    --input: 0 0% 100%;
+    --sidebar-border: 240 6% 90%;
+    --ring: 214 89% 53%;
+    --sidebar-ring: 214 89% 53%;
+    --destructive: 348 86% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 158 64% 52%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    --radius: 0.5rem;
+    --tree-primary: 214 89% 53%;
+    --tree-secondary: 240 12% 95%;
+    --tree-accent: 214 89% 60%;
+    --tree-background: 240 10% 96%;
+    --tree-gradient: linear-gradient(135deg, #1877F2, #42B883);
+    --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .theme-professional.dark {
+    --background: 240 6% 10%;
+    --foreground: 0 0% 95%;
+    --sidebar-background: 240 8% 7%;
+    --sidebar-foreground: 0 0% 90%;
+    --card: 240 8% 12%;
+    --card-foreground: 0 0% 95%;
+    --popover: 240 8% 12%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 214 89% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 6% 15%;
+    --secondary-foreground: 0 0% 80%;
+    --muted: 240 6% 15%;
+    --muted-foreground: 0 0% 65%;
+    --accent: 240 6% 15%;
+    --accent-foreground: 0 0% 95%;
+    --destructive: 348 86% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 6% 20%;
+    --input: 240 6% 15%;
+    --ring: 214 89% 53%;
+    --tree-background: 240 6% 10%;
+    --tree-foreground: 0 0% 95%;
+    --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Shared Base Styles */
   * {
     @apply border-border;
   }
 
   body {
-    font-family: 'Inter', sans-serif;
+    @apply bg-background text-foreground;
+    font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
@@ -35,8 +162,6 @@
     scroll-behavior: smooth;
   }
 }
-
-/* Theme Variables will be loaded dynamically */
 
 
 /* Facebook Theme Global Overrides */
