@@ -163,6 +163,17 @@
   }
 }
 
+/* Modern Theme Components */
+@import './styles/themes/modern/components.css';
+@import './styles/themes/modern/utilities.css';
+@import './styles/themes/modern/layout.css';
+@import './styles/themes/modern/rtl.css';
+
+/* Professional Theme Components */
+@import './styles/themes/professional/components.css';
+@import './styles/themes/professional/utilities.css';
+@import './styles/themes/professional/layout.css';
+@import './styles/themes/professional/rtl.css';
 
 /* Facebook Theme Global Overrides */
 .theme-professional {
