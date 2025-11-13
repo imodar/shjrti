@@ -604,7 +604,7 @@ const Dashboard = () => {
 
                   {/* Simplified Steps in One Row with Connection Lines */}
                   <div className="max-w-6xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 relative">
+                    <div className="hidden md:grid md:grid-cols-3 gap-6 relative">
                       {/* Connection Lines - Between Icons */}
                       <div className="hidden md:block absolute top-4 inset-x-0 z-0">
                         <div className="flex justify-between items-center max-w-2xl mx-auto px-16">
