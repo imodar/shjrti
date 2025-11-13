@@ -683,19 +683,19 @@ const Dashboard = () => {
                         <div className="flex items-center justify-center mb-4 md:mb-8">
                           <div className="relative">
                             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-xl opacity-60 animate-pulse"></div>
-                            <div className="relative w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-2xl">
-                              <TreePine className="h-10 w-10 text-white" />
+                            <div className="relative w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-2xl">
+                              <TreePine className="h-8 w-8 md:h-10 md:w-10 text-white" />
                             </div>
                           </div>
                         </div>
 
-                        <h3 className="text-3xl md:text-4xl font-bold mb-6">
+                        <h3 className="text-xl md:text-3xl font-bold mb-4 md:mb-6">
                           <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
                             {t('build_first_tree', 'اصنع أول شجرة عائلية')}
                           </span>
                         </h3>
 
-                        <p className="text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
+                        <p className="text-sm md:text-lg text-gray-600 dark:text-gray-300 mb-6 md:mb-10 max-w-2xl mx-auto leading-relaxed">
                           {t('first_tree_desc', 'بخطوات بسيطة ، ستبدأ رحلة حفظ تاريخ عائلتك ، إبدأ الآن واصنع إرثك الرقمي ليدوم للأبد')}
                         </p>
 
@@ -703,13 +703,13 @@ const Dashboard = () => {
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                           <Button 
                             onClick={handleCreateNewTree}
-                            className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 hover:from-emerald-700 hover:via-teal-700 hover:to-emerald-700 text-white border-0 rounded-2xl px-8 py-4 text-lg font-bold shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105"
+                            className="group relative overflow-hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 hover:from-emerald-700 hover:via-teal-700 hover:to-emerald-700 text-white border-0 rounded-2xl px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-bold shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105"
                           >
                             <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            <div className="relative flex items-center gap-3">
-                              <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform duration-300" />
+                            <div className="relative flex items-center gap-2 md:gap-3">
+                              <Plus className="h-5 w-5 md:h-6 md:w-6 group-hover:rotate-90 transition-transform duration-300" />
                               <span>{t('create_first_tree', 'إنشاء شجرتي الأولى')}</span>
-                              <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform duration-300" />
+                              <ArrowLeft className="h-4 w-4 md:h-5 md:w-5 group-hover:-translate-x-1 transition-transform duration-300" />
                             </div>
                           </Button>
 
