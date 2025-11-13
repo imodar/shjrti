@@ -707,7 +707,7 @@ const FamilyCreator = () => {
                               <div className="relative">
                                 <Textarea
                                   id="familyDescription"
-                                  placeholder="شارك قصة عائلتك، تاريخها، أو أي تفاصيل مميزة تود الاحتفاظ بها..."
+                                  placeholder={t('family_description_placeholder', 'شارك قصة عائلتك، تاريخها، أو أي تفاصيل مميزة تود الاحتفاظ بها...')}
                                   value={treeData.description}
                                   onChange={(e) => setTreeData({...treeData, description: e.target.value})}
                                   className="min-h-[120px] text-sm placeholder:text-sm border-2 border-teal-200/50 dark:border-teal-700/50 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
