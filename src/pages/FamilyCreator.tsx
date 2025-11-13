@@ -80,8 +80,8 @@ const FamilyCreator = () => {
       if (!treeData.name.trim()) {
         console.log('Family name validation failed:', treeData.name);
         toast({
-          title: "خطأ",
-          description: "يرجى إدخال اسم العائلة",
+          title: t('error_title', 'خطأ'),
+          description: t('please_enter_family_name', 'يرجى إدخال اسم العائلة'),
           variant: "destructive"
         });
         return;
@@ -445,15 +445,15 @@ const FamilyCreator = () => {
       setShowSuccessModal(true);
       
       toast({
-        title: "تم إنشاء العائلة بنجاح",
+        title: t('family_created_success', 'تم إنشاء العائلة بنجاح'),
         description: `تم حفظ بيانات العائلة مع ${wives.length} من الزوجات في قاعدة البيانات`
       });
       
     } catch (error) {
       console.error('Error creating family:', error);
       toast({
-        title: "خطأ في إنشاء العائلة",
-        description: "حدث خطأ أثناء حفظ بيانات العائلة، يرجى المحاولة مرة أخرى",
+        title: t('error_creating_family', 'خطأ في إنشاء العائلة'),
+        description: t('error_saving_family', 'حدث خطأ أثناء حفظ بيانات العائلة، يرجى المحاولة مرة أخرى'),
         variant: "destructive"
       });
     } finally {
@@ -667,15 +667,15 @@ const FamilyCreator = () => {
                           <div className="text-center lg:text-right">
                             <div className="inline-flex items-center gap-3 bg-emerald-100 dark:bg-emerald-900/30 px-4 py-2 rounded-full mb-4">
                               <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                              <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">الخطوة الأولى</span>
+                              <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">{t('first_step', 'الخطوة الأولى')}</span>
                             </div>
                             <h3 className="text-3xl font-bold mb-3">
                               <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                                معلومات العائلة
+                                {t('family_info', 'معلومات العائلة')}
                               </span>
                             </h3>
                             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-                              ابدأ رحلتك بتحديد هوية عائلتك الفريدة
+                              {t('start_journey_family', 'ابدأ رحلتك بتحديد هوية عائلتك الفريدة')}
                             </p>
                           </div>
 
@@ -683,12 +683,12 @@ const FamilyCreator = () => {
                             <div className="group">
                               <Label htmlFor="familyName" className="text-sm font-medium flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                                 <div className="w-3 h-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                اسم العائلة *
+                                {t('family_name_required', 'اسم العائلة *')}
                               </Label>
                               <div className="relative">
                                 <Input
                                   id="familyName"
-                                  placeholder="مثال : السعيد"
+                                  placeholder={t('family_name_example', 'مثال : السعيد')}
                                   value={treeData.name}
                                   onChange={(e) => setTreeData({...treeData, name: e.target.value})}
                                   className="h-14 text-sm placeholder:text-sm border-2 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-12"
@@ -702,7 +702,7 @@ const FamilyCreator = () => {
                             <div className="group">
                               <Label htmlFor="familyDescription" className="text-sm font-medium flex items-center gap-3 text-gray-700 dark:text-gray-300 mb-3">
                                 <div className="w-3 h-3 bg-gradient-to-r from-teal-500 to-amber-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                                وصف العائلة (اختياري)
+                                {t('family_description_optional', 'وصف العائلة (اختياري)')}
                               </Label>
                               <div className="relative">
                                 <Textarea
@@ -790,7 +790,7 @@ const FamilyCreator = () => {
                                   {/* Main Title */}
                                   <h3 className="text-3xl md:text-4xl font-bold leading-none">
                                     <span className="block bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent drop-shadow-sm">
-                                      رحلة الذكريات
+                                      {t('memory_journey', 'رحلة الذكريات')}
                                     </span>
                                   </h3>
                                   
@@ -819,22 +819,22 @@ const FamilyCreator = () => {
                                 {[
                                   { 
                                     icon: Heart, 
-                                    title: "ذكريات خالدة", 
-                                    desc: "احفظ قصص عائلتك",
+                                    title: t('eternal_memories', 'ذكريات خالدة'), 
+                                    desc: t('save_family_stories', 'احفظ قصص عائلتك'),
                                     color: "emerald",
                                     delay: "0"
                                   },
                                   { 
                                     icon: Users, 
-                                    title: "روابط قوية", 
-                                    desc: "اربط بين الأجيال بحب",
+                                    title: t('strong_bonds', 'روابط قوية'), 
+                                    desc: t('connect_generations_love', 'اربط بين الأجيال بحب'),
                                     color: "teal",
                                     delay: "200"
                                   },
                                   { 
                                     icon: Star, 
-                                    title: "إرث مضيء", 
-                                    desc: "اترك بصمة جميلة دائمة",
+                                    title: t('bright_legacy', 'إرث مضيء'), 
+                                    desc: t('leave_beautiful_mark', 'اترك بصمة جميلة دائمة'),
                                     color: "amber",
                                     delay: "400"
                                   }
@@ -1186,7 +1186,7 @@ const FamilyCreator = () => {
                 className="h-10 sm:h-12 md:h-16 px-4 sm:px-6 md:px-10 text-sm sm:text-base md:text-lg border-2 border-border hover:border-ring hover:bg-accent/50 hover:text-accent-foreground transition-all duration-300 rounded-xl sm:rounded-2xl bg-card/50 backdrop-blur-sm"
               >
                 <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 mr-2 sm:mr-3" />
-                {currentStep === 1 ? "العودة للوحة التحكم" : "السابق"}
+                {currentStep === 1 ? t('back_to_dashboard', 'العودة للوحة التحكم') : t('previous', 'السابق')}
               </Button>
               
               <Button
@@ -1198,7 +1198,7 @@ const FamilyCreator = () => {
                 className="h-10 sm:h-12 md:h-16 px-6 sm:px-10 md:px-16 text-sm sm:text-base md:text-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-amber-500 hover:opacity-90 hover:scale-105 transition-all duration-300 shadow-2xl rounded-xl sm:rounded-2xl text-white font-bold relative z-50 pointer-events-auto disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                 style={{ pointerEvents: 'auto' }}
               >
-                {currentStep === 1 ? "التالي" : (isCreatingFamily ? "جاري إنشاء العائلة..." : "إنشاء العائلة")}
+                {currentStep === 1 ? t('next', 'التالي') : (isCreatingFamily ? t('creating_family_progress', 'جاري إنشاء العائلة...') : t('create_family_button', 'إنشاء العائلة'))}
                 {currentStep === 1 && <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 ml-2 sm:ml-3" />}
                 {currentStep === 2 && !isCreatingFamily && <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 ml-2 sm:ml-3" />}
               </Button>
