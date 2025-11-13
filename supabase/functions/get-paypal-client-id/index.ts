@@ -71,6 +71,20 @@ serve(async (req) => {
       throw new Error('PayPal client ID not configured');
     }
 
+    // Validate client ID matches environment
+    // Live client IDs typically start with 'A', sandbox with 'E'
+    const isLikelyLiveClientId = clientId.startsWith('A');
+    const isLikelySandboxClientId = clientId.startsWith('E');
+    
+    if (environment === 'live' && isLikelySandboxClientId) {
+      console.error('Environment is set to LIVE but client ID appears to be SANDBOX (starts with E)');
+      throw new Error('البيئة مضبوطة على Live لكن الـ Client ID يبدو أنه Sandbox. تحقق من PAYPAL_CLIENT_ID_LIVE في Supabase Secrets');
+    }
+    
+    if (environment === 'sandbox' && isLikelyLiveClientId) {
+      console.warn('Environment is set to SANDBOX but client ID appears to be LIVE (starts with A)');
+    }
+
     console.log('Successfully retrieved PayPal client ID');
 
     return new Response(
