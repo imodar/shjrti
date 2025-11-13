@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import familyTreeLogo from "@/assets/family-tree-logo.png";
 import { sendAuthEmail, canSendAuthEmail } from "@/services/authService";
+import { sendOTP, verifyOTP } from "@/services/otpAuthService";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -198,37 +199,25 @@ const Auth = () => {
         // Continue even if this fails
       }
 
-      const result = await sendAuthEmail({
-        type: 'signup',
+      console.log('[Auth] Sending OTP for signup:', email);
+
+      // Use new OTP system with Resend
+      const result = await sendOTP({
         email,
-        password,
+        purpose: 'signup',
         userData: {
           first_name: firstName,
           last_name: lastName,
-          full_name: `${firstName} ${lastName}`.trim(),
           phone: phone,
-        },
-        onProgress: (msg) => console.log('Signup progress:', msg)
+        }
       });
 
-      if (result.error) {
-        if (result.error.message === 'DUPLICATE_REQUEST') {
-          return; // Silently ignore
-        }
-        
-        if (result.error.message === 'REQUEST_TIMEOUT') {
-          toast({
-            title: t('request_timeout', 'انتهت مهلة الطلب'),
-            description: t('try_again', 'يرجى المحاولة مرة أخرى'),
-            variant: 'destructive'
-          });
-        } else {
-          toast({
-            title: t('register_error', 'خطأ في إنشاء الحساب'),
-            description: result.error.message,
-            variant: "destructive",
-          });
-        }
+      if (!result.success) {
+        toast({
+          title: t('register_error', 'خطأ في إنشاء الحساب'),
+          description: result.error || t('failed_to_send_otp', 'فشل إرسال رمز التحقق'),
+          variant: "destructive",
+        });
         setIsLoading(false);
         return;
       }
@@ -245,6 +234,7 @@ const Auth = () => {
       setShowOTP(true);
       setIsLoading(false);
     } catch (error: any) {
+      console.error('[Auth] Signup error:', error);
       toast({
         title: t('error', 'خطأ'),
         description: error.message || t('register_error_general', 'حدث خطأ أثناء إنشاء الحساب'),
@@ -259,20 +249,31 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.verifyOtp({
+      console.log('[Auth] Verifying OTP for signup');
+
+      // Use new OTP verification system
+      const result = await verifyOTP({
         email: pendingUserData.email,
-        token: otpCode,
-        type: 'signup'
+        otpCode: otpCode,
+        purpose: 'signup',
+        password: pendingUserData.password,
+        userData: {
+          first_name: pendingUserData.firstName,
+          last_name: pendingUserData.lastName,
+          phone: pendingUserData.phone
+        }
       });
 
-      if (error) {
+      if (!result.success) {
         toast({
           title: t('verification_error', 'خطأ في التحقق'),
-          description: error.message,
+          description: result.error || t('invalid_otp', 'رمز التحقق غير صحيح'),
           variant: "destructive",
         });
         return;
       }
+
+      console.log('[Auth] OTP verified successfully, account created');
 
       toast({
         title: t('verification_successful', 'تم التحقق بنجاح'),
@@ -292,6 +293,7 @@ const Auth = () => {
       // For new registration, redirect to plan selection
       window.location.href = "/plan-selection";
     } catch (error: any) {
+      console.error('[Auth] OTP verification error:', error);
       toast({
         title: t('error', 'خطأ'),
         description: error.message || t('verification_error_general', 'حدث خطأ أثناء التحقق'),
@@ -318,40 +320,25 @@ const Auth = () => {
     setIsLoading(true);
     
     try {
-      const result = await sendAuthEmail({
-        type: 'resend',
+      console.log('[Auth] Resending OTP');
+
+      // Use new OTP system to resend
+      const result = await sendOTP({
         email: pendingUserData.email,
-        onProgress: (msg) => console.log('Resend progress:', msg)
+        purpose: 'signup',
+        userData: {
+          first_name: pendingUserData.firstName,
+          last_name: pendingUserData.lastName,
+          phone: pendingUserData.phone
+        }
       });
 
-      if (result.error) {
-        if (result.error.message === 'DUPLICATE_REQUEST') {
-          setIsLoading(false);
-          return;
-        }
-        
-        if (result.error.message === 'REQUEST_TIMEOUT') {
-          toast({
-            title: t('request_timeout', 'انتهت مهلة الطلب'),
-            description: t('try_again', 'يرجى المحاولة مرة أخرى'),
-            variant: 'destructive'
-          });
-        } else {
-          const msg = (result.error.message || '').toLowerCase();
-          if (msg.includes('rate limit')) {
-            startGlobalCooldown(300);
-            toast({
-              title: t('too_many_requests', 'طلبات متكررة'),
-              description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل إعادة الإرسال')}`,
-            });
-          } else {
-            toast({
-              title: t('resend_error', 'خطأ في إعادة الإرسال'),
-              description: result.error.message,
-              variant: "destructive",
-            });
-          }
-        }
+      if (!result.success) {
+        toast({
+          title: t('resend_error', 'خطأ في إعادة الإرسال'),
+          description: result.error || t('failed_to_resend_otp', 'فشل إرسال رمز جديد'),
+          variant: "destructive",
+        });
         setIsLoading(false);
         return;
       }
@@ -363,6 +350,7 @@ const Auth = () => {
       startGlobalCooldown(60);
       setIsLoading(false);
     } catch (error: any) {
+      console.error('[Auth] Resend error:', error);
       toast({
         title: t('error', 'خطأ'),
         description: error.message || t('resend_error_general', 'حدث خطأ أثناء إعادة الإرسال'),
