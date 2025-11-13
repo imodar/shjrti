@@ -38,6 +38,73 @@ import { useCookieConsent } from '@/hooks/useCookieConsent';
  * - You regularly audit admin actions and script changes
  * - You understand the security implications of arbitrary code execution
  */
+/**
+ * Validates custom JavaScript code for basic security patterns
+ * @param code - The JavaScript code to validate
+ * @returns { valid: boolean, reason?: string }
+ */
+const validateCustomScript = (code: string): { valid: boolean; reason?: string } => {
+  if (!code || code.trim().length === 0) {
+    return { valid: false, reason: 'Empty script' };
+  }
+
+  // Check for extremely dangerous patterns
+  const dangerousPatterns = [
+    { pattern: /document\.cookie\s*=/gi, name: 'Direct cookie manipulation' },
+    { pattern: /localStorage\.clear\(\)/gi, name: 'LocalStorage clearing' },
+    { pattern: /sessionStorage\.clear\(\)/gi, name: 'SessionStorage clearing' },
+    { pattern: /<iframe[^>]*srcdoc=/gi, name: 'Inline iframe with srcdoc' },
+  ];
+
+  for (const { pattern, name } of dangerousPatterns) {
+    if (pattern.test(code)) {
+      console.warn(`[CustomScriptInjector] Blocked script containing: ${name}`);
+      return { valid: false, reason: `Contains potentially dangerous pattern: ${name}` };
+    }
+  }
+
+  return { valid: true };
+};
+
+/**
+ * Safely injects script tags from HTML string
+ * @param htmlString - HTML string potentially containing script tags
+ * @param container - Container element to append scripts to
+ */
+const injectScriptTags = (htmlString: string, container: HTMLElement): void => {
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = htmlString;
+  
+  // Find all script tags
+  const scripts = tempDiv.querySelectorAll('script');
+  
+  scripts.forEach((oldScript) => {
+    // Create new script element (necessary for execution)
+    const newScript = document.createElement('script');
+    
+    // Copy attributes
+    Array.from(oldScript.attributes).forEach((attr) => {
+      newScript.setAttribute(attr.name, attr.value);
+    });
+    
+    // Copy inline code if present
+    if (oldScript.textContent) {
+      newScript.textContent = oldScript.textContent;
+    }
+    
+    container.appendChild(newScript);
+  });
+  
+  // Inject non-script elements (e.g., style tags, meta tags)
+  const nonScripts = Array.from(tempDiv.children).filter(
+    (el) => el.tagName.toLowerCase() !== 'script'
+  );
+  
+  nonScripts.forEach((el) => {
+    container.appendChild(el.cloneNode(true));
+  });
+};
+
 export const CustomScriptInjector = () => {
   const { hasConsent } = useCookieConsent();
   useEffect(() => {
@@ -58,6 +125,7 @@ export const CustomScriptInjector = () => {
           .maybeSingle();
 
         if (error) {
+          console.error('[CustomScriptInjector] Failed to load custom scripts:', error);
           return;
         }
 
@@ -75,17 +143,31 @@ export const CustomScriptInjector = () => {
           existingContainer.remove();
         }
 
-        // If there's custom code, inject it
+        // If there's custom code, validate and inject it
         if (customCode && customCode.trim()) {
+          // Validate the script before injection
+          const validation = validateCustomScript(customCode);
+          
+          if (!validation.valid) {
+            console.error('[CustomScriptInjector] Script validation failed:', validation.reason);
+            return;
+          }
+
+          // Create container
           scriptContainer = document.createElement('div');
           scriptContainer.id = 'custom-scripts-container';
-          scriptContainer.innerHTML = customCode;
+          scriptContainer.setAttribute('data-source', 'admin-custom-scripts');
+          
+          // Safely inject scripts using proper script tag creation
+          injectScriptTags(customCode, scriptContainer);
           
           // Append to head
           document.head.appendChild(scriptContainer);
+          
+          console.info('[CustomScriptInjector] Custom scripts loaded successfully');
         }
       } catch (error) {
-        // Silently handle errors
+        console.error('[CustomScriptInjector] Error loading custom scripts:', error);
       }
     };
 
