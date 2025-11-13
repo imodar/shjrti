@@ -95,19 +95,31 @@ export async function verifyOTP(options: VerifyOTPOptions): Promise<OTPServiceRe
       }
     });
 
+    // Check for network/connection errors first
     if (error) {
-      console.error('[OTP Service] Error verifying OTP:', error);
+      console.error('[OTP Service] Network error verifying OTP:', error);
+      const errorMessage = error.message || 'فشل الاتصال بالخادم';
       return {
         success: false,
-        error: error.message || 'Failed to verify OTP'
+        error: errorMessage
       };
     }
 
+    // Check for application-level errors from edge function
     if (data?.error) {
-      console.error('[OTP Service] Error from edge function:', data.error);
+      console.error('[OTP Service] Application error from edge function:', data.error);
       return {
         success: false,
         error: data.error
+      };
+    }
+
+    // Check if the response indicates success
+    if (!data?.success) {
+      console.error('[OTP Service] Invalid response from edge function:', data);
+      return {
+        success: false,
+        error: 'رمز التحقق غير صحيح أو منتهي الصلاحية'
       };
     }
 

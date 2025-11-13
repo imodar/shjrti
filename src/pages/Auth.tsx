@@ -265,9 +265,13 @@ const Auth = () => {
       });
 
       if (!result.success) {
+        const errorMsg = result.error === "Invalid or expired OTP code" 
+          ? t('invalid_expired_otp', 'رمز التحقق غير صحيح أو منتهي الصلاحية')
+          : result.error || t('invalid_otp', 'رمز التحقق غير صحيح');
+        
         toast({
           title: t('verification_error', 'خطأ في التحقق'),
-          description: result.error || t('invalid_otp', 'رمز التحقق غير صحيح'),
+          description: errorMsg,
           variant: "destructive",
         });
         return;
