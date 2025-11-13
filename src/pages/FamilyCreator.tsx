@@ -601,7 +601,7 @@ const FamilyCreator = () => {
                   </div>
                   
                   {/* Text Content */}
-                  <div className="text-right">
+                  <div className="text-start">
                     <h1 className="text-2xl md:text-3xl font-bold mb-2">
                       <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent text-right rtl:text-right">
                         {t('create_family_tree', 'إنشاء شجرة العائلة')}
