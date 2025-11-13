@@ -1277,11 +1277,12 @@ const Auth = () => {
                             <Label htmlFor="email">{t('email', 'البريد الإلكتروني')}</Label>
                             <div className="relative">
                               <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-                               <Input
+                              <Input
                                  id="email"
                                  type="email"
                                  placeholder={t('email_placeholder', 'example@domain.com')}
                                  className="pr-10"
+                                 autoComplete="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 tabIndex={3}
@@ -1299,6 +1300,7 @@ const Auth = () => {
                                 type="tel"
                                 placeholder={t('phone_placeholder', '+966 50 123 4567')}
                                 className="pr-10"
+                                autoComplete="tel"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 tabIndex={4}
@@ -1316,6 +1318,7 @@ const Auth = () => {
                                 type="password"
                                 placeholder={t('enter_strong_password', 'أدخل كلمة مرور قوية')}
                                 className="pr-10"
+                                autoComplete="new-password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 tabIndex={5}
@@ -1343,14 +1346,15 @@ const Auth = () => {
                             <div className="relative">
                               <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
                                <Input
-                                 id="loginEmail"
-                                 type="email"
-                                 placeholder={t('email_placeholder', 'example@domain.com')}
-                                 className="pr-10"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                              />
+                                  id="loginEmail"
+                                  type="email"
+                                  placeholder={t('email_placeholder', 'example@domain.com')}
+                                  className="pr-10"
+                                  autoComplete="email"
+                                 value={email}
+                                 onChange={(e) => setEmail(e.target.value)}
+                                 required
+                               />
                             </div>
                           </div>
 
@@ -1363,6 +1367,7 @@ const Auth = () => {
                                 type="password"
                                 placeholder={t('enter_password', 'أدخل كلمة المرور')}
                                 className="pr-10"
+                                autoComplete="current-password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
