@@ -44,9 +44,10 @@ serve(async (req) => {
 
     if (otpError || !otpRecord) {
       console.error("Invalid or expired OTP:", otpError);
+      // Return 200 with a structured error to avoid client-side 4xx handling
       return new Response(
-        JSON.stringify({ error: "Invalid or expired OTP code" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ success: false, error: "OTP_INVALID_OR_EXPIRED" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 

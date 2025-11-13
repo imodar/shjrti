@@ -124,16 +124,19 @@ export async function verifyOTP(options: VerifyOTPOptions): Promise<OTPServiceRe
     // Check for application-level errors in successful response
     if (response.data?.error) {
       console.error('[OTP Service] Application error:', response.data.error);
-      if (response.data.error.includes('Invalid or expired')) {
-        return {
-          success: false,
-          error: 'OTP_INVALID_OR_EXPIRED'
-        };
+      const code = String(response.data.error).toUpperCase();
+      switch (code) {
+        case 'OTP_INVALID_OR_EXPIRED':
+          return { success: false, error: 'OTP_INVALID_OR_EXPIRED' };
+        case 'OTP_ALREADY_USED':
+          return { success: false, error: 'OTP_ALREADY_USED' };
+        default:
+          // Backwards compatibility with old text messages
+          if (String(response.data.error).includes('Invalid or expired')) {
+            return { success: false, error: 'OTP_INVALID_OR_EXPIRED' };
+          }
+          return { success: false, error: 'OTP_VERIFICATION_FAILED' };
       }
-      return {
-        success: false,
-        error: 'OTP_VERIFICATION_FAILED'
-      };
     }
 
     // Check if the response indicates success
