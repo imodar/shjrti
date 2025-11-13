@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit, getClientIP } from "../_shared/rateLimiter.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -12,6 +13,32 @@ serve(async (req) => {
   }
 
   try {
+    // Rate limiting: max 3 verification attempts per minute per IP
+    const clientIP = getClientIP(req);
+    const rateLimitResult = checkRateLimit(`verify-suggestion:${clientIP}`, {
+      maxAttempts: 3,
+      windowMs: 60 * 1000, // 1 minute
+      backoffMultiplier: 2, // Exponential backoff on repeated failures
+    });
+
+    if (!rateLimitResult.allowed) {
+      console.warn(`Rate limit exceeded for IP ${clientIP}`);
+      return new Response(
+        JSON.stringify({
+          error: "Too many verification attempts. Please wait before trying again.",
+          retryAfter: rateLimitResult.retryAfter,
+        }),
+        {
+          status: 429,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+            "Retry-After": rateLimitResult.retryAfter?.toString() || "60",
+          },
+        }
+      );
+    }
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -49,6 +76,7 @@ serve(async (req) => {
 
     // Check if code matches
     if (suggestion.verification_code !== verificationCode) {
+      console.warn(`Invalid verification code attempt from IP ${clientIP} for suggestion ${suggestionId}`);
       return new Response(
         JSON.stringify({ error: "Invalid verification code" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -112,6 +140,8 @@ serve(async (req) => {
     } catch (notifError) {
       console.error("Notification error:", notifError);
     }
+
+    console.log(`Suggestion ${suggestionId} verified successfully from IP ${clientIP}`);
 
     return new Response(
       JSON.stringify({

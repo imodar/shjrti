@@ -3,8 +3,40 @@ import { supabase } from '@/integrations/supabase/client';
 import { useCookieConsent } from '@/hooks/useCookieConsent';
 
 /**
- * Legacy component - loads all custom scripts without consent checking
- * Use ConsentAwareScriptInjector for consent-aware script loading
+ * @deprecated Legacy component - Use ConsentAwareScriptInjector for consent-aware script loading
+ * 
+ * CustomScriptInjector - Loads and injects custom JavaScript code into the application's head.
+ * This component fetches custom JavaScript from Supabase and injects it into the DOM.
+ * 
+ * ⚠️ SECURITY WARNING ⚠️
+ * This component allows admins to inject arbitrary JavaScript that executes on all pages.
+ * While properly protected by RLS policies (admin-only access), this feature has inherent risks:
+ * 
+ * RISKS:
+ * - A compromised admin account could inject malicious scripts (XSS)
+ * - Scripts execute with full user context and can access sensitive data
+ * - No built-in sandboxing or script validation
+ * - All users are affected by injected scripts
+ * 
+ * SECURITY MEASURES IN PLACE:
+ * - RLS policies restrict custom_javascript modifications to verified admins only
+ * - Scripts are loaded from Supabase database (not external URLs)
+ * - Previous scripts are cleaned up before new injection
+ * - Cookie consent required before script execution
+ * 
+ * RECOMMENDED ADDITIONAL HARDENING:
+ * - Implement Content Security Policy (CSP) headers to restrict script capabilities
+ * - Add admin action audit logging for all custom_javascript changes
+ * - Consider integrity hash validation for injected scripts
+ * - Limit script capabilities through CSP directives (no inline eval, external fetch restrictions)
+ * - Require two-factor authentication for admin accounts
+ * - Implement script review/approval workflow for high-security environments
+ * 
+ * USE ONLY IF:
+ * - You fully trust all admin users with system-level access
+ * - You have strong admin account security (2FA, password policies)
+ * - You regularly audit admin actions and script changes
+ * - You understand the security implications of arbitrary code execution
  */
 export const CustomScriptInjector = () => {
   const { hasConsent } = useCookieConsent();

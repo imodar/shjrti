@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit, validateEmail, getClientIP } from "../_shared/rateLimiter.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,6 +18,30 @@ serve(async (req) => {
   }
 
   try {
+    // Rate limiting: max 5 submissions per hour per IP
+    const clientIP = getClientIP(req);
+    const rateLimitResult = checkRateLimit(`submit-suggestion:${clientIP}`, {
+      maxAttempts: 5,
+      windowMs: 60 * 60 * 1000, // 1 hour
+    });
+
+    if (!rateLimitResult.allowed) {
+      return new Response(
+        JSON.stringify({
+          error: "Too many submission attempts. Please try again later.",
+          retryAfter: rateLimitResult.retryAfter,
+        }),
+        {
+          status: 429,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+            "Retry-After": rateLimitResult.retryAfter?.toString() || "3600",
+          },
+        }
+      );
+    }
+
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -36,6 +61,37 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Email validation
+    if (!validateEmail(submitterEmail)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email address format" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Additional rate limiting per email: max 3 submissions per hour per email
+    const emailRateLimitResult = checkRateLimit(`submit-suggestion:email:${submitterEmail}`, {
+      maxAttempts: 3,
+      windowMs: 60 * 60 * 1000, // 1 hour
+    });
+
+    if (!emailRateLimitResult.allowed) {
+      return new Response(
+        JSON.stringify({
+          error: "Too many submissions from this email. Please try again later.",
+          retryAfter: emailRateLimitResult.retryAfter,
+        }),
+        {
+          status: 429,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+            "Retry-After": emailRateLimitResult.retryAfter?.toString() || "3600",
+          },
+        }
       );
     }
 
@@ -96,6 +152,8 @@ serve(async (req) => {
       console.error("Email sending error:", emailError);
       // Continue even if email fails - user can request new code
     }
+
+    console.log(`Suggestion submitted from IP ${clientIP}, ${rateLimitResult.attemptsRemaining} attempts remaining`);
 
     return new Response(
       JSON.stringify({
