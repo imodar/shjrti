@@ -85,7 +85,7 @@ export async function verifyOTP(options: VerifyOTPOptions): Promise<OTPServiceRe
   try {
     console.log(`[OTP Service] Verifying OTP for ${options.email}, purpose: ${options.purpose}`);
 
-    const { data, error } = await supabase.functions.invoke('verify-otp', {
+    const response = await supabase.functions.invoke('verify-otp', {
       body: {
         email: options.email,
         otpCode: options.otpCode,
@@ -95,20 +95,36 @@ export async function verifyOTP(options: VerifyOTPOptions): Promise<OTPServiceRe
       }
     });
 
-    // Check for network/connection errors first
-    if (error) {
-      console.error('[OTP Service] Network error verifying OTP:', error);
+    console.log('[OTP Service] Edge function response:', { 
+      hasError: !!response.error, 
+      hasData: !!response.data,
+      errorMessage: response.error?.message,
+      dataError: response.data?.error
+    });
+
+    // Check for edge function errors (including 400 responses)
+    if (response.error) {
+      console.error('[OTP Service] Edge function error:', response.error);
+      
+      // For 400 Bad Request, treat as invalid OTP
+      if (response.error.message?.includes('non-2xx status code')) {
+        return {
+          success: false,
+          error: 'OTP_INVALID_OR_EXPIRED'
+        };
+      }
+      
+      // Real network errors
       return {
         success: false,
-        error: 'OTP_NETWORK_ERROR' // Error code instead of message
+        error: 'OTP_NETWORK_ERROR'
       };
     }
 
-    // Check for application-level errors from edge function
-    if (data?.error) {
-      console.error('[OTP Service] Application error from edge function:', data.error);
-      // Map edge function errors to error codes
-      if (data.error.includes('Invalid or expired')) {
+    // Check for application-level errors in successful response
+    if (response.data?.error) {
+      console.error('[OTP Service] Application error:', response.data.error);
+      if (response.data.error.includes('Invalid or expired')) {
         return {
           success: false,
           error: 'OTP_INVALID_OR_EXPIRED'
@@ -121,8 +137,8 @@ export async function verifyOTP(options: VerifyOTPOptions): Promise<OTPServiceRe
     }
 
     // Check if the response indicates success
-    if (!data?.success) {
-      console.error('[OTP Service] Invalid response from edge function:', data);
+    if (!response.data?.success) {
+      console.error('[OTP Service] Invalid response:', response.data);
       return {
         success: false,
         error: 'OTP_INVALID_RESPONSE'
@@ -151,7 +167,7 @@ export async function verifyOTP(options: VerifyOTPOptions): Promise<OTPServiceRe
 
     return {
       success: true,
-      data: data
+      data: response.data
     };
   } catch (error: any) {
     console.error('[OTP Service] Exception:', error);
