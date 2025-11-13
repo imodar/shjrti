@@ -107,6 +107,36 @@ export type Database = {
         }
         Relationships: []
       }
+      auth_otp_codes: {
+        Row: {
+          created_at: string | null
+          email: string
+          expires_at: string
+          id: string
+          is_used: boolean | null
+          otp_code: string
+          purpose: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          expires_at: string
+          id?: string
+          is_used?: boolean | null
+          otp_code: string
+          purpose: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          is_used?: boolean | null
+          otp_code?: string
+          purpose?: string
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string
@@ -1472,6 +1502,7 @@ export type Database = {
         Args: { p_scheduled_change_id: string; p_user_id: string }
         Returns: boolean
       }
+      cleanup_expired_otps: { Args: never; Returns: undefined }
       complete_payment_and_upgrade: {
         Args: {
           p_invoice_id: string
