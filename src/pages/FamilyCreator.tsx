@@ -664,7 +664,7 @@ const FamilyCreator = () => {
                         <div className="absolute bottom-6 left-6 w-16 h-16 bg-gradient-to-tr from-amber-200/30 to-emerald-200/30 rounded-full blur-lg"></div>
                         
                         <div className="relative z-10 space-y-8">
-                          <div className="text-center lg:text-right">
+                          <div className="text-center lg:text-start">
                             <div className="inline-flex items-center gap-3 bg-emerald-100 dark:bg-emerald-900/30 px-4 py-2 rounded-full mb-4">
                               <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                               <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">{t('first_step', 'الخطوة الأولى')}</span>
