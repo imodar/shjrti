@@ -555,7 +555,7 @@ const Dashboard = () => {
                             <CardHeader>
                               <CardTitle className="flex items-center gap-2 text-emerald-700">
                                 <Search className="h-5 w-5" />
-                                البحث الذكي في العائلة
+                                {t('smart_search_title', 'البحث الذكي في العائلة')}
                               </CardTitle>
                             </CardHeader>
                             <CardContent>
@@ -563,12 +563,12 @@ const Dashboard = () => {
                                 familyId={familyTrees[0]?.id || ''}
                                 onResultSelect={(member) => {
                                   toast({
-                                    title: "تم العثور على العضو",
-                                    description: `${member.name} موجود في قاعدة البيانات`,
+                                    title: t('member_found_title', 'تم العثور على العضو'),
+                                    description: `${member.name} ${t('member_found_desc', 'موجود في قاعدة البيانات')}`,
                                     variant: "default"
                                   });
                                 }}
-                                placeholder="ابحث عن أفراد العائلة... (مثال: ابن عم أحمد)"
+                                placeholder={t('smart_search_placeholder', 'ابحث عن أفراد العائلة... (مثال: ابن عم أحمد)')}
                               />
                             </CardContent>
                           </Card>
