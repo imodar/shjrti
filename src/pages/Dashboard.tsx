@@ -673,14 +673,14 @@ const Dashboard = () => {
                   </div>
 
                   {/* Call to Action Section - Build First Tree */}
-                  <div className="max-w-4xl mx-auto mt-8 md:mt-20">
+                  <div className="max-w-4xl mx-auto mt-6 md:mt-20">
                     <div className="relative">
                       {/* Glow Background */}
                       <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/20 via-teal-600/30 to-amber-600/20 rounded-3xl blur-3xl"></div>
                       
-                      <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-6 border border-white/30 dark:border-gray-700/30 shadow-2xl text-center">
+                      <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl p-4 md:p-6 border border-white/30 dark:border-gray-700/30 shadow-2xl text-center">
                         {/* Icon */}
-                        <div className="flex items-center justify-center mb-8">
+                        <div className="flex items-center justify-center mb-4 md:mb-8">
                           <div className="relative">
                             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-xl opacity-60 animate-pulse"></div>
                             <div className="relative w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-2xl">
