@@ -673,7 +673,7 @@ const Dashboard = () => {
                   </div>
 
                   {/* Call to Action Section - Build First Tree */}
-                  <div className="max-w-4xl mx-auto mt-20">
+                  <div className="max-w-4xl mx-auto mt-8 md:mt-20">
                     <div className="relative">
                       {/* Glow Background */}
                       <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/20 via-teal-600/30 to-amber-600/20 rounded-3xl blur-3xl"></div>
