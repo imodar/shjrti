@@ -604,7 +604,7 @@ const Dashboard = () => {
 
                   {/* Simplified Steps in One Row with Connection Lines */}
                   <div className="max-w-6xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 relative">
                       {/* Connection Lines - Between Icons */}
                       <div className="hidden md:block absolute top-4 inset-x-0 z-0">
                         <div className="flex justify-between items-center max-w-2xl mx-auto px-16">
@@ -615,15 +615,15 @@ const Dashboard = () => {
                       
                       {/* Step 1 */}
                       <div className="text-center group hover:scale-105 transition-transform duration-300 relative">
-                        <div className="flex items-center justify-center gap-3 mb-3 relative z-10">
-                          <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center shadow-lg">
-                            <Plus className="h-4 w-4 text-white" />
+                        <div className="flex items-center justify-center gap-2 md:gap-3 mb-2 md:mb-3 relative z-10">
+                          <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center shadow-lg">
+                            <Plus className="h-3 w-3 md:h-4 md:w-4 text-white" />
                           </div>
-                          <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                          <h3 className="text-base md:text-lg font-bold text-gray-800 dark:text-white">
                             {t('step1_title', 'إنشاء الشجرة')}
                           </h3>
                         </div>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm">
+                        <p className="text-gray-600 dark:text-gray-300 text-xs md:text-sm px-2 md:px-0">
                           {t('step1_desc', 'ابدأ بإنشاء شجرة عائلتك الأولى وإعطائها اسماً مميزاً')}
                         </p>
                         {/* Arrow for desktop - RTL direction */}
@@ -636,15 +636,15 @@ const Dashboard = () => {
 
                       {/* Step 2 */}
                       <div className="text-center group hover:scale-105 transition-transform duration-300 relative">
-                        <div className="flex items-center justify-center gap-3 mb-3 relative z-10">
-                          <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg">
-                            <Users className="h-4 w-4 text-white" />
+                        <div className="flex items-center justify-center gap-2 md:gap-3 mb-2 md:mb-3 relative z-10">
+                          <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-teal-500 to-amber-500 rounded-lg flex items-center justify-center shadow-lg">
+                            <Users className="h-3 w-3 md:h-4 md:w-4 text-white" />
                           </div>
-                          <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                          <h3 className="text-base md:text-lg font-bold text-gray-800 dark:text-white">
                             {t('step2_title', 'إضافة الأفراد')}
                           </h3>
                         </div>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm">
+                        <p className="text-gray-600 dark:text-gray-300 text-xs md:text-sm px-2 md:px-0">
                           {t('step2_desc', 'أضف أفراد عائلتك مع تفاصيلهم الشخصية والصور')}
                         </p>
                         {/* Arrow for desktop - RTL direction */}
@@ -657,26 +657,17 @@ const Dashboard = () => {
 
                       {/* Step 3 */}
                       <div className="text-center group hover:scale-105 transition-transform duration-300">
-                        <div className="flex items-center justify-center gap-3 mb-3 relative z-10">
-                          <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center shadow-lg">
-                            <Heart className="h-4 w-4 text-white" />
+                        <div className="flex items-center justify-center gap-2 md:gap-3 mb-2 md:mb-3 relative z-10">
+                          <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-amber-500 to-rose-500 rounded-lg flex items-center justify-center shadow-lg">
+                            <Heart className="h-3 w-3 md:h-4 md:w-4 text-white" />
                           </div>
-                          <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                          <h3 className="text-base md:text-lg font-bold text-gray-800 dark:text-white">
                             {t('step3_title', 'حفظ الذكريات')}
                           </h3>
                         </div>
-                        <p className="text-gray-600 dark:text-gray-300 text-sm">
+                        <p className="text-gray-600 dark:text-gray-300 text-xs md:text-sm px-2 md:px-0">
                           {t('step3_desc', 'احفظ إرثك العائلي للأجيال القادمة')}
                         </p>
-                      </div>
-
-                      {/* Mobile Connection Lines */}
-                      <div className="md:hidden col-span-full flex justify-center items-center gap-4 mt-4">
-                        <div className="w-16 h-0.5 bg-gradient-to-r from-emerald-300 to-teal-300"></div>
-                        <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
-                        <div className="w-16 h-0.5 bg-gradient-to-r from-teal-300 to-amber-300"></div>
-                        <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
-                        <div className="w-16 h-0.5 bg-gradient-to-r from-amber-300 to-orange-300"></div>
                       </div>
                     </div>
                   </div>
