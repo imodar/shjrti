@@ -40,7 +40,7 @@ serve(async (req) => {
       .gt("expires_at", new Date().toISOString())
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle(); // Use maybeSingle instead of single
 
     if (otpError || !otpRecord) {
       console.error("Invalid or expired OTP:", otpError);
