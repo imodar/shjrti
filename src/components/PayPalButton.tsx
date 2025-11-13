@@ -86,19 +86,37 @@ export function PayPalButton({
             sdkLoaded = true;
             resolve();
           };
-          script.onerror = () => {
+          script.onerror = (event) => {
             console.error('Failed to load PayPal SDK script');
-            reject(new Error('Failed to load PayPal SDK'));
+            console.error('Environment:', data.environment);
+            console.error('This may indicate a client ID mismatch - ensure you are using the correct client ID for the environment');
+            
+            // Provide helpful error message
+            const errorMsg = data.environment === 'live' 
+              ? 'فشل تحميل PayPal (بيئة الإنتاج). تأكد من استخدام Live Client ID الصحيح، أو غيّر البيئة إلى sandbox.'
+              : 'فشل تحميل PayPal (بيئة التجربة). تأكد من استخدام Sandbox Client ID الصحيح.';
+            
+            reject(new Error(errorMsg));
           };
           document.body.appendChild(script);
         });
 
         setScriptLoaded(true);
         setLoading(false);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error loading PayPal script:', error);
         setLoading(false);
-        onError('Failed to initialize PayPal');
+        
+        // Show the detailed error message to user
+        const errorMessage = error?.message || 'Failed to initialize PayPal';
+        onError(errorMessage);
+        
+        toast({
+          title: "خطأ في إعدادات الدفع",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        
         sdkLoadingPromise = null;
       }
     };
