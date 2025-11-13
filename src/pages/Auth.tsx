@@ -265,9 +265,27 @@ const Auth = () => {
       });
 
       if (!result.success) {
-        const errorMsg = result.error === "Invalid or expired OTP code" 
-          ? t('invalid_expired_otp', 'رمز التحقق غير صحيح أو منتهي الصلاحية')
-          : result.error || t('invalid_otp', 'رمز التحقق غير صحيح');
+        // Map error codes to translated messages
+        let errorMsg;
+        switch (result.error) {
+          case 'OTP_INVALID_OR_EXPIRED':
+            errorMsg = t('otp_invalid_or_expired', 'رمز التحقق غير صحيح أو منتهي الصلاحية');
+            break;
+          case 'OTP_NETWORK_ERROR':
+            errorMsg = t('otp_network_error', 'فشل الاتصال بالخادم');
+            break;
+          case 'OTP_VERIFICATION_FAILED':
+            errorMsg = t('otp_verification_failed', 'فشل التحقق من الرمز');
+            break;
+          case 'OTP_INVALID_RESPONSE':
+            errorMsg = t('otp_invalid_response', 'استجابة غير صحيحة من الخادم');
+            break;
+          case 'OTP_ALREADY_USED':
+            errorMsg = t('otp_already_used', 'تم استخدام هذا الرمز مسبقاً');
+            break;
+          default:
+            errorMsg = t('otp_verification_failed', 'فشل التحقق من الرمز');
+        }
         
         toast({
           title: t('verification_error', 'خطأ في التحقق'),
