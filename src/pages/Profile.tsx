@@ -544,55 +544,6 @@ export default function Profile() {
                     </div>
                   </CardContent>
                 </Card>
-                
-                {/* Danger Zone - Delete Account */}
-                <Card className="bg-gradient-to-br from-red-50 via-rose-50 to-orange-50 dark:from-red-950/30 dark:via-rose-950/30 dark:to-orange-950/30 backdrop-blur-xl border-2 border-red-300/50 dark:border-red-700/50 shadow-xl">
-                  <CardHeader>
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-orange-600 rounded-lg flex items-center justify-center shadow-lg">
-                        <AlertTriangle className="h-5 w-5 text-white" />
-                      </div>
-                      <CardTitle className="text-lg bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
-                        منطقة الخطر
-                      </CardTitle>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-4">
-                    {/* Security Warning Alert */}
-                    <Alert className="border-red-300 dark:border-red-700 bg-red-100/50 dark:bg-red-900/20">
-                      <AlertTriangle className="h-5 w-5 text-red-600" />
-                      <AlertTitle className="text-red-800 dark:text-red-200 font-bold">
-                        ⚠️ تحذير: عملية لا يمكن التراجع عنها
-                      </AlertTitle>
-                      <AlertDescription className="text-red-700 dark:text-red-300 space-y-2">
-                        <p>حذف حسابك سيؤدي إلى إزالة <strong>جميع بياناتك نهائيًا</strong> من نظامنا، بما في ذلك:</p>
-                        <ul className="list-disc pr-5 space-y-1 text-sm">
-                          <li>جميع أشجار العائلة ({stats.familiesCreated} شجرة)</li>
-                          <li>جميع الأعضاء ({stats.totalMembers} عضو)</li>
-                          <li>الصور والذكريات المرتبطة</li>
-                          <li>معلومات الاشتراك والفواتير</li>
-                          <li>جميع الإعدادات والتفضيلات</li>
-                        </ul>
-                        <p className="font-bold mt-2">هذا الإجراء لا يمكن استرجاعه أبدًا!</p>
-                      </AlertDescription>
-                    </Alert>
-
-                    {/* Delete Button */}
-                    <Button
-                      onClick={() => setShowDeleteAccountModal(true)}
-                      variant="destructive"
-                      className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold h-12 gap-2 shadow-lg shadow-red-500/30"
-                    >
-                      <Trash2 className="h-5 w-5" />
-                      حذف الحساب نهائيًا
-                    </Button>
-
-                    <p className="text-xs text-center text-gray-600 dark:text-gray-400">
-                      للامتثال للوائح GDPR وقوانين حماية البيانات
-                    </p>
-                  </CardContent>
-                </Card>
               </div>
 
               {/* Personal Information and Quick Actions */}
@@ -879,6 +830,55 @@ export default function Profile() {
                   </Card>
                 </div>
               </div>
+
+              {/* Danger Zone - Delete Account */}
+              <Card className="bg-gradient-to-br from-red-50 via-rose-50 to-orange-50 dark:from-red-950/30 dark:via-rose-950/30 dark:to-orange-950/30 backdrop-blur-xl border-2 border-red-300/50 dark:border-red-700/50 shadow-xl">
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-red-600 to-orange-600 rounded-lg flex items-center justify-center shadow-lg">
+                      <AlertTriangle className="h-5 w-5 text-white" />
+                    </div>
+                    <CardTitle className="text-lg bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                      منطقة الخطر
+                    </CardTitle>
+                  </div>
+                </CardHeader>
+                
+                <CardContent className="space-y-4">
+                  {/* Security Warning Alert */}
+                  <Alert className="border-red-300 dark:border-red-700 bg-red-100/50 dark:bg-red-900/20">
+                    <AlertTriangle className="h-5 w-5 text-red-600" />
+                    <AlertTitle className="text-red-800 dark:text-red-200 font-bold">
+                      ⚠️ تحذير: عملية لا يمكن التراجع عنها
+                    </AlertTitle>
+                    <AlertDescription className="text-red-700 dark:text-red-300 space-y-2">
+                      <p>حذف حسابك سيؤدي إلى إزالة <strong>جميع بياناتك نهائيًا</strong> من نظامنا، بما في ذلك:</p>
+                      <ul className="list-disc pr-5 space-y-1 text-sm">
+                        <li>جميع أشجار العائلة ({stats.familiesCreated} شجرة)</li>
+                        <li>جميع الأعضاء ({stats.totalMembers} عضو)</li>
+                        <li>الصور والذكريات المرتبطة</li>
+                        <li>معلومات الاشتراك والفواتير</li>
+                        <li>جميع الإعدادات والتفضيلات</li>
+                      </ul>
+                      <p className="font-bold mt-2">هذا الإجراء لا يمكن استرجاعه أبدًا!</p>
+                    </AlertDescription>
+                  </Alert>
+
+                  {/* Delete Button */}
+                  <Button
+                    onClick={() => setShowDeleteAccountModal(true)}
+                    variant="destructive"
+                    className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold h-12 gap-2 shadow-lg shadow-red-500/30"
+                  >
+                    <Trash2 className="h-5 w-5" />
+                    حذف الحساب نهائيًا
+                  </Button>
+
+                  <p className="text-xs text-center text-gray-600 dark:text-gray-400">
+                    للامتثال للوائح GDPR وقوانين حماية البيانات
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
