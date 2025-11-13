@@ -604,11 +604,11 @@ const FamilyCreator = () => {
                   <div className="text-right">
                     <h1 className="text-2xl md:text-3xl font-bold mb-2">
                       <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent text-right rtl:text-right">
-                        إنشاء شجرة العائلة
+                        {t('create_family_tree', 'إنشاء شجرة العائلة')}
                       </span>
                     </h1>
                     <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
-                      ابدأ رحلتك في بناء تاريخ عائلتك وحفظ ذكرياتك للأجيال القادمة
+                      {t('create_tree_description', 'ابدأ رحلتك في بناء تاريخ عائلتك وحفظ ذكرياتك للأجيال القادمة')}
                     </p>
                   </div>
                 </div>
@@ -623,7 +623,7 @@ const FamilyCreator = () => {
                     }`}>
                       <span className="relative z-10">1</span>
                     </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">معلومات العائلة</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_info', 'معلومات العائلة')}</span>
                   </div>
                   
                   <div className={`w-8 h-2 rounded-full transition-all duration-700 ${
@@ -638,7 +638,7 @@ const FamilyCreator = () => {
                     }`}>
                       <span className="relative z-10">2</span>
                     </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">بيانات المؤسس</span>
+                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('founder_data', 'بيانات المؤسس')}</span>
                   </div>
                 </div>
               </div>
