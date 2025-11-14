@@ -117,7 +117,7 @@ export default function TermsConditions() {
   const privacyLabel = getLocalizedText(quickInfo.privacy_label, currentLanguage, 'Privacy');
   const privacyValue = getLocalizedText(quickInfo.privacy_value, currentLanguage, 'Fully Protected');
   const contactLabel = getLocalizedText(quickInfo.contact_label, currentLanguage, 'For Inquiries');
-  const contactValue = getLocalizedText(quickInfo.contact_value, currentLanguage, 'support@familytree.com');
+  const contactValue = getLocalizedText(quickInfo.contact_value, currentLanguage, 'support@shjrti.com');
   const introText = getLocalizedText(quickInfo.intro_text, currentLanguage, 'Welcome to the Family Tree platform. Please read these terms and conditions carefully before using our services.');
 
   return (
