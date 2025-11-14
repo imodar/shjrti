@@ -168,7 +168,7 @@ export const GlobalFooter = () => {
                   <Heart className="h-3 w-3 md:h-4 md:w-4" />
                   <span>{getPageTitle('privacy-policy', 'سياسة الخصوصية')}</span>
                 </Link>
-                <Link to="/contact-us" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300 text-sm md:text-base">
+                <Link to="/contact" className="group flex items-center gap-2 text-gray-300 hover:text-emerald-400 transition-all duration-300 text-sm md:text-base">
                   <Users className="h-3 w-3 md:h-4 md:w-4" />
                   <span>{t('footer_link_contact', 'تواصل معنا')}</span>
                 </Link>
