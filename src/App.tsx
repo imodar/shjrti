@@ -43,6 +43,7 @@ import ContactUs from "./pages/ContactUs";
 import Store from "./pages/Store";
 import EnhancedAdminPanel from "./pages/EnhancedAdminPanel";
 import AdminBilling from "./pages/AdminBilling";
+import AdminAPISettings from "./pages/AdminAPISettings";
 import RenewSubscription from "./pages/RenewSubscription";
 import CustomDomainRedirect from "./pages/CustomDomainRedirect";
 import PublicTreeViewWithContext from "./pages/PublicTreeView/PublicTreeViewWithContext";
@@ -199,6 +200,11 @@ const App = () => {
                   <Route path="/admin/billing" element={
                     <ProtectedRoute requireAdmin={true}>
                       <AdminBilling />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin-api-settings" element={
+                    <ProtectedRoute requireAdmin={true}>
+                      <AdminAPISettings />
                     </ProtectedRoute>
                   } />
                   <Route path="/renew-subscription" element={
