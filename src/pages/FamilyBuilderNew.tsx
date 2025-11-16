@@ -725,27 +725,39 @@ const FamilyBuilderNew = () => {
   const [selectedTwins, setSelectedTwins] = useState<string[]>([]);
   const [twinCommandOpen, setTwinCommandOpen] = useState(false);
 
-  // Initialize selected twins when editing an existing twin group
-  useEffect(() => {
-    if (editingMember?.id && editingMember?.is_twin && editingMember?.twin_group_id && familyMembers?.length > 0) {
-      const twins = (familyMembers as any[])
-        .filter(m => m.twin_group_id === editingMember.twin_group_id && m.id !== editingMember.id)
-        .map(m => m.id);
-      console.log('🔍 Loading twins for editing member:', {
-        editingMemberId: editingMember.id,
-        editingMemberName: editingMember.name,
-        is_twin: editingMember.is_twin,
-        twin_group_id: editingMember.twin_group_id,
-        foundTwins: twins,
-        familyMembersWithTwinGroup: familyMembers.filter((m: any) => m.twin_group_id === editingMember.twin_group_id)
-      });
-      setSelectedTwins(twins);
-    } else if (editingMember?.id) {
-      // ✅ Clear selectedTwins if member is not a twin
-      console.log('🔍 Editing member is not a twin, clearing selectedTwins');
-      setSelectedTwins([]);
-    }
-  }, [editingMember?.id, editingMember?.is_twin, editingMember?.twin_group_id, familyMembers?.length]);
+// Initialize selected twins when editing an existing twin group (more robust)
+useEffect(() => {
+  // Wait until we have an editing member and family members loaded
+  if (!editingMember?.id || !familyMembers || familyMembers.length === 0) return;
+
+  // Resolve latest member data from state in case the object passed to edit lacks twin fields
+  const memberFromState: any = (familyMembers as any[]).find(m => m.id === editingMember.id) || editingMember;
+  const resolvedGroupId = memberFromState?.twin_group_id ?? editingMember?.twin_group_id ?? null;
+
+  if (resolvedGroupId) {
+    const twins = (familyMembers as any[])
+      .filter(m => m.twin_group_id === resolvedGroupId && m.id !== editingMember.id)
+      .map(m => m.id);
+
+    console.log('🔍 Loading twins for editing member (robust):', {
+      editingMemberId: editingMember.id,
+      editingMemberName: editingMember.name,
+      is_twin_input: (editingMember as any)?.is_twin,
+      is_twin_resolved: (memberFromState as any)?.is_twin,
+      twin_group_id_input: (editingMember as any)?.twin_group_id,
+      twin_group_id_resolved: resolvedGroupId,
+      foundTwins: twins,
+      familyMembersWithTwinGroup: (familyMembers as any[]).filter((m: any) => m.twin_group_id === resolvedGroupId)
+    });
+
+    setSelectedTwins(twins);
+    return;
+  }
+
+  // Only clear if we definitively have no twin group id
+  console.log('🔍 No twin_group_id found; clearing selectedTwins');
+  setSelectedTwins([]);
+}, [editingMember?.id, editingMember?.twin_group_id, familyMembers]);
 
   // Sync croppedImage with formData when croppedImage changes
   useEffect(() => {
