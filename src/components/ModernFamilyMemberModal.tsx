@@ -440,7 +440,7 @@ export const ModernFamilyMemberModal = ({
 
       // Sanitize all form data before submission
       const twinGroupId = selectedTwins.length > 0
-        ? (editMember?.twin_group_id || crypto.randomUUID())
+        ? (editMember?.twin_group_id || selectedTwins[0])
         : null;
 
       const sanitizedData = sanitizeFormData({

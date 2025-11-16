@@ -2563,7 +2563,7 @@ const handleEditMember = useCallback((member: any) => {
         isEditMode
       });
       
-      // ✅ Accept twin_group_id from submission as-is (valid UUID)
+      // ✅ Determine a valid twin_group_id that respects FK (must reference an existing member id)
       const twinGroupFromSubmission = submissionData?.twin_group_id || null;
       
       // Check if there's an existing twin group in current members
@@ -2575,9 +2575,19 @@ const handleEditMember = useCallback((member: any) => {
       const isTwinInput = (typeof submissionData?.is_twin === 'boolean') ? submissionData.is_twin : (selectedTwinsInput.length > 0);
       const shouldBeTwin = isTwinInput || (editingMember?.is_twin && hadExistingGroup);
       
-      // Generate consistent twin_group_id using crypto.randomUUID() for new groups
+      // Only use submission group if it matches an existing member id (FK constraint)
+      const submissionValidGroupId = twinGroupFromSubmission && (familyMembers as any[]).some((m: any) => m.id === twinGroupFromSubmission)
+        ? twinGroupFromSubmission
+        : null;
+      
+      // Leader selection: prefer existing group id, else use a real member id
       const finalTwinGroupId = selectedTwinsInput.length > 0
-        ? (twinGroupFromSubmission || existingGroupFromTwins || editingMember?.twin_group_id || crypto.randomUUID())
+        ? (
+            submissionValidGroupId
+            || existingGroupFromTwins
+            || (editingMember as any)?.twin_group_id
+            || (isEditMode && editingMember ? editingMember.id : selectedTwinsInput[0])
+          )
         : null;
       let memberData;
       if (isEditMode) {
