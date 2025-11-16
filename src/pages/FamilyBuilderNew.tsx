@@ -740,15 +740,7 @@ const derivedSelectedTwins = useMemo(() => {
     ?.map(m => m.id) || [];
 }, [selectedTwins, familyMembers, resolvedTwinGroupId, editingMember?.id]);
 
-// Debug twins state for label correctness
-useEffect(() => {
-  console.log('🧪 Twins label state', {
-    selectedTwins,
-    derivedSelectedTwins,
-    resolvedTwinGroupId,
-    editingMemberId: editingMember?.id,
-  });
-}, [selectedTwins, derivedSelectedTwins, resolvedTwinGroupId, editingMember?.id]);
+// Debug twins state for label correctness (removed verbose logging)
 
 // Initialize selected twins when editing an existing twin group (more robust)
 useEffect(() => {
@@ -2007,12 +1999,22 @@ const handleEditMember = useCallback((member: any) => {
     }
   };
   const populateFormData = (member: any) => {
+    // Auto-set selectedParent based on member's parents
+    let autoSelectedParent = member.relatedPersonId || null;
+    if (!autoSelectedParent && (member.fatherId || member.motherId)) {
+      // Find marriage between parents
+      const parentMarriage = familyMarriages.find((m: any) => 
+        m.husband?.id === member.fatherId && m.wife?.id === member.motherId
+      );
+      autoSelectedParent = parentMarriage?.id || null;
+    }
+    
     setFormData({
       name: member.name || "",
       first_name: member.first_name || member.name?.split(' ')[0] || "",
       relation: member.relation || "",
       relatedPersonId: member.relatedPersonId,
-      selectedParent: member.relatedPersonId || null,
+      selectedParent: autoSelectedParent,
       gender: member.gender || "male",
       birthDate: member.birthDate ? new Date(member.birthDate) : null,
       isAlive: member.isAlive ?? true,
@@ -2020,7 +2022,6 @@ const handleEditMember = useCallback((member: any) => {
       bio: member.bio || "",
       imageUrl: member.image || "",
       croppedImage: null,
-      // Don't set croppedImage when editing existing member
       isFounder: member.isFounder || false
     });
 
@@ -2554,28 +2555,6 @@ const handleEditMember = useCallback((member: any) => {
         fromState: selectedTwins,
         finalInput: selectedTwinsInput
       });
-      
-      // Twins: compute a valid existing group id (FK-safe)
-      const selectedTwinMembers = familyMembers.filter((m: any) => selectedTwinsInput.includes(m.id));
-      const existingGroupFromTwins = selectedTwinMembers.find((m: any) => m.twin_group_id)?.twin_group_id || null;
-      const twinGroupId = selectedTwinsInput.length > 0
-        ? (
-            editingMember?.twin_group_id ||
-            existingGroupFromTwins ||
-            editingMember?.id ||
-            selectedTwinMembers[0]?.id ||
-            null
-          )
-        : null;
-      
-      console.log('🔍 TWIN DATA DEBUG:', {
-        selectedTwinsCount: selectedTwinsInput.length,
-        selectedTwinsInput,
-        selectedTwinMembers,
-        existingGroupFromTwins,
-        twinGroupId,
-        editingMemberTwinGroupId: editingMember?.twin_group_id
-      });
 
       let isEditMode = formMode === 'edit' && editingMember;
       console.log('🚨 IS EDIT MODE CHECK:', {
@@ -2584,14 +2563,22 @@ const handleEditMember = useCallback((member: any) => {
         isEditMode
       });
       
-      // ✅ Respect modal-provided is_twin/twin_group_id when valid
-      const twinGroupFromSubmission = (submissionData?.twin_group_id && familyMembers.some((m: any) => m.id === submissionData.twin_group_id))
-        ? submissionData.twin_group_id
+      // ✅ Accept twin_group_id from submission as-is (valid UUID)
+      const twinGroupFromSubmission = submissionData?.twin_group_id || null;
+      
+      // Check if there's an existing twin group in current members
+      const existingGroupFromTwins = selectedTwinsInput.length > 0
+        ? (familyMembers as any[]).find(m => selectedTwinsInput.includes(m.id))?.twin_group_id
         : null;
+      
       const hadExistingGroup = !!editingMember?.twin_group_id;
       const isTwinInput = (typeof submissionData?.is_twin === 'boolean') ? submissionData.is_twin : (selectedTwinsInput.length > 0);
       const shouldBeTwin = isTwinInput || (editingMember?.is_twin && hadExistingGroup);
-      const finalTwinGroupId = twinGroupFromSubmission || twinGroupId || editingMember?.twin_group_id || (shouldBeTwin ? editingMember?.id : null);
+      
+      // Generate consistent twin_group_id using crypto.randomUUID() for new groups
+      const finalTwinGroupId = selectedTwinsInput.length > 0
+        ? (twinGroupFromSubmission || existingGroupFromTwins || editingMember?.twin_group_id || crypto.randomUUID())
+        : null;
       let memberData;
       if (isEditMode) {
         // Update existing member
@@ -2785,7 +2772,7 @@ const handleEditMember = useCallback((member: any) => {
           is_founder: submissionData.isFounder || false,
           marital_status: finalData.maritalStatus || 'single',
           is_twin: selectedTwinsInput.length > 0,
-          twin_group_id: twinGroupId
+          twin_group_id: finalTwinGroupId
         }).select().single();
         
         if (memberError) {
@@ -2796,17 +2783,17 @@ const handleEditMember = useCallback((member: any) => {
         memberData = newMember;
 
         // Handle twin relationships collectively for new member with .select() to verify
-        if (selectedTwinsInput.length > 0 && twinGroupId) {
+        if (selectedTwinsInput.length > 0 && finalTwinGroupId) {
           console.log('🔍 Linking twins for new member:', { 
             selectedTwinsInput, 
-            twinGroupId,
+            finalTwinGroupId,
             newMemberId: newMember.id 
           });
           const allTwinIds = [newMember.id, ...selectedTwinsInput];
           
           const { data: twinsUpdated, error: twinUpdateError } = await supabase
             .from('family_tree_members')
-            .update({ is_twin: true, twin_group_id: twinGroupId })
+            .update({ is_twin: true, twin_group_id: finalTwinGroupId })
             .in('id', allTwinIds)
             .select('id, is_twin, twin_group_id');
           
@@ -3835,10 +3822,15 @@ const handleEditMember = useCallback((member: any) => {
   <PopoverTrigger asChild>
     <Button variant="outline" className="w-full h-11 font-arabic justify-between">
 {(() => { 
+  // Ensure we only count members with valid (non-null) twin_group_id
   const count = (derivedSelectedTwins && derivedSelectedTwins.length > 0)
     ? derivedSelectedTwins.length
     : (resolvedTwinGroupId
-        ? ((familyMembers as any[])?.filter((m: any) => m.twin_group_id === resolvedTwinGroupId && m.id !== editingMember?.id).length || 0)
+        ? ((familyMembers as any[])?.filter((m: any) => 
+            m.twin_group_id === resolvedTwinGroupId && 
+            m.twin_group_id !== null && 
+            m.id !== editingMember?.id
+          ).length || 0)
         : 0);
   return count === 0 ? "لا" : `${count} توأم`;
 })()}
