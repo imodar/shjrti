@@ -2458,6 +2458,13 @@ const FamilyBuilderNew = () => {
       }
       // Twins: compute group id if any twins selected
       const twinGroupId = selectedTwins.length > 0 ? (editingMember?.twin_group_id || crypto.randomUUID()) : null;
+      
+      console.log('🔍 TWIN DATA DEBUG:', {
+        selectedTwinsCount: selectedTwins.length,
+        selectedTwins,
+        twinGroupId,
+        editingMemberTwinGroupId: editingMember?.twin_group_id
+      });
 
       let isEditMode = formMode === 'edit' && editingMember;
       console.log('🚨 IS EDIT MODE CHECK:', {
@@ -2511,7 +2518,8 @@ const FamilyBuilderNew = () => {
         memberData = updatedMember;
         // Ensure selected twins are linked to the same twin group
         if (selectedTwins.length > 0 && twinGroupId) {
-          await Promise.all(
+          console.log('🔍 Updating twins:', { selectedTwins, twinGroupId });
+          const twinUpdateResults = await Promise.all(
             selectedTwins.map((twinId) =>
               supabase
                 .from('family_tree_members')
@@ -2519,6 +2527,9 @@ const FamilyBuilderNew = () => {
                 .eq('id', twinId)
             )
           );
+          console.log('✅ Twin update results:', twinUpdateResults);
+        } else {
+          console.log('⚠️ No twins to update:', { selectedTwinsLength: selectedTwins.length, twinGroupId });
         }
       } else {
         // Insert new family member into database
@@ -2572,7 +2583,8 @@ const FamilyBuilderNew = () => {
 
         // Update twins to link them into the same group
         if (selectedTwins.length > 0 && twinGroupId) {
-          await Promise.all(
+          console.log('🔍 Updating twins for new member:', { selectedTwins, twinGroupId });
+          const twinUpdateResults = await Promise.all(
             selectedTwins.map((twinId) =>
               supabase
                 .from('family_tree_members')
@@ -2580,6 +2592,9 @@ const FamilyBuilderNew = () => {
                 .eq('id', twinId)
             )
           );
+          console.log('✅ Twin update results (new member):', twinUpdateResults);
+        } else {
+          console.log('⚠️ No twins to update for new member:', { selectedTwinsLength: selectedTwins.length, twinGroupId });
         }
         
         // Now upload image using the real member ID
