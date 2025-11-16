@@ -717,6 +717,16 @@ const FamilyBuilderNew = () => {
   const [selectedTwins, setSelectedTwins] = useState<string[]>([]);
   const [twinCommandOpen, setTwinCommandOpen] = useState(false);
 
+  // Initialize selected twins when editing an existing twin group
+  useEffect(() => {
+    if (editingMember?.id && editingMember?.is_twin && editingMember?.twin_group_id && familyMembers?.length > 0) {
+      const twins = (familyMembers as any[])
+        .filter(m => m.twin_group_id === editingMember.twin_group_id && m.id !== editingMember.id)
+        .map(m => m.id);
+      setSelectedTwins(twins);
+    }
+  }, [editingMember?.id, editingMember?.is_twin, editingMember?.twin_group_id, familyMembers?.length]);
+
   // Sync croppedImage with formData when croppedImage changes
   useEffect(() => {
     if (croppedImage !== formData.croppedImage) {
@@ -2484,6 +2494,9 @@ const FamilyBuilderNew = () => {
         editingMember: editingMember ? editingMember.id : 'none',
         isEditMode
       });
+      const hadExistingGroup = !!editingMember?.twin_group_id;
+      const shouldBeTwin = (selectedTwins.length > 0) || (editingMember?.is_twin && hadExistingGroup);
+      const finalTwinGroupId = twinGroupId || editingMember?.twin_group_id || (shouldBeTwin ? editingMember?.id : null);
       let memberData;
       if (isEditMode) {
         // Update existing member
@@ -2519,8 +2532,8 @@ const FamilyBuilderNew = () => {
           mother_id: motherId,
           related_person_id: relatedPersonId,
           marital_status: finalData.maritalStatus || 'single',
-          is_twin: selectedTwins.length > 0,
-          twin_group_id: twinGroupId,
+          is_twin: shouldBeTwin,
+          twin_group_id: finalTwinGroupId,
           updated_at: new Date().toISOString()
         }).eq('id', editingMember.id).select().single();
         if (updateError) {
@@ -2529,13 +2542,13 @@ const FamilyBuilderNew = () => {
         }
         memberData = updatedMember;
         // Ensure selected twins are linked to the same twin group
-        if (selectedTwins.length > 0 && twinGroupId) {
-          console.log('🔍 Updating twins:', { selectedTwins, twinGroupId });
+        if (selectedTwins.length > 0 && finalTwinGroupId) {
+          console.log('🔍 Updating twins:', { selectedTwins, finalTwinGroupId });
           const twinUpdateResults = await Promise.all(
             selectedTwins.map((twinId) =>
               supabase
                 .from('family_tree_members')
-                .update({ is_twin: true, twin_group_id: twinGroupId })
+                .update({ is_twin: true, twin_group_id: finalTwinGroupId })
                 .eq('id', twinId)
             )
           );
