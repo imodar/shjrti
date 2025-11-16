@@ -83,18 +83,17 @@ export function SignupForm({ onOTPRequired }: SignupFormProps) {
         return;
       }
 
-      // 3. Get reCAPTCHA token
-      if (!executeRecaptcha) {
-        toast({
-          title: t('error', 'خطأ'),
-          description: 'reCAPTCHA غير جاهز. يرجى المحاولة مرة أخرى',
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
+      // 3. Get reCAPTCHA token (optional for now)
+      let recaptchaToken = null;
+      if (executeRecaptcha) {
+        try {
+          recaptchaToken = await executeRecaptcha('signup');
+        } catch (error) {
+          console.warn('reCAPTCHA execution failed:', error);
+        }
+      } else {
+        console.warn('reCAPTCHA not ready - proceeding without verification');
       }
-
-      const recaptchaToken = await executeRecaptcha('signup');
 
       // 4. Call secure-signup edge function
       const { data, error } = await supabase.functions.invoke('secure-signup', {

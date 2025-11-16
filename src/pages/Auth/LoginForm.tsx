@@ -47,18 +47,17 @@ export function LoginForm({ onSwitchToReset }: LoginFormProps) {
         return;
       }
 
-      // 2. Get reCAPTCHA token
-      if (!executeRecaptcha) {
-        toast({
-          title: t('error', 'خطأ'),
-          description: 'reCAPTCHA غير جاهز. يرجى المحاولة مرة أخرى',
-          variant: "destructive",
-        });
-        setIsLoading(false);
-        return;
+      // 2. Get reCAPTCHA token (optional for now)
+      let recaptchaToken = null;
+      if (executeRecaptcha) {
+        try {
+          recaptchaToken = await executeRecaptcha('login');
+        } catch (error) {
+          console.warn('reCAPTCHA execution failed:', error);
+        }
+      } else {
+        console.warn('reCAPTCHA not ready - proceeding without verification');
       }
-
-      const recaptchaToken = await executeRecaptcha('login');
 
       // 3. Call secure-login edge function
       const { data, error } = await supabase.functions.invoke('secure-login', {
