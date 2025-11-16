@@ -2456,12 +2456,24 @@ const FamilyBuilderNew = () => {
           relatedPersonId = selectedMarriage.id;
         }
       }
-      // Twins: compute group id if any twins selected
-      const twinGroupId = selectedTwins.length > 0 ? (editingMember?.twin_group_id || crypto.randomUUID()) : null;
+      // Twins: compute a valid existing group id (FK-safe)
+      const selectedTwinMembers = familyMembers.filter((m: any) => selectedTwins.includes(m.id));
+      const existingGroupFromTwins = selectedTwinMembers.find((m: any) => m.twin_group_id)?.twin_group_id || null;
+      const twinGroupId = selectedTwins.length > 0
+        ? (
+            editingMember?.twin_group_id ||
+            existingGroupFromTwins ||
+            editingMember?.id ||
+            selectedTwinMembers[0]?.id ||
+            null
+          )
+        : null;
       
       console.log('🔍 TWIN DATA DEBUG:', {
         selectedTwinsCount: selectedTwins.length,
         selectedTwins,
+        selectedTwinMembers,
+        existingGroupFromTwins,
         twinGroupId,
         editingMemberTwinGroupId: editingMember?.twin_group_id
       });
@@ -2527,7 +2539,13 @@ const FamilyBuilderNew = () => {
                 .eq('id', twinId)
             )
           );
-          console.log('✅ Twin update results:', twinUpdateResults);
+          const hadTwinErrors = twinUpdateResults.some((r: any) => r.error);
+          if (hadTwinErrors) {
+            console.error('❌ Twin update errors:', twinUpdateResults);
+            toast({ title: 'خطأ', description: 'فشل حفظ بيانات التوأم.', variant: 'destructive' });
+          } else {
+            console.log('✅ Twin update results:', twinUpdateResults);
+          }
         } else {
           console.log('⚠️ No twins to update:', { selectedTwinsLength: selectedTwins.length, twinGroupId });
         }
@@ -2592,7 +2610,13 @@ const FamilyBuilderNew = () => {
                 .eq('id', twinId)
             )
           );
-          console.log('✅ Twin update results (new member):', twinUpdateResults);
+          const hadTwinErrors = twinUpdateResults.some((r: any) => r.error);
+          if (hadTwinErrors) {
+            console.error('❌ Twin update errors (new member):', twinUpdateResults);
+            toast({ title: 'خطأ', description: 'فشل حفظ بيانات التوأم.', variant: 'destructive' });
+          } else {
+            console.log('✅ Twin update results (new member):', twinUpdateResults);
+          }
         } else {
           console.log('⚠️ No twins to update for new member:', { selectedTwinsLength: selectedTwins.length, twinGroupId });
         }
