@@ -91,3 +91,12 @@ verify_jwt = false
 
 [functions.verify-otp]
 verify_jwt = false
+
+[functions.verify-recaptcha]
+verify_jwt = false
+
+[functions.secure-login]
+verify_jwt = false
+
+[functions.secure-signup]
+verify_jwt = false

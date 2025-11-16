@@ -1,0 +1,1483 @@
+import { useState, useEffect, useRef } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TreePine, Mail, Lock, User, Phone, Heart, Users, Star, Sparkles, Crown, Gem, ArrowLeft, ShieldCheck } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/contexts/LanguageContext";
+import familyTreeLogo from "@/assets/family-tree-logo.png";
+import { sendAuthEmail, canSendAuthEmail } from "@/services/authService";
+import { sendOTP, verifyOTP } from "@/services/otpAuthService";
+
+const Auth = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [showOTP, setShowOTP] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [pendingUserData, setPendingUserData] = useState<any>(null);
+  const [showPasswordReset, setShowPasswordReset] = useState<'email' | 'otp' | 'newPassword' | null>(null);
+  const [resetEmail, setResetEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showMagicLink, setShowMagicLink] = useState<'email' | 'otp' | null>(null);
+  const [magicLinkEmail, setMagicLinkEmail] = useState("");
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { t, direction } = useLanguage();
+
+  // Global OTP cooldown (one timer for all OTP-related requests)
+  const [otpCooldown, setOtpCooldown] = useState(0);
+
+  const startGlobalCooldown = (seconds: number) => {
+    const until = Date.now() + seconds * 1000;
+    localStorage.setItem('auth_otp_global_until', String(until));
+    setOtpCooldown(seconds);
+  };
+
+  useEffect(() => {
+    const update = () => {
+      const now = Date.now();
+      const g = parseInt(localStorage.getItem('auth_otp_global_until') || '0', 10);
+      setOtpCooldown(Math.max(0, Math.ceil((g - now) / 1000)));
+    };
+    update();
+    const id = setInterval(update, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    // Check if user is already logged in
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        navigate("/dashboard");
+      }
+    };
+    checkUser();
+  }, [navigate]);
+
+  const cleanupAuthState = () => {
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        localStorage.removeItem(key);
+      }
+    });
+    Object.keys(sessionStorage || {}).forEach((key) => {
+      if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        sessionStorage.removeItem(key);
+      }
+    });
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      cleanupAuthState();
+      
+      // Add retry logic for network issues
+      let retryCount = 0;
+      const maxRetries = 3;
+      let authResult;
+      
+      while (retryCount < maxRetries) {
+        try {
+          authResult = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          break; // Success, exit retry loop
+        } catch (networkError: any) {
+          retryCount++;
+          if (retryCount >= maxRetries) {
+            throw networkError; // Re-throw after max retries
+          }
+          // Wait before retry
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+        }
+      }
+
+      const { data, error } = authResult;
+      
+      if (error) {
+        // Check if email is not confirmed
+        if (error.message.includes("Email not confirmed") || error.message.includes("not confirmed")) {
+          toast({
+            title: t('email_not_confirmed', 'البريد الإلكتروني غير مؤكد'),
+            description: t('will_send_verification_code', 'سنرسل لك رمز تحقق جديد'),
+          });
+          
+          // Send OTP code via email
+          const { error: otpError } = await supabase.auth.signInWithOtp({
+            email: email,
+            options: {
+              shouldCreateUser: false,
+            }
+          });
+
+          if (otpError) {
+            toast({
+              title: t('sending_error', 'خطأ في الإرسال'),
+              description: otpError.message,
+              variant: "destructive",
+            });
+          } else {
+            // Store user data and show OTP screen
+            setPendingUserData({ email, password, firstName: "", lastName: "", phone: "" });
+            setShowOTP(true);
+            toast({
+              title: t('verification_code_sent', 'تم إرسال رمز التحقق'),
+              description: t('enter_code_instruction', 'يرجى إدخال الرمز المرسل إلى بريدك الإلكتروني'),
+            });
+          }
+        } else {
+          toast({
+            title: t('login_error', 'خطأ في تسجيل الدخول'),
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      toast({
+        title: t('welcome', 'مرحباً بك'),
+        description: t('login_successful', 'تم تسجيل الدخول بنجاح'),
+      });
+
+      window.location.href = "/dashboard";
+    } catch (error: any) {
+      console.error('Login error:', error);
+      
+      // Provide specific error messages for network issues
+      let errorMessage = error.message || t('login_error_general', 'حدث خطأ أثناء تسجيل الدخول');
+      
+      if (error.message?.includes('Failed to fetch') || error.message?.includes('ERR_CONNECTION_RESET')) {
+        errorMessage = t('network_error', 'مشكلة في الاتصال بالخادم. يرجى المحاولة مرة أخرى.');
+      }
+      
+      toast({
+        title: t('error', 'خطأ'),
+        description: errorMessage,
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!canSendAuthEmail(otpCooldown)) {
+      if (otpCooldown > 0) {
+        toast({
+          title: t('wait_before_retry', 'الرجاء الانتظار'),
+          description: `${t('retry_after', 'يمكنك طلب رمز جديد بعد')} ${otpCooldown}ث`,
+        });
+      }
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      cleanupAuthState();
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        // Continue even if this fails
+      }
+
+      console.log('[Auth] Sending OTP for signup:', email);
+
+      // Use new OTP system with Resend
+      const result = await sendOTP({
+        email,
+        purpose: 'signup',
+        userData: {
+          first_name: firstName,
+          last_name: lastName,
+          phone: phone,
+        }
+      });
+
+      if (!result.success) {
+        toast({
+          title: t('register_error', 'خطأ في إنشاء الحساب'),
+          description: result.error || t('failed_to_send_otp', 'فشل إرسال رمز التحقق'),
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      // Store user data for later verification
+      setPendingUserData({ email, password, firstName, lastName, phone });
+      
+      toast({
+        title: t('verification_code_sent', 'تم إرسال رمز التحقق'),
+        description: t('enter_code_instruction', 'يرجى التحقق من بريدك الإلكتروني وإدخال رمز التحقق'),
+      });
+
+      startGlobalCooldown(60);
+      setShowOTP(true);
+      setIsLoading(false);
+    } catch (error: any) {
+      console.error('[Auth] Signup error:', error);
+      toast({
+        title: t('error', 'خطأ'),
+        description: error.message || t('register_error_general', 'حدث خطأ أثناء إنشاء الحساب'),
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      console.log('[Auth] Verifying OTP for signup');
+
+      // Use new OTP verification system
+      const result = await verifyOTP({
+        email: pendingUserData.email,
+        otpCode: otpCode,
+        purpose: 'signup',
+        password: pendingUserData.password,
+        userData: {
+          first_name: pendingUserData.firstName,
+          last_name: pendingUserData.lastName,
+          phone: pendingUserData.phone
+        }
+      });
+
+      if (!result.success) {
+        // Map error codes to translated messages
+        let errorMsg;
+        switch (result.error) {
+          case 'OTP_INVALID_OR_EXPIRED':
+            errorMsg = t('otp_invalid_or_expired', 'رمز التحقق غير صحيح أو منتهي الصلاحية');
+            break;
+          case 'OTP_NETWORK_ERROR':
+            errorMsg = t('otp_network_error', 'فشل الاتصال بالخادم');
+            break;
+          case 'OTP_VERIFICATION_FAILED':
+            errorMsg = t('otp_verification_failed', 'فشل التحقق من الرمز');
+            break;
+          case 'OTP_INVALID_RESPONSE':
+            errorMsg = t('otp_invalid_response', 'استجابة غير صحيحة من الخادم');
+            break;
+          case 'OTP_ALREADY_USED':
+            errorMsg = t('otp_already_used', 'تم استخدام هذا الرمز مسبقاً');
+            break;
+          default:
+            errorMsg = t('otp_verification_failed', 'فشل التحقق من الرمز');
+        }
+        
+        toast({
+          title: t('verification_error', 'خطأ في التحقق'),
+          description: errorMsg,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log('[Auth] OTP verified successfully, account created');
+
+      toast({
+        title: t('verification_successful', 'تم التحقق بنجاح'),
+        description: t('welcome_to_my_tree', 'مرحباً بك في شجرتي'),
+      });
+
+      // Clear form and redirect
+      setEmail("");
+      setPassword("");
+      setFirstName("");
+      setLastName("");
+      setPhone("");
+      setOtpCode("");
+      setShowOTP(false);
+      setPendingUserData(null);
+      
+      // For new registration, redirect to plan selection
+      window.location.href = "/plan-selection";
+    } catch (error: any) {
+      console.error('[Auth] OTP verification error:', error);
+      toast({
+        title: t('error', 'خطأ'),
+        description: error.message || t('verification_error_general', 'حدث خطأ أثناء التحقق'),
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleResendOTP = async () => {
+    if (!pendingUserData) return;
+    
+    if (!canSendAuthEmail(otpCooldown)) {
+      if (otpCooldown > 0) {
+        toast({
+          title: t('wait_before_retry', 'الرجاء الانتظار'),
+          description: `${t('retry_after', 'يمكنك إعادة الإرسال بعد')} ${otpCooldown}ث`,
+        });
+      }
+      return;
+    }
+    
+    setIsLoading(true);
+    
+    try {
+      console.log('[Auth] Resending OTP');
+
+      // Use new OTP system to resend
+      const result = await sendOTP({
+        email: pendingUserData.email,
+        purpose: 'signup',
+        userData: {
+          first_name: pendingUserData.firstName,
+          last_name: pendingUserData.lastName,
+          phone: pendingUserData.phone
+        }
+      });
+
+      if (!result.success) {
+        toast({
+          title: t('resend_error', 'خطأ في إعادة الإرسال'),
+          description: result.error || t('failed_to_resend_otp', 'فشل إرسال رمز جديد'),
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      toast({
+        title: t('resent_successfully', 'تم إعادة الإرسال'),
+        description: t('resent_description', 'تم إرسال رمز تحقق جديد إلى بريدك الإلكتروني'),
+      });
+      startGlobalCooldown(60);
+      setIsLoading(false);
+    } catch (error: any) {
+      console.error('[Auth] Resend error:', error);
+      toast({
+        title: t('error', 'خطأ'),
+        description: error.message || t('resend_error_general', 'حدث خطأ أثناء إعادة الإرسال'),
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    }
+  };
+
+  const handleBackToRegister = () => {
+    setShowOTP(false);
+    setOtpCode("");
+    setPendingUserData(null);
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!canSendAuthEmail(otpCooldown)) {
+      if (otpCooldown > 0) {
+        toast({
+          title: t('wait_before_retry', 'الرجاء الانتظار'),
+          description: `${t('retry_after', 'يمكنك طلب رمز جديد بعد')} ${otpCooldown}ث`,
+        });
+      }
+      return;
+    }
+    
+    setIsLoading(true);
+
+    try {
+      const result = await sendAuthEmail({
+        type: 'reset',
+        email: resetEmail,
+        onProgress: (msg) => console.log('Reset progress:', msg)
+      });
+
+      if (result.error) {
+        if (result.error.message === 'DUPLICATE_REQUEST') {
+          setIsLoading(false);
+          return;
+        }
+        
+        if (result.error.message === 'REQUEST_TIMEOUT') {
+          toast({
+            title: t('request_timeout', 'انتهت مهلة الطلب'),
+            description: t('try_again', 'يرجى المحاولة مرة أخرى'),
+            variant: 'destructive'
+          });
+        } else {
+          const msg = (result.error.message || '').toLowerCase();
+          if (msg.includes('rate limit')) {
+            startGlobalCooldown(300);
+            toast({
+              title: t('too_many_requests', 'طلبات متكررة'),
+              description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل طلب رمز جديد')}`,
+            });
+          } else {
+            toast({
+              title: t('error', 'خطأ'),
+              description: result.error.message,
+              variant: "destructive",
+            });
+          }
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      toast({
+        title: t('reset_code_sent', 'تم إرسال رمز إعادة التعيين'),
+        description: t('check_email_for_code', 'يرجى التحقق من بريدك الإلكتروني'),
+      });
+
+      startGlobalCooldown(60);
+      setShowPasswordReset('otp');
+      setIsLoading(false);
+    } catch (error: any) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: error.message,
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyResetOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: resetEmail,
+        token: otpCode,
+        type: 'recovery'
+      });
+
+      if (error) {
+        toast({
+          title: t('verification_error', 'خطأ في التحقق'),
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setShowPasswordReset('newPassword');
+      setOtpCode("");
+    } catch (error: any) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: t('passwords_dont_match', 'كلمات المرور غير متطابقة'),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
+      });
+
+      if (error) {
+        toast({
+          title: t('error', 'خطأ'),
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: t('password_updated', 'تم تحديث كلمة المرور'),
+        description: t('password_updated_success', 'تم تحديث كلمة المرور بنجاح'),
+      });
+
+      // Reset all states
+      setShowPasswordReset(null);
+      setResetEmail("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setOtpCode("");
+
+      // Redirect to dashboard
+      window.location.href = "/dashboard";
+    } catch (error: any) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleMagicLinkLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!canSendAuthEmail(otpCooldown)) {
+      if (otpCooldown > 0) {
+        toast({
+          title: t('wait_before_retry', 'الرجاء الانتظار'),
+          description: `${t('retry_after', 'يمكنك طلب رمز جديد بعد')} ${otpCooldown}ث`,
+        });
+      }
+      return;
+    }
+    
+    setIsLoading(true);
+
+    try {
+      const result = await sendAuthEmail({
+        type: 'magiclink',
+        email: magicLinkEmail,
+        onProgress: (msg) => console.log('Magic link progress:', msg)
+      });
+
+      if (result.error) {
+        if (result.error.message === 'DUPLICATE_REQUEST') {
+          setIsLoading(false);
+          return;
+        }
+        
+        if (result.error.message === 'REQUEST_TIMEOUT') {
+          toast({
+            title: t('request_timeout', 'انتهت مهلة الطلب'),
+            description: t('try_again', 'يرجى المحاولة مرة أخرى'),
+            variant: 'destructive'
+          });
+        } else {
+          const msg = (result.error.message || '').toLowerCase();
+          if (msg.includes('rate limit')) {
+            startGlobalCooldown(300);
+            toast({
+              title: t('too_many_requests', 'طلبات متكررة'),
+              description: `${t('retry_after', 'يرجى الانتظار')} ${otpCooldown || 300}ث ${t('before_retry', 'قبل طلب رمز جديد')}`,
+            });
+          } else {
+            toast({
+              title: t('error', 'خطأ'),
+              description: result.error.message,
+              variant: "destructive",
+            });
+          }
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      toast({
+        title: t('code_sent', 'تم إرسال الرمز'),
+        description: t('check_email_for_code', 'تحقق من بريدك الإلكتروني لإدخال الرمز المؤقت'),
+      });
+
+      startGlobalCooldown(60);
+      setShowMagicLink('otp');
+      setIsLoading(false);
+    } catch (error: any) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: error.message,
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    }
+  };
+
+  const handleVerifyMagicLinkOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: magicLinkEmail,
+        token: otpCode,
+        type: 'email'
+      });
+
+      if (error) {
+        toast({
+          title: t('verification_error', 'خطأ في التحقق'),
+          description: error.message,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      toast({
+        title: t('login_successful', 'تم تسجيل الدخول بنجاح'),
+        description: t('welcome_back', 'مرحباً بعودتك'),
+      });
+
+      // Clear form and redirect
+      setMagicLinkEmail("");
+      setOtpCode("");
+      setShowMagicLink(null);
+      
+      navigate("/dashboard");
+    } catch (error: any) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: error.message,
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      cleanupAuthState();
+      
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`
+        }
+      });
+
+      if (error) {
+        toast({
+          title: t('login_error', 'خطأ في تسجيل الدخول'),
+          description: error.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: t('error', 'خطأ'),
+        description: error.message || t('google_login_error', 'حدث خطأ أثناء تسجيل الدخول بـ Google'),
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950">
+      <div className="min-h-screen flex relative overflow-hidden">
+        {/* Floating Background Elements */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-20 right-10 animate-float">
+            <Heart className="h-12 w-12 text-pink-400 opacity-60" />
+          </div>
+          <div className="absolute bottom-32 left-16 animate-float-delayed">
+            <Users className="h-16 w-16 text-emerald-400 opacity-40" />
+          </div>
+          <div className="absolute top-40 left-32 animate-float-slow">
+            <Star className="h-8 w-8 text-yellow-400 opacity-60" />
+          </div>
+          <div className="absolute top-1/2 right-1/4 animate-float">
+            <Sparkles className="h-10 w-10 text-emerald-500 opacity-50" />
+          </div>
+        </div>
+
+        {/* Left Side - Luxury Branding */}
+        <div className="hidden lg:flex lg:w-1/2 relative">
+          {/* Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(255,255,255,0.1),transparent_50%)]"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(245,158,11,0.1),transparent_50%)]"></div>
+          
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-white/5 rounded-full blur-xl animate-pulse"></div>
+            <div className="absolute top-3/4 right-1/4 w-24 h-24 bg-white/10 rounded-full blur-lg animate-pulse delay-1000"></div>
+            <div className="absolute bottom-1/4 left-1/3 w-16 h-16 bg-white/15 rounded-full blur-md animate-pulse delay-2000"></div>
+            
+            {/* Floating Tree Icons */}
+            <div className="absolute top-1/6 right-1/6 text-white/10 animate-bounce">
+              <TreePine className="h-8 w-8" />
+            </div>
+            <div className="absolute bottom-1/6 left-1/6 text-white/10 animate-bounce delay-500">
+              <TreePine className="h-6 w-6" />
+            </div>
+            <div className="absolute top-2/3 right-1/3 text-white/10 animate-bounce delay-1000">
+              <TreePine className="h-4 w-4" />
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="relative z-10 flex items-center justify-center min-h-full p-8 w-full mx-auto">
+            <div className="text-center text-white space-y-8 max-w-lg font-arabic">
+              {/* Luxury Logo */}
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-amber-300/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-300"></div>
+                <div className="relative bg-white/10 backdrop-blur-sm rounded-full p-2 border-2 border-white/30 inline-block shadow-2xl">
+                  <img 
+                    src={familyTreeLogo} 
+                    alt={t('my_tree', 'شجرتي')}
+                    className="h-24 w-24 rounded-full group-hover:scale-110 transition-transform duration-300"
+                  />
+                </div>
+                <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-80 animate-pulse">
+                  <Crown className="h-4 w-4 text-white m-2" />
+                </div>
+              </div>
+
+              {/* Luxury Title */}
+              <div className="space-y-4">
+                <h1 className="text-6xl font-bold leading-tight">
+                  <span className="block bg-gradient-to-r from-white via-amber-200 to-white bg-clip-text text-transparent">
+                    {t('welcome_to', 'مرحباً بك في')}
+                  </span>
+                  <span className="block text-white font-black text-7xl">
+                    {t('my_tree', 'شجرتي')}
+                  </span>
+                </h1>
+                <div className="w-20 h-1 bg-gradient-to-r from-amber-400 to-white mx-auto rounded-full"></div>
+              </div>
+
+              {/* Luxury Description */}
+               <p className="text-xl opacity-95 leading-relaxed font-light">
+                 {t('exceptional_journey', 'ابدأ رحلتك الاستثنائية في اكتشاف جذورك وبناء إرث رقمي فاخر')}
+                 <br />
+                 <span className="text-amber-200 font-medium">
+                   {t('best_arabic_platform', 'مع أفضل منصة عربية لإنشاء أشجار العائلة')}
+                 </span>
+               </p>
+
+              {/* Luxury Statistics */}
+              <div className="grid grid-cols-3 gap-4 pt-8">
+                <div className="group">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                    <div className="text-3xl font-bold group-hover:text-amber-200 transition-colors">+1000</div>
+                    <div className="text-sm opacity-80 mt-1">{t('distinguished_family', 'عائلة مميزة')}</div>
+                  </div>
+                </div>
+                <div className="group">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                    <div className="text-3xl font-bold group-hover:text-emerald-200 transition-colors">+50k</div>
+                    <div className="text-sm opacity-80 mt-1">{t('preserved_member', 'فرد محفوظ')}</div>
+                  </div>
+                </div>
+                <div className="group">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                    <div className="text-3xl font-bold group-hover:text-blue-200 transition-colors">100%</div>
+                    <div className="text-sm opacity-80 mt-1">{t('high_security', 'آمان عالي')}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Luxury Features */}
+              <div className={`space-y-4 ${direction === 'rtl' ? 'pt-4' : 'pt-4'}`}>
+                <div className={`flex items-center justify-center gap-4 ${direction === 'rtl' ? 'space-x-4 space-x-reverse' : 'space-x-4'}`}>
+                  <div className={`flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg ${direction === 'rtl' ? 'space-x-2 space-x-reverse' : 'space-x-2'}`}>
+                    <Gem className="w-4 h-4 text-emerald-300" />
+                    <span className="text-sm font-medium">{t('luxury_design', 'تصميم فاخر')}</span>
+                  </div>
+                  <div className={`flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg ${direction === 'rtl' ? 'space-x-2 space-x-reverse' : 'space-x-2'}`}>
+                    <Crown className="w-4 h-4 text-amber-300" />
+                    <span className="text-sm font-medium">{t('high_quality', 'جودة عالية')}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center">
+                  <div className={`flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg ${direction === 'rtl' ? 'space-x-2 space-x-reverse' : 'space-x-2'}`}>
+                    <Star className="w-4 h-4 text-yellow-300" />
+                    <span className="text-sm font-medium">{t('distinctive_experience', 'تجربة مميزة')}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Side - Luxury Auth Forms */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-8 relative">
+          <div className="w-full max-w-md space-y-6">
+            {/* Mobile Logo */}
+            <div className="lg:hidden text-center mb-8">
+              <div className="relative group mx-auto w-fit">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-30"></div>
+                <img 
+                  src={familyTreeLogo} 
+                  alt={t('my_tree', 'شجرتي')} 
+                  className="relative h-16 w-16 rounded-full mx-auto mb-4 border-2 border-emerald-200"
+                />
+              </div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">{t('my_tree', 'شجرتي')}</h1>
+              <p className="text-muted-foreground">{t('discover_roots_platform', 'اكتشف جذورك مع أفضل منصة')}</p>
+            </div>
+
+            <Card className="border-0 shadow-2xl bg-white/90 backdrop-blur-xl relative overflow-hidden">
+              {/* Luxury Card Background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white via-emerald-50/30 to-teal-50/30"></div>
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500"></div>
+              
+              <CardHeader className="text-center relative z-10">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Crown className="h-6 w-6 text-amber-500" />
+                 <CardTitle className="text-3xl bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent pb-1 leading-relaxed">
+                    {t('join_my_tree', 'انضم إلى شجرتي')}
+                  </CardTitle>
+                  <Crown className="h-6 w-6 text-amber-500" />
+                </div>
+                <CardDescription className="text-lg text-gray-600">
+                  {t('start_exceptional_journey', 'ابدأ رحلتك الاستثنائية في بناء إرث عائلتك الرقمي')}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="relative z-10">
+                {showMagicLink === 'email' ? (
+                  /* Magic Link Login - Email Entry */
+                  <div className="space-y-6">
+                    <div className="text-center space-y-2">
+                      <div className="flex justify-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+                          <Mail className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-800">{t('magic_link_login', 'تسجيل الدخول بالرمز المؤقت')}</h3>
+                      <p className="text-gray-600">
+                        {t('enter_email_for_magic_link', 'أدخل بريدك الإلكتروني لإرسال رمز الدخول المؤقت')}
+                      </p>
+                      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-sm text-blue-800 text-center">
+                          {t('magic_link_info', 'سيصلك رمز مؤقت للبريد المسجل يمكنك استخدامه للدخول مباشرة')}
+                        </p>
+                      </div>
+                    </div>
+
+                    <form onSubmit={handleMagicLinkLogin} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="magicLinkEmail">{t('email', 'البريد الإلكتروني')}</Label>
+                        <div className="relative">
+                          <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="magicLinkEmail"
+                            type="email"
+                            placeholder={t('email_placeholder', 'example@domain.com')}
+                            className="pr-10"
+                            value={magicLinkEmail}
+                            onChange={(e) => setMagicLinkEmail(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                        disabled={isLoading || otpCooldown > 0}
+                      >
+                        {isLoading
+                          ? t('sending', 'جاري الإرسال...')
+                          : otpCooldown > 0
+                            ? `${t('retry_after', 'يمكن الإرسال بعد')} ${otpCooldown}ث`
+                            : t('send_magic_code', 'إرسال الرمز المؤقت')}
+                        <Mail className="mr-2 h-4 w-4" />
+                      </Button>
+                    </form>
+
+                    <Button
+                      onClick={() => {
+                        setShowMagicLink(null);
+                        setMagicLinkEmail("");
+                      }}
+                      variant="ghost"
+                      className="w-full"
+                      disabled={isLoading}
+                    >
+                      <ArrowLeft className="ml-2 h-4 w-4" />
+                      {t('back_to_login', 'العودة إلى تسجيل الدخول')}
+                    </Button>
+                  </div>
+                ) : showMagicLink === 'otp' ? (
+                  /* Magic Link - OTP Verification */
+                  <div className="space-y-6">
+                    <div className="text-center space-y-2">
+                      <div className="flex justify-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+                          <ShieldCheck className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-800">{t('verify_magic_code', 'أدخل الرمز المؤقت')}</h3>
+                      <p className="text-gray-600">
+                        {t('enter_magic_code', 'أدخل الرمز المرسل إلى')}
+                        <br />
+                        <span className="font-medium text-emerald-600">{magicLinkEmail}</span>
+                      </p>
+                    </div>
+
+                    <form onSubmit={handleVerifyMagicLinkOTP} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="magicOtpCode">{t('verification_code', 'رمز التحقق')}</Label>
+                        <div className="relative">
+                          <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="magicOtpCode"
+                            type="text"
+                            placeholder={t('enter_6_digit_code', 'أدخل الرمز المكون من 6 أرقام')}
+                            className="pr-10 text-center text-lg tracking-wider"
+                            value={otpCode}
+                            onChange={(e) => setOtpCode(e.target.value)}
+                            maxLength={6}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                        disabled={isLoading || otpCode.length !== 6}
+                      >
+                        {isLoading ? t('verifying', 'جاري التحقق...') : t('login_with_code', 'تسجيل الدخول')}
+                        <ShieldCheck className="mr-2 h-4 w-4" />
+                      </Button>
+                    </form>
+
+                    <Button
+                      onClick={() => {
+                        setShowMagicLink('email');
+                        setOtpCode("");
+                      }}
+                      variant="ghost"
+                      className="w-full"
+                      disabled={isLoading}
+                    >
+                      <ArrowLeft className="ml-2 h-4 w-4" />
+                      {t('back', 'رجوع')}
+                    </Button>
+                  </div>
+                ) : showPasswordReset === 'email' ? (
+                  /* Password Reset - Email Entry */
+                  <div className="space-y-6">
+                    <div className="text-center space-y-2">
+                      <div className="flex justify-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+                          <Lock className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-800">{t('reset_password', 'إعادة تعيين كلمة المرور')}</h3>
+                      <p className="text-gray-600">
+                        {t('enter_email_for_reset', 'أدخل بريدك الإلكتروني لإرسال رمز إعادة التعيين')}
+                      </p>
+                      <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <p className="text-sm text-blue-800 text-center">
+                          {t('reset_code_info', 'إذا كنت مسجلاً، سيصلك بريد إلكتروني يحتوي على رمز إعادة التعيين')}
+                        </p>
+                      </div>
+                    </div>
+
+                    <form onSubmit={handleForgotPassword} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="resetEmail">{t('email', 'البريد الإلكتروني')}</Label>
+                        <div className="relative">
+                          <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="resetEmail"
+                            type="email"
+                            placeholder={t('email_placeholder', 'example@domain.com')}
+                            className="pr-10"
+                            value={resetEmail}
+                            onChange={(e) => setResetEmail(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                        disabled={isLoading || otpCooldown > 0}
+                      >
+                        {isLoading
+                          ? t('sending', 'جاري الإرسال...')
+                          : otpCooldown > 0
+                            ? `${t('retry_after', 'أعد المحاولة بعد')} ${otpCooldown}ث`
+                            : t('send_reset_code', 'إرسال رمز إعادة التعيين')}
+                        <Mail className="mr-2 h-4 w-4" />
+                      </Button>
+                    </form>
+
+                    <Button
+                      onClick={() => {
+                        setShowPasswordReset(null);
+                        setResetEmail("");
+                      }}
+                      variant="ghost"
+                      className="w-full"
+                      disabled={isLoading}
+                    >
+                      <ArrowLeft className="ml-2 h-4 w-4" />
+                      {t('back_to_login', 'العودة إلى تسجيل الدخول')}
+                    </Button>
+                  </div>
+                ) : showPasswordReset === 'otp' ? (
+                  /* Password Reset - OTP Verification */
+                  <div className="space-y-6">
+                    <div className="text-center space-y-2">
+                      <div className="flex justify-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+                          <ShieldCheck className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-800">{t('verify_reset_code', 'تحقق من رمز إعادة التعيين')}</h3>
+                      <p className="text-gray-600">
+                        {t('enter_reset_code', 'أدخل الرمز المرسل إلى')}
+                        <br />
+                        <span className="font-medium text-emerald-600">{resetEmail}</span>
+                      </p>
+                    </div>
+
+                    <form onSubmit={handleVerifyResetOTP} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="resetOtpCode">{t('verification_code', 'رمز التحقق')}</Label>
+                        <div className="relative">
+                          <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="resetOtpCode"
+                            type="text"
+                            placeholder={t('enter_6_digit_code', 'أدخل الرمز المكون من 6 أرقام')}
+                            className="pr-10 text-center text-lg tracking-wider"
+                            value={otpCode}
+                            onChange={(e) => setOtpCode(e.target.value)}
+                            maxLength={6}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                        disabled={isLoading || otpCode.length !== 6}
+                      >
+                        {isLoading ? t('verifying', 'جاري التحقق...') : t('verify_code', 'تحقق من الرمز')}
+                        <ShieldCheck className="mr-2 h-4 w-4" />
+                      </Button>
+                    </form>
+
+                    <Button
+                      onClick={() => {
+                        setShowPasswordReset('email');
+                        setOtpCode("");
+                      }}
+                      variant="ghost"
+                      className="w-full"
+                      disabled={isLoading}
+                    >
+                      <ArrowLeft className="ml-2 h-4 w-4" />
+                      {t('back', 'رجوع')}
+                    </Button>
+                  </div>
+                ) : showPasswordReset === 'newPassword' ? (
+                  /* Password Reset - New Password Entry */
+                  <div className="space-y-6">
+                    <div className="text-center space-y-2">
+                      <div className="flex justify-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+                          <Lock className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-800">{t('new_password', 'كلمة مرور جديدة')}</h3>
+                      <p className="text-gray-600">
+                        {t('enter_new_password', 'أدخل كلمة المرور الجديدة')}
+                      </p>
+                    </div>
+
+                    <form onSubmit={handleUpdatePassword} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="newPassword">{t('new_password', 'كلمة المرور الجديدة')}</Label>
+                        <div className="relative">
+                          <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="newPassword"
+                            type="password"
+                            placeholder={t('enter_new_password', 'أدخل كلمة المرور الجديدة')}
+                            className="pr-10"
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="confirmPassword">{t('confirm_password', 'تأكيد كلمة المرور')}</Label>
+                        <div className="relative">
+                          <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="confirmPassword"
+                            type="password"
+                            placeholder={t('confirm_new_password', 'أكد كلمة المرور الجديدة')}
+                            className="pr-10"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? t('updating', 'جاري التحديث...') : t('update_password', 'تحديث كلمة المرور')}
+                        <Lock className="mr-2 h-4 w-4" />
+                      </Button>
+                    </form>
+                  </div>
+                ) : showOTP ? (
+                  /* OTP Verification Screen */
+                  <div className="space-y-6">
+                    <div className="text-center space-y-2">
+                      <div className="flex justify-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center">
+                          <ShieldCheck className="w-8 h-8 text-white" />
+                        </div>
+                      </div>
+                      <h3 className="text-2xl font-bold text-gray-800">{t('account_confirmation', 'تأكيد الحساب')}</h3>
+                      <p className="text-gray-600">
+                        {t('enter_verification_code', 'أدخل رمز التحقق المرسل إلى')}
+                        <br />
+                        <span className="font-medium text-emerald-600">{pendingUserData?.email}</span>
+                      </p>
+                    </div>
+
+                    <form onSubmit={handleVerifyOTP} className="space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="otpCode">{t('verification_code', 'رمز التحقق')}</Label>
+                        <div className="relative">
+                          <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                          <Input
+                            id="otpCode"
+                            type="text"
+                            placeholder={t('enter_6_digit_code', 'أدخل الرمز المكون من 6 أرقام')}
+                            className="pr-10 text-center text-lg tracking-wider"
+                            value={otpCode}
+                            onChange={(e) => setOtpCode(e.target.value)}
+                            maxLength={6}
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                        disabled={isLoading || otpCode.length !== 6}
+                      >
+                        {isLoading ? t('verifying', 'جاري التحقق...') : t('confirm_account', 'تأكيد الحساب')}
+                        <ShieldCheck className="mr-2 h-4 w-4" />
+                      </Button>
+                    </form>
+
+                    <div className="space-y-3">
+                      <Button
+                        onClick={handleResendOTP}
+                        variant="outline"
+                        className="w-full border-emerald-200 hover:bg-emerald-50"
+                        disabled={isLoading || otpCooldown > 0}
+                      >
+                        {otpCooldown > 0
+                          ? `${t('resend_in', 'إعادة الإرسال خلال')} ${otpCooldown}ث`
+                          : t('resend_code', 'إعادة إرسال الرمز')}
+                        <Mail className="mr-2 h-4 w-4" />
+                      </Button>
+
+                      <Button
+                        onClick={handleBackToRegister}
+                        variant="ghost"
+                        className="w-full"
+                        disabled={isLoading}
+                      >
+                        <ArrowLeft className="ml-2 h-4 w-4" />
+                        {t('back_to_register', 'العودة إلى إنشاء الحساب')}
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  /* Regular Auth Tabs */
+                  <>
+                    <Tabs defaultValue="login" className="w-full">
+                      <TabsList className="grid w-full grid-cols-2 bg-gray-100 rounded-xl p-1 gap-1">
+                        <TabsTrigger 
+                          value="register" 
+                          className="rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-gray-200 data-[state=active]:hover:bg-emerald-600"
+                        >
+                          {t('create_account', 'إنشاء حساب')}
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="login" 
+                          className="rounded-lg font-medium transition-all duration-300 data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-gray-200 data-[state=active]:hover:bg-emerald-600"
+                        >
+                          {t('login', 'تسجيل الدخول')}
+                        </TabsTrigger>
+                      </TabsList>
+
+                      {/* Register Tab */}
+                      <TabsContent value="register" className="space-y-4">
+                        <form onSubmit={handleRegister} className="space-y-4">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className={`space-y-2 ${direction === 'rtl' ? 'order-2' : 'order-1'}`}>
+                              <Label htmlFor="firstName">{t('first_name', 'الاسم الأول')}</Label>
+                              <div className="relative">
+                                <User className={`absolute top-3 h-4 w-4 text-muted-foreground ${direction === 'rtl' ? 'right-3' : 'left-3'}`} />
+                                <Input
+                                  id="firstName"
+                                  placeholder={t('enter_first_name', 'أدخل اسمك الأول')}
+                                  className={direction === 'rtl' ? 'pr-10' : 'pl-10'}
+                                  value={firstName}
+                                  onChange={(e) => setFirstName(e.target.value)}
+                                  tabIndex={1}
+                                  required
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className={`space-y-2 ${direction === 'rtl' ? 'order-1' : 'order-2'}`}>
+                              <Label htmlFor="lastName">{t('last_name', 'اسم العائلة')}</Label>
+                              <div className="relative">
+                                <User className={`absolute top-3 h-4 w-4 text-muted-foreground ${direction === 'rtl' ? 'right-3' : 'left-3'}`} />
+                                <Input
+                                  id="lastName"
+                                  placeholder={t('enter_last_name', 'أدخل اسم العائلة')}
+                                  className={direction === 'rtl' ? 'pr-10' : 'pl-10'}
+                                  value={lastName}
+                                  onChange={(e) => setLastName(e.target.value)}
+                                  tabIndex={2}
+                                  required
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="email">{t('email', 'البريد الإلكتروني')}</Label>
+                            <div className="relative">
+                              <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                 id="email"
+                                 type="email"
+                                 placeholder={t('email_placeholder', 'example@domain.com')}
+                                 className="pr-10"
+                                 autoComplete="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                tabIndex={3}
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="phone">{t('phone_number', 'رقم الهاتف')}</Label>
+                            <div className="relative">
+                              <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                id="phone"
+                                type="tel"
+                                placeholder={t('phone_placeholder', '+966 50 123 4567')}
+                                className="pr-10"
+                                autoComplete="tel"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                                tabIndex={4}
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="password">{t('password', 'كلمة المرور')}</Label>
+                            <div className="relative">
+                              <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                id="password"
+                                type="password"
+                                placeholder={t('enter_strong_password', 'أدخل كلمة مرور قوية')}
+                                className="pr-10"
+                                autoComplete="new-password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                tabIndex={5}
+                                required
+                              />
+                            </div>
+                          </div>
+
+                          <Button
+                            type="submit"
+                            className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                            disabled={isLoading}
+                          >
+                            {isLoading ? t('creating_account', 'جاري إنشاء الحساب...') : t('create_new_account', 'إنشاء حساب جديد')}
+                            <TreePine className="mr-2 h-4 w-4" />
+                          </Button>
+                        </form>
+                      </TabsContent>
+
+                      {/* Login Tab */}
+                      <TabsContent value="login" className="space-y-4">
+                        <form onSubmit={handleLogin} className="space-y-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="loginEmail">{t('email', 'البريد الإلكتروني')}</Label>
+                            <div className="relative">
+                              <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                               <Input
+                                  id="loginEmail"
+                                  type="email"
+                                  placeholder={t('email_placeholder', 'example@domain.com')}
+                                  className="pr-10"
+                                  autoComplete="email"
+                                 value={email}
+                                 onChange={(e) => setEmail(e.target.value)}
+                                 required
+                               />
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label htmlFor="loginPassword">{t('password', 'كلمة المرور')}</Label>
+                            <div className="relative">
+                              <Lock className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+                              <Input
+                                id="loginPassword"
+                                type="password"
+                                placeholder={t('enter_password', 'أدخل كلمة المرور')}
+                                className="pr-10"
+                                autoComplete="current-password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                              />
+                            </div>
+                          </div>
+
+                           <div className="flex items-center justify-between text-sm">
+                            <button 
+                              type="button"
+                              onClick={() => {
+                                setShowMagicLink('email');
+                                setMagicLinkEmail(email);
+                              }}
+                              className="text-primary hover:underline font-medium"
+                            >
+                              {t('login_via_otp', 'تسجيل الدخول بواسطة رمز مؤقت')}
+                            </button>
+                            <button 
+                              type="button"
+                              onClick={() => {
+                                setShowPasswordReset('email');
+                                setResetEmail(email);
+                              }}
+                              className="text-primary hover:underline"
+                            >
+                              {t('forgot_password', 'نسيت كلمة المرور؟')}
+                            </button>
+                          </div>
+
+                          <Button
+                            type="submit"
+                            className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                            disabled={isLoading}
+                          >
+                            {isLoading ? t('logging_in', 'جاري تسجيل الدخول...') : t('login', 'تسجيل الدخول')}
+                            <Sparkles className="mr-2 h-4 w-4" />
+                          </Button>
+                        </form>
+                      </TabsContent>
+                    </Tabs>
+
+                    {/* Google Sign In */}
+                    <div className="mt-6">
+                      <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                          <span className="w-full border-t" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                          <span className="bg-background px-2 text-muted-foreground">{t('or', 'أو')}</span>
+                        </div>
+                      </div>
+                      <Button
+                        onClick={handleGoogleSignIn}
+                        variant="outline"
+                        className="w-full mt-4 border-2 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                        disabled={isLoading}
+                      >
+                        <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                          <path
+                            fill="currentColor"
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                          />
+                          <path
+                            fill="currentColor"
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                          />
+                          <path
+                            fill="currentColor"
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                          />
+                          <path
+                            fill="currentColor"
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                          />
+                        </svg>
+                        {t('continue_with_google', 'متابعة مع Google')}
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Luxury Back to Home Link */}
+            <div className="text-center">
+              <Link
+                to="/"
+                className="group inline-flex items-center gap-2 text-sm text-gray-600 hover:text-emerald-600 transition-all duration-300 bg-white/50 backdrop-blur-sm rounded-full px-6 py-3 border border-emerald-200 hover:border-emerald-300 hover:shadow-lg"
+              >
+                <TreePine className="h-4 w-4 group-hover:text-emerald-500 transition-colors" />
+                {t('back_to_home', 'العودة إلى الصفحة الرئيسية')}
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  );
+};
+
+export default Auth;
