@@ -35,6 +35,8 @@ export interface Member {
   created_by?: string;
   created_at: string;
   updated_at: string;
+  is_twin?: boolean;
+  twin_group_id?: string | null;
 }
 
 export interface Marriage {
