@@ -100,6 +100,19 @@ serve(async (req) => {
       authResult = signUpData;
       console.log(`User created successfully: ${email}`);
 
+      // تحديث حالة المستخدم إلى active بعد التحقق من OTP
+      if (signUpData.user) {
+        console.log(`Setting user status to active for: ${signUpData.user.id}`);
+        await supabase
+          .from('user_status')
+          .upsert({
+            user_id: signUpData.user.id,
+            status: 'active'
+          }, {
+            onConflict: 'user_id'
+          });
+      }
+
       // إرسال إيميل الترحيب للمستخدم الجديد
       console.log(`Sending welcome email to: ${email}`);
       const welcomeEmailPromise = supabase.functions.invoke('send-welcome-email', {
