@@ -395,7 +395,7 @@ const PlanSelection = () => {
 
     const packagePrice = getPackagePrice(pkg);
     if (packagePrice === 0) {
-      return currentLanguage === 'ar' ? "ادفع واشترك الآن" : "Pay and Subscribe Now";
+      return currentLanguage === 'ar' ? "اشترك مجاناً" : "Subscribe for Free";
     }
 
     return currentLanguage === 'ar' ? "ادفع واشترك الآن" : "Pay and Subscribe Now";
