@@ -172,10 +172,6 @@ export function LoginForm({ onSwitchToReset }: LoginFormProps) {
         {isLoading ? t('logging_in', 'جاري تسجيل الدخول...') : t('login', 'تسجيل الدخول')}
         <Lock className="mr-2 h-4 w-4" />
       </Button>
-
-      <p className="text-xs text-center text-muted-foreground">
-        {t('recaptcha_protected', 'هذا الموقع محمي بواسطة reCAPTCHA')}
-      </p>
     </form>
   );
 }
