@@ -116,6 +116,7 @@ export type Database = {
           is_used: boolean | null
           otp_code: string
           purpose: string
+          user_data: Json | null
         }
         Insert: {
           created_at?: string | null
@@ -125,6 +126,7 @@ export type Database = {
           is_used?: boolean | null
           otp_code: string
           purpose: string
+          user_data?: Json | null
         }
         Update: {
           created_at?: string | null
@@ -134,6 +136,7 @@ export type Database = {
           is_used?: boolean | null
           otp_code?: string
           purpose?: string
+          user_data?: Json | null
         }
         Relationships: []
       }
