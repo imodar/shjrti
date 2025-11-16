@@ -3837,7 +3837,9 @@ const handleEditMember = useCallback((member: any) => {
 {(() => { 
   const count = (derivedSelectedTwins && derivedSelectedTwins.length > 0)
     ? derivedSelectedTwins.length
-    : ((familyMembers as any[])?.filter((m: any) => m.twin_group_id === resolvedTwinGroupId && m.id !== editingMember?.id).length || 0);
+    : (resolvedTwinGroupId
+        ? ((familyMembers as any[])?.filter((m: any) => m.twin_group_id === resolvedTwinGroupId && m.id !== editingMember?.id).length || 0)
+        : 0);
   return count === 0 ? "لا" : `${count} توأم`;
 })()}
       <ChevronsUpDown className="mr-2 h-4 w-4 shrink-0 opacity-50" />
