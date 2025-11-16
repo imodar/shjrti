@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowRight } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { TreePine, Heart, Users, Star, Sparkles, Crown, Gem } from "lucide-react";
@@ -314,9 +315,10 @@ const Auth = () => {
                   )}
                 </div>
 
-                <div className="mt-4 text-center">
+                <div className="mt-6 text-center">
                   <Link to="/">
-                    <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
+                    <Button variant="outline" className="w-full sm:w-auto gap-2">
+                      <ArrowRight className="h-4 w-4" />
                       {t('back_to_home', 'العودة للرئيسية')}
                     </Button>
                   </Link>
