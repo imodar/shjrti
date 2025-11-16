@@ -63,7 +63,11 @@ serve(async (req) => {
     let authResult;
     
     if (purpose === 'signup') {
-      if (!password) {
+      // استخراج البيانات من otpRecord.user_data
+      const storedUserData = otpRecord.user_data || {};
+      const storedPassword = storedUserData.password || password;
+      
+      if (!storedPassword) {
         return new Response(
           JSON.stringify({ error: "Password is required for signup" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -75,13 +79,13 @@ serve(async (req) => {
       // Create user with email already confirmed
       const { data: signUpData, error: signUpError } = await supabase.auth.admin.createUser({
         email,
-        password,
+        password: storedPassword,
         email_confirm: true, // Auto-confirm email
         user_metadata: {
-          first_name: userData?.first_name || '',
-          last_name: userData?.last_name || '',
-          full_name: `${userData?.first_name || ''} ${userData?.last_name || ''}`.trim(),
-          phone: userData?.phone || ''
+          first_name: storedUserData.first_name || userData?.first_name || '',
+          last_name: storedUserData.last_name || userData?.last_name || '',
+          full_name: `${storedUserData.first_name || userData?.first_name || ''} ${storedUserData.last_name || userData?.last_name || ''}`.trim(),
+          phone: storedUserData.phone || userData?.phone || ''
         }
       });
 

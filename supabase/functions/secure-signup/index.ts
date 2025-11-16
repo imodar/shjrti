@@ -82,66 +82,42 @@ serve(async (req) => {
       );
     }
 
-    // 3. إنشاء المستخدم
-    console.log('[Secure Signup] Creating user...');
-    const redirectUrl = req.headers.get('origin') || 'https://cd2d25f7-7b31-497f-b193-004048ecdca6.lovableproject.com';
+    // 3. إرسال OTP بدلاً من إنشاء المستخدم مباشرة
+    console.log('[Secure Signup] Sending OTP...');
     
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${redirectUrl}/dashboard`,
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          phone: phone || ''
+    const { data: otpData, error: otpError } = await supabase.functions.invoke(
+      'send-otp',
+      {
+        body: {
+          email,
+          purpose: 'signup',
+          userData: {
+            first_name: firstName,
+            last_name: lastName,
+            phone: phone || '',
+            password // حفظ كلمة المرور لاستخدامها عند verify-otp
+          }
         }
       }
-    });
+    );
 
-    if (authError) {
-      console.error('[Secure Signup] Signup failed:', authError.message);
-      
-      // رسائل خطأ مخصصة
-      if (authError.message.includes('already registered')) {
-        return new Response(
-          JSON.stringify({ error: 'البريد الإلكتروني مسجل بالفعل' }),
-          { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      
-      if (authError.message.includes('password')) {
-        return new Response(
-          JSON.stringify({ error: 'كلمة المرور ضعيفة. يجب أن تكون 8 أحرف على الأقل' }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-
+    if (otpError || !otpData?.success) {
+      console.error('[Secure Signup] Failed to send OTP:', otpError);
       return new Response(
-        JSON.stringify({ error: authError.message }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ 
+          error: otpData?.error || 'فشل إرسال رمز التحقق. يرجى المحاولة مرة أخرى' 
+        }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log(`[Secure Signup] User created successfully: ${email}`);
-
-    // 4. إنشاء user status (pending)
-    if (authData.user) {
-      console.log('[Secure Signup] Creating user status...');
-      await supabase
-        .from('user_status')
-        .insert({
-          user_id: authData.user.id,
-          status: 'pending'
-        });
-    }
+    console.log(`[Secure Signup] OTP sent successfully to: ${email}`);
 
     return new Response(
       JSON.stringify({ 
-        success: true,
-        message: 'تم التسجيل بنجاح! يرجى التحقق من بريدك الإلكتروني لتفعيل حسابك',
-        user: authData.user,
-        session: authData.session
+        success: true, 
+        message: 'تم إرسال رمز التحقق إلى بريدك الإلكتروني',
+        expiresAt: otpData.expiresAt
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
