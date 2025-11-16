@@ -100,6 +100,22 @@ serve(async (req) => {
       authResult = signUpData;
       console.log(`User created successfully: ${email}`);
 
+      // إرسال إيميل الترحيب للمستخدم الجديد
+      console.log(`Sending welcome email to: ${email}`);
+      const welcomeEmailPromise = supabase.functions.invoke('send-welcome-email', {
+        body: {
+          email,
+          firstName: storedUserData.first_name || userData?.first_name || '',
+          lastName: storedUserData.last_name || userData?.last_name || '',
+          language: 'ar'
+        }
+      }).catch(error => {
+        console.error('Failed to send welcome email:', error);
+      });
+
+      // تشغيل إرسال الإيميل في الخلفية دون انتظار
+      EdgeRuntime.waitUntil(welcomeEmailPromise);
+
     } else if (purpose === 'login') {
       // For login, sign in with email/password (if provided) or generate session
       if (password) {
