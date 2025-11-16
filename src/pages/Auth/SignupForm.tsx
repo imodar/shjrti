@@ -272,10 +272,6 @@ export function SignupForm({ onOTPRequired }: SignupFormProps) {
         {isLoading ? t('creating_account', 'جاري إنشاء الحساب...') : t('create_account', 'إنشاء حساب')}
         <User className="mr-2 h-4 w-4" />
       </Button>
-
-      <p className="text-xs text-center text-muted-foreground">
-        {t('recaptcha_protected', 'هذا الموقع محمي بواسطة reCAPTCHA')}
-      </p>
     </form>
   );
 }
