@@ -29,8 +29,8 @@ export function SubscriptionGuard({
       return <>{fallbackContent}</>;
     }
 
-    // إذا لم يكن لديه اشتراك أصلاً، وجّهه لاختيار الباقة
-    if (!subscription || !subscription.package_name) {
+    // إذا لم يكن لديه اشتراك أصلاً أو كان free plan، وجّهه لاختيار الباقة
+    if (!subscription || subscription.status === 'free' || !subscription.subscription_id) {
       return (
         <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
           {/* Background decorations */}
