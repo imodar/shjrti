@@ -111,35 +111,43 @@ export function LoginForm({ onSwitchToReset, onSwitchToMagicLink }: LoginFormPro
         
         // Extract error message from FunctionsHttpError
         let errorMsg = 'فشل تسجيل الدخول';
+        let isRateLimitError = false;
         
-        if (functionError.context?.body) {
-          // The error response body is in context.body
+        // Check if it's a FunctionsHttpError with context
+        if (functionError.context) {
           try {
-            const errorBody = functionError.context.body;
-            errorMsg = errorBody.error || errorMsg;
+            // Must await context.json() to get the error body
+            const errorBody = await functionError.context.json();
+            console.log('[LoginForm] Error body:', errorBody);
             
-            // Handle rate limiting from error response
-            if (errorBody.rateLimitExceeded) {
-              toast({
-                title: t('rate_limit_exceeded', 'تم تجاوز عدد المحاولات'),
-                description: errorMsg,
-                variant: "destructive",
-              });
-              setIsLoading(false);
-              return;
-            }
+            errorMsg = errorBody.error || errorMsg;
+            isRateLimitError = errorBody.rateLimitExceeded || false;
           } catch (parseError) {
             console.error('[LoginForm] Error parsing response:', parseError);
+            // Fallback to message if json parsing fails
+            if (functionError.message) {
+              errorMsg = functionError.message;
+            }
           }
         } else if (functionError.message) {
           errorMsg = functionError.message;
         }
         
-        toast({
-          title: t('login_error', 'خطأ في تسجيل الدخول'),
-          description: errorMsg,
-          variant: "destructive",
-        });
+        // Show appropriate error message
+        if (isRateLimitError) {
+          toast({
+            title: t('rate_limit_exceeded', 'تم تجاوز عدد المحاولات'),
+            description: errorMsg,
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: t('login_error', 'خطأ في تسجيل الدخول'),
+            description: errorMsg,
+            variant: "destructive",
+          });
+        }
+        
         setIsLoading(false);
         return;
       }
