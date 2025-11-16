@@ -31,6 +31,8 @@ interface FamilyMember {
   isFounder: boolean;
   spouseId: string | null;
   relatedPersonId: string | null;
+  is_twin?: boolean;
+  twin_group_id?: string | null;
 }
 interface Marriage {
   id: string;
@@ -125,6 +127,7 @@ export const ModernFamilyMemberModal = ({
     maritalStatus: "single" as string,
     hasMultipleWives: false
   });
+  const [selectedTwins, setSelectedTwins] = useState<string[]>([]);
   
   // Track image changes and original image URL for preservation
   const [imageChanged, setImageChanged] = useState(false);
@@ -168,6 +171,21 @@ export const ModernFamilyMemberModal = ({
       }, 50);
     }
   }, [editMember, isOpen, marriages, familyMembers]);
+
+  // Load twins when editing
+  useEffect(() => {
+    if (editMember && editMember.is_twin && editMember.twin_group_id && familyMembers.length > 0) {
+      const twins = familyMembers
+        .filter(m => 
+          m.twin_group_id === editMember.twin_group_id && 
+          m.id !== editMember.id
+        )
+        .map(m => m.id);
+      setSelectedTwins(twins);
+    } else if (!editMember) {
+      setSelectedTwins([]);
+    }
+  }, [editMember, familyMembers]);
   const populateEditForm = () => {
     if (!editMember) return;
     
@@ -421,6 +439,10 @@ export const ModernFamilyMemberModal = ({
       }
 
       // Sanitize all form data before submission
+      const twinGroupId = selectedTwins.length > 0
+        ? (editMember?.twin_group_id || crypto.randomUUID())
+        : null;
+
       const sanitizedData = sanitizeFormData({
         ...memberData,
         name: sanitizedName,
@@ -434,6 +456,9 @@ export const ModernFamilyMemberModal = ({
         // Set mother ID from selected marriage  
         relatedPersonId,
         // Set related person ID to marriage ID (which marriage this person comes from)
+        is_twin: selectedTwins.length > 0,
+        twin_group_id: twinGroupId,
+        selectedTwins: selectedTwins, // Pass twins to be updated
         wives: memberData.gender === "male" ? wives.map(wife => ({
           ...wife,
           name: sanitizeInput(wife.name || ""),
@@ -483,6 +508,7 @@ export const ModernFamilyMemberModal = ({
       maritalStatus: "single",
       hasMultipleWives: false
     });
+    setSelectedTwins([]);
     setWives([]);
     setHusband(null);
     setNewWife({
@@ -722,11 +748,11 @@ export const ModernFamilyMemberModal = ({
                 <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-4 sm:p-6 border border-white/30 dark:border-gray-700/30">
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                      {/* Name and Birth Date - Combined in one row */}
+                      {/* Row 1: Name, Gender, Birth Date, Twin - All equal width (1/4 each) */}
                       <div className="group sm:col-span-1 md:col-span-4">
                         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                         {/* Name - 2/3 width */}
-                          <div className="sm:col-span-2">
+                         {/* Name - 1/4 width */}
+                          <div className="sm:col-span-1">
                             <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                               <div className="w-2 h-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
                               الاسم الأول *
@@ -742,23 +768,7 @@ export const ModernFamilyMemberModal = ({
                            </div>
                          </div>
 
-                         {/* Birth Date - 1/3 width */}
-                         <div className="sm:col-span-1">
-                           <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
-                             <div className="w-2 h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
-                             تاريخ الميلاد
-                           </Label>
-                           <div className="relative z-[10020]">
-                             <EnhancedDatePicker value={memberData.birthDate} onChange={date => setMemberData({
-                          ...memberData,
-                          birthDate: date
-                        })} placeholder="اختر التاريخ" className="h-9 text-sm border-2 border-green-200/50 dark:border-green-700/50 focus:border-green-500 focus:ring-4 focus:ring-green-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic" />
-                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
-                               <CalendarIcon className="h-2 w-2 text-white" />
-                             </div>
-                           </div>
-                         </div>
-                          {/* Gender - 1/4 width */}
+                         {/* Gender - 1/4 width */}
                           <div className="sm:col-span-1">
                              <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
                                <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
@@ -782,6 +792,93 @@ export const ModernFamilyMemberModal = ({
                               </div>
                             </div>
                           </div>
+
+                         {/* Birth Date - 1/4 width */}
+                         <div className="sm:col-span-1">
+                           <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                             <div className="w-2 h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                             تاريخ الميلاد
+                           </Label>
+                           <div className="relative z-[10020]">
+                             <EnhancedDatePicker value={memberData.birthDate} onChange={date => setMemberData({
+                          ...memberData,
+                          birthDate: date
+                        })} placeholder="اختر التاريخ" className="h-9 text-sm border-2 border-green-200/50 dark:border-green-700/50 focus:border-green-500 focus:ring-4 focus:ring-green-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl pr-10 font-arabic" />
+                             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                               <CalendarIcon className="h-2 w-2 text-white" />
+                             </div>
+                           </div>
+                         </div>
+
+                         {/* Twin Selection - 1/4 width */}
+                         <div className="sm:col-span-1">
+                           <Label className="text-sm font-bold flex items-center gap-2 text-gray-700 dark:text-gray-300 mb-2 font-arabic">
+                             <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full shadow-lg group-hover:scale-110 transition-transform"></div>
+                             توأم
+                           </Label>
+                           <Popover open={commandOpen} onOpenChange={setCommandOpen}>
+                             <PopoverTrigger asChild>
+                               <Button
+                                 variant="outline"
+                                 className="w-full h-9 justify-between text-sm border-2 border-purple-200/50 dark:border-purple-700/50 focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 transition-all duration-300 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl font-arabic"
+                               >
+                                 {selectedTwins.length === 0 ? "لا" : `${selectedTwins.length} توأم`}
+                                 <ChevronsUpDown className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                               </Button>
+                             </PopoverTrigger>
+                             <PopoverContent className="w-full p-0 z-[10002]">
+                               <Command className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl">
+                                 <CommandInput placeholder="ابحث عن الإخوة..." className="h-9 text-sm font-arabic" />
+                                 <CommandList className="max-h-48">
+                                   <CommandEmpty className="text-sm font-arabic text-center py-4 text-gray-500">
+                                     لا يوجد إخوة متاحون
+                                   </CommandEmpty>
+                                   <CommandGroup>
+                                     {(() => {
+                                       const siblings = familyMembers.filter(member => {
+                                         if (!memberData.selectedParent || memberData.selectedParent === "none") return false;
+                                         if (member.id === editMember?.id) return false;
+                                         
+                                         const selectedMarriage = marriages.find(m => m.id === memberData.selectedParent);
+                                         if (!selectedMarriage) return false;
+                                         
+                                         return (member.fatherId === selectedMarriage.husband?.id && member.motherId === selectedMarriage.wife?.id);
+                                       });
+                                       
+                                       return siblings.map((sibling) => (
+                                         <CommandItem
+                                           key={sibling.id}
+                                           onSelect={() => {
+                                             setSelectedTwins(prev =>
+                                               prev.includes(sibling.id)
+                                                 ? prev.filter(id => id !== sibling.id)
+                                                 : [...prev, sibling.id]
+                                             );
+                                           }}
+                                           className="font-arabic"
+                                         >
+                                           <div className="flex items-center gap-2">
+                                             <div className={cn(
+                                               "w-4 h-4 border-2 rounded flex items-center justify-center",
+                                               selectedTwins.includes(sibling.id) 
+                                                 ? "bg-purple-500 border-purple-500" 
+                                                 : "border-gray-300"
+                                             )}>
+                                               {selectedTwins.includes(sibling.id) && (
+                                                 <Check className="h-3 w-3 text-white" />
+                                               )}
+                                             </div>
+                                             <span>{sibling.name}</span>
+                                           </div>
+                                         </CommandItem>
+                                       ));
+                                     })()}
+                                   </CommandGroup>
+                                 </CommandList>
+                               </Command>
+                             </PopoverContent>
+                           </Popover>
+                         </div>
                         </div>
                       </div>
                     </div>

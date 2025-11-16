@@ -287,13 +287,25 @@ const SimpleMemberCard: React.FC<SimpleMemberCardProps> = ({
         
         <CardContent className="p-4">
           <div className="flex items-center justify-between gap-3 min-h-[80px]">
-            <div className="flex items-start gap-3 flex-1">
-              <Avatar className="h-12 w-12 flex-shrink-0">
-                {memberImageSrc && <AvatarImage src={memberImageSrc} alt={member.name} />}
-                <AvatarFallback className={getGenderColor(member.gender)}>
-                  {(member.name || member.first_name || "؟").charAt(0)}
-                </AvatarFallback>
-              </Avatar>
+              <div className="flex items-start gap-3 flex-1">
+              <div className="relative">
+                <Avatar className="h-12 w-12 flex-shrink-0">
+                  {memberImageSrc && <AvatarImage src={memberImageSrc} alt={member.name} />}
+                  <AvatarFallback className={getGenderColor(member.gender)}>
+                    {(member.name || member.first_name || "؟").charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                {member.is_twin && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-md">
+                        <Users className="h-3 w-3 text-white" />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent><p className="text-xs">توأم</p></TooltipContent>
+                  </Tooltip>
+                )}
+              </div>
               
               <div className="flex-1 min-w-0 space-y-1">
                 {/* Individual Name */}

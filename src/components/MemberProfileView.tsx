@@ -1033,6 +1033,41 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   </div>
                 )}
 
+                {/* Twins Section */}
+                {member.is_twin && member.twin_group_id && (() => {
+                  const twins = familyMembers.filter(m => 
+                    m.twin_group_id === member.twin_group_id && 
+                    m.id !== member.id
+                  );
+                  return twins.length > 0 ? (
+                    <div className="bg-card rounded-xl border border-border p-6">
+                      <h3 className="font-bold text-lg mb-4 text-primary flex items-center gap-2">
+                        <Users className="h-5 w-5" />
+                        التوائم
+                      </h3>
+                      <div className="flex flex-wrap gap-3">
+                        {twins.map(twin => (
+                          <Button
+                            key={twin.id}
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onMemberClick?.(twin)}
+                            className="flex items-center gap-2 h-auto py-3 px-4 border-2 border-purple-200/50 hover:border-purple-500 hover:bg-purple-50 dark:border-purple-700/50 dark:hover:bg-purple-900/20 transition-all"
+                          >
+                            <Avatar className="w-8 h-8">
+                              <AvatarImage src={twin.image_url} />
+                              <AvatarFallback className="bg-gradient-to-br from-purple-400/30 to-pink-500/30 text-purple-700 dark:text-purple-300">
+                                {twin.first_name?.charAt(0) || twin.name?.charAt(0) || '?'}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="font-medium">{twin.first_name || twin.name}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
+
                 {/* Spouses and Children Section */}
                 {(() => {
                   const spouses = getSpouses();
