@@ -33,6 +33,8 @@ interface Member {
   marital_status: string;
   image_url?: string;
   biography?: string;
+  is_twin?: boolean;
+  twin_group_id?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -99,7 +101,7 @@ export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children
       if (!familyId) return [];
       const { data, error } = await supabase
         .from('family_tree_members')
-        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, related_person_id, gender, birth_date, death_date, is_alive, is_founder, image_url, marital_status, biography, family_id, created_at, updated_at')
+        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, related_person_id, gender, birth_date, death_date, is_alive, is_founder, image_url, marital_status, biography, family_id, created_at, updated_at, is_twin, twin_group_id')
         .eq('family_id', familyId)
         .order('created_at', { ascending: true });
       if (error) throw error;
