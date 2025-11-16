@@ -187,38 +187,40 @@ export function SignupForm({ onOTPRequired }: SignupFormProps) {
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="signupEmail">{t('email', 'البريد الإلكتروني')}</Label>
-        <div className="relative">
-          <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input
-            id="signupEmail"
-            type="email"
-            placeholder={t('email_placeholder', 'example@domain.com')}
-            className={`pr-10 ${errors.email ? 'border-red-500' : ''}`}
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setErrors({ ...errors, email: undefined });
-            }}
-            required
-          />
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="signupEmail">{t('email', 'البريد الإلكتروني')}</Label>
+          <div className="relative">
+            <Mail className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="signupEmail"
+              type="email"
+              placeholder={t('email_placeholder', 'example@domain.com')}
+              className={`pr-10 ${errors.email ? 'border-red-500' : ''}`}
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setErrors({ ...errors, email: undefined });
+              }}
+              required
+            />
+          </div>
+          {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
         </div>
-        {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
-      </div>
 
-      <div className="space-y-2">
-        <Label htmlFor="phone">{t('phone', 'رقم الهاتف')} ({t('optional', 'اختياري')})</Label>
-        <div className="relative">
-          <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input
-            id="phone"
-            type="tel"
-            placeholder={t('phone_placeholder', '+966 5XXXXXXXX')}
-            className="pr-10"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-          />
+        <div className="space-y-2">
+          <Label htmlFor="phone">{t('phone', 'رقم الهاتف')} ({t('optional', 'اختياري')})</Label>
+          <div className="relative">
+            <Phone className="absolute right-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Input
+              id="phone"
+              type="tel"
+              placeholder={t('phone_placeholder', '+966 5XXXXXXXX')}
+              className="pr-10"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
         </div>
       </div>
 
