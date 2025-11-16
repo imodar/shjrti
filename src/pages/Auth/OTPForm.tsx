@@ -83,7 +83,12 @@ export function OTPForm({ email, purpose, userData, password, onBack, onSuccess 
       if (onSuccess) {
         onSuccess();
       } else {
-        navigate("/dashboard");
+        // توجيه المستخدمين الجدد لاختيار الباقة، والقدامى للداشبورد
+        if (purpose === 'signup') {
+          navigate("/plan-selection");
+        } else {
+          navigate("/dashboard");
+        }
       }
     } catch (error: any) {
       console.error('[OTPForm] Error:', error);

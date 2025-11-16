@@ -23,10 +23,54 @@ export function SubscriptionGuard({
 
   // Silent loading - render children directly without spinner
 
-  // If subscription is required and user is expired, show renewal prompt
-  if (requireActiveSubscription && isExpired) {
+  // If subscription is required and user has no active subscription, redirect to plan selection
+  if (requireActiveSubscription && (!subscription || isExpired)) {
     if (fallbackContent) {
       return <>{fallbackContent}</>;
+    }
+
+    // إذا لم يكن لديه اشتراك أصلاً، وجّهه لاختيار الباقة
+    if (!subscription || !subscription.package_name) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
+          {/* Background decorations */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
+            <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
+            <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
+          </div>
+          
+          <div className="min-h-screen flex items-center justify-center p-6 relative z-10">
+            <Card className="w-full max-w-md bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30 shadow-xl">
+              <CardHeader className="text-center">
+                <div className="mx-auto mb-6 h-16 w-16 rounded-full bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 flex items-center justify-center relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full blur-xl"></div>
+                  <Package className="h-8 w-8 text-emerald-600 dark:text-emerald-400 relative z-10" />
+                </div>
+                <CardTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
+                  🎉 اختر باقتك المناسبة
+                </CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed font-medium">
+                  <div className="space-y-2">
+                    <div>
+                      للاستمرار في استخدام شجرتي، يرجى اختيار الباقة المناسبة لك
+                    </div>
+                  </div>
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button 
+                  onClick={() => navigate('/plan-selection')} 
+                  className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg"
+                  size="lg"
+                >
+                  اختيار الباقة المناسبة
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      );
     }
 
     return (
