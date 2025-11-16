@@ -711,7 +711,11 @@ const Dashboard = () => {
                             <div className="relative flex items-center gap-2 md:gap-3">
                               <Plus className="h-5 w-5 md:h-6 md:w-6 group-hover:rotate-90 transition-transform duration-300" />
                               <span>{t('create_first_tree', 'إنشاء شجرتي الأولى')}</span>
-                              <ArrowLeft className="h-4 w-4 md:h-5 md:w-5 group-hover:-translate-x-1 transition-transform duration-300" />
+                              {direction === 'rtl' ? (
+                                <ArrowLeft className="h-4 w-4 md:h-5 md:w-5 group-hover:-translate-x-1 transition-transform duration-300" />
+                              ) : (
+                                <ArrowRight className="h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                              )}
                             </div>
                           </Button>
 
