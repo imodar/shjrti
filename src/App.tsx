@@ -16,6 +16,7 @@ import { MaintenanceModeGuard } from "@/components/MaintenanceModeGuard";
 import { SkeletonLayoutForBuilder } from "@/components/SkeletonLayoutForBuilder";
 import ScrollToTop from "@/components/ScrollToTop";
 import PageViewTracker from "@/components/PageViewTracker";
+import PageTitle from "@/components/PageTitle";
 import ConsentAwareScriptInjector from "@/components/ConsentAwareScriptInjector";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
@@ -105,6 +106,7 @@ const App = () => {
           <BrowserRouter>
             <ScrollToTop />
             <PageViewTracker />
+            <PageTitle />
             <ConsentAwareScriptInjector />
                   {gaId && <GoogleAnalytics measurementId={gaId} />}
                   <Routes>
