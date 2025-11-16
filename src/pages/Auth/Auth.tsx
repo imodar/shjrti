@@ -71,79 +71,115 @@ const Auth = () => {
         </div>
 
         <div className="min-h-screen flex">
-          {/* Left Side - Luxury Branding */}
-          <div className="hidden lg:flex lg:w-1/2 relative">
-            {/* Gradient Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-800"></div>
+        {/* Left Side - Luxury Branding */}
+        <div className="hidden lg:flex lg:w-1/2 relative">
+          {/* Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(255,255,255,0.1),transparent_50%)]"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(245,158,11,0.1),transparent_50%)]"></div>
+          
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-white/5 rounded-full blur-xl animate-pulse"></div>
+            <div className="absolute top-3/4 right-1/4 w-24 h-24 bg-white/10 rounded-full blur-lg animate-pulse delay-1000"></div>
+            <div className="absolute bottom-1/4 left-1/3 w-16 h-16 bg-white/15 rounded-full blur-md animate-pulse delay-2000"></div>
             
-            {/* Subtle Pattern Overlay */}
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30"></div>
-            
-            {/* Content */}
-            <div className="relative z-10 flex flex-col justify-center items-center p-12 text-white w-full">
-              <div className="max-w-md space-y-8 text-center">
-                {/* Logo with Glow Effect */}
-                <div className="relative inline-block">
-                  <div className="absolute inset-0 bg-white/30 blur-3xl rounded-full animate-pulse-slow"></div>
-                  <img
-                    src={familyTreeLogo}
-                    alt="Family Tree Logo"
-                    className="relative w-48 h-48 mx-auto drop-shadow-2xl animate-float"
+            {/* Floating Tree Icons */}
+            <div className="absolute top-1/6 right-1/6 text-white/10 animate-bounce">
+              <TreePine className="h-8 w-8" />
+            </div>
+            <div className="absolute bottom-1/6 left-1/6 text-white/10 animate-bounce delay-500">
+              <TreePine className="h-6 w-6" />
+            </div>
+            <div className="absolute top-2/3 right-1/3 text-white/10 animate-bounce delay-1000">
+              <TreePine className="h-4 w-4" />
+            </div>
+          </div>
+
+          {/* Main Content */}
+          <div className="relative z-10 flex items-center justify-center min-h-full p-8 w-full mx-auto">
+            <div className="text-center text-white space-y-8 max-w-lg font-arabic">
+              {/* Luxury Logo */}
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-amber-300/20 rounded-full blur-xl group-hover:blur-2xl transition-all duration-300"></div>
+                <div className="relative bg-white/10 backdrop-blur-sm rounded-full p-2 border-2 border-white/30 inline-block shadow-2xl">
+                  <img 
+                    src={familyTreeLogo} 
+                    alt={t('mytree', 'شجرتي')}
+                    className="h-24 w-24 rounded-full group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
+                <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-80 animate-pulse">
+                  <Crown className="h-4 w-4 text-white m-2" />
+                </div>
+              </div>
 
-                <div className="space-y-4">
-                  <h1 className="text-6xl font-bold tracking-tight">
-                    <span className="bg-gradient-to-r from-white via-emerald-50 to-white bg-clip-text text-transparent drop-shadow-lg">
-                      {t('appName', 'شجرتي')}
-                    </span>
-                  </h1>
-                  
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="h-px w-12 bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
-                    <Crown className="h-6 w-6 text-amber-300" />
-                    <div className="h-px w-12 bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
+              {/* Luxury Title */}
+              <div className="space-y-4">
+                <h1 className="text-6xl font-bold leading-tight">
+                  <span className="block bg-gradient-to-r from-white via-amber-200 to-white bg-clip-text text-transparent">
+                    {t('welcome_to', 'مرحباً بك في')}
+                  </span>
+                  <span className="block text-white font-black text-7xl">
+                    {t('mytree', 'شجرتي')}
+                  </span>
+                </h1>
+                <div className="w-20 h-1 bg-gradient-to-r from-amber-400 to-white mx-auto rounded-full"></div>
+              </div>
+
+              {/* Luxury Description */}
+              <p className="text-xl opacity-95 leading-relaxed font-light">
+                {t('exceptional_journey', 'ابدأ رحلتك الاستثنائية في اكتشاف جذورك وبناء إرث رقمي فاخر')}
+                <br />
+                <span className="text-amber-200 font-medium">
+                  {t('best_arabic_platform', 'مع أفضل منصة عربية لإنشاء أشجار العائلة')}
+                </span>
+              </p>
+
+              {/* Luxury Statistics */}
+              <div className="grid grid-cols-3 gap-4 pt-8">
+                <div className="group">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                    <div className="text-3xl font-bold group-hover:text-amber-200 transition-colors">+1000</div>
+                    <div className="text-sm opacity-80 mt-1">{t('distinguished_family', 'عائلة مميزة')}</div>
                   </div>
                 </div>
-
-                {/* Tagline */}
-                <p className="text-2xl font-light text-emerald-50/90 leading-relaxed max-w-sm mx-auto">
-                  {t('authTagline', 'احفظ تاريخ عائلتك للأجيال القادمة')}
-                </p>
-
-                {/* Feature Icons */}
-                <div className="grid grid-cols-3 gap-6 pt-8">
-                  <div className="flex flex-col items-center gap-3 group">
-                    <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-all duration-300 group-hover:scale-110">
-                      <TreePine className="h-8 w-8 text-white" />
-                    </div>
-                    <span className="text-sm font-medium text-emerald-50">{t('familyTree', 'شجرة العائلة')}</span>
-                  </div>
-                  
-                  <div className="flex flex-col items-center gap-3 group">
-                    <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-all duration-300 group-hover:scale-110">
-                      <Heart className="h-8 w-8 text-pink-200" />
-                    </div>
-                    <span className="text-sm font-medium text-emerald-50">{t('memories', 'الذكريات')}</span>
-                  </div>
-                  
-                  <div className="flex flex-col items-center gap-3 group">
-                    <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-all duration-300 group-hover:scale-110">
-                      <Users className="h-8 w-8 text-white" />
-                    </div>
-                    <span className="text-sm font-medium text-emerald-50">{t('family', 'العائلة')}</span>
+                <div className="group">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                    <div className="text-3xl font-bold group-hover:text-emerald-200 transition-colors">+50k</div>
+                    <div className="text-sm opacity-80 mt-1">{t('preserved_member', 'فرد محفوظ')}</div>
                   </div>
                 </div>
+                <div className="group">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                    <div className="text-3xl font-bold group-hover:text-blue-200 transition-colors">100%</div>
+                    <div className="text-sm opacity-80 mt-1">{t('high_security', 'آمان عالي')}</div>
+                  </div>
+                </div>
+              </div>
 
-                {/* Luxury Badge */}
-                <div className="pt-6 flex items-center justify-center gap-2">
-                  <Gem className="h-5 w-5 text-amber-300" />
-                  <span className="text-emerald-100/80 text-sm font-light tracking-wide">{t('premiumPlatform', 'منصة متميزة لعائلات مميزة')}</span>
-                  <Sparkles className="h-5 w-5 text-amber-300" />
+              {/* Luxury Features */}
+              <div className={`space-y-4 ${direction === 'rtl' ? 'pt-4' : 'pt-4'}`}>
+                <div className={`flex items-center justify-center gap-4 ${direction === 'rtl' ? 'space-x-4 space-x-reverse' : 'space-x-4'}`}>
+                  <div className={`flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg ${direction === 'rtl' ? 'space-x-2 space-x-reverse' : 'space-x-2'}`}>
+                    <Gem className="w-4 h-4 text-emerald-300" />
+                    <span className="text-sm font-medium">{t('luxury_design', 'تصميم فاخر')}</span>
+                  </div>
+                  <div className={`flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg ${direction === 'rtl' ? 'space-x-2 space-x-reverse' : 'space-x-2'}`}>
+                    <Crown className="w-4 h-4 text-amber-300" />
+                    <span className="text-sm font-medium">{t('high_quality', 'جودة عالية')}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center">
+                  <div className={`flex items-center gap-2 bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm rounded-full px-6 py-3 border border-white/20 shadow-lg ${direction === 'rtl' ? 'space-x-2 space-x-reverse' : 'space-x-2'}`}>
+                    <Star className="w-4 h-4 text-yellow-300" />
+                    <span className="text-sm font-medium">{t('distinctive_experience', 'تجربة مميزة')}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
           {/* Right Side - Authentication */}
           <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 relative z-10">
