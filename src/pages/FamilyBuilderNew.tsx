@@ -516,7 +516,10 @@ const FamilyBuilderNew = () => {
           image: member.image_url || null,
           bio: '',
           marital_status: member.marital_status || 'single',
-          relation: ""
+          relation: "",
+          // ✅ include twin fields from DB so they persist after refresh
+          is_twin: (member as any).is_twin ?? false,
+          twin_group_id: (member as any).twin_group_id ?? null
         }));
         setFamilyMembers(transformedMembers);
         console.log(`✅ Members loaded with images: ${transformedMembers.filter(m => m.image).length}/${transformedMembers.length}`);
@@ -611,7 +614,10 @@ const FamilyBuilderNew = () => {
       image: member.image_url || null,
       bio: member.biography || '',
       marital_status: member.marital_status || 'single',
-      relation: ""
+      relation: "",
+      // ✅ include twin fields so UI reflects DB state after refresh
+      is_twin: (member as any).is_twin ?? false,
+      twin_group_id: (member as any).twin_group_id ?? null
     }));
     setFamilyMembers(transformedMembers);
     
