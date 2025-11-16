@@ -740,6 +740,16 @@ const derivedSelectedTwins = useMemo(() => {
     ?.map(m => m.id) || [];
 }, [selectedTwins, familyMembers, resolvedTwinGroupId, editingMember?.id]);
 
+// Debug twins state for label correctness
+useEffect(() => {
+  console.log('🧪 Twins label state', {
+    selectedTwins,
+    derivedSelectedTwins,
+    resolvedTwinGroupId,
+    editingMemberId: editingMember?.id,
+  });
+}, [selectedTwins, derivedSelectedTwins, resolvedTwinGroupId, editingMember?.id]);
+
 // Initialize selected twins when editing an existing twin group (more robust)
 useEffect(() => {
   // Wait until we have an editing member and family members loaded
@@ -3824,7 +3834,12 @@ const handleEditMember = useCallback((member: any) => {
 }}>
   <PopoverTrigger asChild>
     <Button variant="outline" className="w-full h-11 font-arabic justify-between">
-      {derivedSelectedTwins.length === 0 ? "لا" : `${derivedSelectedTwins.length} توأم`}
+{(() => { 
+  const count = (derivedSelectedTwins && derivedSelectedTwins.length > 0)
+    ? derivedSelectedTwins.length
+    : ((familyMembers as any[])?.filter((m: any) => m.twin_group_id === resolvedTwinGroupId && m.id !== editingMember?.id).length || 0);
+  return count === 0 ? "لا" : `${count} توأم`;
+})()}
       <ChevronsUpDown className="mr-2 h-4 w-4 shrink-0 opacity-50" />
     </Button>
   </PopoverTrigger>
