@@ -44,7 +44,7 @@ serve(async (req) => {
 
     console.log(`Generating OTP for ${email}, purpose: ${purpose}`);
 
-    // Save OTP to database
+    // Save OTP to database with userData
     const { data: otpRecord, error: otpError } = await supabase
       .from("auth_otp_codes")
       .insert({
@@ -52,7 +52,8 @@ serve(async (req) => {
         otp_code: otpCode,
         purpose,
         expires_at: expiresAt.toISOString(),
-        is_used: false
+        is_used: false,
+        user_data: userData || null // حفظ بيانات المستخدم بما فيها كلمة المرور
       })
       .select()
       .single();
