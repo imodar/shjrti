@@ -713,6 +713,9 @@ const FamilyBuilderNew = () => {
   });
   const [wives, setWives] = useState<SpouseData[]>([]);
   const [husband, setHusband] = useState<SpouseData | null>(null);
+  // Twins state
+  const [selectedTwins, setSelectedTwins] = useState<string[]>([]);
+  const [twinCommandOpen, setTwinCommandOpen] = useState(false);
 
   // Sync croppedImage with formData when croppedImage changes
   useEffect(() => {
@@ -2453,6 +2456,9 @@ const FamilyBuilderNew = () => {
           relatedPersonId = selectedMarriage.id;
         }
       }
+      // Twins: compute group id if any twins selected
+      const twinGroupId = selectedTwins.length > 0 ? (editingMember?.twin_group_id || crypto.randomUUID()) : null;
+
       let isEditMode = formMode === 'edit' && editingMember;
       console.log('🚨 IS EDIT MODE CHECK:', {
         formMode,
@@ -2494,6 +2500,8 @@ const FamilyBuilderNew = () => {
           mother_id: motherId,
           related_person_id: relatedPersonId,
           marital_status: finalData.maritalStatus || 'single',
+          is_twin: selectedTwins.length > 0,
+          twin_group_id: twinGroupId,
           updated_at: new Date().toISOString()
         }).eq('id', editingMember.id).select().single();
         if (updateError) {
@@ -2501,6 +2509,17 @@ const FamilyBuilderNew = () => {
           throw updateError;
         }
         memberData = updatedMember;
+        // Ensure selected twins are linked to the same twin group
+        if (selectedTwins.length > 0 && twinGroupId) {
+          await Promise.all(
+            selectedTwins.map((twinId) =>
+              supabase
+                .from('family_tree_members')
+                .update({ is_twin: true, twin_group_id: twinGroupId })
+                .eq('id', twinId)
+            )
+          );
+        }
       } else {
         // Insert new family member into database
         // Use first_name from formData directly
@@ -2539,7 +2558,9 @@ const FamilyBuilderNew = () => {
           family_id: familyId,
           created_by: familyData?.creator_id,
           is_founder: submissionData.isFounder || false,
-          marital_status: finalData.maritalStatus || 'single'
+          marital_status: finalData.maritalStatus || 'single',
+          is_twin: selectedTwins.length > 0,
+          twin_group_id: twinGroupId
         }).select().single();
         
         if (memberError) {
@@ -2548,6 +2569,18 @@ const FamilyBuilderNew = () => {
         }
         
         memberData = newMember;
+
+        // Update twins to link them into the same group
+        if (selectedTwins.length > 0 && twinGroupId) {
+          await Promise.all(
+            selectedTwins.map((twinId) =>
+              supabase
+                .from('family_tree_members')
+                .update({ is_twin: true, twin_group_id: twinGroupId })
+                .eq('id', twinId)
+            )
+          );
+        }
         
         // Now upload image using the real member ID
         const croppedBlob = (window as any).__croppedImageBlob;
@@ -3504,10 +3537,79 @@ const FamilyBuilderNew = () => {
                           deathDate: date
                         })} placeholder="اختر تاريخ الوفاة" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" />
                                   </div>}
-                             </div>
+                              </div>
 
-                             {/* Biography and Profile Picture - Side by Side Layout */}
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              {/* Twins selection - visible after choosing parents */}
+                              {formData.selectedParent && !formData.isFounder && (
+                                <div className="grid grid-cols-12 gap-6">
+                                  <div className="col-span-12 md:col-span-6">
+                                    <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                      توأم
+                                    </Label>
+                                    <Popover open={twinCommandOpen} onOpenChange={setTwinCommandOpen}>
+                                      <PopoverTrigger asChild>
+                                        <Button variant="outline" className="w-full h-11 font-arabic justify-between">
+                                          {selectedTwins.length === 0 ? "لا" : `${selectedTwins.length} توأم`}
+                                          <ChevronsUpDown className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                                        </Button>
+                                      </PopoverTrigger>
+                                      <PopoverContent className="w-full p-0 z-[10002]">
+                                        <Command className="bg-card">
+                                          <CommandInput placeholder="ابحث عن الإخوة..." className="h-9 text-sm font-arabic" />
+                                          <CommandList className="max-h-48">
+                                            <CommandEmpty className="text-sm font-arabic text-center py-4 text-muted-foreground">
+                                              لا يوجد إخوة متاحون
+                                            </CommandEmpty>
+                                            <CommandGroup>
+                                              {(() => {
+                                                const selectedMarriage = familyMarriages.find((m: any) => m.id === formData.selectedParent);
+                                                const siblings = familyMembers.filter((member: any) => {
+                                                  if (!selectedMarriage) return false;
+                                                  if (editingMember && member.id === editingMember.id) return false;
+                                                  return (
+                                                    member.father_id === selectedMarriage.husband?.id &&
+                                                    member.mother_id === selectedMarriage.wife?.id
+                                                  );
+                                                });
+
+                                                return siblings.map((sibling: any) => (
+                                                  <CommandItem
+                                                    key={sibling.id}
+                                                    onSelect={() => {
+                                                      setSelectedTwins(prev => prev.includes(sibling.id)
+                                                        ? prev.filter(id => id !== sibling.id)
+                                                        : [...prev, sibling.id]
+                                                      );
+                                                    }}
+                                                    className="font-arabic"
+                                                  >
+                                                    <div className="flex items-center gap-2">
+                                                      <div className={cn(
+                                                        "w-4 h-4 border-2 rounded flex items-center justify-center",
+                                                        selectedTwins.includes(sibling.id)
+                                                          ? "bg-primary border-primary"
+                                                          : "border-border"
+                                                      )}>
+                                                        {selectedTwins.includes(sibling.id) && (
+                                                          <Check className="h-3 w-3 text-primary-foreground" />
+                                                        )}
+                                                      </div>
+                                                      <span>{sibling.name}</span>
+                                                    </div>
+                                                  </CommandItem>
+                                                ));
+                                              })()}
+                                            </CommandGroup>
+                                          </CommandList>
+                                        </Command>
+                                      </PopoverContent>
+                                    </Popover>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Biography and Profile Picture - Side by Side Layout */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                {/* Biography Section - 1/2 */}
                                <div>
                                  <Label htmlFor="bio" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
