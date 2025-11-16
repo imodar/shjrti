@@ -2468,10 +2468,22 @@ const FamilyBuilderNew = () => {
           relatedPersonId = selectedMarriage.id;
         }
       }
+      
+      // ✅ FIX: Use selectedTwins from submissionData first, fallback to state
+      const selectedTwinsInput = Array.isArray(submissionData?.selectedTwins)
+        ? submissionData.selectedTwins
+        : selectedTwins;
+      
+      console.log('🔍 TWIN INPUT SOURCE:', {
+        fromSubmissionData: submissionData?.selectedTwins,
+        fromState: selectedTwins,
+        finalInput: selectedTwinsInput
+      });
+      
       // Twins: compute a valid existing group id (FK-safe)
-      const selectedTwinMembers = familyMembers.filter((m: any) => selectedTwins.includes(m.id));
+      const selectedTwinMembers = familyMembers.filter((m: any) => selectedTwinsInput.includes(m.id));
       const existingGroupFromTwins = selectedTwinMembers.find((m: any) => m.twin_group_id)?.twin_group_id || null;
-      const twinGroupId = selectedTwins.length > 0
+      const twinGroupId = selectedTwinsInput.length > 0
         ? (
             editingMember?.twin_group_id ||
             existingGroupFromTwins ||
@@ -2482,8 +2494,8 @@ const FamilyBuilderNew = () => {
         : null;
       
       console.log('🔍 TWIN DATA DEBUG:', {
-        selectedTwinsCount: selectedTwins.length,
-        selectedTwins,
+        selectedTwinsCount: selectedTwinsInput.length,
+        selectedTwinsInput,
         selectedTwinMembers,
         existingGroupFromTwins,
         twinGroupId,
@@ -2497,7 +2509,7 @@ const FamilyBuilderNew = () => {
         isEditMode
       });
       const hadExistingGroup = !!editingMember?.twin_group_id;
-      const shouldBeTwin = (selectedTwins.length > 0) || (editingMember?.is_twin && hadExistingGroup);
+      const shouldBeTwin = (selectedTwinsInput.length > 0) || (editingMember?.is_twin && hadExistingGroup);
       const finalTwinGroupId = twinGroupId || editingMember?.twin_group_id || (shouldBeTwin ? editingMember?.id : null);
       let memberData;
       if (isEditMode) {
@@ -2544,16 +2556,21 @@ const FamilyBuilderNew = () => {
         }
         memberData = updatedMember;
         
-        // Handle twin relationships collectively
-        if (selectedTwins.length > 0 && finalTwinGroupId) {
+        // Handle twin relationships collectively with .select() to verify rows updated
+        if (selectedTwinsInput.length > 0 && finalTwinGroupId) {
           // Link all selected twins together in one batch update
-          console.log('🔍 Updating twins collectively:', { selectedTwins, finalTwinGroupId });
-          const allTwinIds = [editingMember.id, ...selectedTwins];
+          console.log('🔍 Updating twins collectively:', { 
+            selectedTwinsInput, 
+            finalTwinGroupId,
+            editingMemberId: editingMember.id 
+          });
+          const allTwinIds = [editingMember.id, ...selectedTwinsInput];
           
-          const { error: twinUpdateError } = await supabase
+          const { data: twinsUpdated, error: twinUpdateError } = await supabase
             .from('family_tree_members')
             .update({ is_twin: true, twin_group_id: finalTwinGroupId })
-            .in('id', allTwinIds);
+            .in('id', allTwinIds)
+            .select('id, is_twin, twin_group_id');
           
           if (twinUpdateError) {
             console.error('❌ فشل تحديث التوائم:', twinUpdateError);
@@ -2562,16 +2579,28 @@ const FamilyBuilderNew = () => {
               description: "فشل ربط أعضاء التوائم. يرجى المحاولة مرة أخرى.",
               variant: "destructive",
             });
+          } else if (twinsUpdated && twinsUpdated.length === 0) {
+            console.warn('⚠️ لم يتم تحديث أي صفوف للتوائم - قد يكون RLS منع التحديث');
+            toast({
+              title: "تنبيه: لم يتم حفظ التوائم",
+              description: "لم يتم حفظ بيانات التوائم. قد لا تملك صلاحية تعديل هؤلاء الأعضاء.",
+              variant: "destructive",
+            });
           } else {
-            console.log('✅ تم ربط التوائم بنجاح:', allTwinIds);
+            console.log('✅ تم ربط التوائم بنجاح:', {
+              updatedCount: twinsUpdated?.length,
+              updatedIds: twinsUpdated?.map(t => t.id),
+              twinsUpdated
+            });
           }
-        } else if (hadExistingGroup && selectedTwins.length === 0) {
+        } else if (hadExistingGroup && selectedTwinsInput.length === 0) {
           // Unlink all members from previous twin group
           console.log('🔓 فك ربط التوائم للمجموعة:', editingMember.twin_group_id);
-          const { error: unlinkError } = await supabase
+          const { data: twinsUnlinked, error: unlinkError } = await supabase
             .from('family_tree_members')
             .update({ is_twin: false, twin_group_id: null })
-            .eq('twin_group_id', editingMember.twin_group_id);
+            .eq('twin_group_id', editingMember.twin_group_id)
+            .select('id, is_twin, twin_group_id');
           
           if (unlinkError) {
             console.error('❌ فشل فك ربط التوائم:', unlinkError);
@@ -2580,8 +2609,18 @@ const FamilyBuilderNew = () => {
               description: "فشل إلغاء ربط التوائم. يرجى المحاولة مرة أخرى.",
               variant: "destructive",
             });
+          } else if (twinsUnlinked && twinsUnlinked.length === 0) {
+            console.warn('⚠️ لم يتم فك ربط أي صفوف - قد يكون RLS منع التحديث');
+            toast({
+              title: "تنبيه: لم يتم إلغاء التوائم",
+              description: "لم يتم إلغاء ربط التوائم. قد لا تملك صلاحية تعديل هؤلاء الأعضاء.",
+              variant: "destructive",
+            });
           } else {
-            console.log('✅ تم فك ربط التوائم بنجاح');
+            console.log('✅ تم فك ربط التوائم بنجاح:', {
+              unlinkedCount: twinsUnlinked?.length,
+              twinsUnlinked
+            });
           }
         }
       } else {
@@ -2623,7 +2662,7 @@ const FamilyBuilderNew = () => {
           created_by: familyData?.creator_id,
           is_founder: submissionData.isFounder || false,
           marital_status: finalData.maritalStatus || 'single',
-          is_twin: selectedTwins.length > 0,
+          is_twin: selectedTwinsInput.length > 0,
           twin_group_id: twinGroupId
         }).select().single();
         
@@ -2634,15 +2673,20 @@ const FamilyBuilderNew = () => {
         
         memberData = newMember;
 
-        // Handle twin relationships collectively for new member
-        if (selectedTwins.length > 0 && twinGroupId) {
-          console.log('🔍 Linking twins for new member:', { selectedTwins, twinGroupId });
-          const allTwinIds = [newMember.id, ...selectedTwins];
+        // Handle twin relationships collectively for new member with .select() to verify
+        if (selectedTwinsInput.length > 0 && twinGroupId) {
+          console.log('🔍 Linking twins for new member:', { 
+            selectedTwinsInput, 
+            twinGroupId,
+            newMemberId: newMember.id 
+          });
+          const allTwinIds = [newMember.id, ...selectedTwinsInput];
           
-          const { error: twinUpdateError } = await supabase
+          const { data: twinsUpdated, error: twinUpdateError } = await supabase
             .from('family_tree_members')
             .update({ is_twin: true, twin_group_id: twinGroupId })
-            .in('id', allTwinIds);
+            .in('id', allTwinIds)
+            .select('id, is_twin, twin_group_id');
           
           if (twinUpdateError) {
             console.error('❌ فشل تحديث التوائم للعضو الجديد:', twinUpdateError);
@@ -2651,8 +2695,19 @@ const FamilyBuilderNew = () => {
               description: "تم حفظ العضو لكن فشل ربط التوائم. يرجى تعديل العضو لربط التوائم.",
               variant: "destructive",
             });
+          } else if (twinsUpdated && twinsUpdated.length === 0) {
+            console.warn('⚠️ لم يتم تحديث أي صفوف للتوائم - قد يكون RLS منع التحديث');
+            toast({
+              title: "تنبيه: لم يتم حفظ التوائم",
+              description: "تم حفظ العضو لكن لم يتم ربط التوائم. قد لا تملك صلاحية تعديل هؤلاء الأعضاء.",
+              variant: "destructive",
+            });
           } else {
-            console.log('✅ تم ربط التوائم بنجاح للعضو الجديد:', allTwinIds);
+            console.log('✅ تم ربط التوائم بنجاح للعضو الجديد:', {
+              updatedCount: twinsUpdated?.length,
+              updatedIds: twinsUpdated?.map(t => t.id),
+              twinsUpdated
+            });
           }
         }
         
