@@ -19,8 +19,6 @@ interface FormData {
   isFounder: boolean;
   fatherId: string;
   motherId: string;
-  isTwin: boolean;
-  selectedTwins: string[];
 }
 
 interface UseFormStateResult {
@@ -51,9 +49,7 @@ const initialFormData: FormData = {
   isAlive: true,
   isFounder: false,
   fatherId: '',
-  motherId: '',
-  isTwin: false,
-  selectedTwins: []
+  motherId: ''
 };
 
 export const useFormState = (): UseFormStateResult => {
@@ -71,17 +67,7 @@ export const useFormState = (): UseFormStateResult => {
     setFormMode('view');
   }, []);
 
-  const loadMemberToForm = useCallback((member: Member, allMembers: Member[] = []) => {
-    // Load twins if member is a twin
-    const twins = member.is_twin && member.twin_group_id
-      ? allMembers
-          .filter(m => 
-            m.twin_group_id === member.twin_group_id && 
-            m.id !== member.id
-          )
-          .map(m => m.id)
-      : [];
-
+  const loadMemberToForm = useCallback((member: Member) => {
     setFormDataState({
       firstName: member.first_name || member.name?.split(' ')[0] || '',
       middleName: '',
@@ -99,9 +85,7 @@ export const useFormState = (): UseFormStateResult => {
       isAlive: member.is_alive !== false,
       isFounder: member.is_founder || false,
       fatherId: member.father_id || '',
-      motherId: member.mother_id || '',
-      isTwin: member.is_twin || false,
-      selectedTwins: twins
+      motherId: member.mother_id || ''
     });
     setSelectedMemberId(member.id);
     setFormMode('edit');

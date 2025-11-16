@@ -45,11 +45,7 @@ export const useUpdateMemberMutation = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async ({ id, updates, twinIds }: { 
-      id: string; 
-      updates: any;
-      twinIds?: string[];
-    }) => {
+    mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
       const { data, error } = await supabase
         .from('family_tree_members')
         .update(updates)
@@ -57,21 +53,6 @@ export const useUpdateMemberMutation = () => {
         .select()
         .single();
       if (error) throw error;
-
-      // Update twins if provided
-      if (twinIds && twinIds.length > 0 && updates.twin_group_id) {
-        const twinUpdates = twinIds.map(twinId =>
-          supabase
-            .from('family_tree_members')
-            .update({
-              is_twin: true,
-              twin_group_id: updates.twin_group_id
-            })
-            .eq('id', twinId)
-        );
-        await Promise.all(twinUpdates);
-      }
-
       return data;
     },
     onSuccess: (updatedMember) => {
@@ -81,17 +62,12 @@ export const useUpdateMemberMutation = () => {
         (old: any[] = []) => old.map(m => m.id === updatedMember.id ? updatedMember : m)
       );
       
-      // Invalidate to refresh twins
-      queryClient.invalidateQueries({ 
-        queryKey: ['members', updatedMember.family_id] 
-      });
-      
       // Also update single member cache if it exists
       queryClient.setQueryData(['member', updatedMember.id], updatedMember);
       
       toast({
         title: 'تم التحديث',
-        description: 'تم تحديث بيانات العضو والتوائم بنجاح',
+        description: 'تم تحديث بيانات العضو بنجاح',
       });
     },
     onError: (error: any) => {

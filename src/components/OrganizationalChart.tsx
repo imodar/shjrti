@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Heart, HeartCrack, Users, Crown, UserRound, Edit3 } from "lucide-react";
 import { useResolvedImageUrl } from "@/utils/useResolvedImageUrl";
 
@@ -407,19 +406,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                   // Single wife layout - centered vertically
                   <div className="flex items-center justify-between gap-4">
                     {/* Wife */}
-                    <div className="flex-1 text-center relative">
-                      {wives[0].is_twin && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="absolute top-0 right-0 w-5 h-5 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-md z-10">
-                                <Users className="h-3 w-3 text-white" />
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent><p className="text-xs">توأم</p></TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
+                    <div className="flex-1 text-center">
                       <MemberAvatar 
                         member={wives[0]} 
                         size="h-14 w-14"
@@ -462,19 +449,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
                     {/* Husband */}
                     {husband && (
-                      <div className="flex-1 text-center relative">
-                        {husband.is_twin && (
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div className="absolute top-0 right-0 w-5 h-5 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-md z-10">
-                                  <Users className="h-3 w-3 text-white" />
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent><p className="text-xs">توأم</p></TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        )}
+                      <div className="flex-1 text-center">
                         <MemberAvatar 
                           member={husband} 
                           size="h-14 w-14"

@@ -54,14 +54,12 @@ import { MemberCard } from "@/pages/FamilyBuilderNew/components/MemberList/Membe
 import { TreeSettingsView } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsView";
 import { CustomDomainCard } from "@/pages/FamilyBuilderNew/components/TreeSettings/CustomDomainCard";
 import { useFamilyData } from "@/contexts/FamilyDataContext";
-import { useQueryClient } from "@tanstack/react-query";
 
 
 const FamilyBuilderNew = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const queryClient = useQueryClient();
   const {
     hasAIFeatures
   } = useSubscription();
@@ -492,7 +490,7 @@ const FamilyBuilderNew = () => {
         data: members,
         error: membersError
       } = await supabase.from('family_tree_members')
-        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, related_person_id, is_founder, gender, birth_date, is_alive, death_date, marital_status, image_url, is_twin, twin_group_id')
+        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, related_person_id, is_founder, gender, birth_date, is_alive, death_date, marital_status, image_url')
         .eq('family_id', familyToUse.id);
       if (membersError) throw membersError;
       
@@ -516,10 +514,7 @@ const FamilyBuilderNew = () => {
           image: member.image_url || null,
           bio: '',
           marital_status: member.marital_status || 'single',
-          relation: "",
-          // ✅ include twin fields from DB so they persist after refresh
-          is_twin: (member as any).is_twin ?? false,
-          twin_group_id: (member as any).twin_group_id ?? null
+          relation: ""
         }));
         setFamilyMembers(transformedMembers);
         console.log(`✅ Members loaded with images: ${transformedMembers.filter(m => m.image).length}/${transformedMembers.length}`);
@@ -614,10 +609,7 @@ const FamilyBuilderNew = () => {
       image: member.image_url || null,
       bio: member.biography || '',
       marital_status: member.marital_status || 'single',
-      relation: "",
-      // ✅ include twin fields so UI reflects DB state after refresh
-      is_twin: (member as any).is_twin ?? false,
-      twin_group_id: (member as any).twin_group_id ?? null
+      relation: ""
     }));
     setFamilyMembers(transformedMembers);
     
@@ -721,60 +713,6 @@ const FamilyBuilderNew = () => {
   });
   const [wives, setWives] = useState<SpouseData[]>([]);
   const [husband, setHusband] = useState<SpouseData | null>(null);
-// Twins state
-const [selectedTwins, setSelectedTwins] = useState<string[]>([]);
-const [twinCommandOpen, setTwinCommandOpen] = useState(false);
-
-// Derive twins from DB if selection is empty
-const resolvedTwinGroupId = useMemo(() => {
-  if (!editingMember?.id) return null;
-  const fromState = (familyMembers as any[])?.find(m => m.id === editingMember.id);
-  return (fromState?.twin_group_id ?? (editingMember as any)?.twin_group_id) || null;
-}, [editingMember?.id, (editingMember as any)?.twin_group_id, familyMembers]);
-
-const derivedSelectedTwins = useMemo(() => {
-  if (!resolvedTwinGroupId) return selectedTwins;
-  if (selectedTwins.length > 0) return selectedTwins;
-  return (familyMembers as any[])
-    ?.filter(m => m.twin_group_id === resolvedTwinGroupId && m.id !== editingMember?.id)
-    ?.map(m => m.id) || [];
-}, [selectedTwins, familyMembers, resolvedTwinGroupId, editingMember?.id]);
-
-// Debug twins state for label correctness (removed verbose logging)
-
-// Initialize selected twins when editing an existing twin group (more robust)
-useEffect(() => {
-  // Wait until we have an editing member and family members loaded
-  if (!editingMember?.id || !familyMembers || familyMembers.length === 0) return;
-
-  // Resolve latest member data from state in case the object passed to edit lacks twin fields
-  const memberFromState: any = (familyMembers as any[]).find(m => m.id === editingMember.id) || editingMember;
-  const resolvedGroupId = memberFromState?.twin_group_id ?? editingMember?.twin_group_id ?? null;
-
-  if (resolvedGroupId) {
-    const twins = (familyMembers as any[])
-      .filter(m => m.twin_group_id === resolvedGroupId && m.id !== editingMember.id)
-      .map(m => m.id);
-
-    console.log('🔍 Loading twins for editing member (robust):', {
-      editingMemberId: editingMember.id,
-      editingMemberName: editingMember.name,
-      is_twin_input: (editingMember as any)?.is_twin,
-      is_twin_resolved: (memberFromState as any)?.is_twin,
-      twin_group_id_input: (editingMember as any)?.twin_group_id,
-      twin_group_id_resolved: resolvedGroupId,
-      foundTwins: twins,
-      familyMembersWithTwinGroup: (familyMembers as any[]).filter((m: any) => m.twin_group_id === resolvedGroupId)
-    });
-
-    setSelectedTwins(twins);
-    return;
-  }
-
-  // Only clear if we definitively have no twin group id
-  console.log('🔍 No twin_group_id found; clearing selectedTwins');
-  setSelectedTwins([]);
-}, [editingMember?.id, editingMember?.twin_group_id, familyMembers]);
 
   // Sync croppedImage with formData when croppedImage changes
   useEffect(() => {
@@ -1935,33 +1873,13 @@ useEffect(() => {
     // Fetch fresh member profile data
     await fetchMemberProfile(member.id);
   }, [isMobile, familyId, toast]);
-const handleEditMember = useCallback((member: any) => {
-  console.log('🔍 handleEditMember called with member:', {
-    id: member.id,
-    name: member.name,
-    is_twin: (member as any)?.is_twin,
-    twin_group_id: (member as any)?.twin_group_id
-  });
-  setFormMode('edit');
-  setEditingMember(member);
-  setCurrentStep(1);
-  populateFormData(member);
-
-  // Prime twins immediately from cache/DB fields
-  const fromState: any = (familyMembers as any[]).find(m => m.id === member.id) || member;
-  const groupId = fromState?.twin_group_id ?? (member as any)?.twin_group_id ?? null;
-  if (groupId) {
-    const twins = (familyMembers as any[])
-      .filter(m => m.twin_group_id === groupId && m.id !== member.id)
-      .map(m => m.id);
-    console.log('🔄 Primed selectedTwins from cache on edit:', { groupId, twins });
-    setSelectedTwins(twins);
-  } else {
-    setSelectedTwins([]);
-  }
-
-  if (isMobile) setIsMemberListOpen(false);
-}, [isMobile, familyMembers]);
+  const handleEditMember = useCallback((member: any) => {
+    setFormMode('edit');
+    setEditingMember(member);
+    setCurrentStep(1);
+    populateFormData(member);
+    if (isMobile) setIsMemberListOpen(false);
+  }, [isMobile]);
   const handleCancelForm = () => {
     setFormMode('view');
     setEditingMember(null);
@@ -1999,22 +1917,12 @@ const handleEditMember = useCallback((member: any) => {
     }
   };
   const populateFormData = (member: any) => {
-    // Auto-set selectedParent based on member's parents
-    let autoSelectedParent = member.relatedPersonId || null;
-    if (!autoSelectedParent && (member.fatherId || member.motherId)) {
-      // Find marriage between parents
-      const parentMarriage = familyMarriages.find((m: any) => 
-        m.husband?.id === member.fatherId && m.wife?.id === member.motherId
-      );
-      autoSelectedParent = parentMarriage?.id || null;
-    }
-    
     setFormData({
       name: member.name || "",
       first_name: member.first_name || member.name?.split(' ')[0] || "",
       relation: member.relation || "",
       relatedPersonId: member.relatedPersonId,
-      selectedParent: autoSelectedParent,
+      selectedParent: member.relatedPersonId || null,
       gender: member.gender || "male",
       birthDate: member.birthDate ? new Date(member.birthDate) : null,
       isAlive: member.isAlive ?? true,
@@ -2022,6 +1930,7 @@ const handleEditMember = useCallback((member: any) => {
       bio: member.bio || "",
       imageUrl: member.image || "",
       croppedImage: null,
+      // Don't set croppedImage when editing existing member
       isFounder: member.isFounder || false
     });
 
@@ -2544,51 +2453,12 @@ const handleEditMember = useCallback((member: any) => {
           relatedPersonId = selectedMarriage.id;
         }
       }
-      
-      // ✅ FIX: Use selectedTwins from submissionData first, fallback to state
-      const selectedTwinsInput = Array.isArray(submissionData?.selectedTwins)
-        ? submissionData.selectedTwins
-        : selectedTwins;
-      
-      console.log('🔍 TWIN INPUT SOURCE:', {
-        fromSubmissionData: submissionData?.selectedTwins,
-        fromState: selectedTwins,
-        finalInput: selectedTwinsInput
-      });
-
       let isEditMode = formMode === 'edit' && editingMember;
       console.log('🚨 IS EDIT MODE CHECK:', {
         formMode,
         editingMember: editingMember ? editingMember.id : 'none',
         isEditMode
       });
-      
-      // ✅ Determine a valid twin_group_id that respects FK (must reference an existing member id)
-      const twinGroupFromSubmission = submissionData?.twin_group_id || null;
-      
-      // Check if there's an existing twin group in current members
-      const existingGroupFromTwins = selectedTwinsInput.length > 0
-        ? (familyMembers as any[]).find(m => selectedTwinsInput.includes(m.id))?.twin_group_id
-        : null;
-      
-      const hadExistingGroup = !!editingMember?.twin_group_id;
-      const isTwinInput = (typeof submissionData?.is_twin === 'boolean') ? submissionData.is_twin : (selectedTwinsInput.length > 0);
-      const shouldBeTwin = isTwinInput || (editingMember?.is_twin && hadExistingGroup);
-      
-      // Only use submission group if it matches an existing member id (FK constraint)
-      const submissionValidGroupId = twinGroupFromSubmission && (familyMembers as any[]).some((m: any) => m.id === twinGroupFromSubmission)
-        ? twinGroupFromSubmission
-        : null;
-      
-      // Leader selection: prefer existing group id, else use a real member id
-      const finalTwinGroupId = selectedTwinsInput.length > 0
-        ? (
-            submissionValidGroupId
-            || existingGroupFromTwins
-            || (editingMember as any)?.twin_group_id
-            || (isEditMode && editingMember ? editingMember.id : selectedTwinsInput[0])
-          )
-        : null;
       let memberData;
       if (isEditMode) {
         // Update existing member
@@ -2624,8 +2494,6 @@ const handleEditMember = useCallback((member: any) => {
           mother_id: motherId,
           related_person_id: relatedPersonId,
           marital_status: finalData.maritalStatus || 'single',
-          is_twin: shouldBeTwin,
-          twin_group_id: finalTwinGroupId,
           updated_at: new Date().toISOString()
         }).eq('id', editingMember.id).select().single();
         if (updateError) {
@@ -2633,115 +2501,6 @@ const handleEditMember = useCallback((member: any) => {
           throw updateError;
         }
         memberData = updatedMember;
-        
-        // Handle twin relationships collectively with .select() to verify rows updated
-        if (selectedTwinsInput.length > 0 && finalTwinGroupId) {
-          // Link all selected twins together in one batch update
-          console.log('🔍 Updating twins collectively:', { 
-            selectedTwinsInput, 
-            finalTwinGroupId,
-            editingMemberId: editingMember.id 
-          });
-          const allTwinIds = [editingMember.id, ...selectedTwinsInput];
-          
-          const { data: twinsUpdated, error: twinUpdateError } = await supabase
-            .from('family_tree_members')
-            .update({ is_twin: true, twin_group_id: finalTwinGroupId })
-            .in('id', allTwinIds)
-            .select('id, is_twin, twin_group_id');
-          
-          if (twinUpdateError) {
-            console.error('❌ فشل تحديث التوائم:', twinUpdateError);
-            toast({
-              title: "خطأ في حفظ التوائم",
-              description: "فشل ربط أعضاء التوائم. يرجى المحاولة مرة أخرى.",
-              variant: "destructive",
-            });
-          } else if (twinsUpdated && twinsUpdated.length === 0) {
-            console.warn('⚠️ لم يتم تحديث أي صفوف للتوائم - قد يكون RLS منع التحديث');
-            toast({
-              title: "تنبيه: لم يتم حفظ التوائم",
-              description: "لم يتم حفظ بيانات التوائم. قد لا تملك صلاحية تعديل هؤلاء الأعضاء.",
-              variant: "destructive",
-            });
-          } else {
-            console.log('✅ تم ربط التوائم بنجاح:', {
-              updatedCount: twinsUpdated?.length,
-              updatedIds: twinsUpdated?.map(t => t.id),
-              twinsUpdated
-            });
-            
-            // ✅ Update local familyMembers state immediately with twin data
-            setFamilyMembers(prev => prev.map(m => {
-              const twinUpdate = twinsUpdated.find(t => t.id === m.id);
-              return twinUpdate ? { 
-                ...m, 
-                is_twin: twinUpdate.is_twin, 
-                twin_group_id: twinUpdate.twin_group_id 
-              } : m;
-            }));
-            
-            // ✅ Update editingMember if it was one of the updated twins
-            if (editingMember && twinsUpdated.some(t => t.id === editingMember.id)) {
-              const updatedEditingData = twinsUpdated.find(t => t.id === editingMember.id);
-              if (updatedEditingData) {
-                setEditingMember({
-                  ...editingMember,
-                  is_twin: updatedEditingData.is_twin,
-                  twin_group_id: updatedEditingData.twin_group_id
-                });
-              }
-            }
-          }
-        } else if (hadExistingGroup && selectedTwinsInput.length === 0) {
-          // Unlink all members from previous twin group
-          console.log('🔓 فك ربط التوائم للمجموعة:', editingMember.twin_group_id);
-          const { data: twinsUnlinked, error: unlinkError } = await supabase
-            .from('family_tree_members')
-            .update({ is_twin: false, twin_group_id: null })
-            .eq('twin_group_id', editingMember.twin_group_id)
-            .select('id, is_twin, twin_group_id');
-          
-          if (unlinkError) {
-            console.error('❌ فشل فك ربط التوائم:', unlinkError);
-            toast({
-              title: "خطأ في إلغاء التوائم",
-              description: "فشل إلغاء ربط التوائم. يرجى المحاولة مرة أخرى.",
-              variant: "destructive",
-            });
-          } else if (twinsUnlinked && twinsUnlinked.length === 0) {
-            console.warn('⚠️ لم يتم فك ربط أي صفوف - قد يكون RLS منع التحديث');
-            toast({
-              title: "تنبيه: لم يتم إلغاء التوائم",
-              description: "لم يتم إلغاء ربط التوائم. قد لا تملك صلاحية تعديل هؤلاء الأعضاء.",
-              variant: "destructive",
-            });
-          } else {
-            console.log('✅ تم فك ربط التوائم بنجاح:', {
-              unlinkedCount: twinsUnlinked?.length,
-              twinsUnlinked
-            });
-            
-            // ✅ Update local familyMembers state immediately 
-            setFamilyMembers(prev => prev.map(m => {
-              const wasUnlinked = twinsUnlinked.find(t => t.id === m.id);
-              return wasUnlinked ? { 
-                ...m, 
-                is_twin: false, 
-                twin_group_id: null 
-              } : m;
-            }));
-            
-            // ✅ Update editingMember if it was unlinked
-            if (editingMember && twinsUnlinked.some(t => t.id === editingMember.id)) {
-              setEditingMember({
-                ...editingMember,
-                is_twin: false,
-                twin_group_id: null
-              });
-            }
-          }
-        }
       } else {
         // Insert new family member into database
         // Use first_name from formData directly
@@ -2780,9 +2539,7 @@ const handleEditMember = useCallback((member: any) => {
           family_id: familyId,
           created_by: familyData?.creator_id,
           is_founder: submissionData.isFounder || false,
-          marital_status: finalData.maritalStatus || 'single',
-          is_twin: selectedTwinsInput.length > 0,
-          twin_group_id: finalTwinGroupId
+          marital_status: finalData.maritalStatus || 'single'
         }).select().single();
         
         if (memberError) {
@@ -2791,63 +2548,6 @@ const handleEditMember = useCallback((member: any) => {
         }
         
         memberData = newMember;
-
-        // Handle twin relationships collectively for new member with .select() to verify
-        if (selectedTwinsInput.length > 0 && finalTwinGroupId) {
-          console.log('🔍 Linking twins for new member:', { 
-            selectedTwinsInput, 
-            finalTwinGroupId,
-            newMemberId: newMember.id 
-          });
-          const allTwinIds = [newMember.id, ...selectedTwinsInput];
-          
-          const { data: twinsUpdated, error: twinUpdateError } = await supabase
-            .from('family_tree_members')
-            .update({ is_twin: true, twin_group_id: finalTwinGroupId })
-            .in('id', allTwinIds)
-            .select('id, is_twin, twin_group_id');
-          
-          if (twinUpdateError) {
-            console.error('❌ فشل تحديث التوائم للعضو الجديد:', twinUpdateError);
-            toast({
-              title: "خطأ في حفظ التوائم",
-              description: "تم حفظ العضو لكن فشل ربط التوائم. يرجى تعديل العضو لربط التوائم.",
-              variant: "destructive",
-            });
-          } else if (twinsUpdated && twinsUpdated.length === 0) {
-            console.warn('⚠️ لم يتم تحديث أي صفوف للتوائم - قد يكون RLS منع التحديث');
-            toast({
-              title: "تنبيه: لم يتم حفظ التوائم",
-              description: "تم حفظ العضو لكن لم يتم ربط التوائم. قد لا تملك صلاحية تعديل هؤلاء الأعضاء.",
-              variant: "destructive",
-            });
-          } else {
-            console.log('✅ تم ربط التوائم بنجاح للعضو الجديد:', {
-              updatedCount: twinsUpdated?.length,
-              updatedIds: twinsUpdated?.map(t => t.id),
-              twinsUpdated
-            });
-            
-            // ✅ Update local familyMembers state immediately with twin data
-            setFamilyMembers(prev => prev.map(m => {
-              const twinUpdate = twinsUpdated.find(t => t.id === m.id);
-              return twinUpdate ? { 
-                ...m, 
-                is_twin: twinUpdate.is_twin, 
-                twin_group_id: twinUpdate.twin_group_id 
-              } : m;
-            }));
-            
-            // ✅ For new member, also add to familyMembers if needed
-            if (newMember && twinsUpdated.some(t => t.id === newMember.id)) {
-              const updatedNewMemberData = twinsUpdated.find(t => t.id === newMember.id);
-              if (updatedNewMemberData) {
-                memberData.is_twin = updatedNewMemberData.is_twin;
-                memberData.twin_group_id = updatedNewMemberData.twin_group_id;
-              }
-            }
-          }
-        }
         
         // Now upload image using the real member ID
         const croppedBlob = (window as any).__croppedImageBlob;
@@ -3297,10 +2997,6 @@ const handleEditMember = useCallback((member: any) => {
         }, 1000);
       }
 
-      // ✅ Force refetch queries to get fresh data from DB (not from cache)
-      await queryClient.refetchQueries({ queryKey: ['members', familyId] });
-      await queryClient.refetchQueries({ queryKey: ['family', familyId] });
-      
       // Refresh family data to reflect all changes in the member list
       await refetchFamilyData();
     } catch (error) {
@@ -3808,122 +3504,10 @@ const handleEditMember = useCallback((member: any) => {
                           deathDate: date
                         })} placeholder="اختر تاريخ الوفاة" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" />
                                   </div>}
-                              </div>
+                             </div>
 
-                              {/* Twins selection - visible after choosing parents */}
-                              {formData.selectedParent && !formData.isFounder && (
-                                <div className="grid grid-cols-12 gap-6">
-                                  <div className="col-span-12 md:col-span-6">
-                                    <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                      توأم
-                                    </Label>
-<Popover open={twinCommandOpen} onOpenChange={(open) => {
-  setTwinCommandOpen(open);
-  if (open && selectedTwins.length === 0 && resolvedTwinGroupId) {
-    const autoTwins = (familyMembers as any[])
-      .filter(m => m.twin_group_id === resolvedTwinGroupId && m.id !== editingMember?.id)
-      .map(m => m.id);
-    if (autoTwins.length > 0) {
-      console.log('🔄 Auto-selecting twins from DB on open:', autoTwins);
-      setSelectedTwins(autoTwins);
-    }
-  }
-}}>
-  <PopoverTrigger asChild>
-    <Button variant="outline" className="w-full h-11 font-arabic justify-between">
-{(() => { 
-  // Ensure we only count members with valid (non-null) twin_group_id
-  const count = (derivedSelectedTwins && derivedSelectedTwins.length > 0)
-    ? derivedSelectedTwins.length
-    : (resolvedTwinGroupId
-        ? ((familyMembers as any[])?.filter((m: any) => 
-            m.twin_group_id === resolvedTwinGroupId && 
-            m.twin_group_id !== null && 
-            m.id !== editingMember?.id
-          ).length || 0)
-        : 0);
-  return count === 0 ? "لا" : `${count} توأم`;
-})()}
-      <ChevronsUpDown className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-    </Button>
-  </PopoverTrigger>
-  <PopoverContent className="w-full p-0 z-[10002]">
-                                        <Command className="bg-card">
-                                          <CommandInput placeholder="ابحث عن الإخوة..." className="h-9 text-sm font-arabic" />
-                                          <CommandList className="max-h-48">
-                                            <CommandEmpty className="text-sm font-arabic text-center py-4 text-muted-foreground">
-                                              لا يوجد إخوة متاحون
-                                            </CommandEmpty>
-                                            <CommandGroup>
-                                              {(() => {
-                                                const selectedMarriage = familyMarriages.find((m: any) => m.id === formData.selectedParent);
-                                                
-
-                                                const siblings = familyMembers.filter((member: any) => {
-                                                  if (!selectedMarriage) return false;
-                                                  if (editingMember && member.id === editingMember.id) return false;
-                                                  
-                                                  const father = member.father_id ?? member.fatherId;
-                                                  const mother = member.mother_id ?? member.motherId;
-
-                                                  const isMatch = (
-                                                    father === selectedMarriage.husband?.id &&
-                                                    mother === selectedMarriage.wife?.id
-                                                  );
-
-                                                  if (isMatch) {
-                                                    console.log('✅ Found sibling (same father & mother):', {
-                                                      name: member.name,
-                                                      id: member.id,
-                                                      father_id: father,
-                                                      mother_id: mother,
-                                                    });
-                                                  }
-                                                  
-                                                  return isMatch;
-                                                });
-
-                                                console.log('🔍 Total siblings found (strict father+mother):', siblings.length);
-
-                                                return siblings.map((sibling: any) => (
-                                                  <CommandItem
-                                                    key={sibling.id}
-                                                    onSelect={() => {
-                                                      const isSelectedNow = derivedSelectedTwins.includes(sibling.id)
-                                                      const next = isSelectedNow
-                                                        ? derivedSelectedTwins.filter(id => id !== sibling.id)
-                                                        : [...derivedSelectedTwins, sibling.id]
-                                                      setSelectedTwins(next)
-                                                    }}
-                                                    className="font-arabic"
-                                                  >
-                                                    <div className="flex items-center gap-2">
-                                                      <div className={cn(
-                                                        "w-4 h-4 border-2 rounded flex items-center justify-center",
-                                                        derivedSelectedTwins.includes(sibling.id)
-                                                          ? "bg-primary border-primary"
-                                                          : "border-border"
-                                                      )}>
-                                                        {derivedSelectedTwins.includes(sibling.id) && (
-                                                          <Check className="h-3 w-3 text-primary-foreground" />
-                                                        )}
-                                                      </div>
-                                                      <span>{sibling.name}</span>
-                                                    </div>
-                                                  </CommandItem>
-                                                ));
-                                              })()}
-                                            </CommandGroup>
-                                          </CommandList>
-                                        </Command>
-                                      </PopoverContent>
-                                    </Popover>
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Biography and Profile Picture - Side by Side Layout */}
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             {/* Biography and Profile Picture - Side by Side Layout */}
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                {/* Biography Section - 1/2 */}
                                <div>
                                  <Label htmlFor="bio" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">

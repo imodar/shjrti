@@ -71,7 +71,7 @@ export const useMembersQuery = (familyId: string | null) => {
       if (!familyId) return [];
       const { data, error } = await supabase
         .from('family_tree_members')
-        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, gender, birth_date, is_alive, image_url, marital_status, is_founder, is_twin, twin_group_id')
+        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, gender, birth_date, is_alive, image_url, marital_status, is_founder')
         .eq('family_id', familyId)
         .order('created_at', { ascending: true });
       if (error) throw error;
