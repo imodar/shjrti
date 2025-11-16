@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Calendar, Package } from 'lucide-react';
+import { AlertTriangle, Calendar, Package, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { DateDisplay } from '@/components/DateDisplay';
@@ -18,13 +18,37 @@ export function SubscriptionGuard({
   requireActiveSubscription = true, 
   fallbackContent 
 }: SubscriptionGuardProps) {
-  const { subscription, loading, isExpired, daysUntilExpiry, showExpiryWarning } = useSubscription();
+  const { subscription, loading, isExpired, daysUntilExpiry, showExpiryWarning, refreshSubscription, hasInitialized } = useSubscription();
   const navigate = useNavigate();
 
-  // Silent loading - render children directly without spinner
+  // Revalidate subscription once if missing/free to avoid stale cache
+  const hasRefreshedRef = useRef(false);
+  useEffect(() => {
+    if (!requireActiveSubscription) return;
+    if (loading) return;
+    if (hasRefreshedRef.current) return;
+    if (!subscription || subscription.status === 'free' || !subscription.subscription_id) {
+      hasRefreshedRef.current = true;
+      refreshSubscription().catch(() => {});
+    }
+  }, [requireActiveSubscription, loading, subscription, refreshSubscription]);
+
+  // While initializing or loading, show a lightweight loader to prevent false prompts
+  if (requireActiveSubscription && (!hasInitialized || loading)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="text-center">
+          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">جاري التحقق من الاشتراك...</p>
+        </div>
+      </div>
+    );
+  }
 
   // If subscription is required and user has no active subscription, redirect to plan selection
-  if (requireActiveSubscription && (!subscription || isExpired)) {
+
+  // If subscription is required and user has no active subscription, redirect to plan selection
+  if (requireActiveSubscription && hasInitialized && (!subscription || isExpired)) {
     if (fallbackContent) {
       return <>{fallbackContent}</>;
     }
