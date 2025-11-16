@@ -232,7 +232,7 @@ const Dashboard = () => {
           .eq('payment_status', 'paid')
           .order('created_at', { ascending: false })
           .limit(1)
-          .single();
+          .maybeSingle();
 
         if (invoiceError || !latestInvoice) return;
 
