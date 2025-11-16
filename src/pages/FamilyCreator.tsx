@@ -28,7 +28,7 @@ import { useImageUploadPermission } from "@/hooks/useImageUploadPermission";
 const FamilyCreator = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, direction } = useLanguage();
   const { isImageUploadEnabled, loading: imagePermissionLoading } = useImageUploadPermission();
   const wifeFormRef = useRef<WifeFormRef>(null);
   const [currentStep, setCurrentStep] = useState(1);
@@ -1185,7 +1185,11 @@ const FamilyCreator = () => {
                 variant="outline"
                 className="h-10 sm:h-12 md:h-16 px-4 sm:px-6 md:px-10 text-sm sm:text-base md:text-lg border-2 border-border hover:border-ring hover:bg-accent/50 hover:text-accent-foreground transition-all duration-300 rounded-xl sm:rounded-2xl bg-card/50 backdrop-blur-sm"
               >
-                <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 mr-2 sm:mr-3" />
+                {direction === 'rtl' ? (
+                  <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 mr-2 sm:mr-3" />
+                ) : (
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 mr-2 sm:mr-3" />
+                )}
                 {currentStep === 1 ? t('back_to_dashboard', 'العودة للوحة التحكم') : t('previous', 'السابق')}
               </Button>
               
@@ -1199,7 +1203,11 @@ const FamilyCreator = () => {
                 style={{ pointerEvents: 'auto' }}
               >
                 {currentStep === 1 ? t('next', 'التالي') : (isCreatingFamily ? t('creating_family_progress', 'جاري إنشاء العائلة...') : t('create_family_button', 'إنشاء العائلة'))}
-                {currentStep === 1 && <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 ml-2 sm:ml-3" />}
+                {currentStep === 1 && (direction === 'rtl' ? (
+                  <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 ml-2 sm:ml-3" />
+                ) : (
+                  <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 ml-2 sm:ml-3" />
+                ))}
                 {currentStep === 2 && !isCreatingFamily && <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 ml-2 sm:ml-3" />}
               </Button>
             </div>
