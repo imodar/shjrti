@@ -54,12 +54,14 @@ import { MemberCard } from "@/pages/FamilyBuilderNew/components/MemberList/Membe
 import { TreeSettingsView } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsView";
 import { CustomDomainCard } from "@/pages/FamilyBuilderNew/components/TreeSettings/CustomDomainCard";
 import { useFamilyData } from "@/contexts/FamilyDataContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 const FamilyBuilderNew = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const {
     hasAIFeatures
   } = useSubscription();
@@ -2541,26 +2543,46 @@ const FamilyBuilderNew = () => {
           throw updateError;
         }
         memberData = updatedMember;
-        // Ensure selected twins are linked to the same twin group
+        
+        // Handle twin relationships collectively
         if (selectedTwins.length > 0 && finalTwinGroupId) {
-          console.log('🔍 Updating twins:', { selectedTwins, finalTwinGroupId });
-          const twinUpdateResults = await Promise.all(
-            selectedTwins.map((twinId) =>
-              supabase
-                .from('family_tree_members')
-                .update({ is_twin: true, twin_group_id: finalTwinGroupId })
-                .eq('id', twinId)
-            )
-          );
-          const hadTwinErrors = twinUpdateResults.some((r: any) => r.error);
-          if (hadTwinErrors) {
-            console.error('❌ Twin update errors:', twinUpdateResults);
-            toast({ title: 'خطأ', description: 'فشل حفظ بيانات التوأم.', variant: 'destructive' });
+          // Link all selected twins together in one batch update
+          console.log('🔍 Updating twins collectively:', { selectedTwins, finalTwinGroupId });
+          const allTwinIds = [editingMember.id, ...selectedTwins];
+          
+          const { error: twinUpdateError } = await supabase
+            .from('family_tree_members')
+            .update({ is_twin: true, twin_group_id: finalTwinGroupId })
+            .in('id', allTwinIds);
+          
+          if (twinUpdateError) {
+            console.error('❌ فشل تحديث التوائم:', twinUpdateError);
+            toast({
+              title: "خطأ في حفظ التوائم",
+              description: "فشل ربط أعضاء التوائم. يرجى المحاولة مرة أخرى.",
+              variant: "destructive",
+            });
           } else {
-            console.log('✅ Twin update results:', twinUpdateResults);
+            console.log('✅ تم ربط التوائم بنجاح:', allTwinIds);
           }
-        } else {
-          console.log('⚠️ No twins to update:', { selectedTwinsLength: selectedTwins.length, twinGroupId });
+        } else if (hadExistingGroup && selectedTwins.length === 0) {
+          // Unlink all members from previous twin group
+          console.log('🔓 فك ربط التوائم للمجموعة:', editingMember.twin_group_id);
+          const { error: unlinkError } = await supabase
+            .from('family_tree_members')
+            .update({ is_twin: false, twin_group_id: null })
+            .eq('twin_group_id', editingMember.twin_group_id);
+          
+          if (unlinkError) {
+            console.error('❌ فشل فك ربط التوائم:', unlinkError);
+            toast({
+              title: "خطأ في إلغاء التوائم",
+              description: "فشل إلغاء ربط التوائم. يرجى المحاولة مرة أخرى.",
+              variant: "destructive",
+            });
+          } else {
+            console.log('✅ تم فك ربط التوائم بنجاح');
+          }
         }
       } else {
         // Insert new family member into database
@@ -2612,26 +2634,26 @@ const FamilyBuilderNew = () => {
         
         memberData = newMember;
 
-        // Update twins to link them into the same group
+        // Handle twin relationships collectively for new member
         if (selectedTwins.length > 0 && twinGroupId) {
-          console.log('🔍 Updating twins for new member:', { selectedTwins, twinGroupId });
-          const twinUpdateResults = await Promise.all(
-            selectedTwins.map((twinId) =>
-              supabase
-                .from('family_tree_members')
-                .update({ is_twin: true, twin_group_id: twinGroupId })
-                .eq('id', twinId)
-            )
-          );
-          const hadTwinErrors = twinUpdateResults.some((r: any) => r.error);
-          if (hadTwinErrors) {
-            console.error('❌ Twin update errors (new member):', twinUpdateResults);
-            toast({ title: 'خطأ', description: 'فشل حفظ بيانات التوأم.', variant: 'destructive' });
+          console.log('🔍 Linking twins for new member:', { selectedTwins, twinGroupId });
+          const allTwinIds = [newMember.id, ...selectedTwins];
+          
+          const { error: twinUpdateError } = await supabase
+            .from('family_tree_members')
+            .update({ is_twin: true, twin_group_id: twinGroupId })
+            .in('id', allTwinIds);
+          
+          if (twinUpdateError) {
+            console.error('❌ فشل تحديث التوائم للعضو الجديد:', twinUpdateError);
+            toast({
+              title: "خطأ في حفظ التوائم",
+              description: "تم حفظ العضو لكن فشل ربط التوائم. يرجى تعديل العضو لربط التوائم.",
+              variant: "destructive",
+            });
           } else {
-            console.log('✅ Twin update results (new member):', twinUpdateResults);
+            console.log('✅ تم ربط التوائم بنجاح للعضو الجديد:', allTwinIds);
           }
-        } else {
-          console.log('⚠️ No twins to update for new member:', { selectedTwinsLength: selectedTwins.length, twinGroupId });
         }
         
         // Now upload image using the real member ID
@@ -3082,6 +3104,10 @@ const FamilyBuilderNew = () => {
         }, 1000);
       }
 
+      // Invalidate queries to fetch fresh data from DB
+      await queryClient.invalidateQueries({ queryKey: ['members', familyId] });
+      await queryClient.invalidateQueries({ queryKey: ['family', familyId] });
+      
       // Refresh family data to reflect all changes in the member list
       await refetchFamilyData();
     } catch (error) {
