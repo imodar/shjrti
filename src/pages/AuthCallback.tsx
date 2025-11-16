@@ -25,8 +25,17 @@ export default function AuthCallback() {
           .eq('user_id', session.user.id)
           .maybeSingle();
 
-        // إذا لم يكن لديه profile، فهو مستخدم جديد (تسجيل بواسطة Google)
-        const isNewUser = !profile;
+        // فحص إذا كان المستخدم جديد (تم إنشاء profile منذ أقل من 30 ثانية)
+        // لأن trigger قاعدة البيانات ينشئ profile تلقائياً فور إنشاء المستخدم
+        const isNewUser = profile && 
+                         (new Date().getTime() - new Date(profile.created_at).getTime()) < 30000;
+        
+        console.log('Profile check:', { 
+          profileExists: !!profile, 
+          createdAt: profile?.created_at,
+          timeDiff: profile ? (new Date().getTime() - new Date(profile.created_at).getTime()) : 0,
+          isNewUser 
+        });
 
         if (isNewUser) {
           console.log('New Google user detected, sending welcome email');
