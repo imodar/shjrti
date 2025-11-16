@@ -248,15 +248,10 @@ const Auth = () => {
                       </TabsList>
 
                       <TabsContent value="login">
-                        <LoginForm onSwitchToReset={() => setShowPasswordReset(true)} />
-                        <div className="mt-4 text-center">
-                          <button
-                            onClick={() => setShowMagicLink(true)}
-                            className="text-sm text-emerald-600 hover:text-emerald-700 hover:underline"
-                          >
-                            {t('login_without_password', 'تسجيل دخول بدون كلمة مرور')}
-                          </button>
-                        </div>
+                        <LoginForm 
+                          onSwitchToReset={() => setShowPasswordReset(true)}
+                          onSwitchToMagicLink={() => setShowMagicLink(true)}
+                        />
                       </TabsContent>
 
                       <TabsContent value="signup">

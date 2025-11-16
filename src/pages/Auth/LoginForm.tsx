@@ -17,9 +17,10 @@ const loginSchema = z.object({
 
 interface LoginFormProps {
   onSwitchToReset: () => void;
+  onSwitchToMagicLink: () => void;
 }
 
-export function LoginForm({ onSwitchToReset }: LoginFormProps) {
+export function LoginForm({ onSwitchToReset, onSwitchToMagicLink }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -153,12 +154,20 @@ export function LoginForm({ onSwitchToReset }: LoginFormProps) {
         {errors.password && <p className="text-sm text-red-500">{errors.password}</p>}
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center">
+        <Button
+          type="button"
+          variant="link"
+          onClick={onSwitchToMagicLink}
+          className="text-sm text-emerald-600 hover:text-emerald-700 p-0 h-auto"
+        >
+          {t('login_without_password', 'تسجيل دخول بدون كلمة مرور')}
+        </Button>
         <Button
           type="button"
           variant="link"
           onClick={onSwitchToReset}
-          className="text-sm text-emerald-600 hover:text-emerald-700"
+          className="text-sm text-emerald-600 hover:text-emerald-700 p-0 h-auto"
         >
           {t('forgot_password', 'نسيت كلمة المرور؟')}
         </Button>
