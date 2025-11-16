@@ -3563,14 +3563,47 @@ const FamilyBuilderNew = () => {
                                             <CommandGroup>
                                               {(() => {
                                                 const selectedMarriage = familyMarriages.find((m: any) => m.id === formData.selectedParent);
+                                                
+                                                console.log('🔍 Twin Siblings Filter Debug:', {
+                                                  selectedMarriageId: formData.selectedParent,
+                                                  selectedMarriage,
+                                                  husbandId: selectedMarriage?.husband?.id,
+                                                  wifeId: selectedMarriage?.wife?.id,
+                                                  totalMembers: familyMembers.length,
+                                                  editingMemberId: editingMember?.id
+                                                });
+
                                                 const siblings = familyMembers.filter((member: any) => {
                                                   if (!selectedMarriage) return false;
                                                   if (editingMember && member.id === editingMember.id) return false;
-                                                  return (
+                                                  
+                                                  // Check if member is from the same parents using multiple methods
+                                                  const matchesByParentIds = (
                                                     member.father_id === selectedMarriage.husband?.id &&
                                                     member.mother_id === selectedMarriage.wife?.id
                                                   );
+                                                  
+                                                  const matchesByRelation = (
+                                                    member.related_person_id === selectedMarriage.id
+                                                  );
+
+                                                  const isMatch = matchesByParentIds || matchesByRelation;
+
+                                                  if (isMatch) {
+                                                    console.log('✅ Found sibling:', {
+                                                      name: member.name,
+                                                      id: member.id,
+                                                      father_id: member.father_id,
+                                                      mother_id: member.mother_id,
+                                                      related_person_id: member.related_person_id,
+                                                      matchedBy: matchesByParentIds ? 'parent_ids' : 'relation_id'
+                                                    });
+                                                  }
+                                                  
+                                                  return isMatch;
                                                 });
+
+                                                console.log('🔍 Total siblings found:', siblings.length);
 
                                                 return siblings.map((sibling: any) => (
                                                   <CommandItem
