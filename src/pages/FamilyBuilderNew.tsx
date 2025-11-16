@@ -721,9 +721,24 @@ const FamilyBuilderNew = () => {
   });
   const [wives, setWives] = useState<SpouseData[]>([]);
   const [husband, setHusband] = useState<SpouseData | null>(null);
-  // Twins state
-  const [selectedTwins, setSelectedTwins] = useState<string[]>([]);
-  const [twinCommandOpen, setTwinCommandOpen] = useState(false);
+// Twins state
+const [selectedTwins, setSelectedTwins] = useState<string[]>([]);
+const [twinCommandOpen, setTwinCommandOpen] = useState(false);
+
+// Derive twins from DB if selection is empty
+const resolvedTwinGroupId = useMemo(() => {
+  if (!editingMember?.id) return null;
+  const fromState = (familyMembers as any[])?.find(m => m.id === editingMember.id);
+  return (fromState?.twin_group_id ?? (editingMember as any)?.twin_group_id) || null;
+}, [editingMember?.id, (editingMember as any)?.twin_group_id, familyMembers]);
+
+const derivedSelectedTwins = useMemo(() => {
+  if (!resolvedTwinGroupId) return selectedTwins;
+  if (selectedTwins.length > 0) return selectedTwins;
+  return (familyMembers as any[])
+    ?.filter(m => m.twin_group_id === resolvedTwinGroupId && m.id !== editingMember?.id)
+    ?.map(m => m.id) || [];
+}, [selectedTwins, familyMembers, resolvedTwinGroupId, editingMember?.id]);
 
 // Initialize selected twins when editing an existing twin group (more robust)
 useEffect(() => {
@@ -3781,14 +3796,25 @@ useEffect(() => {
                                     <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
                                       توأم
                                     </Label>
-                                    <Popover open={twinCommandOpen} onOpenChange={setTwinCommandOpen}>
-                                      <PopoverTrigger asChild>
-                                        <Button variant="outline" className="w-full h-11 font-arabic justify-between">
-                                          {selectedTwins.length === 0 ? "لا" : `${selectedTwins.length} توأم`}
-                                          <ChevronsUpDown className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-                                        </Button>
-                                      </PopoverTrigger>
-                                      <PopoverContent className="w-full p-0 z-[10002]">
+<Popover open={twinCommandOpen} onOpenChange={(open) => {
+  setTwinCommandOpen(open);
+  if (open && selectedTwins.length === 0 && resolvedTwinGroupId) {
+    const autoTwins = (familyMembers as any[])
+      .filter(m => m.twin_group_id === resolvedTwinGroupId && m.id !== editingMember?.id)
+      .map(m => m.id);
+    if (autoTwins.length > 0) {
+      console.log('🔄 Auto-selecting twins from DB on open:', autoTwins);
+      setSelectedTwins(autoTwins);
+    }
+  }
+}}>
+  <PopoverTrigger asChild>
+    <Button variant="outline" className="w-full h-11 font-arabic justify-between">
+      {derivedSelectedTwins.length === 0 ? "لا" : `${derivedSelectedTwins.length} توأم`}
+      <ChevronsUpDown className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+    </Button>
+  </PopoverTrigger>
+  <PopoverContent className="w-full p-0 z-[10002]">
                                         <Command className="bg-card">
                                           <CommandInput placeholder="ابحث عن الإخوة..." className="h-9 text-sm font-arabic" />
                                           <CommandList className="max-h-48">
