@@ -675,6 +675,36 @@ export type Database = {
         }
         Relationships: []
       }
+      login_attempts: {
+        Row: {
+          attempted_at: string | null
+          email: string
+          failure_reason: string | null
+          id: string
+          ip_address: string | null
+          success: boolean | null
+          user_agent: string | null
+        }
+        Insert: {
+          attempted_at?: string | null
+          email: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: string | null
+          success?: boolean | null
+          user_agent?: string | null
+        }
+        Update: {
+          attempted_at?: string | null
+          email?: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: string | null
+          success?: boolean | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       marriages: {
         Row: {
           created_at: string
@@ -1502,7 +1532,21 @@ export type Database = {
         Args: { p_scheduled_change_id: string; p_user_id: string }
         Returns: boolean
       }
+      check_failed_login_attempts: {
+        Args: {
+          max_attempts?: number
+          time_window_minutes?: number
+          user_email: string
+        }
+        Returns: {
+          attempts_count: number
+          is_allowed: boolean
+          remaining_attempts: number
+          reset_time: string
+        }[]
+      }
       cleanup_expired_otps: { Args: never; Returns: undefined }
+      cleanup_old_login_attempts: { Args: never; Returns: undefined }
       complete_payment_and_upgrade: {
         Args: {
           p_invoice_id: string
@@ -1588,6 +1632,16 @@ export type Database = {
       is_admin_secure: { Args: { user_uuid: string }; Returns: boolean }
       is_maintenance_mode_enabled: { Args: never; Returns: boolean }
       is_subscription_expired: { Args: { user_uuid: string }; Returns: boolean }
+      log_login_attempt: {
+        Args: {
+          is_success: boolean
+          reason?: string
+          user_agent_text: string
+          user_email: string
+          user_ip: string
+        }
+        Returns: string
+      }
       log_payment_event: {
         Args: {
           p_amount?: number
