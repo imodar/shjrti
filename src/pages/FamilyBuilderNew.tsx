@@ -1933,19 +1933,33 @@ useEffect(() => {
     // Fetch fresh member profile data
     await fetchMemberProfile(member.id);
   }, [isMobile, familyId, toast]);
-  const handleEditMember = useCallback((member: any) => {
-    console.log('🔍 handleEditMember called with member:', {
-      id: member.id,
-      name: member.name,
-      is_twin: member.is_twin,
-      twin_group_id: member.twin_group_id
-    });
-    setFormMode('edit');
-    setEditingMember(member);
-    setCurrentStep(1);
-    populateFormData(member);
-    if (isMobile) setIsMemberListOpen(false);
-  }, [isMobile]);
+const handleEditMember = useCallback((member: any) => {
+  console.log('🔍 handleEditMember called with member:', {
+    id: member.id,
+    name: member.name,
+    is_twin: (member as any)?.is_twin,
+    twin_group_id: (member as any)?.twin_group_id
+  });
+  setFormMode('edit');
+  setEditingMember(member);
+  setCurrentStep(1);
+  populateFormData(member);
+
+  // Prime twins immediately from cache/DB fields
+  const fromState: any = (familyMembers as any[]).find(m => m.id === member.id) || member;
+  const groupId = fromState?.twin_group_id ?? (member as any)?.twin_group_id ?? null;
+  if (groupId) {
+    const twins = (familyMembers as any[])
+      .filter(m => m.twin_group_id === groupId && m.id !== member.id)
+      .map(m => m.id);
+    console.log('🔄 Primed selectedTwins from cache on edit:', { groupId, twins });
+    setSelectedTwins(twins);
+  } else {
+    setSelectedTwins([]);
+  }
+
+  if (isMobile) setIsMemberListOpen(false);
+}, [isMobile, familyMembers]);
   const handleCancelForm = () => {
     setFormMode('view');
     setEditingMember(null);
