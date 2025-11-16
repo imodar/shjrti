@@ -18,6 +18,35 @@ export default function AuthCallback() {
           return;
         }
 
+        // التحقق من وجود profile للمستخدم
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('id, created_at')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+
+        // إذا لم يكن لديه profile، فهو مستخدم جديد (تسجيل بواسطة Google)
+        const isNewUser = !profile;
+
+        if (isNewUser) {
+          console.log('New Google user detected, sending welcome email');
+          // إرسال رسالة الترحيب للمستخدمين الجدد من Google
+          try {
+            await supabase.functions.invoke('send-welcome-email', {
+              body: {
+                email: session.user.email,
+                firstName: session.user.user_metadata?.first_name || session.user.user_metadata?.full_name?.split(' ')[0] || '',
+                lastName: session.user.user_metadata?.last_name || session.user.user_metadata?.full_name?.split(' ')[1] || '',
+                language: 'ar'
+              }
+            });
+            console.log('Welcome email sent to new Google user');
+          } catch (emailError) {
+            console.error('Failed to send welcome email:', emailError);
+            // لا نوقف العملية حتى لو فشل إرسال البريد
+          }
+        }
+
         // التحقق من وجود اشتراك نشط باستخدام RPC function
         const { data: subscriptionData, error: subError } = await supabase
           .rpc('get_user_subscription_details', { user_uuid: session.user.id });
