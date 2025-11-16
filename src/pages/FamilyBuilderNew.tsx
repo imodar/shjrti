@@ -3854,14 +3854,6 @@ const handleEditMember = useCallback((member: any) => {
                                               {(() => {
                                                 const selectedMarriage = familyMarriages.find((m: any) => m.id === formData.selectedParent);
                                                 
-                                                console.log('🔍 Twin Siblings Filter Debug:', {
-                                                  selectedMarriageId: formData.selectedParent,
-                                                  selectedMarriage,
-                                                  husbandId: selectedMarriage?.husband?.id,
-                                                  wifeId: selectedMarriage?.wife?.id,
-                                                  totalMembers: familyMembers.length,
-                                                  editingMemberId: editingMember?.id
-                                                });
 
                                                 const siblings = familyMembers.filter((member: any) => {
                                                   if (!selectedMarriage) return false;
@@ -3893,21 +3885,22 @@ const handleEditMember = useCallback((member: any) => {
                                                   <CommandItem
                                                     key={sibling.id}
                                                     onSelect={() => {
-                                                      setSelectedTwins(prev => prev.includes(sibling.id)
-                                                        ? prev.filter(id => id !== sibling.id)
-                                                        : [...prev, sibling.id]
-                                                      );
+                                                      const isSelectedNow = derivedSelectedTwins.includes(sibling.id)
+                                                      const next = isSelectedNow
+                                                        ? derivedSelectedTwins.filter(id => id !== sibling.id)
+                                                        : [...derivedSelectedTwins, sibling.id]
+                                                      setSelectedTwins(next)
                                                     }}
                                                     className="font-arabic"
                                                   >
                                                     <div className="flex items-center gap-2">
                                                       <div className={cn(
                                                         "w-4 h-4 border-2 rounded flex items-center justify-center",
-                                                        selectedTwins.includes(sibling.id)
+                                                        derivedSelectedTwins.includes(sibling.id)
                                                           ? "bg-primary border-primary"
                                                           : "border-border"
                                                       )}>
-                                                        {selectedTwins.includes(sibling.id) && (
+                                                        {derivedSelectedTwins.includes(sibling.id) && (
                                                           <Check className="h-3 w-3 text-primary-foreground" />
                                                         )}
                                                       </div>
