@@ -492,7 +492,7 @@ const FamilyBuilderNew = () => {
         data: members,
         error: membersError
       } = await supabase.from('family_tree_members')
-        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, related_person_id, is_founder, gender, birth_date, is_alive, death_date, marital_status, image_url')
+        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, related_person_id, is_founder, gender, birth_date, is_alive, death_date, marital_status, image_url, is_twin, twin_group_id')
         .eq('family_id', familyToUse.id);
       if (membersError) throw membersError;
       
@@ -1907,6 +1907,12 @@ const FamilyBuilderNew = () => {
     await fetchMemberProfile(member.id);
   }, [isMobile, familyId, toast]);
   const handleEditMember = useCallback((member: any) => {
+    console.log('🔍 handleEditMember called with member:', {
+      id: member.id,
+      name: member.name,
+      is_twin: member.is_twin,
+      twin_group_id: member.twin_group_id
+    });
     setFormMode('edit');
     setEditingMember(member);
     setCurrentStep(1);
