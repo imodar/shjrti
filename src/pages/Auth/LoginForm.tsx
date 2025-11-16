@@ -61,37 +61,78 @@ export function LoginForm({ onSwitchToReset, onSwitchToMagicLink }: LoginFormPro
       }
 
       // 3. Call secure-login edge function
-      const { data, error } = await supabase.functions.invoke('secure-login', {
-        body: {
-          email: validation.data.email,
-          password: validation.data.password,
-          recaptchaToken
-        }
-      });
+      try {
+        const { data, error } = await supabase.functions.invoke('secure-login', {
+          body: {
+            email: validation.data.email,
+            password: validation.data.password,
+            recaptchaToken
+          }
+        });
 
-      if (error) {
-        // Extract error message from the response
+        if (error) {
+          throw error;
+        }
+
+        if (!data?.success) {
+          const errorMsg = data?.error || 'فشل تسجيل الدخول';
+          
+          // Handle rate limiting
+          if (data?.rateLimitExceeded) {
+            toast({
+              title: t('rate_limit_exceeded', 'تم تجاوز عدد المحاولات'),
+              description: errorMsg,
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: t('login_error', 'خطأ في تسجيل الدخول'),
+              description: errorMsg,
+              variant: "destructive",
+            });
+          }
+          setIsLoading(false);
+          return;
+        }
+
+        // 4. Set session
+        if (data.session) {
+          await supabase.auth.setSession(data.session);
+        }
+
+        toast({
+          title: t('login_successful', 'تم تسجيل الدخول بنجاح'),
+          description: t('welcome_back', 'مرحباً بعودتك'),
+        });
+
+        navigate("/dashboard");
+      } catch (functionError: any) {
+        console.error('[LoginForm] Edge function error:', functionError);
+        
+        // Extract error message from FunctionsHttpError
         let errorMsg = 'فشل تسجيل الدخول';
         
-        if (error.message) {
+        if (functionError.context?.body) {
+          // The error response body is in context.body
           try {
-            // Try to parse the error message if it contains JSON
-            const errorData = JSON.parse(error.message);
-            errorMsg = errorData.error || errorMsg;
-          } catch {
-            // If not JSON, check if it's in the format "status: Error, {json}"
-            const match = error.message.match(/\{.*\}/);
-            if (match) {
-              try {
-                const errorData = JSON.parse(match[0]);
-                errorMsg = errorData.error || errorMsg;
-              } catch {
-                errorMsg = error.message;
-              }
-            } else {
-              errorMsg = error.message;
+            const errorBody = functionError.context.body;
+            errorMsg = errorBody.error || errorMsg;
+            
+            // Handle rate limiting from error response
+            if (errorBody.rateLimitExceeded) {
+              toast({
+                title: t('rate_limit_exceeded', 'تم تجاوز عدد المحاولات'),
+                description: errorMsg,
+                variant: "destructive",
+              });
+              setIsLoading(false);
+              return;
             }
+          } catch (parseError) {
+            console.error('[LoginForm] Error parsing response:', parseError);
           }
+        } else if (functionError.message) {
+          errorMsg = functionError.message;
         }
         
         toast({
@@ -102,39 +143,6 @@ export function LoginForm({ onSwitchToReset, onSwitchToMagicLink }: LoginFormPro
         setIsLoading(false);
         return;
       }
-
-      if (!data?.success) {
-        const errorMsg = data?.error || 'فشل تسجيل الدخول';
-        
-        // Handle rate limiting
-        if (data?.rateLimitExceeded) {
-          toast({
-            title: t('rate_limit_exceeded', 'تم تجاوز عدد المحاولات'),
-            description: errorMsg,
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: t('login_error', 'خطأ في تسجيل الدخول'),
-            description: errorMsg,
-            variant: "destructive",
-          });
-        }
-        setIsLoading(false);
-        return;
-      }
-
-      // 4. Set session
-      if (data.session) {
-        await supabase.auth.setSession(data.session);
-      }
-
-      toast({
-        title: t('login_successful', 'تم تسجيل الدخول بنجاح'),
-        description: t('welcome_back', 'مرحباً بعودتك'),
-      });
-
-      navigate("/dashboard");
     } catch (error: any) {
       console.error('[LoginForm] Error:', error);
       toast({
