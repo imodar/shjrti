@@ -2508,9 +2508,15 @@ const FamilyBuilderNew = () => {
         editingMember: editingMember ? editingMember.id : 'none',
         isEditMode
       });
+      
+      // ✅ Respect modal-provided is_twin/twin_group_id when valid
+      const twinGroupFromSubmission = (submissionData?.twin_group_id && familyMembers.some((m: any) => m.id === submissionData.twin_group_id))
+        ? submissionData.twin_group_id
+        : null;
       const hadExistingGroup = !!editingMember?.twin_group_id;
-      const shouldBeTwin = (selectedTwinsInput.length > 0) || (editingMember?.is_twin && hadExistingGroup);
-      const finalTwinGroupId = twinGroupId || editingMember?.twin_group_id || (shouldBeTwin ? editingMember?.id : null);
+      const isTwinInput = (typeof submissionData?.is_twin === 'boolean') ? submissionData.is_twin : (selectedTwinsInput.length > 0);
+      const shouldBeTwin = isTwinInput || (editingMember?.is_twin && hadExistingGroup);
+      const finalTwinGroupId = twinGroupFromSubmission || twinGroupId || editingMember?.twin_group_id || (shouldBeTwin ? editingMember?.id : null);
       let memberData;
       if (isEditMode) {
         // Update existing member
