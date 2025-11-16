@@ -797,7 +797,7 @@ const FamilyCreator = () => {
                                   {/* Subtitle */}
                                   <div className="relative">
                                     <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 font-light leading-relaxed max-w-2xl mx-auto">
-                                      ابدأ في كتابة تاريخ عائلتك وصنع إرث يدوم للأبد
+                                      {t('memory_journey_subtitle', 'ابدأ في كتابة تاريخ عائلتك وصنع إرث يدوم للأبد')}
                                     </p>
                                     
                                     {/* Decorative Line */}
