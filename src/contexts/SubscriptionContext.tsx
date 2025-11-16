@@ -21,6 +21,7 @@ interface SubscriptionContextType {
   clearSubscriptionCache: () => void;
   showExpiryWarning: boolean;
   hasAIFeatures: boolean;
+  hasInitialized: boolean;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
@@ -191,6 +192,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     clearSubscriptionCache,
     showExpiryWarning,
     hasAIFeatures,
+    hasInitialized,
   };
 
   return (
