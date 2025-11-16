@@ -731,7 +731,19 @@ const FamilyBuilderNew = () => {
       const twins = (familyMembers as any[])
         .filter(m => m.twin_group_id === editingMember.twin_group_id && m.id !== editingMember.id)
         .map(m => m.id);
+      console.log('🔍 Loading twins for editing member:', {
+        editingMemberId: editingMember.id,
+        editingMemberName: editingMember.name,
+        is_twin: editingMember.is_twin,
+        twin_group_id: editingMember.twin_group_id,
+        foundTwins: twins,
+        familyMembersWithTwinGroup: familyMembers.filter((m: any) => m.twin_group_id === editingMember.twin_group_id)
+      });
       setSelectedTwins(twins);
+    } else if (editingMember?.id) {
+      // ✅ Clear selectedTwins if member is not a twin
+      console.log('🔍 Editing member is not a twin, clearing selectedTwins');
+      setSelectedTwins([]);
     }
   }, [editingMember?.id, editingMember?.is_twin, editingMember?.twin_group_id, familyMembers?.length]);
 
@@ -2604,6 +2616,28 @@ const FamilyBuilderNew = () => {
               updatedIds: twinsUpdated?.map(t => t.id),
               twinsUpdated
             });
+            
+            // ✅ Update local familyMembers state immediately with twin data
+            setFamilyMembers(prev => prev.map(m => {
+              const twinUpdate = twinsUpdated.find(t => t.id === m.id);
+              return twinUpdate ? { 
+                ...m, 
+                is_twin: twinUpdate.is_twin, 
+                twin_group_id: twinUpdate.twin_group_id 
+              } : m;
+            }));
+            
+            // ✅ Update editingMember if it was one of the updated twins
+            if (editingMember && twinsUpdated.some(t => t.id === editingMember.id)) {
+              const updatedEditingData = twinsUpdated.find(t => t.id === editingMember.id);
+              if (updatedEditingData) {
+                setEditingMember({
+                  ...editingMember,
+                  is_twin: updatedEditingData.is_twin,
+                  twin_group_id: updatedEditingData.twin_group_id
+                });
+              }
+            }
           }
         } else if (hadExistingGroup && selectedTwinsInput.length === 0) {
           // Unlink all members from previous twin group
@@ -2633,6 +2667,25 @@ const FamilyBuilderNew = () => {
               unlinkedCount: twinsUnlinked?.length,
               twinsUnlinked
             });
+            
+            // ✅ Update local familyMembers state immediately 
+            setFamilyMembers(prev => prev.map(m => {
+              const wasUnlinked = twinsUnlinked.find(t => t.id === m.id);
+              return wasUnlinked ? { 
+                ...m, 
+                is_twin: false, 
+                twin_group_id: null 
+              } : m;
+            }));
+            
+            // ✅ Update editingMember if it was unlinked
+            if (editingMember && twinsUnlinked.some(t => t.id === editingMember.id)) {
+              setEditingMember({
+                ...editingMember,
+                is_twin: false,
+                twin_group_id: null
+              });
+            }
           }
         }
       } else {
@@ -2720,6 +2773,25 @@ const FamilyBuilderNew = () => {
               updatedIds: twinsUpdated?.map(t => t.id),
               twinsUpdated
             });
+            
+            // ✅ Update local familyMembers state immediately with twin data
+            setFamilyMembers(prev => prev.map(m => {
+              const twinUpdate = twinsUpdated.find(t => t.id === m.id);
+              return twinUpdate ? { 
+                ...m, 
+                is_twin: twinUpdate.is_twin, 
+                twin_group_id: twinUpdate.twin_group_id 
+              } : m;
+            }));
+            
+            // ✅ For new member, also add to familyMembers if needed
+            if (newMember && twinsUpdated.some(t => t.id === newMember.id)) {
+              const updatedNewMemberData = twinsUpdated.find(t => t.id === newMember.id);
+              if (updatedNewMemberData) {
+                memberData.is_twin = updatedNewMemberData.is_twin;
+                memberData.twin_group_id = updatedNewMemberData.twin_group_id;
+              }
+            }
           }
         }
         
@@ -3171,9 +3243,9 @@ const FamilyBuilderNew = () => {
         }, 1000);
       }
 
-      // Invalidate queries to fetch fresh data from DB
-      await queryClient.invalidateQueries({ queryKey: ['members', familyId] });
-      await queryClient.invalidateQueries({ queryKey: ['family', familyId] });
+      // ✅ Force refetch queries to get fresh data from DB (not from cache)
+      await queryClient.refetchQueries({ queryKey: ['members', familyId] });
+      await queryClient.refetchQueries({ queryKey: ['family', familyId] });
       
       // Refresh family data to reflect all changes in the member list
       await refetchFamilyData();
