@@ -47,60 +47,99 @@ const Auth = () => {
 
   return (
     <GoogleReCaptchaProvider reCaptchaKey={RECAPTCHA_SITE_KEY}>
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950">
-        <div className="min-h-screen flex relative overflow-hidden">
-          {/* Floating Background Elements */}
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-20 right-10 animate-float">
-              <Heart className="h-12 w-12 text-pink-400 opacity-60" />
-            </div>
-            <div className="absolute bottom-32 left-16 animate-float-delayed">
-              <Users className="h-16 w-16 text-emerald-400 opacity-40" />
-            </div>
-            <div className="absolute top-40 left-32 animate-float-slow">
-              <Star className="h-8 w-8 text-yellow-400 opacity-60" />
-            </div>
-            <div className="absolute top-1/2 right-1/4 animate-float">
-              <Sparkles className="h-10 w-10 text-emerald-500 opacity-50" />
-            </div>
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 relative overflow-hidden">
+        {/* Enhanced Floating Background Elements */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-20 left-1/4 animate-float">
+            <Heart className="h-16 w-16 text-pink-400/30 dark:text-pink-500/20" />
           </div>
+          <div className="absolute bottom-32 right-20 animate-float-delayed">
+            <Users className="h-20 w-20 text-emerald-400/20 dark:text-emerald-500/15" />
+          </div>
+          <div className="absolute top-1/3 right-1/3 animate-float-slow">
+            <Star className="h-12 w-12 text-amber-400/25 dark:text-amber-500/15" />
+          </div>
+          <div className="absolute bottom-1/4 left-1/3 animate-float">
+            <Sparkles className="h-14 w-14 text-teal-400/20 dark:text-teal-500/15" />
+          </div>
+          <div className="absolute top-1/2 left-20 animate-float-delayed">
+            <Crown className="h-10 w-10 text-amber-500/20 dark:text-amber-600/15" />
+          </div>
+          <div className="absolute bottom-40 right-1/4 animate-float-slow">
+            <Gem className="h-12 w-12 text-purple-400/20 dark:text-purple-500/15" />
+          </div>
+        </div>
 
+        <div className="min-h-screen flex">
           {/* Left Side - Luxury Branding */}
           <div className="hidden lg:flex lg:w-1/2 relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700"></div>
+            {/* Gradient Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-800"></div>
+            
+            {/* Subtle Pattern Overlay */}
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS13aWR0aD0iMC41IiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-30"></div>
             
+            {/* Content */}
             <div className="relative z-10 flex flex-col justify-center items-center p-12 text-white w-full">
               <div className="max-w-md space-y-8 text-center">
+                {/* Logo with Glow Effect */}
                 <div className="relative inline-block">
-                  <div className="absolute inset-0 bg-white/20 blur-3xl rounded-full"></div>
+                  <div className="absolute inset-0 bg-white/30 blur-3xl rounded-full animate-pulse-slow"></div>
                   <img
                     src={familyTreeLogo}
-                    alt="شجرتي Logo"
-                    className="relative w-40 h-40 mx-auto drop-shadow-2xl animate-float"
+                    alt="Family Tree Logo"
+                    className="relative w-48 h-48 mx-auto drop-shadow-2xl animate-float"
                   />
                 </div>
 
                 <div className="space-y-4">
-                  <h1 className="text-5xl font-bold bg-gradient-to-r from-white via-amber-100 to-white bg-clip-text text-transparent drop-shadow-lg">
-                    {t('welcome_to_mytree', 'مرحباً بك في شجرتي')}
+                  <h1 className="text-6xl font-bold tracking-tight">
+                    <span className="bg-gradient-to-r from-white via-emerald-50 to-white bg-clip-text text-transparent drop-shadow-lg">
+                      {t('appName', 'شجرتي')}
+                    </span>
                   </h1>
-                  <p className="text-xl text-emerald-50 leading-relaxed">
-                    {t('build_your_family_tree', 'ابنِ شجرة عائلتك بسهولة واحفظ ذكرياتك الثمينة')}
-                  </p>
+                  
+                  <div className="flex items-center justify-center gap-2">
+                    <div className="h-px w-12 bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
+                    <Crown className="h-6 w-6 text-amber-300" />
+                    <div className="h-px w-12 bg-gradient-to-r from-transparent via-white/50 to-transparent"></div>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-8">
-                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-                    <Crown className="w-8 h-8 mb-3 text-amber-300" />
-                    <h3 className="font-semibold text-lg mb-2">{t('premium_features', 'ميزات متقدمة')}</h3>
-                    <p className="text-sm text-emerald-100 leading-relaxed">{t('premium_features_desc', 'أدوات احترافية لإدارة شجرتك')}</p>
+                {/* Tagline */}
+                <p className="text-2xl font-light text-emerald-50/90 leading-relaxed max-w-sm mx-auto">
+                  {t('authTagline', 'احفظ تاريخ عائلتك للأجيال القادمة')}
+                </p>
+
+                {/* Feature Icons */}
+                <div className="grid grid-cols-3 gap-6 pt-8">
+                  <div className="flex flex-col items-center gap-3 group">
+                    <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-all duration-300 group-hover:scale-110">
+                      <TreePine className="h-8 w-8 text-white" />
+                    </div>
+                    <span className="text-sm font-medium text-emerald-50">{t('familyTree', 'شجرة العائلة')}</span>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-                    <Gem className="w-8 h-8 mb-3 text-pink-300" />
-                    <h3 className="font-semibold text-lg mb-2">{t('secure_storage', 'تخزين آمن')}</h3>
-                    <p className="text-sm text-emerald-100 leading-relaxed">{t('secure_storage_desc', 'بياناتك محمية بأعلى معايير الأمان')}</p>
+                  
+                  <div className="flex flex-col items-center gap-3 group">
+                    <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-all duration-300 group-hover:scale-110">
+                      <Heart className="h-8 w-8 text-pink-200" />
+                    </div>
+                    <span className="text-sm font-medium text-emerald-50">{t('memories', 'الذكريات')}</span>
                   </div>
+                  
+                  <div className="flex flex-col items-center gap-3 group">
+                    <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center border border-white/20 group-hover:bg-white/20 transition-all duration-300 group-hover:scale-110">
+                      <Users className="h-8 w-8 text-white" />
+                    </div>
+                    <span className="text-sm font-medium text-emerald-50">{t('family', 'العائلة')}</span>
+                  </div>
+                </div>
+
+                {/* Luxury Badge */}
+                <div className="pt-6 flex items-center justify-center gap-2">
+                  <Gem className="h-5 w-5 text-amber-300" />
+                  <span className="text-emerald-100/80 text-sm font-light tracking-wide">{t('premiumPlatform', 'منصة متميزة لعائلات مميزة')}</span>
+                  <Sparkles className="h-5 w-5 text-amber-300" />
                 </div>
               </div>
             </div>
