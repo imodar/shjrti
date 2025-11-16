@@ -15,6 +15,7 @@ import { ProtectedFamilyRoute } from "@/components/ProtectedFamilyRoute";
 import { MaintenanceModeGuard } from "@/components/MaintenanceModeGuard";
 import { SkeletonLayoutForBuilder } from "@/components/SkeletonLayoutForBuilder";
 import ScrollToTop from "@/components/ScrollToTop";
+import PageViewTracker from "@/components/PageViewTracker";
 import ConsentAwareScriptInjector from "@/components/ConsentAwareScriptInjector";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
@@ -101,9 +102,10 @@ const App = () => {
                 <MaintenanceModeGuard>
                 <Toaster />
                 <Sonner />
-                <BrowserRouter>
-                  <ScrollToTop />
-                  <ConsentAwareScriptInjector />
+          <BrowserRouter>
+            <ScrollToTop />
+            <PageViewTracker />
+            <ConsentAwareScriptInjector />
                   {gaId && <GoogleAnalytics measurementId={gaId} />}
                   <Routes>
                   <Route path="/" element={<Index />} />
