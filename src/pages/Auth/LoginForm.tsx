@@ -107,47 +107,40 @@ export function LoginForm({ onSwitchToReset, onSwitchToMagicLink }: LoginFormPro
 
         navigate("/dashboard");
       } catch (functionError: any) {
-        console.error('[LoginForm] Edge function error:', functionError);
-        
-        // Extract error message from FunctionsHttpError
+        // Don't spam console for expected errors like 401 invalid credentials
         let errorMsg = 'فشل تسجيل الدخول';
         let isRateLimitError = false;
-        
-        // Check if it's a FunctionsHttpError with context
-        if (functionError.context) {
+        let isExpectedAuthError = false;
+
+        if (functionError?.context && typeof functionError.context.json === 'function') {
           try {
-            // Must await context.json() to get the error body
             const errorBody = await functionError.context.json();
-            console.log('[LoginForm] Error body:', errorBody);
-            
             errorMsg = errorBody.error || errorMsg;
-            isRateLimitError = errorBody.rateLimitExceeded || false;
-          } catch (parseError) {
-            console.error('[LoginForm] Error parsing response:', parseError);
-            // Fallback to message if json parsing fails
-            if (functionError.message) {
-              errorMsg = functionError.message;
-            }
+            isRateLimitError = !!errorBody.rateLimitExceeded;
+            isExpectedAuthError = typeof errorMsg === 'string' && (
+              errorMsg.includes('البريد الإلكتروني') ||
+              errorMsg.toLowerCase().includes('invalid login')
+            );
+          } catch {
+            // ignore parse errors
           }
-        } else if (functionError.message) {
-          errorMsg = functionError.message;
+        } else if (functionError?.message) {
+          isExpectedAuthError = functionError.message.includes('non-2xx');
         }
-        
-        // Show appropriate error message
-        if (isRateLimitError) {
-          toast({
-            title: t('rate_limit_exceeded', 'تم تجاوز عدد المحاولات'),
-            description: errorMsg,
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: t('login_error', 'خطأ في تسجيل الدخول'),
-            description: errorMsg,
-            variant: "destructive",
-          });
+
+        if (!isExpectedAuthError && !isRateLimitError) {
+          console.error('[LoginForm] Unexpected edge function error:', functionError);
         }
-        
+
+        const toastTitle = isRateLimitError
+          ? t('rate_limit_exceeded', 'تم تجاوز عدد المحاولات')
+          : t('login_error', 'خطأ في تسجيل الدخول');
+
+        toast({
+          title: toastTitle,
+          description: errorMsg,
+          variant: "destructive",
+        });
         setIsLoading(false);
         return;
       }
