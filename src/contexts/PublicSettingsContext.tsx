@@ -34,7 +34,16 @@ export function PublicSettingsProvider({ children }: { children: React.ReactNode
         console.error('Error loading public settings:', error);
         // استخدام القيمة من .env كـ fallback
         setSettings({
-          recaptchaSiteKey: import.meta.env.VITE_RECAPTCHA_SITE_KEY || null,
+          recaptchaSiteKey: '6LcvPA4sAAAAAGJr1CorOOXE3Y_xAtkPa7TesVcG',
+          loading: false,
+        });
+        return;
+      }
+
+      // التحقق من وجود البيانات قبل الوصول إلى setting_value
+      if (!data) {
+        setSettings({
+          recaptchaSiteKey: '6LcvPA4sAAAAAGJr1CorOOXE3Y_xAtkPa7TesVcG',
           loading: false,
         });
         return;
@@ -43,13 +52,13 @@ export function PublicSettingsProvider({ children }: { children: React.ReactNode
       const settingsValue = data.setting_value as { siteKey?: string };
       
       setSettings({
-        recaptchaSiteKey: settingsValue.siteKey || import.meta.env.VITE_RECAPTCHA_SITE_KEY || null,
+        recaptchaSiteKey: settingsValue?.siteKey || '6LcvPA4sAAAAAGJr1CorOOXE3Y_xAtkPa7TesVcG',
         loading: false,
       });
     } catch (error) {
       console.error('Failed to load public settings:', error);
       setSettings({
-        recaptchaSiteKey: import.meta.env.VITE_RECAPTCHA_SITE_KEY || null,
+        recaptchaSiteKey: '6LcvPA4sAAAAAGJr1CorOOXE3Y_xAtkPa7TesVcG',
         loading: false,
       });
     }
