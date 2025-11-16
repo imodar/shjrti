@@ -115,19 +115,20 @@ serve(async (req) => {
 
       // إرسال إيميل الترحيب للمستخدم الجديد
       console.log(`Sending welcome email to: ${email}`);
-      const welcomeEmailPromise = supabase.functions.invoke('send-welcome-email', {
-        body: {
-          email,
-          firstName: storedUserData.first_name || userData?.first_name || '',
-          lastName: storedUserData.last_name || userData?.last_name || '',
-          language: 'ar'
-        }
-      }).catch(error => {
+      try {
+        await supabase.functions.invoke('send-welcome-email', {
+          body: {
+            email,
+            firstName: storedUserData.first_name || userData?.first_name || '',
+            lastName: storedUserData.last_name || userData?.last_name || '',
+            language: 'ar'
+          }
+        });
+        console.log('Welcome email sent successfully');
+      } catch (error) {
         console.error('Failed to send welcome email:', error);
-      });
-
-      // تشغيل إرسال الإيميل في الخلفية دون انتظار
-      EdgeRuntime.waitUntil(welcomeEmailPromise);
+        // لا نوقف العملية حتى لو فشل إرسال البريد
+      }
 
     } else if (purpose === 'login') {
       // For login, sign in with email/password (if provided) or generate session
