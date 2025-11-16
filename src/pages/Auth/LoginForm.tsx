@@ -69,8 +69,42 @@ export function LoginForm({ onSwitchToReset, onSwitchToMagicLink }: LoginFormPro
         }
       });
 
-      if (error || !data?.success) {
-        const errorMsg = data?.error || error?.message || 'فشل تسجيل الدخول';
+      if (error) {
+        // Extract error message from the response
+        let errorMsg = 'فشل تسجيل الدخول';
+        
+        if (error.message) {
+          try {
+            // Try to parse the error message if it contains JSON
+            const errorData = JSON.parse(error.message);
+            errorMsg = errorData.error || errorMsg;
+          } catch {
+            // If not JSON, check if it's in the format "status: Error, {json}"
+            const match = error.message.match(/\{.*\}/);
+            if (match) {
+              try {
+                const errorData = JSON.parse(match[0]);
+                errorMsg = errorData.error || errorMsg;
+              } catch {
+                errorMsg = error.message;
+              }
+            } else {
+              errorMsg = error.message;
+            }
+          }
+        }
+        
+        toast({
+          title: t('login_error', 'خطأ في تسجيل الدخول'),
+          description: errorMsg,
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      if (!data?.success) {
+        const errorMsg = data?.error || 'فشل تسجيل الدخول';
         
         // Handle rate limiting
         if (data?.rateLimitExceeded) {
