@@ -28,7 +28,7 @@ export function PublicSettingsProvider({ children }: { children: React.ReactNode
         .from('admin_settings')
         .select('setting_value')
         .eq('setting_key', 'recaptcha_public_settings')
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error loading public settings:', error);
