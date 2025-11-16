@@ -446,26 +446,28 @@ const PlanSelection = () => {
         </div>
       </div>
       
-      {/* Creative Floating Back Button */}
-      <div className="fixed top-8 left-8 z-50">
-        <Button
-          size="lg"
-          onClick={() => navigate('/dashboard')}
-          className="rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 hover:bg-white dark:hover:bg-gray-900 shadow-2xl hover:shadow-emerald-200/30 dark:hover:shadow-emerald-800/30 transition-all duration-300 group hover:scale-110 hover:-translate-y-1 px-6 py-3 flex items-center gap-2"
-        >
-          {direction === 'rtl' ? (
-            <>
-              <ChevronRight className="h-6 w-6 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform duration-200" />
-              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">عودة لحسابي</span>
-            </>
-          ) : (
-            <>
-              <ArrowLeft className="h-6 w-6 text-emerald-600 dark:text-emerald-400 group-hover:-translate-x-1 transition-transform duration-200" />
-              <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Back to Dashboard</span>
-            </>
-          )}
-        </Button>
-      </div>
+      {/* Creative Floating Back Button - Only show if user has active subscription */}
+      {userSubscription && (
+        <div className="fixed top-8 left-8 z-50">
+          <Button
+            size="lg"
+            onClick={() => navigate('/dashboard')}
+            className="rounded-full bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 hover:bg-white dark:hover:bg-gray-900 shadow-2xl hover:shadow-emerald-200/30 dark:hover:shadow-emerald-800/30 transition-all duration-300 group hover:scale-110 hover:-translate-y-1 px-6 py-3 flex items-center gap-2"
+          >
+            {direction === 'rtl' ? (
+              <>
+                <ChevronRight className="h-6 w-6 text-emerald-600 dark:text-emerald-400 group-hover:translate-x-1 transition-transform duration-200" />
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold">عودة لحسابي</span>
+              </>
+            ) : (
+              <>
+                <ArrowLeft className="h-6 w-6 text-emerald-600 dark:text-emerald-400 group-hover:-translate-x-1 transition-transform duration-200" />
+                <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Back to Dashboard</span>
+              </>
+            )}
+          </Button>
+        </div>
+      )}
       
       <div className="container mx-auto px-6 pt-8 pb-16 max-w-6xl relative z-10">
         {/* Header section matching dashboard style */}
@@ -503,6 +505,30 @@ const PlanSelection = () => {
             </div>
           </div>
         </div>
+          
+          {/* تنبيه اختيار الباقة الإجباري - يظهر فقط إذا لم يكن لديه اشتراك */}
+          {!userSubscription && (
+            <div className="mb-8 p-6 bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0">
+                  <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+                    <AlertTriangle className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100 mb-2">
+                    {currentLanguage === 'ar' ? 'اختيار الباقة مطلوب' : 'Subscription Required'}
+                  </h3>
+                  <p className="text-blue-800 dark:text-blue-200 leading-relaxed">
+                    {currentLanguage === 'ar' 
+                      ? 'يجب عليك اختيار إحدى الباقات للمتابعة واستخدام النظام. اختر الباقة المناسبة لك وأكمل عملية الدفع.'
+                      : 'You must choose a subscription plan to continue using the system. Select the plan that suits you and complete the payment process.'
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
           
           {/* تنبيه تغيير الباقة */}
           {packageWarning && (

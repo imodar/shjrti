@@ -18,25 +18,27 @@ export default function AuthCallback() {
           return;
         }
 
-        // التحقق من وجود اشتراك نشط
+        // التحقق من وجود اشتراك نشط باستخدام RPC function
         const { data: subscriptionData, error: subError } = await supabase
-          .from('user_subscriptions')
-          .select('id, status, package_id')
-          .eq('user_id', session.user.id)
-          .eq('status', 'active')
-          .maybeSingle();
+          .rpc('get_user_subscription_details', { user_uuid: session.user.id });
 
         if (subError) {
           console.error('Subscription check error:', subError);
         }
 
-        // إذا لم يكن لديه اشتراك نشط، وجّهه لاختيار الباقة
-        if (!subscriptionData) {
+        // التحقق إذا كان لديه اشتراك نشط
+        const hasActiveSubscription = subscriptionData && 
+                                      subscriptionData.length > 0 && 
+                                      subscriptionData[0].subscription_id &&
+                                      subscriptionData[0].status !== 'free';
+
+        if (!hasActiveSubscription) {
           console.log('No active subscription found, redirecting to plan selection');
-          navigate('/plan-selection');
+          // استخدام replace بدلاً من navigate لمنع الرجوع
+          navigate('/plan-selection', { replace: true });
         } else {
           console.log('Active subscription found, redirecting to dashboard');
-          navigate('/dashboard');
+          navigate('/dashboard', { replace: true });
         }
       } catch (error) {
         console.error('Auth callback error:', error);

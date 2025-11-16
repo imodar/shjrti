@@ -15,7 +15,7 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, requireAdmin = false, requireActiveSubscription = false }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdmin();
-  const { isExpired, loading: subscriptionLoading } = useSubscription();
+  const { isExpired, hasActiveSubscription, loading: subscriptionLoading } = useSubscription();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -39,18 +39,14 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
     }
   }, [requireAdmin, isAdmin, adminLoading, user, navigate, toast]);
 
-  // Check subscription expiration for subscription-protected routes
+  // Check subscription - redirect if no active subscription
   useEffect(() => {
     if (requireActiveSubscription && !subscriptionLoading && user) {
-      // Only redirect if we've finished loading AND subscription is expired
-      if (isExpired) {
-        // Add a small delay to ensure subscription context has been updated
-        setTimeout(() => {
-          navigate('/renew-subscription');
-        }, 100);
+      if (!hasActiveSubscription) {
+        navigate('/plan-selection', { replace: true });
       }
     }
-  }, [requireActiveSubscription, isExpired, subscriptionLoading, navigate, user]);
+  }, [requireActiveSubscription, hasActiveSubscription, subscriptionLoading, navigate, user]);
 
   if (loading || (requireAdmin && adminLoading)) {
     return (
@@ -80,8 +76,8 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
     return null;
   }
 
-  if (requireActiveSubscription && isExpired) {
-    console.log('ProtectedRoute: Access denied - subscription required but expired');
+  if (requireActiveSubscription && !hasActiveSubscription) {
+    console.log('ProtectedRoute: Access denied - subscription required but not active');
     return null;
   }
 

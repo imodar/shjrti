@@ -22,6 +22,7 @@ interface SubscriptionContextType {
   showExpiryWarning: boolean;
   hasAIFeatures: boolean;
   hasInitialized: boolean;
+  hasActiveSubscription: boolean;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
@@ -182,6 +183,13 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   const daysUntilExpiry = subscription?.days_until_expiry ?? null;
   const showExpiryWarning = !isExpired && daysUntilExpiry !== null && daysUntilExpiry <= 7;
   const hasAIFeatures = !isExpired && (subscription?.ai_features_enabled ?? false);
+  
+  // التحقق من وجود اشتراك نشط حقيقي (ليس free)
+  const hasActiveSubscription = !loading && 
+                                subscription !== null && 
+                                subscription.subscription_id !== null &&
+                                subscription.status !== 'free' &&
+                                !isExpired;
 
   const value = {
     subscription,
@@ -193,6 +201,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     showExpiryWarning,
     hasAIFeatures,
     hasInitialized,
+    hasActiveSubscription,
   };
 
   return (
