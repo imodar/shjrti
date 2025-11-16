@@ -313,6 +313,14 @@ const Auth = () => {
                     </>
                   )}
                 </div>
+
+                <div className="mt-4 text-center">
+                  <Link to="/">
+                    <Button variant="ghost" className="text-muted-foreground hover:text-foreground">
+                      {t('back_to_home', 'العودة للرئيسية')}
+                    </Button>
+                  </Link>
+                </div>
               </CardContent>
             </Card>
           </div>
