@@ -46,6 +46,7 @@ serve(async (req) => {
     const { suggestionId, verificationCode } = await req.json();
 
     if (!suggestionId || !verificationCode) {
+      console.error("Missing required fields:", { suggestionId, verificationCode });
       return new Response(
         JSON.stringify({ error: "Missing required fields" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -60,6 +61,7 @@ serve(async (req) => {
       .single();
 
     if (fetchError || !suggestion) {
+      console.error("Suggestion not found:", { suggestionId, fetchError });
       return new Response(
         JSON.stringify({ error: "Suggestion not found" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -68,15 +70,27 @@ serve(async (req) => {
 
     // Check if already verified
     if (suggestion.is_email_verified) {
+      console.warn("Suggestion already verified:", suggestionId);
       return new Response(
         JSON.stringify({ error: "Suggestion already verified" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
+    // Normalize codes for comparison (trim and convert to string)
+    const storedCode = String(suggestion.verification_code || '').trim();
+    const providedCode = String(verificationCode || '').trim();
+    
+    console.log("Verification attempt:", {
+      suggestionId,
+      storedCode,
+      providedCode,
+      match: storedCode === providedCode
+    });
+
     // Check if code matches
-    if (suggestion.verification_code !== verificationCode) {
-      console.warn(`Invalid verification code attempt from IP ${clientIP} for suggestion ${suggestionId}`);
+    if (storedCode !== providedCode) {
+      console.warn(`Invalid verification code from IP ${clientIP} for suggestion ${suggestionId}. Expected: "${storedCode}", Got: "${providedCode}"`);
       return new Response(
         JSON.stringify({ error: "Invalid verification code" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
