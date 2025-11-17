@@ -56,7 +56,6 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooter } from "@/components/GlobalFooter";
-import { DirectionWrapper } from "@/components/DirectionWrapper";
 
 interface PackageType {
   id: string;
@@ -1052,7 +1051,6 @@ export default function EnhancedAdminPanel() {
   }
 
   return (
-    <DirectionWrapper>
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
       <GlobalHeader />
       <Toaster />
@@ -2742,6 +2740,5 @@ export default function EnhancedAdminPanel() {
       </div>
       <GlobalFooter />
     </div>
-    </DirectionWrapper>
   );
 }
