@@ -1101,9 +1101,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                               {/* Children */}
                               {childrenWithSpouse.length > 0 && (
                                 <div className="mt-4 pt-4 border-t border-border/50">
-                                  <h5 className="font-medium text-foreground mb-3 flex items-center">
-                                    <span className="mr-2">👶</span>
-                                    {t('profile.children')} ({childrenWithSpouse.length})
+                                  <h5 className="font-medium text-foreground mb-3 flex items-center gap-4">
+                                    <span>
+                                      الذكور ({childrenWithSpouse.filter(c => c.gender === 'male').length})
+                                    </span>
+                                    <span>
+                                      الإناث ({childrenWithSpouse.filter(c => c.gender === 'female').length})
+                                    </span>
                                   </h5>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                      {(() => {
