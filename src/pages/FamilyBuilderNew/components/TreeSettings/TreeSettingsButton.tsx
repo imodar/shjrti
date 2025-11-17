@@ -13,10 +13,10 @@ export const TreeSettingsButton: React.FC<TreeSettingsButtonProps> = ({
     <Button 
       variant="outline" 
       size="sm" 
-      className="ml-2" 
+      className="ms-2" 
       onClick={onShowSettings}
     >
-      <Settings className="h-4 w-4 ml-2" />
+      <Settings className="h-4 w-4 ms-2" />
       إعدادات الشجرة
     </Button>
   );
