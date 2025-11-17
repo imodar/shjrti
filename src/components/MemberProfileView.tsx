@@ -1106,31 +1106,90 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                     {t('profile.children')} ({childrenWithSpouse.length})
                                   </h5>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                     {childrenWithSpouse.map((child) => (
-                                       <div 
-                                         key={child.id} 
-                                         className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/50 cursor-pointer hover:bg-background/80 transition-colors duration-200 border border-transparent hover:border-border/30"
-                                         onClick={() => onMemberClick?.(child)}
-                                       >
-                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
-                                           child.gender === 'female' 
-                                             ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
-                                             : 'bg-gradient-to-br from-blue-400 to-blue-500'
-                                         }`}>
-                                           {child.gender === 'female' ? '♀' : '♂'}
-                                         </div>
-                                          <div className="flex-1 min-w-0 ps-3">
-                                           <p className="font-medium text-sm text-foreground truncate">
-                                             {child.first_name}
-                                           </p>
-                                           {child.birth_date && (
-                                              <p className="text-xs text-muted-foreground">
-                                                {new Date().getFullYear() - new Date(child.birth_date).getFullYear()} {t('profile.years')}
-                                              </p>
-                                            )}
-                                         </div>
-                                       </div>
-                                     ))}
+                                     {(() => {
+                                       // Group children by twin_group_id
+                                       const twinGroups = new Map<string, typeof childrenWithSpouse>();
+                                       const nonTwins: typeof childrenWithSpouse = [];
+                                       
+                                       childrenWithSpouse.forEach((child) => {
+                                         if (child.is_twin && child.twin_group_id) {
+                                           if (!twinGroups.has(child.twin_group_id)) {
+                                             twinGroups.set(child.twin_group_id, []);
+                                           }
+                                           twinGroups.get(child.twin_group_id)!.push(child);
+                                         } else {
+                                           nonTwins.push(child);
+                                         }
+                                       });
+
+                                       return (
+                                         <>
+                                           {/* Render twin groups */}
+                                           {Array.from(twinGroups.entries()).map(([groupId, twins]) => (
+                                             <div key={`twin-group-${groupId}`} className="col-span-full">
+                                               <div className="flex items-center gap-1 mb-2 text-xs text-muted-foreground">
+                                                 <Users className="h-3 w-3" />
+                                                 <span>توأم ({twins.length})</span>
+                                               </div>
+                                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-2 rounded-lg bg-primary/5 border border-primary/10">
+                                                 {twins.map((child) => (
+                                                   <div 
+                                                     key={child.id} 
+                                                     className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/80 cursor-pointer hover:bg-background transition-colors duration-200 border border-transparent hover:border-border/30"
+                                                     onClick={() => onMemberClick?.(child)}
+                                                   >
+                                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
+                                                       child.gender === 'female' 
+                                                         ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
+                                                         : 'bg-gradient-to-br from-blue-400 to-blue-500'
+                                                     }`}>
+                                                       {child.gender === 'female' ? '♀' : '♂'}
+                                                     </div>
+                                                     <div className="flex-1 min-w-0 ps-3">
+                                                       <p className="font-medium text-sm text-foreground truncate">
+                                                         {child.first_name}
+                                                       </p>
+                                                       {child.birth_date && (
+                                                         <p className="text-xs text-muted-foreground">
+                                                           {new Date().getFullYear() - new Date(child.birth_date).getFullYear()} {t('profile.years')}
+                                                         </p>
+                                                       )}
+                                                     </div>
+                                                   </div>
+                                                 ))}
+                                               </div>
+                                             </div>
+                                           ))}
+
+                                           {/* Render non-twin children */}
+                                           {nonTwins.map((child) => (
+                                             <div 
+                                               key={child.id} 
+                                               className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/50 cursor-pointer hover:bg-background/80 transition-colors duration-200 border border-transparent hover:border-border/30"
+                                               onClick={() => onMemberClick?.(child)}
+                                             >
+                                               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
+                                                 child.gender === 'female' 
+                                                   ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
+                                                   : 'bg-gradient-to-br from-blue-400 to-blue-500'
+                                               }`}>
+                                                 {child.gender === 'female' ? '♀' : '♂'}
+                                               </div>
+                                               <div className="flex-1 min-w-0 ps-3">
+                                                 <p className="font-medium text-sm text-foreground truncate">
+                                                   {child.first_name}
+                                                 </p>
+                                                 {child.birth_date && (
+                                                   <p className="text-xs text-muted-foreground">
+                                                     {new Date().getFullYear() - new Date(child.birth_date).getFullYear()} {t('profile.years')}
+                                                   </p>
+                                                 )}
+                                               </div>
+                                             </div>
+                                           ))}
+                                         </>
+                                       );
+                                     })()}
                                      
                                      {!readOnly && onAddChild && (
                                        <div 
