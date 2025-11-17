@@ -491,7 +491,7 @@ const FamilyBuilderNew = () => {
         data: members,
         error: membersError
       } = await supabase.from('family_tree_members')
-        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, related_person_id, is_founder, gender, birth_date, is_alive, death_date, marital_status, image_url')
+        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, related_person_id, is_founder, gender, birth_date, is_alive, death_date, marital_status, image_url, is_twin, twin_group_id')
         .eq('family_id', familyToUse.id);
       if (membersError) throw membersError;
       
@@ -515,7 +515,9 @@ const FamilyBuilderNew = () => {
           image: member.image_url || null,
           bio: '',
           marital_status: member.marital_status || 'single',
-          relation: ""
+          relation: "",
+          is_twin: member.is_twin || false,
+          twin_group_id: member.twin_group_id || null
         }));
         setFamilyMembers(transformedMembers);
         console.log(`✅ Members loaded with images: ${transformedMembers.filter(m => m.image).length}/${transformedMembers.length}`);
@@ -610,7 +612,9 @@ const FamilyBuilderNew = () => {
       image: member.image_url || null,
       bio: member.biography || '',
       marital_status: member.marital_status || 'single',
-      relation: ""
+      relation: "",
+      is_twin: member.is_twin || false,
+      twin_group_id: member.twin_group_id || null
     }));
     setFamilyMembers(transformedMembers);
     
@@ -1857,7 +1861,9 @@ const FamilyBuilderNew = () => {
         image: memberData.image_url || null,
         bio: memberData.biography || "",
         marital_status: memberData.marital_status || 'single',
-        relation: ""
+        relation: "",
+        is_twin: memberData.is_twin || false,
+        twin_group_id: memberData.twin_group_id || null
       };
 
       // Update local state with fresh data
