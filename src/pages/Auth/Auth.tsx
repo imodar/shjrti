@@ -208,14 +208,6 @@ const Auth = () => {
           <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 relative z-10">
             <Card className="w-full max-w-md backdrop-blur-xl bg-card/95 shadow-2xl border-0 ring-1 ring-border/50">
               <CardHeader className="text-center space-y-4 pb-8">
-                <div className="flex justify-center mb-2">
-                  <div className="relative group">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/80 to-primary blur-3xl opacity-40 rounded-full animate-pulse"></div>
-                    <div className="relative bg-gradient-to-br from-primary/10 to-primary/5 backdrop-blur-sm rounded-2xl p-4 border-2 border-primary/20 shadow-xl">
-                      <TreePine className="h-14 w-14 text-primary drop-shadow-lg group-hover:scale-110 transition-transform duration-300" />
-                    </div>
-                  </div>
-                </div>
                 <div className="space-y-2">
                   <CardTitle className="text-4xl font-black bg-gradient-to-r from-primary via-primary/90 to-primary bg-clip-text text-transparent drop-shadow-sm leading-tight">
                     {t('mytree', 'شجرتي')}
