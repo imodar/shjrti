@@ -2654,6 +2654,35 @@ const FamilyBuilderNew = () => {
           })
           .eq('id', memberData.id);
         
+        // Get original twin siblings to detect removals
+        const originalTwinSiblings = formMode === 'edit' && editingMember?.twin_group_id
+          ? familyMembers.filter(m => 
+              m.twin_group_id === editingMember.twin_group_id && 
+              m.id !== memberData.id
+            ).map(m => m.id)
+          : [];
+        
+        // Find siblings that were removed from the twin group
+        const removedSiblings = originalTwinSiblings.filter(
+          siblingId => !submissionData.selected_twins.includes(siblingId)
+        );
+        
+        // Remove deselected siblings from twin group
+        if (removedSiblings.length > 0) {
+          const removeUpdates = removedSiblings.map(async (siblingId: string) => {
+            return supabase
+              .from('family_tree_members')
+              .update({ 
+                is_twin: false, 
+                twin_group_id: null 
+              })
+              .eq('id', siblingId);
+          });
+          
+          await Promise.all(removeUpdates);
+          console.log(`✅ Removed ${removedSiblings.length} members from twin group`);
+        }
+        
         // تحديث جميع الإخوة المختارين بنفس twin_group_id
         const twinUpdates = submissionData.selected_twins.map(async (siblingId: string) => {
           return supabase
@@ -2670,7 +2699,7 @@ const FamilyBuilderNew = () => {
         console.log(`✅ Successfully linked ${submissionData.selected_twins.length + 1} twins with group ID: ${twinGroupId}`);
       }
 
-      // إزالة من مجموعة التوائم إذا تم إلغاء الاختيار
+      // إزالة من مجموعة التوائم إذا تم إلغاء الاختيار للعضو الحالي
       if (!submissionData.is_twin && memberData.twin_group_id) {
         await supabase
           .from('family_tree_members')
