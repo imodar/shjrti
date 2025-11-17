@@ -298,11 +298,11 @@ const Auth = () => {
                   {!showPasswordReset && !showMagicLink && !showOTP && (
                     <>
                       {t('by_continuing', 'بالمتابعة، أنت توافق على')}{" "}
-                      <Link to="/terms" className="text-emerald-600 hover:underline">
+                      <Link to="/terms-conditions" className="text-emerald-600 hover:underline">
                         {t('terms', 'الشروط والأحكام')}
                       </Link>
                       {" "}{t('and')}{" "}
-                      <Link to="/privacy" className="text-emerald-600 hover:underline">
+                      <Link to="/privacy-policy" className="text-emerald-600 hover:underline">
                         {t('privacy_policy', 'سياسة الخصوصية')}
                       </Link>
                     </>
