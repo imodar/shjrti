@@ -211,8 +211,8 @@ export const GlobalHeader = () => {
                         </Link>
                       </DropdownMenuItem>
                       
-                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/20 transition-all duration-100 cursor-pointer border border-transparent hover:border-emerald-400/30">
-                         <div className={`flex items-center gap-4 w-full ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
+                      <DropdownMenuItem className="group p-4 rounded-xl hover:bg-emerald-400/20 transition-all duration-100 cursor-pointer border border-transparent hover:border-emerald-400/30" asChild>
+                        <Link to="/contact" className={`flex items-center gap-4 w-full ${direction === 'rtl' ? 'flex-row-reverse' : 'flex-row'}`}>
                           <div className="p-3 bg-emerald-400/20 rounded-xl group-hover:bg-emerald-400/30 transition-all duration-100 border border-emerald-400/30">
                             <HelpCircle className="h-5 w-5 text-emerald-300" />
                           </div>
@@ -220,7 +220,7 @@ export const GlobalHeader = () => {
                             <p className="font-medium text-white">{t('nav.help', 'المساعدة')}</p>
                             <p className="text-xs text-gray-400 group-hover:text-white transition-colors duration-100">{t('nav.help.desc', 'الدعم والتوجيه')}</p>
                           </div>
-                        </div>
+                        </Link>
                       </DropdownMenuItem>
                       
                       <DropdownMenuSeparator className="bg-white/10" />
