@@ -1128,15 +1128,16 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
                                        return (
                                          <>
-                                           {/* Render twin groups */}
-                                           {Array.from(twinGroups.entries()).map(([groupId, twins]) => (
-                                             <div key={`twin-group-${groupId}`} className="col-span-full">
-                                               <div className="flex items-center gap-1 mb-2 text-xs text-muted-foreground">
-                                                 <Users className="h-3 w-3" />
-                                                 <span>توأم ({twins.length})</span>
-                                               </div>
-                                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-2 rounded-lg bg-primary/5 border border-primary/10">
-                                                 {twins.map((child) => (
+                                            {/* Render twin groups */}
+                                            {Array.from(twinGroups.entries()).map(([groupId, twins]) => (
+                                              <div key={`twin-group-${groupId}`} className="col-span-full">
+                                                <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
+                                                  <div className="flex items-center gap-1 mb-3 text-xs text-muted-foreground">
+                                                    <Users className="h-3 w-3" />
+                                                    <span>توأم ({twins.length})</span>
+                                                  </div>
+                                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                    {twins.map((child) => (
                                                    <div 
                                                      key={child.id} 
                                                      className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/80 cursor-pointer hover:bg-background transition-colors duration-200 border border-transparent hover:border-border/30"
@@ -1158,12 +1159,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                                            {new Date().getFullYear() - new Date(child.birth_date).getFullYear()} {t('profile.years')}
                                                          </p>
                                                        )}
-                                                     </div>
-                                                   </div>
-                                                 ))}
-                                               </div>
-                                             </div>
-                                           ))}
+                                                      </div>
+                                                    </div>
+                                                  ))}
+                                                </div>
+                                                </div>
+                                              </div>
+                                            ))}
 
                                            {/* Render non-twin children */}
                                            {nonTwins.map((child) => (
