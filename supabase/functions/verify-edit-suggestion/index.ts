@@ -118,9 +118,9 @@ serve(async (req) => {
           recipientEmail: suggestion.submitter_email,
           recipientName: suggestion.submitter_name,
           variables: {
-            submitter_name: suggestion.submitter_name,
-            family_name: suggestion.families?.name || 'the family tree',
-            suggestion_text: suggestion.suggestion_text,
+            name: suggestion.submitter_name,
+            familyName: suggestion.families?.name || 'the family tree',
+            suggestionText: suggestion.suggestion_text,
           },
           languageCode: 'ar', // Default to Arabic, could be made dynamic
         },

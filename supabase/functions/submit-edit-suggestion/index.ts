@@ -141,9 +141,10 @@ serve(async (req) => {
           recipientEmail: submitterEmail,
           recipientName: submitterName,
           variables: {
-            submitter_name: submitterName,
-            family_name: family?.name || 'Family Tree',
-            verification_code: verificationCode,
+            name: submitterName,
+            familyName: family?.name || 'Family Tree',
+            verificationCode: verificationCode,
+            expiryMinutes: '10',
           },
           languageCode: 'ar', // Default to Arabic, could be made dynamic
         },
