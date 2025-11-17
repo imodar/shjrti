@@ -1,0 +1,111 @@
+-- Insert Contact page translations
+
+-- Form validation messages
+INSERT INTO public.translations (key, language_code, value, category) VALUES
+('contact.form.name_required', 'ar', 'الاسم الكامل مطلوب', 'contact'),
+('contact.form.name_required', 'en', 'Full name is required', 'contact'),
+('contact.form.email_invalid', 'ar', 'البريد الإلكتروني غير صحيح', 'contact'),
+('contact.form.email_invalid', 'en', 'Invalid email address', 'contact'),
+('contact.form.description_min', 'ar', 'الوصف يجب أن يكون 10 أحرف على الأقل', 'contact'),
+('contact.form.description_min', 'en', 'Description must be at least 10 characters', 'contact'),
+
+-- Toast messages
+('contact.error', 'ar', 'خطأ', 'contact'),
+('contact.error', 'en', 'Error', 'contact'),
+('contact.captcha_error', 'ar', 'يرجى حل المعادلة الرياضية بشكل صحيح', 'contact'),
+('contact.captcha_error', 'en', 'Please solve the math equation correctly', 'contact'),
+('contact.success', 'ar', 'تم الإرسال بنجاح', 'contact'),
+('contact.success', 'en', 'Sent Successfully', 'contact'),
+('contact.success_message', 'ar', 'شكراً لتواصلك معنا. سنرد عليك في أقرب وقت ممكن.', 'contact'),
+('contact.success_message', 'en', 'Thank you for contacting us. We will reply to you as soon as possible.', 'contact'),
+('contact.submit_error', 'ar', 'حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.', 'contact'),
+('contact.submit_error', 'en', 'An error occurred while sending the message. Please try again.', 'contact'),
+
+-- Hero section
+('contact.hero.badge', 'ar', 'نحن هنا من أجلك', 'contact'),
+('contact.hero.badge', 'en', 'We are here for you', 'contact'),
+('contact.hero.title', 'ar', 'تواصل معنا', 'contact'),
+('contact.hero.title', 'en', 'Contact Us', 'contact'),
+('contact.hero.subtitle', 'ar', 'وابني مستقبل عائلتك', 'contact'),
+('contact.hero.subtitle', 'en', 'And build your family''s future', 'contact'),
+('contact.hero.description', 'ar', 'فريقنا من الخبراء جاهز لمساعدتك في رحلة حفظ التراث العائلي وبناء إرثك الرقمي', 'contact'),
+('contact.hero.description', 'en', 'Our team of experts is ready to help you on your journey to preserve family heritage and build your digital legacy', 'contact'),
+
+-- Stats
+('contact.stats.families', 'ar', 'عائلة راضية', 'contact'),
+('contact.stats.families', 'en', 'Happy Families', 'contact'),
+('contact.stats.response_time', 'ar', '2 دقيقة', 'contact'),
+('contact.stats.response_time', 'en', '2 minutes', 'contact'),
+('contact.stats.avg_response', 'ar', 'متوسط الرد', 'contact'),
+('contact.stats.avg_response', 'en', 'Average Response', 'contact'),
+('contact.stats.rating', 'ar', 'تقييم العملاء', 'contact'),
+('contact.stats.rating', 'en', 'Customer Rating', 'contact'),
+
+-- Contact methods section
+('contact.methods.title', 'ar', 'طرق التواصل', 'contact'),
+('contact.methods.title', 'en', 'Contact Methods', 'contact'),
+('contact.methods.heading', 'ar', 'لنبدأ المحادثة', 'contact'),
+('contact.methods.heading', 'en', 'Let''s Start the Conversation', 'contact'),
+('contact.methods.description', 'ar', 'نحن هنا لمساعدتك في كل خطوة من رحلة بناء شجرة عائلتك', 'contact'),
+('contact.methods.description', 'en', 'We are here to help you every step of the way in your family tree journey', 'contact'),
+
+-- Contact info
+('contact.info.email_title', 'ar', 'البريد الإلكتروني', 'contact'),
+('contact.info.email_title', 'en', 'Email', 'contact'),
+('contact.info.email_subtitle', 'ar', 'للدعم الفني والاستفسارات', 'contact'),
+('contact.info.email_subtitle', 'en', 'For technical support and inquiries', 'contact'),
+('contact.info.hours_title', 'ar', 'أوقات العمل', 'contact'),
+('contact.info.hours_title', 'en', 'Business Hours', 'contact'),
+('contact.info.hours_subtitle', 'ar', 'السبت - الخميس', 'contact'),
+('contact.info.hours_subtitle', 'en', 'Saturday - Thursday', 'contact'),
+('contact.info.hours_time', 'ar', '9:00 ص - 6:00 م (بتوقيت الرياض)', 'contact'),
+('contact.info.hours_time', 'en', '9:00 AM - 6:00 PM (Riyadh Time)', 'contact'),
+('contact.info.location_title', 'ar', 'الموقع', 'contact'),
+('contact.info.location_title', 'en', 'Location', 'contact'),
+('contact.info.location_subtitle', 'ar', 'نخدم عملاءنا من جميع أنحاء', 'contact'),
+('contact.info.location_subtitle', 'en', 'We serve our customers from all over', 'contact'),
+('contact.info.location_country', 'ar', 'المملكة العربية السعودية', 'contact'),
+('contact.info.location_country', 'en', 'Kingdom of Saudi Arabia', 'contact'),
+
+-- Quality assurance
+('contact.quality.title', 'ar', 'ضمانات الجودة', 'contact'),
+('contact.quality.title', 'en', 'Quality Guarantees', 'contact'),
+('contact.quality.data_protection', 'ar', 'حماية البيانات', 'contact'),
+('contact.quality.data_protection', 'en', 'Data Protection', 'contact'),
+('contact.quality.free_support', 'ar', 'دعم مجاني', 'contact'),
+('contact.quality.free_support', 'en', 'Free Support', 'contact'),
+('contact.quality.quick_response', 'ar', 'رد سريع', 'contact'),
+('contact.quality.quick_response', 'en', 'Quick Response', 'contact'),
+('contact.quality.expert_support', 'ar', 'خبراء متخصصون', 'contact'),
+('contact.quality.expert_support', 'en', 'Expert Specialists', 'contact'),
+
+-- Form labels
+('contact.form.title', 'ar', 'أرسل لنا رسالة', 'contact'),
+('contact.form.title', 'en', 'Send Us a Message', 'contact'),
+('contact.form.response_time', 'ar', 'سنرد عليك خلال دقائق', 'contact'),
+('contact.form.response_time', 'en', 'We will reply within minutes', 'contact'),
+('contact.form.full_name', 'ar', 'الاسم الكامل', 'contact'),
+('contact.form.full_name', 'en', 'Full Name', 'contact'),
+('contact.form.full_name_placeholder', 'ar', 'أدخل اسمك الكامل', 'contact'),
+('contact.form.full_name_placeholder', 'en', 'Enter your full name', 'contact'),
+('contact.form.email', 'ar', 'البريد الإلكتروني', 'contact'),
+('contact.form.email', 'en', 'Email', 'contact'),
+('contact.form.email_placeholder', 'ar', 'أدخل بريدك الإلكتروني', 'contact'),
+('contact.form.email_placeholder', 'en', 'Enter your email', 'contact'),
+('contact.form.message_label', 'ar', 'كيف يمكننا مساعدتك؟', 'contact'),
+('contact.form.message_label', 'en', 'How can we help you?', 'contact'),
+('contact.form.message_placeholder', 'ar', 'اكتب رسالتك أو استفسارك هنا...', 'contact'),
+('contact.form.message_placeholder', 'en', 'Write your message or inquiry here...', 'contact'),
+('contact.form.security_check', 'ar', 'تحقق الأمان', 'contact'),
+('contact.form.security_check', 'en', 'Security Check', 'contact'),
+('contact.form.answer_placeholder', 'ar', 'أدخل الناتج', 'contact'),
+('contact.form.answer_placeholder', 'en', 'Enter the result', 'contact'),
+('contact.form.captcha_help', 'ar', 'حل المعادلة البسيطة للتأكد من أنك لست روبوت', 'contact'),
+('contact.form.captcha_help', 'en', 'Solve the simple equation to verify you are not a robot', 'contact'),
+('contact.form.sending', 'ar', 'جاري الإرسال...', 'contact'),
+('contact.form.sending', 'en', 'Sending...', 'contact'),
+('contact.form.submit', 'ar', 'إرسال الرسالة', 'contact'),
+('contact.form.submit', 'en', 'Send Message', 'contact')
+ON CONFLICT (key, language_code) DO UPDATE SET 
+  value = EXCLUDED.value,
+  updated_at = now();
