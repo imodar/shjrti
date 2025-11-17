@@ -283,70 +283,15 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
         ذكريات الأفراد - {memberName}
       </h3>
 
-      {/* Upload Area - Hidden in read-only mode */}
-      {!readOnly && (
-        <>
-          {isImageUploadEnabled ? (
-            <div
-              onDragEnter={handleDragEnter}
-              onDragLeave={handleDragLeave}
-              onDragOver={handleDragOver}
-              onDrop={handleDrop}
-              className={`
-                relative border-2 border-dashed rounded-lg p-6 text-center transition-colors
-                ${isDragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}
-                ${uploading ? 'opacity-50 pointer-events-none' : ''}
-              `}
-            >
-              <input
-                type="file"
-                id="memory-upload"
-                multiple
-                accept="image/*"
-                onChange={handleFileSelect}
-                className="hidden"
-                disabled={uploading}
-              />
-              <label htmlFor="memory-upload" className="cursor-pointer">
-                <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-                <p className="text-sm font-medium mb-1">
-                  {uploading ? 'جاري الرفع...' : 'اسحب الصور هنا أو انقر للاختيار'}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  الحد الأقصى: 1 ميجابايت لكل صورة
-                </p>
-              </label>
-            </div>
-          ) : (
-            <div className="relative border-2 border-dashed border-border rounded-lg p-6 text-center bg-muted/30">
-              <Lock className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-              <p className="text-sm font-medium mb-1">رفع الصور غير متاح</p>
-              <p className="text-xs text-muted-foreground mb-3">
-                يتطلب هذه الميزة ترقية باقتك
-              </p>
-              <Button 
-                variant="default" 
-                size="sm" 
-                className="gap-2"
-                onClick={() => navigate('/plan-selection')}
-              >
-                <Crown className="h-4 w-4" />
-                ترقية الباقة
-              </Button>
-            </div>
-          )}
-        </>
-      )}
-
       {/* Memories Grid */}
       {loading ? (
-        <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="aspect-square bg-muted rounded-lg animate-pulse"></div>
           ))}
         </div>
       ) : memories.length > 0 ? (
-        <div className="mt-6">
+        <div>
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-muted-foreground">
               {memories.length} صورة
@@ -406,7 +351,7 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
           </div>
         </div>
       ) : (
-        <div className="mt-6 text-center py-12">
+        <div className="text-center py-12">
           <Camera className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
           <p className="text-muted-foreground">لا توجد صور مرفقة حالياً</p>
           {isImageUploadEnabled && (
@@ -415,6 +360,61 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
             </p>
           )}
         </div>
+      )}
+
+      {/* Upload Area - Hidden in read-only mode */}
+      {!readOnly && (
+        <>
+          {isImageUploadEnabled ? (
+            <div
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              className={`
+                mt-6 relative border-2 border-dashed rounded-lg p-6 text-center transition-colors
+                ${isDragActive ? 'border-primary bg-primary/5' : 'border-border hover:border-primary/50'}
+                ${uploading ? 'opacity-50 pointer-events-none' : ''}
+              `}
+            >
+              <input
+                type="file"
+                id="memory-upload"
+                multiple
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+                disabled={uploading}
+              />
+              <label htmlFor="memory-upload" className="cursor-pointer">
+                <Upload className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+                <p className="text-sm font-medium mb-1">
+                  {uploading ? 'جاري الرفع...' : 'اسحب الصور هنا أو انقر للاختيار'}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  الحد الأقصى: 1 ميجابايت لكل صورة
+                </p>
+              </label>
+            </div>
+          ) : (
+            <div className="mt-6 relative border-2 border-dashed border-border rounded-lg p-6 text-center bg-muted/30">
+              <Lock className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
+              <p className="text-sm font-medium mb-1">رفع الصور غير متاح</p>
+              <p className="text-xs text-muted-foreground mb-3">
+                يتطلب هذه الميزة ترقية باقتك
+              </p>
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="gap-2"
+                onClick={() => navigate('/plan-selection')}
+              >
+                <Crown className="h-4 w-4" />
+                ترقية الباقة
+              </Button>
+            </div>
+          )}
+        </>
       )}
 
       {/* Image Modal */}
