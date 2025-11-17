@@ -41,6 +41,7 @@ import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 import { TimelineView } from "./FamilyGallery/TimelineView";
 import { FamilyGallerySkeleton } from "@/components/skeletons/FamilyGallerySkeleton";
+import { LazyMemoryImage } from "@/components/LazyMemoryImage";
 
 interface FamilyMemory {
   id: string;
@@ -93,11 +94,17 @@ const FamilyGallery = () => {
     percentage: 0
   });
 
-  // Family Members for linking
+  // Family Members for linking - Load only when needed
   const [familyMembers, setFamilyMembers] = useState<any[]>([]);
+  const [familyMembersLoaded, setFamilyMembersLoaded] = useState(false);
 
   // Image loading states
   const [loadingImages, setLoadingImages] = useState<Set<string>>(new Set());
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const ITEMS_PER_PAGE = 20;
 
   // Calculate storage usage
   const calculateStorageUsage = useCallback(async () => {
@@ -122,10 +129,11 @@ const FamilyGallery = () => {
     }
   }, [familyId, storageUsage.total]);
 
-  // Load family members for linking
+  // Load family members ONLY when needed (lazy loading)
   const loadFamilyMembers = useCallback(async () => {
-    if (!familyId) return;
+    if (!familyId || familyMembersLoaded) return;
     
+    console.log('👥 Loading family members...');
     try {
       const { data, error } = await supabase
         .from('family_tree_members')
@@ -135,48 +143,38 @@ const FamilyGallery = () => {
       
       if (error) throw error;
       setFamilyMembers(data || []);
+      setFamilyMembersLoaded(true);
+      console.log('✅ Loaded', data?.length || 0, 'family members');
     } catch (error) {
       console.error('Error loading family members:', error);
     }
-  }, [familyId]);
+  }, [familyId, familyMembersLoaded]);
 
-  // Load memories
+  // Load memories with PAGINATION (no signed URLs yet - lazy loading)
   const loadMemories = useCallback(async () => {
     if (!familyId) return;
 
     try {
-      console.log('📸 Loading family memories...');
+      console.log('📸 Loading family memories (page', currentPage, ')...');
       
-      const { data: memoriesData, error } = await supabase
+      const from = (currentPage - 1) * ITEMS_PER_PAGE;
+      const to = from + ITEMS_PER_PAGE - 1;
+      
+      const { data: memoriesData, error, count } = await supabase
         .from('family_memories')
-        .select('*')
+        .select('*', { count: 'exact' })
         .eq('family_id', familyId)
-        .order('uploaded_at', { ascending: false });
+        .order('uploaded_at', { ascending: false })
+        .range(from, to);
 
       if (error) throw error;
 
-      if (memoriesData && memoriesData.length > 0) {
-        const memoriesWithUrls = await Promise.all(
-          memoriesData.map(async (memory) => {
-            const { data: signedUrlData } = await supabase.storage
-              .from('family-memories')
-              .createSignedUrl(memory.file_path, 3600);
-
-            return {
-              ...memory,
-              url: signedUrlData?.signedUrl || null
-            };
-          })
-        );
-
-        setMemories(memoriesWithUrls.filter(m => m.url) as FamilyMemory[]);
-        
-        // Initialize all images as loading
-        const memoryIds = memoriesWithUrls.filter(m => m.url).map(m => m.id);
-        setLoadingImages(new Set(memoryIds));
-        
-        console.log(`✅ Loaded ${memoriesWithUrls.length} family memories`);
-      }
+      // Store memories WITHOUT signed URLs (will be loaded lazily on demand)
+      setMemories(memoriesData || []);
+      setTotalCount(count || 0);
+      
+      const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE);
+      console.log(`✅ Loaded ${memoriesData?.length || 0} memories (page ${currentPage} of ${totalPages}, total: ${count})`);
     } catch (error) {
       console.error('Error loading memories:', error);
       toast({
@@ -185,7 +183,7 @@ const FamilyGallery = () => {
         variant: "destructive"
       });
     }
-  }, [familyId, toast]);
+  }, [familyId, toast, currentPage]);
 
   // Fetch family data
   useEffect(() => {
@@ -222,9 +220,11 @@ const FamilyGallery = () => {
         }
 
         setFamilyData(familyData);
-        await loadMemories();
-        await calculateStorageUsage();
-        await loadFamilyMembers();
+        // Load ONLY essential data - family members loaded on demand
+        await Promise.all([
+          loadMemories(),
+          calculateStorageUsage()
+        ]);
 
       } catch (error) {
         console.error('Error fetching family data:', error);
@@ -239,12 +239,17 @@ const FamilyGallery = () => {
     };
 
     fetchFamilyData();
-  }, [familyId, navigate, toast, loadMemories, calculateStorageUsage, loadFamilyMembers]);
+  }, [familyId, navigate, toast, loadMemories, calculateStorageUsage, currentPage]);
 
 
   // Handle file upload - Open dialog instead of direct upload
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length === 0) return;
+    
+    // Load family members when user wants to upload
+    if (!familyMembersLoaded) {
+      loadFamilyMembers();
+    }
 
     const file = acceptedFiles[0];
     const maxSize = 5 * 1024 * 1024; // 5MB
@@ -655,44 +660,23 @@ const FamilyGallery = () => {
                   {/* View-based rendering */}
                   {viewMode === 'grid' && (
                     <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
-                      {memories.map((memory) => {
-                        const isImageLoading = loadingImages.has(memory.id);
-                        
-                        return (
-                          <Card 
-                            key={memory.id}
-                            className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer break-inside-avoid mb-4 hover:scale-[1.02]"
-                            onClick={() => {
-                              setSelectedMemory(memory);
-                              setEditedCaption(memory.caption || "");
-                              setIsModalOpen(true);
-                            }}
-                          >
-                            {/* Image */}
-                            <div className="relative overflow-hidden">
-                              {isImageLoading && (
-                                <Skeleton className="absolute inset-0 w-full h-64 z-10" />
-                              )}
-                              <img
-                                src={memory.url}
-                                alt={memory.original_filename}
-                                className={`w-full h-auto object-cover transition-transform duration-500 group-hover:scale-110 ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}
-                                loading="lazy"
-                                onLoad={() => {
-                                  setLoadingImages(prev => {
-                                    const newSet = new Set(prev);
-                                    newSet.delete(memory.id);
-                                    return newSet;
-                                  });
-                                }}
-                                onError={() => {
-                                  setLoadingImages(prev => {
-                                    const newSet = new Set(prev);
-                                    newSet.delete(memory.id);
-                                    return newSet;
-                                  });
-                                }}
-                              />
+                      {memories.map((memory) => (
+                        <Card 
+                          key={memory.id}
+                          className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer break-inside-avoid mb-4 hover:scale-[1.02]"
+                          onClick={() => {
+                            setSelectedMemory(memory);
+                            setEditedCaption(memory.caption || "");
+                            setIsModalOpen(true);
+                          }}
+                        >
+                          {/* Image with Lazy Loading */}
+                          <div className="relative overflow-hidden min-h-[200px]">
+                            <LazyMemoryImage
+                              filePath={memory.file_path}
+                              alt={memory.original_filename}
+                              className="w-full h-auto transition-transform duration-500 group-hover:scale-110"
+                            />
                             
                             {/* Overlay Gradient */}
                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -733,52 +717,31 @@ const FamilyGallery = () => {
                             </div>
                           )}
                         </Card>
-                        );
-                      })}
+                      ))}
                     </div>
                   )}
 
                   {viewMode === 'list' && (
                     <div className="space-y-3">
-                      {memories.map((memory) => {
-                        const isImageLoading = loadingImages.has(memory.id);
-                        
-                        return (
-                          <Card 
-                            key={memory.id}
-                            className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-                            onClick={() => {
-                              setSelectedMemory(memory);
-                              setEditedCaption(memory.caption || "");
-                              setIsModalOpen(true);
-                            }}
-                          >
-                            <div className="flex gap-4 p-4">
-                              {/* Image Thumbnail */}
-                              <div className="w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden relative">
-                                {isImageLoading && (
-                                  <Skeleton className="absolute inset-0 w-full h-full z-10" />
-                                )}
-                                <img 
-                                  src={memory.url} 
-                                  alt={memory.caption || memory.original_filename}
-                                  className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 ${isImageLoading ? 'opacity-0' : 'opacity-100'}`}
-                                  onLoad={() => {
-                                    setLoadingImages(prev => {
-                                      const newSet = new Set(prev);
-                                      newSet.delete(memory.id);
-                                      return newSet;
-                                    });
-                                  }}
-                                  onError={() => {
-                                    setLoadingImages(prev => {
-                                      const newSet = new Set(prev);
-                                      newSet.delete(memory.id);
-                                      return newSet;
-                                    });
-                                  }}
-                                />
-                            </div>
+                      {memories.map((memory) => (
+                        <Card 
+                          key={memory.id}
+                          className="group relative overflow-hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-purple-200/40 dark:border-purple-700/40 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
+                          onClick={() => {
+                            setSelectedMemory(memory);
+                            setEditedCaption(memory.caption || "");
+                            setIsModalOpen(true);
+                          }}
+                        >
+                          <div className="flex gap-4 p-4">
+                            {/* Image Thumbnail with Lazy Loading */}
+                            <div className="w-32 h-32 flex-shrink-0 rounded-lg overflow-hidden relative">
+                              <LazyMemoryImage
+                                filePath={memory.file_path}
+                                alt={memory.caption || memory.original_filename}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                              />
+                          </div>
                             
                             {/* Details */}
                             <div className="flex-1 space-y-2">
@@ -809,8 +772,7 @@ const FamilyGallery = () => {
                               </div>
                             </div>
                           </Card>
-                        );
-                      })}
+                      ))}
                     </div>
                   )}
 
@@ -823,6 +785,38 @@ const FamilyGallery = () => {
                         setIsModalOpen(true);
                       }} 
                     />
+                  )}
+                  
+                  {/* Pagination Controls */}
+                  {memories.length > 0 && totalCount > ITEMS_PER_PAGE && (
+                    <div className="flex items-center justify-center gap-4 mt-8 pt-6 border-t border-border/40">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        className="gap-2"
+                      >
+                        <ArrowLeft className="w-4 h-4" />
+                        السابق
+                      </Button>
+                      
+                      <span className="text-sm text-muted-foreground">
+                        صفحة {currentPage} من {Math.ceil(totalCount / ITEMS_PER_PAGE)} 
+                        ({totalCount} صورة)
+                      </span>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage(prev => Math.min(Math.ceil(totalCount / ITEMS_PER_PAGE), prev + 1))}
+                        disabled={currentPage >= Math.ceil(totalCount / ITEMS_PER_PAGE)}
+                        className="gap-2"
+                      >
+                        التالي
+                        <ArrowLeft className="w-4 h-4 rotate-180" />
+                      </Button>
+                    </div>
                   )}
                 </div>
               ) : (
