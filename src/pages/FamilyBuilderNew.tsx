@@ -3612,46 +3612,52 @@ const FamilyBuilderNew = () => {
 
                               {/* Twin Selection Dropdown */}
                               {currentSiblings.length > 0 && (
-                                <div className="space-y-3 border-t pt-6 mt-6">
+                                <div className="space-y-3">
                                   <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
                                     <Users className="h-4 w-4 text-primary" />
                                     {t('form.twin_status')}
                                   </Label>
-                                  <div className="space-y-3">
-                                    <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                                      <Checkbox
-                                        id="no-twin"
-                                        checked={!formData.is_twin && formData.selected_twins.length === 0}
-                                        onCheckedChange={(checked) => {
-                                          if (checked) {
-                                            setFormData(prev => ({
-                                              ...prev,
-                                              is_twin: false,
-                                              twin_group_id: null,
-                                              selected_twins: []
-                                            }));
-                                          }
-                                        }}
-                                      />
-                                      <Label htmlFor="no-twin" className="text-sm cursor-pointer font-arabic">
+                                  <Select 
+                                    value={formData.is_twin ? "has_twins" : "no_twin"} 
+                                    onValueChange={(value) => {
+                                      if (value === "no_twin") {
+                                        setFormData(prev => ({
+                                          ...prev,
+                                          is_twin: false,
+                                          twin_group_id: null,
+                                          selected_twins: []
+                                        }));
+                                      }
+                                    }}
+                                  >
+                                    <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
+                                      <SelectValue>
+                                        {formData.is_twin && formData.selected_twins.length > 0 
+                                          ? `توأم مع ${formData.selected_twins.length} ${formData.selected_twins.length === 1 ? 'شخص' : 'أشخاص'}`
+                                          : t('form.not_twin')
+                                        }
+                                      </SelectValue>
+                                    </SelectTrigger>
+                                    <SelectContent className="rounded-lg border-2 bg-background z-50">
+                                      <SelectItem value="no_twin" className="font-arabic rounded-md">
                                         {t('form.not_twin')}
-                                      </Label>
-                                    </div>
-                                    
-                                    <div className="border rounded-xl p-4 space-y-2 bg-muted/30">
-                                      <p className="text-sm text-muted-foreground mb-3 font-arabic">
-                                        {t('form.select_twin_siblings')}
-                                      </p>
-                                      {currentSiblings.map(sibling => (
-                                        <div key={sibling.id} className="flex items-center space-x-2 rtl:space-x-reverse py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors">
-                                          <Checkbox
-                                            id={`twin-${sibling.id}`}
-                                            checked={formData.selected_twins.includes(sibling.id)}
-                                            onCheckedChange={(checked) => {
+                                      </SelectItem>
+                                      <div className="px-2 py-2 border-t">
+                                        <p className="text-xs text-muted-foreground mb-2 px-2 font-arabic">
+                                          {t('form.select_twin_siblings')}
+                                        </p>
+                                        {currentSiblings.map(sibling => (
+                                          <div 
+                                            key={sibling.id} 
+                                            className="flex items-center space-x-2 rtl:space-x-reverse py-2 px-2 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              e.stopPropagation();
+                                              const isSelected = formData.selected_twins.includes(sibling.id);
                                               setFormData(prev => {
-                                                const newSelectedTwins = checked
-                                                  ? [...prev.selected_twins, sibling.id]
-                                                  : prev.selected_twins.filter(id => id !== sibling.id);
+                                                const newSelectedTwins = isSelected
+                                                  ? prev.selected_twins.filter(id => id !== sibling.id)
+                                                  : [...prev.selected_twins, sibling.id];
                                                 
                                                 return {
                                                   ...prev,
@@ -3660,14 +3666,32 @@ const FamilyBuilderNew = () => {
                                                 };
                                               });
                                             }}
-                                          />
-                                          <Label htmlFor={`twin-${sibling.id}`} className="text-sm cursor-pointer font-arabic flex-1">
-                                            {sibling.name}
-                                          </Label>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
+                                          >
+                                            <Checkbox
+                                              id={`twin-${sibling.id}`}
+                                              checked={formData.selected_twins.includes(sibling.id)}
+                                              onCheckedChange={(checked) => {
+                                                setFormData(prev => {
+                                                  const newSelectedTwins = checked
+                                                    ? [...prev.selected_twins, sibling.id]
+                                                    : prev.selected_twins.filter(id => id !== sibling.id);
+                                                  
+                                                  return {
+                                                    ...prev,
+                                                    is_twin: newSelectedTwins.length > 0,
+                                                    selected_twins: newSelectedTwins
+                                                  };
+                                                });
+                                              }}
+                                            />
+                                            <Label htmlFor={`twin-${sibling.id}`} className="text-sm cursor-pointer font-arabic flex-1">
+                                              {sibling.name}
+                                            </Label>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </SelectContent>
+                                  </Select>
                                 </div>
                               )}
 
