@@ -1696,12 +1696,31 @@ export default function EnhancedAdminPanel() {
 
                   {/* Existing Translations List */}
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium">الترجمات الموجودة</h4>
-                      <div className="relative w-80">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-medium">الترجمات الموجودة</h4>
+                        <Badge variant="secondary" className="font-mono">
+                          {(() => {
+                            const filteredTranslations = translations.filter((translation) => {
+                              if (!translationSearchQuery) return true;
+                              const query = translationSearchQuery.toLowerCase();
+                              return (
+                                translation.key.toLowerCase().includes(query) ||
+                                translation.value.toLowerCase().includes(query) ||
+                                translation.language_code.toLowerCase().includes(query) ||
+                                translation.category.toLowerCase().includes(query)
+                              );
+                            });
+                            return translationSearchQuery 
+                              ? `${filteredTranslations.length} من ${translations.length}`
+                              : translations.length;
+                          })()}
+                        </Badge>
+                      </div>
+                      <div className="relative w-96">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
-                          placeholder="ابحث عن مفتاح، قيمة، لغة، أو فئة..."
+                          placeholder="ابحث عن مفتاح، قيمة، لغة، أو فئة... (مثال: profile.married_male)"
                           value={translationSearchQuery}
                           onChange={(e) => setTranslationSearchQuery(e.target.value)}
                           className="pl-10"
@@ -1709,8 +1728,8 @@ export default function EnhancedAdminPanel() {
                       </div>
                     </div>
                     <div className="max-h-96 overflow-y-auto space-y-2">
-                      {translations
-                        .filter((translation) => {
+                      {(() => {
+                        const filteredTranslations = translations.filter((translation) => {
                           if (!translationSearchQuery) return true;
                           const query = translationSearchQuery.toLowerCase();
                           return (
@@ -1719,8 +1738,18 @@ export default function EnhancedAdminPanel() {
                             translation.language_code.toLowerCase().includes(query) ||
                             translation.category.toLowerCase().includes(query)
                           );
-                        })
-                        .map((translation) => (
+                        });
+                        
+                        if (filteredTranslations.length === 0) {
+                          return (
+                            <div className="text-center py-8 text-muted-foreground">
+                              <Search className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                              <p>لا توجد نتائج لـ "{translationSearchQuery}"</p>
+                            </div>
+                          );
+                        }
+                        
+                        return filteredTranslations.map((translation) => (
                         <div key={translation.id} className="flex items-start justify-between p-3 border rounded-lg text-sm">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
@@ -1754,7 +1783,8 @@ export default function EnhancedAdminPanel() {
                              </Button>
                            </div>
                         </div>
-                      ))}
+                        ));
+                      })()}
                     </div>
                   </div>
                 </div>
