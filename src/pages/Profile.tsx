@@ -493,8 +493,7 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Main Content - Two Column Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               
               {/* Stats Section */}
               <div className="space-y-6">
@@ -547,212 +546,260 @@ export default function Profile() {
                 </Card>
               </div>
 
-              {/* Personal Information Section */}
-              <div className="space-y-6">
-                
-                {/* Personal Info Card */}
-                <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl overflow-hidden">
+              {/* Personal Information and Quick Actions */}
+              <div className="lg:col-span-2 space-y-8">
+                <Card className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl">
                   <CardHeader className="pb-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center shadow-lg">
                           <User className="h-5 w-5 text-white" />
                         </div>
-                        <CardTitle className="text-lg bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                          {t('profile.personal_information')}
-                        </CardTitle>
+                        <div>
+                          <CardTitle className="text-xl bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                            {t('profile.personal_information')}
+                          </CardTitle>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {t('profile.welcome_back')}
+                          </p>
+                        </div>
                       </div>
                       
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <span className="text-xs text-green-600 dark:text-green-400 font-medium">{t('profile.welcome_back')}</span>
-                      </div>
-                    </div>
-                    
-                    {!isEditing && (
                       <Button
-                        onClick={() => setIsEditing(true)}
-                        variant="ghost"
+                        onClick={() => setIsEditing(!isEditing)}
+                        variant="outline"
                         size="sm"
-                        className="absolute top-4 left-4 gap-2 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400"
+                        className="gap-2 border-emerald-200 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-950/50"
                       >
-                        <Edit className="h-4 w-4" />
-                        {t('profile.edit')}
+                        {isEditing ? (
+                          <>
+                            <X className="h-4 w-4" />
+                            {t('profile.cancel')}
+                          </>
+                        ) : (
+                          <>
+                            <Edit className="h-4 w-4" />
+                            {t('profile.edit')}
+                          </>
+                        )}
                       </Button>
-                    )}
+                    </div>
                   </CardHeader>
                   
-                  <CardContent className="space-y-5">
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                            <User className="h-4 w-4 text-emerald-500" />
-                            {t('profile.first_name')}
-                          </Label>
-                          {isEditing ? (
-                            <Input
-                              value={profileData.firstName}
-                              onChange={(e) => setProfileData({ ...profileData, firstName: e.target.value })}
-                              className="bg-white/50 dark:bg-gray-900/50 border-emerald-200 dark:border-emerald-800 focus:border-emerald-500 transition-colors"
-                            />
-                          ) : (
-                            <div className="p-3 bg-emerald-50/50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200/50 dark:border-emerald-800/50">
-                              <p className="text-gray-800 dark:text-gray-200">{profileData.firstName || t('profile.not_specified')}</p>
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                            <User className="h-4 w-4 text-emerald-500" />
-                            {t('profile.last_name')}
-                          </Label>
-                          {isEditing ? (
-                            <Input
-                              value={profileData.lastName}
-                              onChange={(e) => setProfileData({ ...profileData, lastName: e.target.value })}
-                              className="bg-white/50 dark:bg-gray-900/50 border-emerald-200 dark:border-emerald-800 focus:border-emerald-500 transition-colors"
-                            />
-                          ) : (
-                            <div className="p-3 bg-emerald-50/50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200/50 dark:border-emerald-800/50">
-                              <p className="text-gray-800 dark:text-gray-200">{profileData.lastName || t('profile.not_specified')}</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                          <Mail className="h-4 w-4 text-blue-500" />
-                          {t('profile.email')}
-                        </Label>
-                        <div className="p-3 bg-blue-50/50 dark:bg-blue-950/30 rounded-lg border border-blue-200/50 dark:border-blue-800/50">
-                          <p className="text-gray-800 dark:text-gray-200">{profileData.email}</p>
-                        </div>
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">{t('profile.first_name')}</Label>
+                        <Input
+                          value={profileData.firstName}
+                          onChange={(e) => setProfileData(prev => ({...prev, firstName: e.target.value}))}
+                          disabled={!isEditing}
+                          className="bg-white/50 dark:bg-gray-900/50 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 dark:focus:border-emerald-400"
+                          placeholder={t('profile.first_name')}
+                        />
                       </div>
-                      
+
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                          <Phone className="h-4 w-4 text-purple-500" />
-                          {t('profile.phone')}
-                        </Label>
-                        {isEditing ? (
-                          <Input
-                            value={profileData.phone}
-                            onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-                            className="bg-white/50 dark:bg-gray-900/50 border-purple-200 dark:border-purple-800 focus:border-purple-500 transition-colors"
-                          />
-                        ) : (
-                          <div className="p-3 bg-purple-50/50 dark:bg-purple-950/30 rounded-lg border border-purple-200/50 dark:border-purple-800/50">
-                            <p className="text-gray-800 dark:text-gray-200">{profileData.phone || t('profile.not_specified')}</p>
-                          </div>
-                        )}
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">{t('profile.last_name')}</Label>
+                        <Input
+                          value={profileData.lastName}
+                          onChange={(e) => setProfileData(prev => ({...prev, lastName: e.target.value}))}
+                          disabled={!isEditing}
+                          className="bg-white/50 dark:bg-gray-900/50 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 dark:focus:border-emerald-400"
+                          placeholder={t('profile.last_name')}
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">{t('profile.email')}</Label>
+                        <Input
+                          value={profileData.email}
+                          onChange={(e) => setProfileData(prev => ({...prev, email: e.target.value}))}
+                          disabled={!isEditing}
+                          className="bg-white/50 dark:bg-gray-900/50 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 dark:focus:border-emerald-400"
+                          placeholder={t('profile.email')}
+                          type="email"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label className="text-gray-700 dark:text-gray-300 font-medium">{t('profile.phone')}</Label>
+                        <Input
+                          value={profileData.phone}
+                          onChange={(e) => setProfileData(prev => ({...prev, phone: e.target.value}))}
+                          disabled={!isEditing}
+                          className="bg-white/50 dark:bg-gray-900/50 border-emerald-200/50 dark:border-emerald-700/50 focus:border-emerald-500 dark:focus:border-emerald-400"
+                          placeholder={t('profile.phone')}
+                          type="tel"
+                        />
                       </div>
                     </div>
-                    
+
                     {isEditing && (
-                      <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <div className="flex gap-3 pt-4 border-t border-emerald-200/50 dark:border-emerald-700/50">
                         <Button
                           onClick={handleSave}
                           disabled={saving}
-                          className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                          className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white border-0 gap-2"
                         >
-                          <Save className="h-4 w-4 me-2" />
-                          {saving ? t('profile.saving') : t('profile.save')}
+                          {saving ? (
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <Save className="h-4 w-4" />
+                          )}
+                          {saving ? t('profile.save') : t('profile.save')}
                         </Button>
                         <Button
                           onClick={handleCancel}
                           variant="outline"
-                          className="border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
+                          className="border-gray-300 text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-800"
                         >
-                          <X className="h-4 w-4 me-2" />
                           {t('profile.cancel')}
                         </Button>
                       </div>
                     )}
                   </CardContent>
                 </Card>
-
-                {/* Quick Actions Card */}
-                <Card className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-950/30 dark:via-indigo-950/30 dark:to-purple-950/30 backdrop-blur-xl border border-white/30 dark:border-gray-700/30 shadow-xl relative overflow-hidden">
-                  <CardHeader className="pb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center shadow-lg">
-                        <Settings className="h-5 w-5 text-white" />
-                      </div>
-                      <CardTitle className="text-lg bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        {t('profile.quick_actions')}
-                      </CardTitle>
-                    </div>
-                  </CardHeader>
+                
+                {/* Quick Actions with Creative Design */}
+                <div className="relative">
+                  {/* Background Gradient Blur */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 via-orange-500/30 to-pink-500/20 rounded-2xl blur-xl"></div>
                   
-                  <CardContent className="space-y-4">
-                    <div className="space-y-4">
-                      {/* Date Format Section */}
-                      <div className="bg-white/50 dark:bg-gray-900/30 p-4 rounded-xl border border-blue-200/50 dark:border-blue-800/50">
-                        <div className="flex items-center gap-3 mb-3">
-                          <Calendar className="h-5 w-5 text-blue-500" />
-                          <h3 className="font-semibold text-gray-800 dark:text-gray-200">{t('profile.date_format')}</h3>
+                  <Card className="relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border border-white/50 dark:border-gray-700/50 shadow-2xl overflow-hidden">
+                    {/* Decorative Header Background */}
+                    <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-r from-amber-400/20 via-orange-400/30 to-pink-400/20"></div>
+                    
+                     <CardHeader className="relative pb-3 pt-4">
+                       <div className="flex items-center gap-4">
+                        <div className="relative">
+                          {/* Icon Glow Effect */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-500 rounded-xl blur-lg opacity-60 animate-pulse"></div>
+                          <div className="relative w-12 h-12 bg-gradient-to-br from-amber-500 via-orange-500 to-pink-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30">
+                            <Settings className="h-6 w-6 text-white animate-pulse" />
+                          </div>
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm text-gray-600 dark:text-gray-400">{t('profile.calendar_type')}</Label>
-                          {!isEditing && (
-                             <div 
-                                className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/50 dark:to-indigo-950/50 rounded-lg border border-blue-200/60 dark:border-blue-700/60 cursor-pointer hover:shadow-md transition-all duration-300"
-                                onClick={async () => {
-                                  // Cycle through date preferences
-                                  let newPreference: DatePreference;
-                                  if (profileData.datePreference === 'gregorian') {
-                                    newPreference = 'gregorian-levantine';
-                                  } else if (profileData.datePreference === 'gregorian-levantine') {
-                                    newPreference = 'hijri';
-                                  } else {
-                                    newPreference = 'gregorian';
-                                  }
-                                  
-                                   try {
-                                     await setGlobalDatePreference(newPreference);
-                                     let description = '';
-                                     if (newPreference === 'gregorian') {
-                                       description = t('profile.calendar_changed_gregorian');
-                                     } else if (newPreference === 'gregorian-levantine') {
-                                       description = t('profile.calendar_changed_levantine');
-                                     } else {
-                                       description = t('profile.calendar_changed_hijri');
-                                     }
-                                     
-                                     toast({
-                                       title: t('profile.updated'),
-                                       description
-                                     });
-                                   } catch (error) {
-                                     toast({
-                                       title: t('profile.error'),
-                                       description: t('profile.calendar_update_error'),
-                                       variant: "destructive"
-                                     });
-                                   }
-                                }}
-                              >
-                                 <div className="flex items-center justify-between">
+                        <div>
+                          <CardTitle className="text-xl bg-gradient-to-r from-amber-600 via-orange-600 to-pink-600 bg-clip-text text-transparent font-bold">
+                            {t('profile.quick_actions')}
+                          </CardTitle>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            {t('profile.welcome_back')}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* Decorative Corner Elements */}
+                      <div className="absolute top-4 right-4 w-8 h-8 border-r-2 border-t-2 border-amber-300/50 dark:border-amber-700/50 rounded-tr-lg"></div>
+                      <div className="absolute bottom-4 left-4 w-8 h-8 border-l-2 border-b-2 border-orange-300/50 dark:border-orange-700/50 rounded-bl-lg"></div>
+                    </CardHeader>
+                    
+                    <CardContent className="relative space-y-4 pb-8 pt-6">
+                      {/* Date Preference Section */}
+                      <div className="mb-6 pb-6 border-b border-gray-200/50 dark:border-gray-700/50">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center shadow-lg">
+                            <Clock className="h-5 w-5 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                              {t('profile.date_format')}
+                            </h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {t('profile.date_format')}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <Label htmlFor="datePreference" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            {t('profile.calendar_type')}
+                          </Label>
+                          {isEditing ? (
+                            <Select
+                              value={profileData.datePreference}
+                              onValueChange={(value) => setProfileData({...profileData, datePreference: value as DatePreference})}
+                            >
+                              <SelectTrigger className="w-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50 hover:border-blue-300 dark:hover:border-blue-600 focus:border-blue-500 dark:focus:border-blue-400 transition-all duration-200">
+                                <SelectValue placeholder={t('profile.choose_calendar')} />
+                              </SelectTrigger>
+                               <SelectContent className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-gray-200/50 dark:border-gray-700/50">
+                                 <SelectItem value="gregorian" className="hover:bg-blue-50 dark:hover:bg-blue-950">
                                    <div className="flex items-center gap-2">
-                                     <span>
-                                       {profileData.datePreference === 'hijri' ? '🌙' : 
-                                        profileData.datePreference === 'gregorian-levantine' ? '🗓️' : '📅'}
-                                     </span>
-                                     <span className="text-gray-700 dark:text-gray-300">
-                                       {profileData.datePreference === 'hijri' ? t('profile.hijri_calendar') :
-                                        profileData.datePreference === 'gregorian-levantine' ? t('profile.levantine_calendar') :
-                                        t('profile.gregorian_calendar')}
-                                     </span>
+                                     <span>📅</span>
+                                     <span>{t('profile.gregorian_calendar')}</span>
                                    </div>
-                                   <span className="text-xs text-blue-600 dark:text-blue-400 opacity-70">
-                                     {t('profile.click_to_switch')}
-                                   </span>
-                                 </div>
-                              </div>
-                           )}
+                                 </SelectItem>
+                                 <SelectItem value="gregorian-levantine" className="hover:bg-purple-50 dark:hover:bg-purple-950">
+                                   <div className="flex items-center gap-2">
+                                     <span>🗓️</span>
+                                     <span>{t('profile.levantine_calendar')}</span>
+                                   </div>
+                                 </SelectItem>
+                                 <SelectItem value="hijri" className="hover:bg-emerald-50 dark:hover:bg-emerald-950">
+                                   <div className="flex items-center gap-2">
+                                     <span>🌙</span>
+                                     <span>{t('profile.hijri_calendar')}</span>
+                                   </div>
+                                 </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                             <div 
+                               className="p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200/50 dark:border-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700/50 cursor-pointer transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-600"
+                               onClick={async () => {
+                                 // Cycle through date preferences
+                                 let newPreference: DatePreference;
+                                 if (profileData.datePreference === 'gregorian') {
+                                   newPreference = 'gregorian-levantine';
+                                 } else if (profileData.datePreference === 'gregorian-levantine') {
+                                   newPreference = 'hijri';
+                                 } else {
+                                   newPreference = 'gregorian';
+                                 }
+                                 
+                                  try {
+                                    await setGlobalDatePreference(newPreference);
+                                    let description = '';
+                                    if (newPreference === 'gregorian') {
+                                      description = t('profile.calendar_changed_gregorian');
+                                    } else if (newPreference === 'gregorian-levantine') {
+                                      description = t('profile.calendar_changed_levantine');
+                                    } else {
+                                      description = t('profile.calendar_changed_hijri');
+                                    }
+                                    
+                                    toast({
+                                      title: t('profile.updated'),
+                                      description
+                                    });
+                                  } catch (error) {
+                                    toast({
+                                      title: t('profile.error'),
+                                      description: t('profile.calendar_update_error'),
+                                      variant: "destructive"
+                                    });
+                                  }
+                               }}
+                             >
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <span>
+                                      {profileData.datePreference === 'hijri' ? '🌙' : 
+                                       profileData.datePreference === 'gregorian-levantine' ? '🗓️' : '📅'}
+                                    </span>
+                                    <span className="text-gray-700 dark:text-gray-300">
+                                      {profileData.datePreference === 'hijri' ? t('profile.hijri_calendar') :
+                                       profileData.datePreference === 'gregorian-levantine' ? t('profile.levantine_calendar') :
+                                       t('profile.gregorian_calendar')}
+                                    </span>
+                                  </div>
+                                  <span className="text-xs text-blue-600 dark:text-blue-400 opacity-70">
+                                    {t('profile.click_to_switch')}
+                                  </span>
+                                </div>
+                             </div>
+                          )}
                         </div>
                       </div>
                       
@@ -767,8 +814,8 @@ export default function Profile() {
                         </Link>
                         
                         <Link to="/change-password" className="group">
-                          <Button className="w-full justify-start gap-3 h-14 bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 text-purple-700 border border-purple-200/70 dark:from-purple-950/40 dark:to-pink-950/40 dark:hover:from-purple-950/60 dark:hover:to-pink-950/60 dark:text-purple-300 dark:border-purple-700/70 transition-all duration-300 shadow-lg hover:shadow-xl group-hover:scale-105">
-                            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                          <Button className="w-full justify-start gap-3 h-14 bg-gradient-to-r from-gray-50 to-slate-50 hover:from-gray-100 hover:to-slate-100 text-gray-700 border border-gray-200/70 dark:from-gray-800/60 dark:to-slate-800/60 dark:hover:from-gray-800/80 dark:hover:to-slate-800/80 dark:text-gray-300 dark:border-gray-600/70 transition-all duration-300 shadow-lg hover:shadow-xl group-hover:scale-105">
+                            <div className="w-8 h-8 bg-gradient-to-br from-gray-500 to-slate-500 rounded-lg flex items-center justify-center">
                               <Shield className="h-4 w-4 text-white group-hover:animate-pulse" />
                             </div>
                             <span className="font-medium">{t('profile.change_password')}</span>
@@ -779,14 +826,12 @@ export default function Profile() {
                       {/* Floating Decorative Elements */}
                       <div className="absolute -top-2 right-8 w-4 h-4 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-60 animate-bounce"></div>
                       <div className="absolute -bottom-1 left-12 w-3 h-3 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-50 animate-pulse"></div>
-                    </div>
-                  </CardContent>
+                    </CardContent>
                   </Card>
                 </div>
               </div>
 
-            {/* Danger Zone - Full Width Bottom Section */}
-            <div className="w-full">
+              {/* Danger Zone - Delete Account */}
               <Card className="bg-gradient-to-br from-red-50 via-rose-50 to-orange-50 dark:from-red-950/30 dark:via-rose-950/30 dark:to-orange-950/30 backdrop-blur-xl border-2 border-red-300/50 dark:border-red-700/50 shadow-xl">
                 <CardHeader>
                   <div className="flex items-center gap-3">
