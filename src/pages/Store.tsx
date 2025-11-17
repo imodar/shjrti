@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Design options data
 const designTemplates = [
@@ -65,6 +66,7 @@ const customSizeOptions = [
 ];
 
 export default function Store() {
+  const { direction } = useLanguage();
   const navigate = useNavigate();
   const [selectedDesign, setSelectedDesign] = useState('classic');
   const [selectedFrame, setSelectedFrame] = useState('none');
@@ -154,7 +156,7 @@ export default function Store() {
   };
 
   return (
-    <div dir="rtl" className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-background via-accent/5 to-secondary/10 relative overflow-hidden">
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full blur-3xl animate-pulse"></div>

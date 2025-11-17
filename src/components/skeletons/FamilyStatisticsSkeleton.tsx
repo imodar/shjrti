@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 const FamilyStatisticsSkeleton: React.FC = () => {
   return (
-    <div className="space-y-6" dir="rtl">
+    <div className="space-y-6">
       {/* Family Header Skeleton */}
       <Card className="bg-white/30 dark:bg-gray-800/30 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl shadow-xl">
         <CardHeader className="pb-4">

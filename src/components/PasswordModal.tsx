@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock, TreePine } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface PasswordModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ const PasswordModal: React.FC<PasswordModalProps> = ({
   onSubmit,
   familyName
 }) => {
+  const { direction } = useLanguage();
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,7 +35,7 @@ const PasswordModal: React.FC<PasswordModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md mx-auto" dir="rtl">
+      <DialogContent className="sm:max-w-md mx-auto" dir={direction}>
         <DialogHeader className="text-center">
           <div className="flex justify-center mb-4">
             <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
