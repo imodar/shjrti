@@ -107,12 +107,3 @@
 [dir="rtl"] [data-radix-select-item] > span:not(.absolute) {
   text-align: right;
 }
-
-/* RTL support for switch component */
-[dir="rtl"] [data-state="checked"] span[data-state="checked"] {
-  transform: translateX(0) !important;
-}
-
-[dir="rtl"] [data-state="unchecked"] span[data-state="unchecked"] {
-  transform: translateX(1.25rem) !important;
-}
