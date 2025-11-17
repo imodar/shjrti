@@ -1293,6 +1293,22 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     return (
                       <div className="bg-card rounded-xl border border-border p-6">
                         <h3 className="font-bold text-lg mb-4 text-primary">{t('profile.grandchildren')}</h3>
+                        
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                            <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                              {t('profile.males')} ({grandchildren.filter(g => g.gender === 'male').length})
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800">
+                            <User className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+                            <span className="text-sm font-medium text-pink-700 dark:text-pink-300">
+                              {t('profile.females')} ({grandchildren.filter(g => g.gender === 'female').length})
+                            </span>
+                          </div>
+                        </div>
+                        
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                            {grandchildren.map((grandchild) => (
                              <div 
