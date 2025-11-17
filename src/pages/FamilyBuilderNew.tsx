@@ -1783,16 +1783,29 @@ const FamilyBuilderNew = () => {
 
   // Get current member's siblings based on form data
   const currentSiblings = useMemo(() => {
-    // يجب أن يكون الوالدين محددين أولاً
-    const fatherId = formMode === 'edit' ? editingMember?.fatherId : 
-                     (formData.relation === 'child' ? formData.relatedPersonId : null);
-    const motherId = formMode === 'edit' ? editingMember?.motherId : null;
+    let fatherId = null;
+    let motherId = null;
+    
+    if (formMode === 'edit') {
+      // في وضع التعديل: استخدم بيانات العضو الحالي
+      fatherId = editingMember?.fatherId;
+      motherId = editingMember?.motherId;
+    } else {
+      // في وضع الإضافة: استخرج الوالدين من الزواج المحدد
+      if (formData.selectedParent && formData.selectedParent !== "none") {
+        const selectedMarriage = familyMarriages.find(m => m.id === formData.selectedParent);
+        if (selectedMarriage) {
+          fatherId = selectedMarriage.husband?.id || null;
+          motherId = selectedMarriage.wife?.id || null;
+        }
+      }
+    }
     
     if (!fatherId || !motherId) return [];
     
     const currentId = formMode === 'edit' ? editingMember?.id : null;
     return getSiblings(currentId, fatherId, motherId);
-  }, [formMode, editingMember, formData.relation, formData.relatedPersonId, getSiblings]);
+  }, [formMode, editingMember, formData.selectedParent, familyMarriages, getSiblings]);
 
   // Form panel actions
   const handleAddMember = () => {
