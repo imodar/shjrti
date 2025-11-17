@@ -1,8 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { Resend } from "npm:resend@2.0.0";
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -36,65 +33,60 @@ serve(async (req) => {
       .single();
 
     if (fetchError || !suggestion) {
+      console.error("Failed to fetch suggestion:", fetchError);
       return new Response(
         JSON.stringify({ error: "Suggestion not found" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Prepare email based on status
-    let subject = "";
-    let html = "";
+    console.log("Sending notification for suggestion:", {
+      id: suggestionId,
+      status,
+      email: suggestion.submitter_email,
+      name: suggestion.submitter_name
+    });
 
-    if (status === "accepted") {
-      subject = "Your Edit Suggestion Has Been Accepted";
-      html = `
-        <h1>Great News!</h1>
-        <p>Hello ${suggestion.submitter_name},</p>
-        <p>Your suggestion to ${suggestion.families?.name || "the family tree"} has been accepted!</p>
-        <br>
-        <p><strong>Your Suggestion:</strong></p>
-        <p>${suggestion.suggestion_text}</p>
-        ${adminNotes ? `
-        <br>
-        <p><strong>Owner's Notes:</strong></p>
-        <p>${adminNotes}</p>
-        ` : ''}
-        <br>
-        <p>Thank you for helping to keep the family tree accurate and complete!</p>
-      `;
-    } else if (status === "rejected") {
-      subject = "Update on Your Edit Suggestion";
-      html = `
-        <h1>Edit Suggestion Update</h1>
-        <p>Hello ${suggestion.submitter_name},</p>
-        <p>Thank you for your suggestion to ${suggestion.families?.name || "the family tree"}.</p>
-        <p>After careful review, the tree owner has decided not to accept this suggestion at this time.</p>
-        <br>
-        <p><strong>Your Suggestion:</strong></p>
-        <p>${suggestion.suggestion_text}</p>
-        ${adminNotes ? `
-        <br>
-        <p><strong>Owner's Notes:</strong></p>
-        <p>${adminNotes}</p>
-        ` : ''}
-        <br>
-        <p>We appreciate your contribution to maintaining an accurate family history.</p>
-      `;
+    // Determine template key based on status
+    const templateKey = status === "accepted" ? "suggestion_accepted" : "suggestion_rejected";
+
+    // Prepare variables for email template
+    const emailVariables: Record<string, string> = {
+      name: suggestion.submitter_name,
+      familyName: suggestion.families?.name || 'شجرة العائلة',
+      suggestionText: suggestion.suggestion_text,
+    };
+
+    // Add admin notes if provided
+    if (adminNotes) {
+      emailVariables.adminNotes = adminNotes;
     }
 
-    // Send email notification
+    // Send email using templated email service
     try {
-      await resend.emails.send({
-        from: "Family Tree <onboarding@resend.dev>",
-        to: [suggestion.submitter_email],
-        subject,
-        html,
+      const { data: emailResult, error: emailError } = await supabase.functions.invoke("send-templated-email", {
+        body: {
+          templateKey,
+          recipientEmail: suggestion.submitter_email,
+          recipientName: suggestion.submitter_name,
+          variables: emailVariables,
+          languageCode: 'ar', // Default to Arabic
+        },
       });
+
+      if (emailError) {
+        console.error("Email service error:", emailError);
+        return new Response(
+          JSON.stringify({ error: "Failed to send notification email", details: emailError }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      console.log("Email sent successfully:", emailResult);
     } catch (emailError) {
       console.error("Email error:", emailError);
       return new Response(
-        JSON.stringify({ error: "Failed to send notification email" }),
+        JSON.stringify({ error: "Failed to send notification email", details: emailError.message }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
