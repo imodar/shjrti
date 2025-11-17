@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { RefreshCw, TrendingUp, DollarSign, Users, AlertCircle, Package, Target, ArrowUp, ArrowDown } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { DirectionWrapper } from "@/components/DirectionWrapper";
 
 interface AnalyticsData {
   total_package_views: number;
@@ -114,9 +115,10 @@ export default function AdminPaymentAnalytics() {
   );
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <DirectionWrapper>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">تحليلات المدفوعات</h2>
           <p className="text-muted-foreground">تتبع مسار التحويل من الترقية إلى الدفع</p>
@@ -308,6 +310,7 @@ export default function AdminPaymentAnalytics() {
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
+    </DirectionWrapper>
   );
 }
