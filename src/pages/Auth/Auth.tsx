@@ -208,12 +208,9 @@ const Auth = () => {
           <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12 relative z-10">
             <Card className="w-full max-w-md backdrop-blur-xl bg-card/95 shadow-2xl border-0 ring-1 ring-border/50">
               <CardHeader className="text-center space-y-4 pb-8">
-                <div className="space-y-2">
-                  <CardTitle className="text-4xl font-black bg-gradient-to-r from-primary via-primary/90 to-primary bg-clip-text text-transparent drop-shadow-sm leading-tight">
-                    {t('mytree', 'شجرتي')}
-                  </CardTitle>
-                  <div className="w-16 h-1 bg-gradient-to-r from-transparent via-primary to-transparent mx-auto rounded-full"></div>
-                </div>
+                <CardTitle className="text-4xl font-black bg-gradient-to-r from-primary via-primary/90 to-primary bg-clip-text text-transparent drop-shadow-sm leading-tight">
+                  {t('mytree', 'شجرتي')}
+                </CardTitle>
                 <CardDescription className="text-base font-medium text-muted-foreground/90 leading-relaxed px-4">
                   {showPasswordReset
                     ? t('reset_your_password', 'إعادة تعيين كلمة المرور')
