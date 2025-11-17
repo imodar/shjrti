@@ -16,20 +16,22 @@ import { supabase } from '@/integrations/supabase/client';
 import { sanitizeFormData } from '@/lib/security';
 import { GlobalHeader } from '@/components/GlobalHeader';
 import { GlobalFooter } from '@/components/GlobalFooter';
-
-const contactSchema = z.object({
-  fullName: z.string().min(2, 'الاسم الكامل مطلوب'),
-  email: z.string().email('البريد الإلكتروني غير صحيح'),
-  description: z.string().min(10, 'الوصف يجب أن يكون 10 أحرف على الأقل'),
-});
-
-type ContactFormData = z.infer<typeof contactSchema>;
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const ContactUs: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [captchaValue, setCaptchaValue] = useState<string | null>(null);
   const [captchaQuestion, setCaptchaQuestion] = useState({ num1: 0, num2: 0, answer: 0 });
   const { toast } = useToast();
+  const { t } = useLanguage();
+
+  const contactSchema = z.object({
+    fullName: z.string().min(2, t('contact.form.name_required', 'الاسم الكامل مطلوب')),
+    email: z.string().email(t('contact.form.email_invalid', 'البريد الإلكتروني غير صحيح')),
+    description: z.string().min(10, t('contact.form.description_min', 'الوصف يجب أن يكون 10 أحرف على الأقل')),
+  });
+
+  type ContactFormData = z.infer<typeof contactSchema>;
 
   // Generate random math question for captcha
   const generateCaptcha = () => {
@@ -57,8 +59,8 @@ const ContactUs: React.FC = () => {
   const onSubmit = async (data: ContactFormData) => {
     if (!captchaValue || parseInt(captchaValue) !== captchaQuestion.answer) {
       toast({
-        title: "خطأ",
-        description: "يرجى حل المعادلة الرياضية بشكل صحيح",
+        title: t('contact.error', 'خطأ'),
+        description: t('contact.captcha_error', 'يرجى حل المعادلة الرياضية بشكل صحيح'),
         variant: "destructive",
       });
       return;
@@ -80,8 +82,8 @@ const ContactUs: React.FC = () => {
       if (error) throw error;
 
       toast({
-        title: "تم الإرسال بنجاح",
-        description: "شكراً لتواصلك معنا. سنرد عليك في أقرب وقت ممكن.",
+        title: t('contact.success', 'تم الإرسال بنجاح'),
+        description: t('contact.success_message', 'شكراً لتواصلك معنا. سنرد عليك في أقرب وقت ممكن.'),
       });
 
       form.reset();
@@ -89,8 +91,8 @@ const ContactUs: React.FC = () => {
     } catch (error) {
       console.error('Error submitting contact form:', error);
       toast({
-        title: "خطأ",
-        description: "حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.",
+        title: t('contact.error', 'خطأ'),
+        description: t('contact.submit_error', 'حدث خطأ أثناء إرسال الرسالة. يرجى المحاولة مرة أخرى.'),
         variant: "destructive",
       });
     } finally {
@@ -138,7 +140,7 @@ const ContactUs: React.FC = () => {
               <div className="p-2 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full">
                 <MessageCircle className="h-5 w-5 text-white" />
               </div>
-              <span className="font-semibold text-emerald-700 dark:text-emerald-300">نحن هنا من أجلك</span>
+              <span className="font-semibold text-emerald-700 dark:text-emerald-300">{t('contact.hero.badge', 'نحن هنا من أجلك')}</span>
               <Badge variant="secondary" className="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300">
                 24/7
               </Badge>
@@ -148,16 +150,16 @@ const ContactUs: React.FC = () => {
             <div className="space-y-6">
               <h1 className="text-5xl md:text-7xl font-bold leading-tight">
                 <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 bg-clip-text text-transparent">
-                  تواصل معنا
+                  {t('contact.hero.title', 'تواصل معنا')}
                 </span>
                 <br />
                 <span className="text-3xl md:text-4xl text-gray-700 dark:text-gray-300 font-light">
-                  وابني مستقبل عائلتك
+                  {t('contact.hero.subtitle', 'وابني مستقبل عائلتك')}
                 </span>
               </h1>
               
               <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                فريقنا من الخبراء جاهز لمساعدتك في رحلة حفظ التراث العائلي وبناء إرثك الرقمي
+                {t('contact.hero.description', 'فريقنا من الخبراء جاهز لمساعدتك في رحلة حفظ التراث العائلي وبناء إرثك الرقمي')}
               </p>
             </div>
 
@@ -170,7 +172,7 @@ const ContactUs: React.FC = () => {
                   </div>
                 </div>
                 <h3 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">+1000</h3>
-                <p className="text-gray-600 dark:text-gray-400">عائلة راضية</p>
+                <p className="text-gray-600 dark:text-gray-400">{t('contact.stats.families', 'عائلة راضية')}</p>
               </div>
               
               <div className="group p-6 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-gray-700/20 hover:scale-105 transition-all duration-300">
@@ -179,8 +181,8 @@ const ContactUs: React.FC = () => {
                     <Zap className="h-8 w-8 text-white" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold text-purple-600 dark:text-purple-400">2 دقيقة</h3>
-                <p className="text-gray-600 dark:text-gray-400">متوسط الرد</p>
+                <h3 className="text-2xl font-bold text-purple-600 dark:text-purple-400">{t('contact.stats.response_time', '2 دقيقة')}</h3>
+                <p className="text-gray-600 dark:text-gray-400">{t('contact.stats.avg_response', 'متوسط الرد')}</p>
               </div>
               
               <div className="group p-6 bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-gray-700/20 hover:scale-105 transition-all duration-300">
@@ -190,7 +192,7 @@ const ContactUs: React.FC = () => {
                   </div>
                 </div>
                 <h3 className="text-2xl font-bold text-amber-600 dark:text-amber-400">4.9/5</h3>
-                <p className="text-gray-600 dark:text-gray-400">تقييم العملاء</p>
+                <p className="text-gray-600 dark:text-gray-400">{t('contact.stats.rating', 'تقييم العملاء')}</p>
               </div>
             </div>
           </div>
@@ -207,16 +209,16 @@ const ContactUs: React.FC = () => {
               <div className="space-y-6">
                 <div className="inline-flex items-center gap-3 px-4 py-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-full">
                   <Phone className="h-4 w-4 text-emerald-600" />
-                  <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">طرق التواصل</span>
+                  <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">{t('contact.methods.title', 'طرق التواصل')}</span>
                 </div>
                 
                 <h2 className="text-4xl font-bold">
                   <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                    لنبدأ المحادثة
+                    {t('contact.methods.heading', 'لنبدأ المحادثة')}
                   </span>
                 </h2>
                 <p className="text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
-                  نحن هنا لمساعدتك في كل خطوة من رحلة بناء شجرة عائلتك
+                  {t('contact.methods.description', 'نحن هنا لمساعدتك في كل خطوة من رحلة بناء شجرة عائلتك')}
                 </p>
               </div>
 
@@ -225,8 +227,8 @@ const ContactUs: React.FC = () => {
                 {[
                   { 
                     icon: Mail, 
-                    title: "البريد الإلكتروني", 
-                    subtitle: "للدعم الفني والاستفسارات", 
+                    title: t('contact.info.email_title', 'البريد الإلكتروني'), 
+                    subtitle: t('contact.info.email_subtitle', 'للدعم الفني والاستفسارات'), 
                     contact: "support@shjrti.com", 
                     href: "mailto:support@shjrti.com",
                     color: "from-blue-500 to-cyan-500",
@@ -234,17 +236,17 @@ const ContactUs: React.FC = () => {
                   },
                   { 
                     icon: Clock, 
-                    title: "أوقات العمل", 
-                    subtitle: "السبت - الخميس", 
-                    contact: "9:00 ص - 6:00 م (بتوقيت الرياض)",
+                    title: t('contact.info.hours_title', 'أوقات العمل'), 
+                    subtitle: t('contact.info.hours_subtitle', 'السبت - الخميس'), 
+                    contact: t('contact.info.hours_time', '9:00 ص - 6:00 م (بتوقيت الرياض)'),
                     color: "from-purple-500 to-indigo-500",
                     bgColor: "from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20"
                   },
                   { 
                     icon: MapPin, 
-                    title: "الموقع", 
-                    subtitle: "نخدم عملاءنا من جميع أنحاء", 
-                    contact: "المملكة العربية السعودية",
+                    title: t('contact.info.location_title', 'الموقع'), 
+                    subtitle: t('contact.info.location_subtitle', 'نخدم عملاءنا من جميع أنحاء'), 
+                    contact: t('contact.info.location_country', 'المملكة العربية السعودية'),
                     color: "from-emerald-500 to-teal-500",
                     bgColor: "from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20"
                   }
@@ -275,24 +277,24 @@ const ContactUs: React.FC = () => {
               <div className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl border border-amber-200/50 dark:border-amber-700/30">
                 <div className="flex items-center gap-3 mb-4">
                   <Shield className="h-6 w-6 text-amber-600" />
-                  <h3 className="font-bold text-amber-700 dark:text-amber-300">ضمانات الجودة</h3>
+                  <h3 className="font-bold text-amber-700 dark:text-amber-300">{t('contact.quality.title', 'ضمانات الجودة')}</h3>
                 </div>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-emerald-500" />
-                    <span className="text-gray-700 dark:text-gray-300">حماية البيانات</span>
+                    <span className="text-gray-700 dark:text-gray-300">{t('contact.quality.data_protection', 'حماية البيانات')}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-emerald-500" />
-                    <span className="text-gray-700 dark:text-gray-300">دعم مجاني</span>
+                    <span className="text-gray-700 dark:text-gray-300">{t('contact.quality.free_support', 'دعم مجاني')}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-emerald-500" />
-                    <span className="text-gray-700 dark:text-gray-300">رد سريع</span>
+                    <span className="text-gray-700 dark:text-gray-300">{t('contact.quality.quick_response', 'رد سريع')}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="h-4 w-4 text-emerald-500" />
-                    <span className="text-gray-700 dark:text-gray-300">خبراء متخصصون</span>
+                    <span className="text-gray-700 dark:text-gray-300">{t('contact.quality.expert_support', 'خبراء متخصصون')}</span>
                   </div>
                 </div>
               </div>
@@ -309,9 +311,9 @@ const ContactUs: React.FC = () => {
                     </div>
                     <div>
                       <CardTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                        أرسل لنا رسالة
+                        {t('contact.form.title', 'أرسل لنا رسالة')}
                       </CardTitle>
-                      <p className="text-gray-600 dark:text-gray-400">سنرد عليك خلال دقائق</p>
+                      <p className="text-gray-600 dark:text-gray-400">{t('contact.form.response_time', 'سنرد عليك خلال دقائق')}</p>
                     </div>
                   </div>
                 </CardHeader>
@@ -323,10 +325,10 @@ const ContactUs: React.FC = () => {
                         name="fullName"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-lg font-semibold text-gray-700 dark:text-gray-300">الاسم الكامل</FormLabel>
+                            <FormLabel className="text-lg font-semibold text-gray-700 dark:text-gray-300">{t('contact.form.full_name', 'الاسم الكامل')}</FormLabel>
                             <FormControl>
                               <Input 
-                                placeholder="أدخل اسمك الكامل" 
+                                placeholder={t('contact.form.full_name_placeholder', 'أدخل اسمك الكامل')} 
                                 {...field} 
                                 className="h-12 text-base bg-white/90 dark:bg-gray-800/90 border-2 border-emerald-200 dark:border-emerald-700 focus:border-emerald-500 dark:focus:border-emerald-400 rounded-xl transition-all duration-300"
                               />
@@ -341,11 +343,11 @@ const ContactUs: React.FC = () => {
                         name="email"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-lg font-semibold text-gray-700 dark:text-gray-300">البريد الإلكتروني</FormLabel>
+                            <FormLabel className="text-lg font-semibold text-gray-700 dark:text-gray-300">{t('contact.form.email', 'البريد الإلكتروني')}</FormLabel>
                             <FormControl>
                               <Input 
                                 type="email" 
-                                placeholder="أدخل بريدك الإلكتروني" 
+                                placeholder={t('contact.form.email_placeholder', 'أدخل بريدك الإلكتروني')} 
                                 {...field} 
                                 className="h-12 text-base bg-white/90 dark:bg-gray-800/90 border-2 border-emerald-200 dark:border-emerald-700 focus:border-emerald-500 dark:focus:border-emerald-400 rounded-xl transition-all duration-300"
                               />
@@ -360,10 +362,10 @@ const ContactUs: React.FC = () => {
                         name="description"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-lg font-semibold text-gray-700 dark:text-gray-300">كيف يمكننا مساعدتك؟</FormLabel>
+                            <FormLabel className="text-lg font-semibold text-gray-700 dark:text-gray-300">{t('contact.form.message_label', 'كيف يمكننا مساعدتك؟')}</FormLabel>
                             <FormControl>
                               <Textarea 
-                                placeholder="اكتب رسالتك أو استفسارك هنا..." 
+                                placeholder={t('contact.form.message_placeholder', 'اكتب رسالتك أو استفسارك هنا...')} 
                                 className="min-h-[120px] text-base bg-white/90 dark:bg-gray-800/90 border-2 border-emerald-200 dark:border-emerald-700 focus:border-emerald-500 dark:focus:border-emerald-400 rounded-xl transition-all duration-300 resize-none" 
                                 {...field} 
                               />
@@ -375,10 +377,10 @@ const ContactUs: React.FC = () => {
 
                       {/* Math Captcha */}
                       <div className="space-y-4">
-                        <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl border border-emerald-200/50 dark:border-emerald-700/30">
+                          <div className="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl border border-emerald-200/50 dark:border-emerald-700/30">
                           <div className="flex items-center gap-3 mb-3">
                             <Shield className="h-5 w-5 text-emerald-600" />
-                            <span className="font-semibold text-emerald-700 dark:text-emerald-300">تحقق الأمان</span>
+                            <span className="font-semibold text-emerald-700 dark:text-emerald-300">{t('contact.form.security_check', 'تحقق الأمان')}</span>
                           </div>
                           <div className="space-y-3">
                             <div className="flex items-center gap-3">
@@ -397,13 +399,13 @@ const ContactUs: React.FC = () => {
                             </div>
                             <Input
                               type="number"
-                              placeholder="أدخل الناتج"
+                              placeholder={t('contact.form.answer_placeholder', 'أدخل الناتج')}
                               value={captchaValue || ''}
                               onChange={(e) => setCaptchaValue(e.target.value)}
                               className="w-32 h-10 text-center bg-white/90 dark:bg-gray-800/90 border-2 border-emerald-200 dark:border-emerald-700 focus:border-emerald-500 dark:focus:border-emerald-400 rounded-lg"
                             />
                             <p className="text-sm text-gray-500 dark:text-gray-400">
-                              حل المعادلة البسيطة للتأكد من أنك لست روبوت
+                              {t('contact.form.captcha_help', 'حل المعادلة البسيطة للتأكد من أنك لست روبوت')}
                             </p>
                           </div>
                         </div>
@@ -417,12 +419,12 @@ const ContactUs: React.FC = () => {
                         {isSubmitting ? (
                           <>
                             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white ml-2" />
-                            جاري الإرسال...
+                            {t('contact.form.sending', 'جاري الإرسال...')}
                           </>
                         ) : (
                           <>
                             <Send className="ml-2 h-5 w-5" />
-                            إرسال الرسالة
+                            {t('contact.form.submit', 'إرسال الرسالة')}
                           </>
                         )}
                       </Button>
