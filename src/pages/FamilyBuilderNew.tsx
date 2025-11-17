@@ -3416,9 +3416,9 @@ const FamilyBuilderNew = () => {
                       {currentStep === 1 && <div className="space-y-6">
                             <h3 className="text-xl font-bold font-arabic text-primary mb-6 pb-2 border-b border-border">المعلومات الأساسية</h3>
                              
-                              {/* First row: First Name (1/2), Gender (1/4), Birthdate (1/4) */}
+                              {/* First row: First Name (1/4), Gender (1/4), Family relation (1/2) */}
                               <div className="grid grid-cols-12 gap-6">
-                                 <div className="col-span-12 md:col-span-6">
+                                 <div className="col-span-6 md:col-span-3">
                                      <Label htmlFor="first_name" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
                                        <UserCircle className="h-4 w-4 text-primary" />
                                        الاسم الأول *
@@ -3447,22 +3447,8 @@ const FamilyBuilderNew = () => {
                                      </SelectContent>
                                    </Select>
                                 </div>
-                                 
-                                <div className="col-span-6 md:col-span-3">
-                                    <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                      <CalendarDays className="h-4 w-4 text-primary" />
-                                      تاريخ الميلاد
-                                   </Label>
-                                   <EnhancedDatePicker value={formData.birthDate} onChange={date => setFormData({
-                          ...formData,
-                          birthDate: date
-                        })} placeholder="اختر تاريخ الميلاد" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" />
-                                </div>
-                              </div>
                              
-                             {/* Second row: Family relation (1/2), Alive status (1/4), Death date (1/4) */}
-                             <div className="grid grid-cols-12 gap-6">
-                                <div className="col-span-12 md:col-span-6">
+                                 <div className="col-span-12 md:col-span-6">
                                    <Label htmlFor="parentRelation" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
                                      <UsersIcon className="h-4 w-4 text-primary" />
                                      العلاقة العائلية (الوالدين) *
@@ -3473,18 +3459,15 @@ const FamilyBuilderNew = () => {
                           label: "جاري تحميل البيانات...",
                           disabled: true
                         }] : familyMarriages.length > 0 ? familyMarriages.filter(marriage => marriage && marriage.id && marriage.husband && marriage.wife).map(marriage => {
-                          // Get full member details for proper naming
                           const husbandMember = familyMembers.find(member => member?.id === marriage.husband?.id);
                           const wifeMember = familyMembers.find(member => member?.id === marriage.wife?.id);
                           let displayName = '';
 
-                          // Helper function to get father's name
                           const getFatherName = (member: any) => {
                             const father = familyMembers.find(m => m?.id === member?.father_id || m?.id === member?.fatherId);
                             return father?.name || '';
                           };
 
-                          // Helper function to get grandfather's name
                           const getGrandfatherName = (member: any) => {
                             const father = familyMembers.find(m => m?.id === member?.father_id || m?.id === member?.fatherId);
                             if (father) {
@@ -3494,12 +3477,9 @@ const FamilyBuilderNew = () => {
                             return '';
                           };
 
-                          // Helper function to build full genealogical name
                           const buildFullName = (member: any, isWife: boolean = false) => {
                             if (!member) return '';
                             const firstName = member.first_name || member.name?.split(' ')[0] || '';
-
-                            // Determine internal vs external membership
                             const father = familyMembers.find(m => m?.id === member?.father_id || m?.id === member?.fatherId);
                             const grandfather = father ? familyMembers.find(m => m?.id === father?.father_id || m?.id === father?.fatherId) : null;
                             const isInternal = Boolean(father) || Boolean(member.is_founder);
@@ -3517,16 +3497,16 @@ const FamilyBuilderNew = () => {
                               isWife
                             });
 
-                            // Internal members use lineage-based naming
                             if (isInternal) {
                               if (isWife) {
                                 if (father) {
+                                  const relationship = member.gender === 'female' ? 'بنت' : 'ابن';
                                   const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
                                   if (grandfather) {
                                     const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
-                                    return `${firstName} بنت ${fatherFirstName} بن ${grandfatherFirstName}`;
+                                    return `${firstName} ${relationship} ${fatherFirstName} بن ${grandfatherFirstName}`;
                                   }
-                                  return `${firstName} بنت ${fatherFirstName}`;
+                                  return `${firstName} ${relationship} ${fatherFirstName}`;
                                 }
                                 return firstName;
                               } else {
@@ -3534,85 +3514,56 @@ const FamilyBuilderNew = () => {
                                   const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
                                   if (grandfather) {
                                     const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
-                                    return `${firstName} ابن ${fatherFirstName} ابن ${grandfatherFirstName}`;
+                                    return `${firstName} بن ${fatherFirstName} بن ${grandfatherFirstName}`;
                                   }
-                                  return `${firstName} ابن ${fatherFirstName}`;
+                                  return `${firstName} بن ${fatherFirstName}`;
                                 }
                                 return firstName;
                               }
+                            } else {
+                              return member.name || firstName;
                             }
-
-                            // External members: show full name when available
-                            const lastName = member.last_name;
-                            return lastName ? `${member.first_name || firstName} ${lastName}` : (member.name || firstName);
                           };
-                          const familyMember = husbandMember ? buildFullName(husbandMember, false) : 'غير محدد';
-                          const spouse = wifeMember ? buildFullName(wifeMember, true) : 'غير محدد';
-                          const heartIcon = marriage.marital_status === 'divorced' ? 'heart-crack' : 'heart';
 
-                          // Debug logging
-                          console.log('🔍 Marriage Display Debug:', {
-                            husbandName: husbandMember?.name,
-                            husbandFirstName: husbandMember?.first_name,
-                            husbandIsFounder: husbandMember?.is_founder,
-                            generatedFamilyMember: familyMember,
-                            wifeName: wifeMember?.name,
-                            wifeFirstName: wifeMember?.first_name,
-                            generatedSpouse: spouse,
-                            maritalStatus: marriage.marital_status,
-                            heartIcon
+                          const husbandName = buildFullName(husbandMember);
+                          const wifeName = buildFullName(wifeMember, true);
+
+                          displayName = `${husbandName} و ${wifeName}`;
+
+                          console.log('💑 Marriage Display:', {
+                            marriageId: marriage.id,
+                            husbandId: marriage.husband?.id,
+                            wifeId: marriage.wife?.id,
+                            husbandName,
+                            wifeName,
+                            displayName,
+                            husbandMember,
+                            wifeMember
                           });
+
                           return {
                             value: marriage.id,
-                            familyMember,
-                            spouse,
-                            heartIcon,
+                            familyMember: husbandName,
+                            spouse: wifeName,
+                            heartIcon: 'heart' as const,
                             isFounder: husbandMember?.is_founder || false
                           };
                         }) : [{
                           value: "no-data",
                           label: "لا توجد زيجات مسجلة في هذه العائلة",
                           disabled: true
-                                        }]} value={formData.selectedParent || ""} onValueChange={value => setFormData({
+                        }]} value={formData.selectedParent || ""} onValueChange={value => setFormData({
                           ...formData,
                           selectedParent: value === "none" ? null : value
                         })} disabled={loading || !familyMarriages || !familyMembers || formData.isFounder || parentsLocked} placeholder={loading ? "جاري التحميل..." : formData.isFounder ? "مؤسس العائلة - لا يحتاج لوالدين" : parentsLocked ? "تم اختيار الوالدين تلقائياً" : "اختر الوالدين"} searchPlaceholder="ابحث عن الوالدين..." emptyMessage="لا توجد نتائج تطابق البحث" />
-                               </div>
-                              
-                               <div className="col-span-6 md:col-span-3">
-                                  <Label htmlFor="aliveStatus" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                    <Activity className="h-4 w-4 text-primary" />
-                                    الحالة الحيوية
-                                 </Label>
-                                 <Select value={formData.isAlive ? "alive" : "deceased"} onValueChange={value => setFormData({
-                          ...formData,
-                          isAlive: value === "alive"
-                        })}>
-                                   <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
-                                     <SelectValue placeholder="اختر الحالة الحيوية" />
-                                   </SelectTrigger>
-                                   <SelectContent className="rounded-lg border-2">
-                                     <SelectItem value="alive" className="font-arabic rounded-md">على قيد الحياة</SelectItem>
-                                     <SelectItem value="deceased" className="font-arabic rounded-md">متوفى</SelectItem>
-                                   </SelectContent>
-                                 </Select>
-                               </div>
-
-                                {!formData.isAlive && <div className="col-span-6 md:col-span-3">
-                                     <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
-                                       <Skull className="h-4 w-4 text-primary" />
-                                       تاريخ الوفاة
-                                    </Label>
-                                    <EnhancedDatePicker value={formData.deathDate} onChange={date => setFormData({
-                          ...formData,
-                          deathDate: date
-                        })} placeholder="اختر تاريخ الوفاة" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" />
-                                  </div>}
                               </div>
+                            </div>
 
-                              {/* Twin Selection Dropdown */}
-                              {currentSiblings.length > 0 && (
-                                <div className="space-y-3">
+                              {/* Second row: Twin (1/4), Birthdate (1/4), Alive status (1/4), Death date (1/4) */}
+                              <div className="grid grid-cols-12 gap-6">
+                                {/* Twin Selection Dropdown */}
+                                {currentSiblings.length > 0 && (
+                                  <div className="col-span-6 md:col-span-3 space-y-3">
                                   <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
                                     <Users className="h-4 w-4 text-primary" />
                                     {t('form.twin_status')}
@@ -3692,8 +3643,50 @@ const FamilyBuilderNew = () => {
                                       </div>
                                     </SelectContent>
                                   </Select>
+                                  </div>
+                                )}
+
+                                <div className="col-span-6 md:col-span-3">
+                                    <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                      <CalendarDays className="h-4 w-4 text-primary" />
+                                      تاريخ الميلاد
+                                   </Label>
+                                   <EnhancedDatePicker value={formData.birthDate} onChange={date => setFormData({
+                          ...formData,
+                          birthDate: date
+                        })} placeholder="اختر تاريخ الميلاد" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" />
                                 </div>
-                              )}
+
+                                <div className="col-span-6 md:col-span-3">
+                                   <Label htmlFor="aliveStatus" className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                     <Activity className="h-4 w-4 text-primary" />
+                                     الحالة الحيوية
+                                  </Label>
+                                  <Select value={formData.isAlive ? "alive" : "deceased"} onValueChange={value => setFormData({
+                          ...formData,
+                          isAlive: value === "alive"
+                        })}>
+                                   <SelectTrigger className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm">
+                                     <SelectValue placeholder="اختر الحالة الحيوية" />
+                                   </SelectTrigger>
+                                   <SelectContent className="rounded-lg border-2">
+                                     <SelectItem value="alive" className="font-arabic rounded-md">على قيد الحياة</SelectItem>
+                                     <SelectItem value="deceased" className="font-arabic rounded-md">متوفى</SelectItem>
+                                   </SelectContent>
+                                 </Select>
+                                </div>
+
+                                {!formData.isAlive && <div className="col-span-6 md:col-span-3">
+                                     <Label className="font-arabic text-sm font-semibold text-foreground mb-3 block flex items-center gap-2">
+                                       <Skull className="h-4 w-4 text-primary" />
+                                       تاريخ الوفاة
+                                    </Label>
+                                    <EnhancedDatePicker value={formData.deathDate} onChange={date => setFormData({
+                          ...formData,
+                          deathDate: date
+                        })} placeholder="اختر تاريخ الوفاة" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" />
+                                  </div>}
+                              </div>
 
                               {/* Biography and Profile Picture - Side by Side Layout */}
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
