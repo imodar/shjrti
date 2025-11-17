@@ -1101,14 +1101,20 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                               {/* Children */}
                               {childrenWithSpouse.length > 0 && (
                                 <div className="mt-4 pt-4 border-t border-border/50">
-                                  <h5 className="font-medium text-foreground mb-3 flex items-center gap-4">
-                                    <span>
-                                      الذكور ({childrenWithSpouse.filter(c => c.gender === 'male').length})
-                                    </span>
-                                    <span>
-                                      الإناث ({childrenWithSpouse.filter(c => c.gender === 'female').length})
-                                    </span>
-                                  </h5>
+                                  <div className="flex items-center gap-3 mb-4">
+                                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                                      <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                      <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                                        {t('profile.males')} ({childrenWithSpouse.filter(c => c.gender === 'male').length})
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800">
+                                      <User className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+                                      <span className="text-sm font-medium text-pink-700 dark:text-pink-300">
+                                        {t('profile.females')} ({childrenWithSpouse.filter(c => c.gender === 'female').length})
+                                      </span>
+                                    </div>
+                                  </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                      {(() => {
                                        // Group children by twin_group_id
