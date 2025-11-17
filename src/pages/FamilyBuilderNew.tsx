@@ -4576,9 +4576,9 @@ const MemberList = ({
       {/* Member List */}
       <div className="space-y-3 flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
         {memberListLoading ?
-      // Loading skeletons
+      // Loading skeletons - عرض 10 عناصر لملء المساحة المرئية وتقليل القفزة في الارتفاع
       Array.from({
-        length: 3
+        length: 10
       }).map((_, index) => <div key={index} className="p-4 rounded-3xl border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 bg-white/50 dark:bg-gray-800/50">
               <div className="flex items-start gap-3">
                 <Skeleton className="h-12 w-12 rounded-full flex-shrink-0" />
