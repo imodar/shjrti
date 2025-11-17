@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import { format } from "date-fns";
 import { Gem } from "lucide-react";
 import { ar } from "date-fns/locale";
@@ -709,7 +710,10 @@ const FamilyBuilderNew = () => {
     bio: "",
     imageUrl: "",
     croppedImage: null as string | null,
-    isFounder: false
+    isFounder: false,
+    is_twin: false,
+    twin_group_id: null as string | null,
+    selected_twins: [] as string[]
   });
   const [wives, setWives] = useState<SpouseData[]>([]);
   const [husband, setHusband] = useState<SpouseData | null>(null);
@@ -1762,6 +1766,30 @@ const FamilyBuilderNew = () => {
     return matchesSearch && matchesFilter;
   });
 
+  // Get siblings (same father AND mother) - for Twin feature
+  const getSiblings = useCallback((currentMemberId: string | null, fatherId: string | null, motherId: string | null): any[] => {
+    if (!fatherId || !motherId) return [];
+    
+    return familyMembers.filter(member => 
+      member.id !== currentMemberId && // ليس نفس الشخص
+      member.fatherId === fatherId && 
+      member.motherId === motherId
+    );
+  }, [familyMembers]);
+
+  // Get current member's siblings based on form data
+  const currentSiblings = useMemo(() => {
+    // يجب أن يكون الوالدين محددين أولاً
+    const fatherId = formMode === 'edit' ? editingMember?.fatherId : 
+                     (formData.relation === 'child' ? formData.relatedPersonId : null);
+    const motherId = formMode === 'edit' ? editingMember?.motherId : null;
+    
+    if (!fatherId || !motherId) return [];
+    
+    const currentId = formMode === 'edit' ? editingMember?.id : null;
+    return getSiblings(currentId, fatherId, motherId);
+  }, [formMode, editingMember, formData.relation, formData.relatedPersonId, getSiblings]);
+
   // Form panel actions
   const handleAddMember = () => {
     // Check if user has reached package limit using subscription from context
@@ -1900,7 +1928,10 @@ const FamilyBuilderNew = () => {
       bio: "",
       imageUrl: "",
       croppedImage: null,
-      isFounder: false
+      isFounder: false,
+      is_twin: false,
+      twin_group_id: null,
+      selected_twins: []
     });
     setParentsLocked(false);
     setWives([]);
@@ -1917,6 +1948,17 @@ const FamilyBuilderNew = () => {
     }
   };
   const populateFormData = (member: any) => {
+    // جلب الإخوة التوائم الحاليين إذا كان هذا العضو توأم
+    let currentTwinSiblings: string[] = [];
+    if (member.is_twin && member.twin_group_id) {
+      currentTwinSiblings = familyMembers
+        .filter((m: any) => 
+          m.id !== member.id && 
+          m.twin_group_id === member.twin_group_id
+        )
+        .map((m: any) => m.id);
+    }
+
     setFormData({
       name: member.name || "",
       first_name: member.first_name || member.name?.split(' ')[0] || "",
@@ -1930,8 +1972,10 @@ const FamilyBuilderNew = () => {
       bio: member.bio || "",
       imageUrl: member.image || "",
       croppedImage: null,
-      // Don't set croppedImage when editing existing member
-      isFounder: member.isFounder || false
+      isFounder: member.isFounder || false,
+      is_twin: member.is_twin || false,
+      twin_group_id: member.twin_group_id || null,
+      selected_twins: currentTwinSiblings
     });
 
     // Load existing spouses
@@ -2494,6 +2538,8 @@ const FamilyBuilderNew = () => {
           mother_id: motherId,
           related_person_id: relatedPersonId,
           marital_status: finalData.maritalStatus || 'single',
+          is_twin: submissionData.is_twin || false,
+          twin_group_id: submissionData.twin_group_id || null,
           updated_at: new Date().toISOString()
         }).eq('id', editingMember.id).select().single();
         if (updateError) {
@@ -2539,7 +2585,9 @@ const FamilyBuilderNew = () => {
           family_id: familyId,
           created_by: familyData?.creator_id,
           is_founder: submissionData.isFounder || false,
-          marital_status: finalData.maritalStatus || 'single'
+          marital_status: finalData.maritalStatus || 'single',
+          is_twin: submissionData.is_twin || false,
+          twin_group_id: submissionData.twin_group_id || null
         }).select().single();
         
         if (memberError) {
@@ -2580,6 +2628,53 @@ const FamilyBuilderNew = () => {
             });
           }
         }
+      }
+
+      // ✅ Twin Group Management - ربط التوائم
+      if (submissionData.is_twin && submissionData.selected_twins && submissionData.selected_twins.length > 0) {
+        // توليد twin_group_id جديد أو استخدام الموجود
+        let twinGroupId = submissionData.twin_group_id;
+        
+        if (!twinGroupId) {
+          twinGroupId = crypto.randomUUID(); // توليد UUID جديد
+        }
+        
+        // تحديث العضو الحالي بـ twin_group_id
+        await supabase
+          .from('family_tree_members')
+          .update({ 
+            is_twin: true, 
+            twin_group_id: twinGroupId 
+          })
+          .eq('id', memberData.id);
+        
+        // تحديث جميع الإخوة المختارين بنفس twin_group_id
+        const twinUpdates = submissionData.selected_twins.map(async (siblingId: string) => {
+          return supabase
+            .from('family_tree_members')
+            .update({ 
+              is_twin: true, 
+              twin_group_id: twinGroupId 
+            })
+            .eq('id', siblingId);
+        });
+        
+        await Promise.all(twinUpdates);
+        
+        console.log(`✅ Successfully linked ${submissionData.selected_twins.length + 1} twins with group ID: ${twinGroupId}`);
+      }
+
+      // إزالة من مجموعة التوائم إذا تم إلغاء الاختيار
+      if (!submissionData.is_twin && memberData.twin_group_id) {
+        await supabase
+          .from('family_tree_members')
+          .update({ 
+            is_twin: false, 
+            twin_group_id: null 
+          })
+          .eq('id', memberData.id);
+        
+        console.log(`✅ Removed member from twin group`);
       }
 
       // Track successful marriages for toast message
@@ -3297,7 +3392,10 @@ const FamilyBuilderNew = () => {
                     bio: "",
                     imageUrl: "",
                     croppedImage: null,
-                    isFounder: false
+                    isFounder: false,
+                    is_twin: false,
+                    twin_group_id: null,
+                    selected_twins: []
                   });
                   setWives([]);
                   setHusband(null);
@@ -3504,9 +3602,70 @@ const FamilyBuilderNew = () => {
                           deathDate: date
                         })} placeholder="اختر تاريخ الوفاة" className="font-arabic h-11 rounded-lg border-2 border-border hover:border-primary/50 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 shadow-sm" />
                                   </div>}
-                             </div>
+                              </div>
 
-                             {/* Biography and Profile Picture - Side by Side Layout */}
+                              {/* Twin Selection Dropdown */}
+                              {currentSiblings.length > 0 && (
+                                <div className="space-y-3 border-t pt-6 mt-6">
+                                  <Label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                                    <Users className="h-4 w-4 text-primary" />
+                                    {t('form.twin_status')}
+                                  </Label>
+                                  <div className="space-y-3">
+                                    <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                                      <Checkbox
+                                        id="no-twin"
+                                        checked={!formData.is_twin && formData.selected_twins.length === 0}
+                                        onCheckedChange={(checked) => {
+                                          if (checked) {
+                                            setFormData(prev => ({
+                                              ...prev,
+                                              is_twin: false,
+                                              twin_group_id: null,
+                                              selected_twins: []
+                                            }));
+                                          }
+                                        }}
+                                      />
+                                      <Label htmlFor="no-twin" className="text-sm cursor-pointer font-arabic">
+                                        {t('form.not_twin')}
+                                      </Label>
+                                    </div>
+                                    
+                                    <div className="border rounded-xl p-4 space-y-2 bg-muted/30">
+                                      <p className="text-sm text-muted-foreground mb-3 font-arabic">
+                                        {t('form.select_twin_siblings')}
+                                      </p>
+                                      {currentSiblings.map(sibling => (
+                                        <div key={sibling.id} className="flex items-center space-x-2 rtl:space-x-reverse py-2 px-3 rounded-lg hover:bg-muted/50 transition-colors">
+                                          <Checkbox
+                                            id={`twin-${sibling.id}`}
+                                            checked={formData.selected_twins.includes(sibling.id)}
+                                            onCheckedChange={(checked) => {
+                                              setFormData(prev => {
+                                                const newSelectedTwins = checked
+                                                  ? [...prev.selected_twins, sibling.id]
+                                                  : prev.selected_twins.filter(id => id !== sibling.id);
+                                                
+                                                return {
+                                                  ...prev,
+                                                  is_twin: newSelectedTwins.length > 0,
+                                                  selected_twins: newSelectedTwins
+                                                };
+                                              });
+                                            }}
+                                          />
+                                          <Label htmlFor={`twin-${sibling.id}`} className="text-sm cursor-pointer font-arabic flex-1">
+                                            {sibling.name}
+                                          </Label>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Biography and Profile Picture - Side by Side Layout */}
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                {/* Biography Section - 1/2 */}
                                <div>

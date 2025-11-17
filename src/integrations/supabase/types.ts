@@ -439,12 +439,14 @@ export type Database = {
           image_url: string | null
           is_alive: boolean | null
           is_founder: boolean | null
+          is_twin: boolean | null
           last_name: string | null
           marital_status: string | null
           mother_id: string | null
           name: string
           related_person_id: string | null
           spouse_id: string | null
+          twin_group_id: string | null
           updated_at: string
         }
         Insert: {
@@ -461,12 +463,14 @@ export type Database = {
           image_url?: string | null
           is_alive?: boolean | null
           is_founder?: boolean | null
+          is_twin?: boolean | null
           last_name?: string | null
           marital_status?: string | null
           mother_id?: string | null
           name: string
           related_person_id?: string | null
           spouse_id?: string | null
+          twin_group_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -483,12 +487,14 @@ export type Database = {
           image_url?: string | null
           is_alive?: boolean | null
           is_founder?: boolean | null
+          is_twin?: boolean | null
           last_name?: string | null
           marital_status?: string | null
           mother_id?: string | null
           name?: string
           related_person_id?: string | null
           spouse_id?: string | null
+          twin_group_id?: string | null
           updated_at?: string
         }
         Relationships: [
