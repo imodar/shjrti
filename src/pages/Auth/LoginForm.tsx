@@ -10,10 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { z } from 'zod';
 
-const loginSchema = z.object({
-  email: z.string().email('البريد الإلكتروني غير صحيح'),
-  password: z.string().min(6, 'كلمة المرور يجب أن تكون 6 أحرف على الأقل'),
-});
+// Schema will be created dynamically with translations
 
 interface LoginFormProps {
   onSwitchToReset: () => void;
@@ -29,6 +26,12 @@ export function LoginForm({ onSwitchToReset, onSwitchToMagicLink }: LoginFormPro
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { executeRecaptcha } = useGoogleReCaptcha();
+
+  // Create schema with translated messages
+  const loginSchema = z.object({
+    email: z.string().email(t('invalid_email_format', 'البريد الإلكتروني غير صحيح')),
+    password: z.string().min(6, t('password_min_6_chars', 'كلمة المرور يجب أن تكون 6 أحرف على الأقل')),
+  });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

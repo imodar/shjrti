@@ -10,13 +10,7 @@ import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 import { z } from 'zod';
 import { checkPasswordStrength, PasswordStrength } from "@/lib/passwordStrength";
 
-const signupSchema = z.object({
-  email: z.string().email('البريد الإلكتروني غير صحيح'),
-  password: z.string().min(8, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل'),
-  firstName: z.string().min(2, 'الاسم الأول يجب أن يكون حرفين على الأقل'),
-  lastName: z.string().min(2, 'الاسم الأخير يجب أن يكون حرفين على الأقل'),
-  phone: z.string().optional(),
-});
+// Schema will be created dynamically with translations
 
 interface SignupFormProps {
   onOTPRequired: (userData: any) => void;
@@ -40,6 +34,15 @@ export function SignupForm({ onOTPRequired }: SignupFormProps) {
   const { toast } = useToast();
   const { t } = useLanguage();
   const { executeRecaptcha } = useGoogleReCaptcha();
+
+  // Create schema with translated messages
+  const signupSchema = z.object({
+    email: z.string().email(t('invalid_email_format', 'البريد الإلكتروني غير صحيح')),
+    password: z.string().min(8, t('password_min_8_chars', 'كلمة المرور يجب أن تكون 8 أحرف على الأقل')),
+    firstName: z.string().min(2, t('first_name_min_2_chars', 'الاسم الأول يجب أن يكون حرفين على الأقل')),
+    lastName: z.string().min(2, t('last_name_min_2_chars', 'الاسم الأخير يجب أن يكون حرفين على الأقل')),
+    phone: z.string().optional(),
+  });
 
   const handlePasswordChange = (value: string) => {
     setPassword(value);
