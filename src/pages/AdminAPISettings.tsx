@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { Key, Save, Eye, EyeOff, Shield, Globe } from 'lucide-react';
 import { GlobalHeader } from '@/components/GlobalHeader';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { DirectionWrapper } from '@/components/DirectionWrapper';
 
 export default function AdminAPISettings() {
   const navigate = useNavigate();
@@ -108,8 +109,9 @@ export default function AdminAPISettings() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <GlobalHeader />
+    <DirectionWrapper>
+      <div className="min-h-screen bg-background">
+        <GlobalHeader />
       
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-8">
@@ -246,6 +248,7 @@ export default function AdminAPISettings() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+      </div>
+    </DirectionWrapper>
   );
 }
