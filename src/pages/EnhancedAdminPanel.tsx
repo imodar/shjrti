@@ -37,7 +37,8 @@ import {
   Palette,
   AlertTriangle,
   MailOpen,
-  TrendingUp
+  TrendingUp,
+  Search
 } from "lucide-react";
 import { PackageEditModal } from '@/components/PackageEditModal';
 import { ChangePackageModal } from '@/components/ChangePackageModal';
@@ -197,6 +198,7 @@ export default function EnhancedAdminPanel() {
   });
   const [editingLanguage, setEditingLanguage] = useState<LanguageType | null>(null);
   const [editingTranslation, setEditingTranslation] = useState<EditingTranslation | null>(null);
+  const [translationSearchQuery, setTranslationSearchQuery] = useState('');
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [userSubscriptions, setUserSubscriptions] = useState<UserSubscription[]>([]);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
@@ -1694,9 +1696,31 @@ export default function EnhancedAdminPanel() {
 
                   {/* Existing Translations List */}
                   <div className="space-y-3">
-                    <h4 className="font-medium">الترجمات الموجودة</h4>
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium">الترجمات الموجودة</h4>
+                      <div className="relative w-80">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="ابحث عن مفتاح، قيمة، لغة، أو فئة..."
+                          value={translationSearchQuery}
+                          onChange={(e) => setTranslationSearchQuery(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
                     <div className="max-h-96 overflow-y-auto space-y-2">
-                      {translations.map((translation) => (
+                      {translations
+                        .filter((translation) => {
+                          if (!translationSearchQuery) return true;
+                          const query = translationSearchQuery.toLowerCase();
+                          return (
+                            translation.key.toLowerCase().includes(query) ||
+                            translation.value.toLowerCase().includes(query) ||
+                            translation.language_code.toLowerCase().includes(query) ||
+                            translation.category.toLowerCase().includes(query)
+                          );
+                        })
+                        .map((translation) => (
                         <div key={translation.id} className="flex items-start justify-between p-3 border rounded-lg text-sm">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
