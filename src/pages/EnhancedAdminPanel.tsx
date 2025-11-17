@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -199,6 +199,13 @@ export default function EnhancedAdminPanel() {
   const [editingLanguage, setEditingLanguage] = useState<LanguageType | null>(null);
   const [editingTranslation, setEditingTranslation] = useState<EditingTranslation | null>(null);
   const [translationSearchQuery, setTranslationSearchQuery] = useState('');
+  const [currentTranslationsQuery, setCurrentTranslationsQuery] = useState('');
+  const [translationsPage, setTranslationsPage] = useState(0);
+  const [translationsTotal, setTranslationsTotal] = useState(0);
+  const [translationsLoading, setTranslationsLoading] = useState(false);
+  const [translationsLoadingMore, setTranslationsLoadingMore] = useState(false);
+  const translationsListRef = useRef<HTMLDivElement | null>(null);
+  const pageSize = 100;
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [userSubscriptions, setUserSubscriptions] = useState<UserSubscription[]>([]);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
@@ -251,17 +258,36 @@ export default function EnhancedAdminPanel() {
     }
   };
 
-  const loadTranslations = async () => {
+  const loadTranslations = async ({ page = 0, query = currentTranslationsQuery, append = false }: { page?: number; query?: string; append?: boolean } = {}) => {
+    const from = page * pageSize;
+    const to = from + pageSize - 1;
     try {
-      const { data, error } = await supabase
+      if (append) setTranslationsLoadingMore(true); else setTranslationsLoading(true);
+      let builder = supabase
         .from('translations')
-        .select('*');
-
+        .select('*', { count: 'exact' })
+        .order('key', { ascending: true })
+        .order('language_code', { ascending: true });
+      const q = query?.trim();
+      if (q) {
+        const like = `%${q}%`;
+        builder = builder.or(`key.ilike.${like},value.ilike.${like},language_code.ilike.${like},category.ilike.${like}`);
+      }
+      const { data, error, count } = await builder.range(from, to);
       if (error) throw error;
-      setTranslations(data || []);
+      if (append) {
+        setTranslations(prev => [...prev, ...(data || [])]);
+      } else {
+        setTranslations(data || []);
+      }
+      if (typeof count === 'number') setTranslationsTotal(count);
+      setTranslationsPage(page);
     } catch (error) {
       console.error('Error loading translations:', error);
+    } finally {
+      if (append) setTranslationsLoadingMore(false); else setTranslationsLoading(false);
     }
+  };
   };
 
   const loadLanguages = async () => {
@@ -514,7 +540,7 @@ export default function EnhancedAdminPanel() {
     setLoading(true);
     Promise.all([
       loadPackages(), 
-      loadTranslations(), 
+      loadTranslations({ page: 0, query: '', append: false }), 
       loadLanguages(), 
       loadUsers(), 
       loadUserSubscriptions(), 
@@ -833,7 +859,9 @@ export default function EnhancedAdminPanel() {
         description: "تم إضافة الترجمة بنجاح"
       });
 
-      loadTranslations();
+      setTranslations([]);
+      setTranslationsPage(0);
+      await loadTranslations({ page: 0, query: currentTranslationsQuery, append: false });
       setNewTranslation({
         key: '',
         value: '',
@@ -875,7 +903,9 @@ export default function EnhancedAdminPanel() {
         description: "تم تحديث الترجمة بنجاح"
       });
 
-      loadTranslations();
+      setTranslations([]);
+      setTranslationsPage(0);
+      await loadTranslations({ page: 0, query: currentTranslationsQuery, append: false });
       setEditingTranslation(null);
     } catch (error) {
       console.error('Error updating translation:', error);
@@ -901,7 +931,9 @@ export default function EnhancedAdminPanel() {
         description: "تم حذف الترجمة بنجاح"
       });
 
-      loadTranslations();
+      setTranslations([]);
+      setTranslationsPage(0);
+      await loadTranslations({ page: 0, query: currentTranslationsQuery, append: false });
     } catch (error) {
       console.error('Error deleting translation:', error);
       toast({
@@ -1031,7 +1063,9 @@ export default function EnhancedAdminPanel() {
             
             <Button onClick={() => { 
               loadPackages(); 
-              loadTranslations(); 
+              setTranslations([]);
+              setTranslationsPage(0);
+              loadTranslations({ page: 0, query: currentTranslationsQuery, append: false }); 
               loadLanguages(); 
               loadUsers(); 
               loadUserSubscriptions(); 
@@ -1700,21 +1734,7 @@ export default function EnhancedAdminPanel() {
                       <div className="flex items-center gap-2">
                         <h4 className="font-medium">الترجمات الموجودة</h4>
                         <Badge variant="secondary" className="font-mono">
-                          {(() => {
-                            const filteredTranslations = translations.filter((translation) => {
-                              if (!translationSearchQuery) return true;
-                              const query = translationSearchQuery.toLowerCase();
-                              return (
-                                translation.key.toLowerCase().includes(query) ||
-                                translation.value.toLowerCase().includes(query) ||
-                                translation.language_code.toLowerCase().includes(query) ||
-                                translation.category.toLowerCase().includes(query)
-                              );
-                            });
-                            return translationSearchQuery 
-                              ? `${filteredTranslations.length} من ${translations.length}`
-                              : translations.length;
-                          })()}
+                          {translations.length} من {translationsTotal || translations.length}
                         </Badge>
                       </div>
                       <div className="relative w-96">
@@ -1727,29 +1747,80 @@ export default function EnhancedAdminPanel() {
                         />
                       </div>
                     </div>
-                    <div className="max-h-96 overflow-y-auto space-y-2">
-                      {(() => {
-                        const filteredTranslations = translations.filter((translation) => {
-                          if (!translationSearchQuery) return true;
-                          const query = translationSearchQuery.toLowerCase();
-                          return (
-                            translation.key.toLowerCase().includes(query) ||
-                            translation.value.toLowerCase().includes(query) ||
-                            translation.language_code.toLowerCase().includes(query) ||
-                            translation.category.toLowerCase().includes(query)
-                          );
-                        });
-                        
-                        if (filteredTranslations.length === 0) {
-                          return (
-                            <div className="text-center py-8 text-muted-foreground">
-                              <Search className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                              <p>لا توجد نتائج لـ "{translationSearchQuery}"</p>
-                            </div>
-                          );
+                    <div
+                      ref={translationsListRef}
+                      onScroll={(e) => {
+                        const el = e.currentTarget;
+                        if (
+                          !translationsLoadingMore &&
+                          translations.length < translationsTotal &&
+                          el.scrollTop + el.clientHeight >= el.scrollHeight - 64
+                        ) {
+                          loadTranslations({ page: translationsPage + 1, query: currentTranslationsQuery, append: true });
                         }
-                        
-                        return filteredTranslations.map((translation) => (
+                      }}
+                      className="max-h-96 overflow-y-auto space-y-2"
+                    >
+                      {translationsLoading && translations.length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">جاري التحميل...</div>
+                      )}
+
+                      {!translationsLoading && translations.length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <Search className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                          <p>لا توجد نتائج لـ "{translationSearchQuery}"</p>
+                        </div>
+                      )}
+
+                      {translations.map((translation) => (
+                        <div key={translation.id} className="flex items-start justify-between p-3 border rounded-lg text-sm">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">
+                                {translation.key}
+                              </span>
+                              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                                {translation.language_code}
+                              </span>
+                              <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                                {translation.category}
+                              </span>
+                            </div>
+                            <p className="text-gray-600">{translation.value}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEditTranslation(translation)}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeleteTranslation(translation.id)}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+
+                      {translationsLoadingMore && (
+                        <div className="py-3 text-center text-muted-foreground">جاري تحميل المزيد...</div>
+                      )}
+
+                      {!translationsLoadingMore && translations.length < translationsTotal && (
+                        <div className="py-3 text-center">
+                          <Button variant="outline" size="sm" onClick={() => loadTranslations({ page: translationsPage + 1, query: currentTranslationsQuery, append: true })}>
+                            تحميل المزيد
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                         <div key={translation.id} className="flex items-start justify-between p-3 border rounded-lg text-sm">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
