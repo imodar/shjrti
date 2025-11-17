@@ -32,7 +32,8 @@ export default function Payments() {
   } = useAuth();
   const {
     currentLanguage,
-    formatPrice
+    formatPrice,
+    direction
   } = useLanguage();
   const {
     refreshSubscription,
@@ -1043,7 +1044,7 @@ export default function Payments() {
 
         {/* Add Payment Method Modal for Upgrade */}
         <Dialog open={showAddPaymentModal} onOpenChange={setShowAddPaymentModal}>
-          <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" dir="rtl">
+          <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" dir={direction}>
             <DialogHeader className="text-center space-y-4">
               <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl">
                 <CreditCard className="h-8 w-8 text-white" />
@@ -1094,7 +1095,7 @@ export default function Payments() {
 
         {/* Credit Card Form Modal */}
         <Dialog open={showCreditCardForm} onOpenChange={setShowCreditCardForm}>
-          <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" dir="rtl">
+          <DialogContent className="sm:max-w-lg bg-gradient-to-br from-white/95 to-gray-50/95 dark:from-gray-900/95 dark:to-gray-800/95 backdrop-blur-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl" dir={direction}>
             <DialogHeader className="text-center space-y-4">
               <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl">
                 <CreditCard className="h-8 w-8 text-white" />

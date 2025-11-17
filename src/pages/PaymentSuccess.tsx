@@ -241,7 +241,7 @@ export default function PaymentSuccess() {
 
   if (verifying) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950">
         <GlobalHeader />
         <div className="container mx-auto px-6 pt-24 pb-12">
           <div className="max-w-2xl mx-auto">
@@ -260,7 +260,7 @@ export default function PaymentSuccess() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir="rtl">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950">
       <GlobalHeader />
       <div className="container mx-auto px-6 pt-24 pb-12">
         <div className="max-w-2xl mx-auto">

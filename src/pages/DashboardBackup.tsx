@@ -12,6 +12,7 @@ import dashboardStatsImage from "@/assets/dashboard-stats.jpg";
 import familySuccessImage from "@/assets/family-success.jpg";
 import heritageTechImage from "@/assets/heritage-tech.jpg";
 import dashboardHeroBanner from "@/assets/dashboard-hero-banner.jpg";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Mock data for family trees
 const mockTrees = [{
@@ -32,6 +33,7 @@ const mockTrees = [{
   lastUpdated: "2024-06-25"
 }];
 export default function Dashboard() {
+  const { direction } = useLanguage();
   const [trees, setTrees] = useState(mockTrees);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [treeToDelete, setTreeToDelete] = useState<number | null>(null);
@@ -72,7 +74,7 @@ export default function Dashboard() {
     setTreeToShare(null);
     setLinkCopied(false);
   };
-  return <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950" dir="rtl">
+  return <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950 dark:to-teal-950">
       {/* Header */}
       <div className="border-b bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
@@ -316,7 +318,7 @@ export default function Dashboard() {
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-md" dir="rtl">
+        <DialogContent className="sm:max-w-md" dir={direction}>
           <DialogHeader>
             <DialogTitle className="text-red-600 text-center px-px py-[24px]">تأكيد حذف الشجرة</DialogTitle>
             <DialogDescription className="text-right">
@@ -347,7 +349,7 @@ export default function Dashboard() {
 
       {/* Share Dialog */}
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
-        <DialogContent className="sm:max-w-md" dir="rtl">
+        <DialogContent className="sm:max-w-md" dir={direction}>
           <DialogHeader>
             <DialogTitle className="text-emerald-600 text-center py-[20px]">مشاركة شجرة العائلة</DialogTitle>
             <DialogDescription className="text-right">
@@ -361,7 +363,7 @@ export default function Dashboard() {
             <div className="space-y-2">
               <Label className="text-right block">رابط المشاركة العام:</Label>
               <div className="flex gap-2">
-                <Input value={`${window.location.origin}/tree/${treeToShare}?public=true`} readOnly className="text-left" dir="ltr" />
+                <Input value={`${window.location.origin}/tree/${treeToShare}?public=true`} readOnly className="text-left" />
                 <Button onClick={copyShareLink} variant="outline" size="icon" className={linkCopied ? "text-green-600" : ""}>
                   {linkCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 </Button>
