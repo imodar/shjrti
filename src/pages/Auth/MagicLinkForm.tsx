@@ -9,9 +9,7 @@ import { sendOTP } from "@/services/otpAuthService";
 import { OTPForm } from "./OTPForm";
 import { z } from 'zod';
 
-const emailSchema = z.object({
-  email: z.string().email('البريد الإلكتروني غير صحيح'),
-});
+// Schema will be created dynamically with translations
 
 interface MagicLinkFormProps {
   onBack: () => void;
@@ -25,6 +23,11 @@ export function MagicLinkForm({ onBack }: MagicLinkFormProps) {
   const [errors, setErrors] = useState<{ email?: string }>({});
   const { toast } = useToast();
   const { t } = useLanguage();
+
+  // Create schema with translated messages
+  const emailSchema = z.object({
+    email: z.string().email(t('invalid_email_format', 'البريد الإلكتروني غير صحيح')),
+  });
 
   const startCooldown = () => {
     setCooldown(60);

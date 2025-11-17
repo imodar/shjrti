@@ -10,17 +10,7 @@ import { OTPForm } from "./OTPForm";
 import { z } from 'zod';
 import { checkPasswordStrength } from "@/lib/passwordStrength";
 
-const resetEmailSchema = z.object({
-  email: z.string().email('البريد الإلكتروني غير صحيح'),
-});
-
-const newPasswordSchema = z.object({
-  password: z.string().min(8, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل'),
-  confirmPassword: z.string()
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "كلمتا المرور غير متطابقتين",
-  path: ["confirmPassword"],
-});
+// Schemas will be created dynamically with translations
 
 interface PasswordResetFormProps {
   onBack: () => void;
@@ -36,6 +26,19 @@ export function PasswordResetForm({ onBack }: PasswordResetFormProps) {
   const [errors, setErrors] = useState<any>({});
   const { toast } = useToast();
   const { t } = useLanguage();
+
+  // Create schemas with translated messages
+  const resetEmailSchema = z.object({
+    email: z.string().email(t('invalid_email_format', 'البريد الإلكتروني غير صحيح')),
+  });
+
+  const newPasswordSchema = z.object({
+    password: z.string().min(8, t('password_min_8_chars', 'كلمة المرور يجب أن تكون 8 أحرف على الأقل')),
+    confirmPassword: z.string()
+  }).refine((data) => data.password === data.confirmPassword, {
+    message: t('passwords_dont_match', 'كلمتا المرور غير متطابقتين'),
+    path: ["confirmPassword"],
+  });
 
   const startCooldown = () => {
     setCooldown(60);
