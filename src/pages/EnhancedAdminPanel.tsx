@@ -288,7 +288,6 @@ export default function EnhancedAdminPanel() {
       if (append) setTranslationsLoadingMore(false); else setTranslationsLoading(false);
     }
   };
-  };
 
   const loadLanguages = async () => {
     try {
@@ -535,6 +534,19 @@ export default function EnhancedAdminPanel() {
     setStatusDialog({isOpen: false, user: null});
     setStatusReason('');
   };
+
+  // Handle search with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (currentTranslationsQuery !== translationSearchQuery) {
+        setTranslations([]);
+        setTranslationsPage(0);
+        setCurrentTranslationsQuery(translationSearchQuery);
+        loadTranslations({ page: 0, query: translationSearchQuery, append: false });
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [translationSearchQuery]);
 
   useEffect(() => {
     setLoading(true);
@@ -1819,43 +1831,6 @@ export default function EnhancedAdminPanel() {
                           </Button>
                         </div>
                       )}
-                    </div>
-                  </div>
-                        <div key={translation.id} className="flex items-start justify-between p-3 border rounded-lg text-sm">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-mono bg-gray-100 px-2 py-1 rounded text-xs">
-                                {translation.key}
-                              </span>
-                              <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
-                                {translation.language_code}
-                              </span>
-                              <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
-                                {translation.category}
-                              </span>
-                            </div>
-                            <p className="text-gray-600">{translation.value}</p>
-                          </div>
-                           <div className="flex gap-2">
-                             <Button
-                               variant="outline"
-                               size="sm"
-                               onClick={() => handleEditTranslation(translation)}
-                             >
-                               <Edit className="h-4 w-4" />
-                             </Button>
-                             <Button
-                               variant="outline"
-                               size="sm"
-                               onClick={() => handleDeleteTranslation(translation.id)}
-                               className="text-red-600 hover:text-red-700"
-                             >
-                               <Trash2 className="h-4 w-4" />
-                             </Button>
-                           </div>
-                        </div>
-                        ));
-                      })()}
                     </div>
                   </div>
                 </div>
