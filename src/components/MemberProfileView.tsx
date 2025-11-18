@@ -1119,7 +1119,19 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                 </div>
                                  <div className="flex-1 ps-3">
                                   <h4 className="font-semibold text-foreground text-lg">
-                                    {spouse.first_name} {spouse.last_name}
+                                    {(() => {
+                                      // Check if spouse is from the same family (has father_id in current family)
+                                      const spouseHasFamilyFather = (spouse.father_id || spouse.fatherId) && 
+                                        familyMembers?.find(m => m.id === (spouse.father_id || spouse.fatherId));
+                                      
+                                      if (spouseHasFamilyFather) {
+                                        // From inside family: show only first_name (lineage will show below)
+                                        return spouse.first_name;
+                                      } else {
+                                        // From outside family: show first_name + last_name to indicate they're external
+                                        return `${spouse.first_name}${spouse.last_name ? ' ' + spouse.last_name : ''}`;
+                                      }
+                                    })()}
                                   </h4>
                                   {(() => {
                                     // Only show lineage if spouse is from the same family (has father_id in current family)
