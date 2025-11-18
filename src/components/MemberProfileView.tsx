@@ -1054,12 +1054,27 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold">
                            ♂
                          </div>
-                         <div>
-                           <p className="text-sm text-muted-foreground">{t('profile.father')}</p>
-                           <p className="font-semibold text-foreground">
-                             {getFather()?.first_name || t('common.not_specified')}
-                           </p>
-                         </div>
+                          <div>
+                            <p className="text-sm text-muted-foreground">{t('profile.father')}</p>
+                            <p className="font-semibold text-foreground">
+                              {(() => {
+                                const father = getFather();
+                                if (!father) return t('common.not_specified');
+                                
+                                // Check if father is from the same family (has father_id in current family)
+                                const fatherHasFamilyFather = (father.father_id || father.fatherId) && 
+                                  familyMembers?.find(m => m.id === (father.father_id || father.fatherId));
+                                
+                                if (fatherHasFamilyFather) {
+                                  // From inside family: show only first_name
+                                  return father.first_name;
+                                } else {
+                                  // From outside family: show first_name + last_name
+                                  return `${father.first_name}${father.last_name ? ' ' + father.last_name : ''}`;
+                                }
+                              })()}
+                            </p>
+                          </div>
                        </div>
                       
                       {/* Mother */}
@@ -1070,12 +1085,27 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center text-white font-semibold">
                            ♀
                          </div>
-                         <div>
-                           <p className="text-sm text-muted-foreground">{t('profile.mother')}</p>
-                           <p className="font-semibold text-foreground">
-                             {getMother() ? `${getMother()?.first_name} ${getMother()?.last_name || ''}`.trim() : t('common.not_specified')}
-                           </p>
-                         </div>
+                          <div>
+                            <p className="text-sm text-muted-foreground">{t('profile.mother')}</p>
+                            <p className="font-semibold text-foreground">
+                              {(() => {
+                                const mother = getMother();
+                                if (!mother) return t('common.not_specified');
+                                
+                                // Check if mother is from the same family (has father_id in current family)
+                                const motherHasFamilyFather = (mother.father_id || mother.fatherId) && 
+                                  familyMembers?.find(m => m.id === (mother.father_id || mother.fatherId));
+                                
+                                if (motherHasFamilyFather) {
+                                  // From inside family: show only first_name
+                                  return mother.first_name;
+                                } else {
+                                  // From outside family: show first_name + last_name
+                                  return `${mother.first_name}${mother.last_name ? ' ' + mother.last_name : ''}`;
+                                }
+                              })()}
+                            </p>
+                          </div>
                        </div>
                     </div>
                   </div>
