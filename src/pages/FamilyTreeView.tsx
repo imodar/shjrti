@@ -518,7 +518,7 @@ const FamilyTreeView = () => {
   console.log('Family tree for rendering:', familyTree);
   console.log('Family tree length:', familyTree.length);
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.2, 3));
-  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.2, 0.5));
+  const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.2, 0.25));
   const handleResetZoom = () => setZoomLevel(1);
   const handleSearchResultSelect = (member: any) => {
     console.log('Selected member from search:', member);
