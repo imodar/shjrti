@@ -346,7 +346,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen" dir={direction}>
+    <div className="min-h-screen flex flex-col" dir={direction}>
       <GlobalHeader />
       <SubscriptionGuard>
         <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
@@ -410,7 +410,7 @@ const Dashboard = () => {
             <Star className="h-8 w-8 text-yellow-400 opacity-60" />
           </div>
 
-          <main className="relative z-10 pt-20">
+          <main className="relative z-10 pt-20 flex-1">
             {/* Hero Section */}
             <section className="py-4 relative">
                 <div className="container mx-auto px-4 relative z-10">

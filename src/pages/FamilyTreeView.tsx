@@ -377,9 +377,9 @@ const FamilyTreeView = () => {
       </div>;
   };
   if (isLoading || dataLoading) {
-    return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
+    return <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
         <GlobalHeader />
-      <div className="container mx-auto px-6 pt-24 pb-12">
+      <div className="container mx-auto px-6 pt-24 pb-12 flex-1">
         <FamilyTreeViewSkeleton />
       </div>
       <GlobalFooterSimplified />
@@ -529,7 +529,7 @@ const FamilyTreeView = () => {
       variant: "default"
     });
   };
-  return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
+  return <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
       <GlobalHeader />
       
       {/* Floating Background Elements */}
@@ -550,7 +550,7 @@ const FamilyTreeView = () => {
         <Star className="h-8 w-8 text-yellow-400 opacity-60" />
       </div>
 
-      <main className="relative z-10 pt-20">
+      <main className="relative z-10 pt-20 flex-1">
         {/* Family Header */}
         {familyData && <div className="container mx-auto px-4">
             <FamilyHeader familyData={familyData} familyId={familyId || ''} familyMembers={familyMembers} generationCount={Math.max(...familyTree.map(group => group.generation || 0)) + 1} onSettingsClick={() => navigate(`/family-builder-new?family=${familyId}&settings=true`)} />

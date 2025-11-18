@@ -642,7 +642,7 @@ export default function Payments() {
   };
   const selectedPlanData = packages.find(p => p.id === selectedPlan);
   const currentPlanData = packages.find(p => p.id === currentPlan);
-  return <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
+  return <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
       {/* Floating Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
@@ -650,10 +650,10 @@ export default function Payments() {
         <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
       </div>
 
-      <div className="relative z-10">
+      <div className="relative z-10 flex-1 flex flex-col">
         <GlobalHeader />
 
-        <div className="container mx-auto px-6 pt-24 pb-12 relative z-10">
+        <div className="container mx-auto px-6 pt-24 pb-12 relative z-10 flex-1">
           <div className="max-w-7xl mx-auto">
             
             {/* Page Header Section */}

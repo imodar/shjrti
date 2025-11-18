@@ -593,7 +593,7 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <GlobalHeader />
       
       <main className="flex-1 relative">
