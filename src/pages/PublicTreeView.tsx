@@ -20,6 +20,7 @@ import { FamilyGalleryView } from "@/components/FamilyGalleryView";
 import { PublicFamilyHeader } from "@/components/PublicFamilyHeader";
 import { FamilyOverview } from "@/components/FamilyOverview";
 import { OrganizationalChart } from "@/components/OrganizationalChart";
+import { DynamicMetaTags } from "@/components/DynamicMetaTags";
 import { Users, AlertCircle, Menu, ZoomIn, ZoomOut, Maximize, Minimize, Check, ChevronsUpDown } from "lucide-react";
 import { MemberProfileModal } from "@/components/MemberProfileModal";
 import { cn } from "@/lib/utils";
