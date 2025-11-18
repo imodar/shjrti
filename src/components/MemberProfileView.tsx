@@ -1383,7 +1383,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                   <div className="flex items-center gap-2 mb-3">
                                     <Users className="w-4 h-4 text-muted-foreground" />
                                     <span className="font-medium text-muted-foreground text-sm">
-                                      {t('common.with')}{' '}
+                                      {mainGroup.child.gender === 'male' 
+                                        ? t('common.with_his_wife')
+                                        : t('common.with_her_husband')
+                                      }{' '}
                                       {spouseGroup.spouse?.first_name 
                                         ? `${spouseGroup.spouse.first_name}${spouseGroup.spouse.last_name ? ' ' + spouseGroup.spouse.last_name : ''}`
                                         : spouseGroup.spouse?.name || t('common.unknown')
