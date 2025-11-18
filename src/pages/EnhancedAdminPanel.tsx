@@ -1092,7 +1092,7 @@ export default function EnhancedAdminPanel() {
             <Button 
               onClick={() => navigate('/admin-api-settings')} 
               variant="outline"
-              className="border-emerald-500 text-emerald-600 hover:bg-emerald-50"
+              className="border-emerald-500 text-emerald-600 hover:bg-emerald-50 hover:!text-emerald-700"
             >
               <Settings className="h-4 w-4 mr-2" />
               إعدادات API
@@ -1100,7 +1100,7 @@ export default function EnhancedAdminPanel() {
             <Button 
               onClick={() => navigate('/admin/social-media')} 
               variant="outline"
-              className="border-emerald-500 text-emerald-600 hover:bg-emerald-50"
+              className="border-emerald-500 text-emerald-600 hover:bg-emerald-50 hover:!text-emerald-700"
             >
               <Share2 className="h-4 w-4 mr-2" />
               إعدادات المشاركة
