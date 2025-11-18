@@ -1363,9 +1363,15 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                               <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border/30">
                                 <Users className="w-5 h-5 text-primary" />
                                 <span className="font-semibold text-foreground">
-                                  {group.father?.first_name || group.father?.name || t('common.unknown')}
+                                  {group.father?.first_name 
+                                    ? `${group.father.first_name}${group.father.last_name ? ' ' + group.father.last_name : ''}`
+                                    : group.father?.name || t('common.unknown')
+                                  }
                                   {' '}{t('common.and')}{' '}
-                                  {group.mother?.first_name || group.mother?.name || t('common.unknown')}
+                                  {group.mother?.first_name 
+                                    ? `${group.mother.first_name}${group.mother.last_name ? ' ' + group.mother.last_name : ''}`
+                                    : group.mother?.name || t('common.unknown')
+                                  }
                                 </span>
                               </div>
                               
