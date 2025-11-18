@@ -94,13 +94,22 @@ serve(async (req) => {
 
     // Send email via Resend (recommended for serverless)
     try {
-      const fromEmail = Deno.env.get("SMTP_FROM_EMAIL") || "no-reply@shjrti.com";
+      // Use from_email and from_name from template, fallback to env variable
+      const fromEmail = template.from_email || Deno.env.get("SMTP_FROM_EMAIL") || "no-reply@shjrti.com";
+      const fromName = template.from_name || "شجرتي";
+      const replyTo = template.reply_to || undefined;
+
+      // Format sender as "Name <email>"
+      const fromFormatted = `${fromName} <${fromEmail}>`;
+
+      console.log(`Sending from: ${fromFormatted}${replyTo ? `, reply-to: ${replyTo}` : ''}`);
 
       const emailResponse = await resend.emails.send({
-        from: fromEmail,
+        from: fromFormatted,
         to: [recipientEmail],
         subject: finalSubject,
         html: finalBody,
+        reply_to: replyTo,
       });
 
       console.log("Resend response:", emailResponse);

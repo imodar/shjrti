@@ -250,8 +250,11 @@ export type Database = {
           body: Json
           created_at: string | null
           description: string | null
+          from_email: string | null
+          from_name: string | null
           id: string
           is_active: boolean | null
+          reply_to: string | null
           subject: Json
           template_key: string
           template_name: Json
@@ -262,8 +265,11 @@ export type Database = {
           body?: Json
           created_at?: string | null
           description?: string | null
+          from_email?: string | null
+          from_name?: string | null
           id?: string
           is_active?: boolean | null
+          reply_to?: string | null
           subject?: Json
           template_key: string
           template_name?: Json
@@ -274,8 +280,11 @@ export type Database = {
           body?: Json
           created_at?: string | null
           description?: string | null
+          from_email?: string | null
+          from_name?: string | null
           id?: string
           is_active?: boolean | null
+          reply_to?: string | null
           subject?: Json
           template_key?: string
           template_name?: Json
