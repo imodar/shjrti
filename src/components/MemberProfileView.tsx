@@ -1187,10 +1187,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                                     <span>توأم ({twins.length})</span>
                                                   </div>
                                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                    {twins.map((child) => (
+                                                     {twins.map((child) => (
                                                    <div 
                                                      key={child.id} 
-                                                     className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/80 cursor-pointer hover:bg-background transition-colors duration-200 border border-transparent hover:border-border/30"
+                                                     className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/80 cursor-pointer hover:bg-background transition-colors duration-200 border border-dashed border-border/30 hover:border-border/50"
                                                      onClick={() => onMemberClick?.(child)}
                                                    >
                                                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
@@ -1217,13 +1217,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                               </div>
                                             ))}
 
-                                           {/* Render non-twin children */}
-                                           {nonTwins.map((child) => (
-                                             <div 
-                                               key={child.id} 
-                                               className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/50 cursor-pointer hover:bg-background/80 transition-colors duration-200 border border-transparent hover:border-border/30"
-                                               onClick={() => onMemberClick?.(child)}
-                                             >
+                                            {/* Render non-twin children */}
+                                            {nonTwins.map((child) => (
+                                              <div 
+                                                key={child.id} 
+                                                className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/50 cursor-pointer hover:bg-background/80 transition-colors duration-200 border border-dashed border-border/30 hover:border-border/50"
+                                                onClick={() => onMemberClick?.(child)}
+                                              >
                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
                                                  child.gender === 'female' 
                                                    ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
@@ -1431,7 +1431,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                                      return (
                                                        <div 
                                                          key={twin.id} 
-                                                         className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                                                         className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 border border-dashed border-border/30 hover:border-border/50"
                                                          onClick={() => onMemberClick?.(twin)}
                                                        >
                                                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
@@ -1468,7 +1468,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                             return (
                                               <div 
                                                 key={grandchild.id} 
-                                                className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/50 cursor-pointer hover:bg-background/80 transition-colors duration-200 border border-transparent hover:border-border/30"
+                                                className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/50 cursor-pointer hover:bg-background/80 transition-colors duration-200 border border-dashed border-border/30 hover:border-border/50"
                                                 onClick={() => onMemberClick?.(grandchild)}
                                               >
                                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
