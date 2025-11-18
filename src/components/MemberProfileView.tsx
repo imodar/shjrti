@@ -1204,6 +1204,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                                      <div className="flex-1 min-w-0 ps-3">
                                                        <p className="font-medium text-sm text-foreground truncate">
                                                          {child.first_name}
+                                                         {child.last_name && child.last_name !== member.last_name && (
+                                                           <span className="text-muted-foreground"> {child.last_name}</span>
+                                                         )}
                                                        </p>
                                                        {child.birth_date && (
                                                          <p className="text-xs text-muted-foreground">
@@ -1235,6 +1238,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                                <div className="flex-1 min-w-0 ps-3">
                                                  <p className="font-medium text-sm text-foreground truncate">
                                                    {child.first_name}
+                                                   {child.last_name && child.last_name !== member.last_name && (
+                                                     <span className="text-muted-foreground"> {child.last_name}</span>
+                                                   )}
                                                  </p>
                                                  {child.birth_date && (
                                                    <p className="text-xs text-muted-foreground">
