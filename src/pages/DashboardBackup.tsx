@@ -363,7 +363,7 @@ export default function Dashboard() {
             <div className="space-y-2">
               <Label className="text-right block">رابط المشاركة العام:</Label>
               <div className="flex gap-2">
-                <Input value={`${window.location.origin}/tree/${treeToShare}?public=true`} readOnly className="text-left" />
+                <Input value={`${window.location.origin}/tree/${treeToShare}?public=true`} readOnly />
                 <Button onClick={copyShareLink} variant="outline" size="icon" className={linkCopied ? "text-green-600" : ""}>
                   {linkCopied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 </Button>

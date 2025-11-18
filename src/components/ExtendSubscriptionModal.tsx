@@ -103,7 +103,7 @@ export function ExtendSubscriptionModal({ isOpen, onClose, user, onSuccess }: Ex
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className={`sm:max-w-[500px] ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
-        <DialogHeader className={direction === 'rtl' ? 'text-right' : 'text-left'}>
+        <DialogHeader>
           <DialogTitle>تمديد اشتراك المستخدم</DialogTitle>
           <DialogDescription>
             تمديد اشتراك المستخدم: {user?.email}

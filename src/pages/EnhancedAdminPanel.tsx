@@ -1884,13 +1884,13 @@ export default function EnhancedAdminPanel() {
                   <div className="p-4 border rounded-lg bg-gradient-to-br from-blue-50 to-indigo-50">
                     <h4 className="font-medium mb-2">إجراءات سريعة</h4>
                     <div className="space-y-2">
-                      <button className="w-full text-left text-sm p-2 hover:bg-white rounded transition-colors">
+                      <button className="w-full text-sm p-2 hover:bg-white rounded transition-colors">
                         → عرض الفواتير المعلقة
                       </button>
-                      <button className="w-full text-left text-sm p-2 hover:bg-white rounded transition-colors">
+                      <button className="w-full text-sm p-2 hover:bg-white rounded transition-colors">
                         → تصدير تقرير مالي
                       </button>
-                      <button className="w-full text-left text-sm p-2 hover:bg-white rounded transition-colors">
+                      <button className="w-full text-sm p-2 hover:bg-white rounded transition-colors">
                         → إدارة الاشتراكات
                       </button>
                     </div>
@@ -2186,7 +2186,7 @@ export default function EnhancedAdminPanel() {
         {/* Edit Language Dialog */}
         <Dialog open={editingLanguage !== null} onOpenChange={() => setEditingLanguage(null)}>
           <DialogContent className={`sm:max-w-[425px] ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
-            <DialogHeader className={direction === 'rtl' ? 'text-right' : 'text-left'}>
+            <DialogHeader>
               <DialogTitle>تعديل اللغة</DialogTitle>
               <DialogDescription>قم بتعديل تفاصيل اللغة المحددة</DialogDescription>
             </DialogHeader>
@@ -2289,7 +2289,7 @@ export default function EnhancedAdminPanel() {
         {/* Edit Translation Dialog */}
         <Dialog open={editingTranslation !== null} onOpenChange={() => setEditingTranslation(null)}>
           <DialogContent className={`sm:max-w-[525px] ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
-            <DialogHeader className={direction === 'rtl' ? 'text-right' : 'text-left'}>
+            <DialogHeader>
               <DialogTitle>تعديل الترجمة</DialogTitle>
               <DialogDescription>قم بتعديل تفاصيل الترجمة المحددة</DialogDescription>
             </DialogHeader>
@@ -2367,7 +2367,7 @@ export default function EnhancedAdminPanel() {
         {/* Delete User Confirmation Dialog */}
         <Dialog open={deletingUser !== null} onOpenChange={() => setDeletingUser(null)}>
           <DialogContent className={`sm:max-w-[525px] ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
-            <DialogHeader className="text-left">
+            <DialogHeader>
               <DialogTitle className="text-red-600">تأكيد حذف المستخدم</DialogTitle>
               <DialogDescription className="text-red-500">
                 تحذير: هذا الإجراء لا يمكن التراجع عنه
@@ -2407,7 +2407,7 @@ export default function EnhancedAdminPanel() {
         {/* Comprehensive Edit User Dialog */}
         <Dialog open={editingUser !== null} onOpenChange={() => setEditingUser(null)}>
           <DialogContent className={`sm:max-w-[700px] max-h-[90vh] overflow-y-auto ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
-            <DialogHeader className={direction === 'rtl' ? 'text-right' : 'text-left'}>
+            <DialogHeader>
               <DialogTitle>إدارة المستخدم - تحكم شامل</DialogTitle>
               <DialogDescription>تحرير جميع بيانات المستخدم وحالاته واشتراكه</DialogDescription>
             </DialogHeader>

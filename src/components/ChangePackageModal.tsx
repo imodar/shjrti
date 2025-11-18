@@ -133,7 +133,7 @@ export function ChangePackageModal({ isOpen, onClose, user, onSuccess }: ChangeP
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className={`sm:max-w-[600px] max-h-[90vh] overflow-y-auto ${direction === 'rtl' ? 'font-arabic' : ''}`} dir={direction}>
-        <DialogHeader className={direction === 'rtl' ? 'text-right' : 'text-left'}>
+        <DialogHeader>
           <DialogTitle>تغيير باقة المستخدم</DialogTitle>
           <DialogDescription>
             تغيير باقة المستخدم: {user?.email}
