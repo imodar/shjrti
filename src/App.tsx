@@ -98,21 +98,22 @@ const App = () => {
 
   return (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <LanguageProvider>
-        <DirectionWrapper>
-          <AuthProvider>
-            <AdminProvider>
-              <SubscriptionProvider>
-                <MaintenanceModeGuard>
-                <Toaster />
-                <Sonner />
-          <BrowserRouter>
-            <ScrollToTop />
-            <PageViewTracker />
-            <PageTitle />
-            <ConsentAwareScriptInjector />
-                  {gaId && <GoogleAnalytics measurementId={gaId} />}
+    <HelmetProvider>
+      <TooltipProvider>
+        <LanguageProvider>
+          <DirectionWrapper>
+            <AuthProvider>
+              <AdminProvider>
+                <SubscriptionProvider>
+                  <MaintenanceModeGuard>
+                  <Toaster />
+                  <Sonner />
+            <BrowserRouter>
+              <ScrollToTop />
+              <PageViewTracker />
+              <PageTitle />
+              <ConsentAwareScriptInjector />
+                    {gaId && <GoogleAnalytics measurementId={gaId} />}
                   <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
@@ -211,6 +212,11 @@ const App = () => {
                       <AdminAPISettings />
                     </ProtectedRoute>
                   } />
+                  <Route path="/admin/social-media" element={
+                    <ProtectedRoute requireAdmin={true}>
+                      <AdminSocialMediaSettings />
+                    </ProtectedRoute>
+                  } />
                   <Route path="/renew-subscription" element={
                     <ProtectedRoute>
                       <RenewSubscription />
@@ -236,6 +242,7 @@ const App = () => {
         </DirectionWrapper>
       </LanguageProvider>
     </TooltipProvider>
+    </HelmetProvider>
   </QueryClientProvider>
 );
 };
