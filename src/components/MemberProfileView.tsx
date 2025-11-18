@@ -1377,31 +1377,92 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                               
                               {/* Grandchildren Grid */}
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                {group.grandchildren.map((grandchild) => (
-                                  <div 
-                                    key={grandchild.id} 
-                                    className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-card border border-border/30 shadow-sm cursor-pointer hover:bg-muted/70 transition-colors duration-200 hover:border-border/50"
-                                    onClick={() => onMemberClick?.(grandchild)}
-                                  >
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${
-                                      grandchild.gender === 'female' 
-                                        ? 'bg-gradient-to-br from-pink-500 to-pink-600' 
-                                        : 'bg-gradient-to-br from-blue-500 to-blue-600'
-                                    }`}>
-                                      {grandchild.gender === 'female' ? '♀' : '♂'}
-                                    </div>
-                                    <div className="flex-1 ps-3">
-                                      <p className="font-semibold text-foreground">
-                                        {grandchild.first_name}
-                                      </p>
-                                      {grandchild.birth_date && (
-                                        <p className="text-sm text-muted-foreground">
-                                          {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} {t('profile.years')}
-                                        </p>
-                                      )}
-                                    </div>
-                                  </div>
-                                ))}
+                                {(() => {
+                                  // Group grandchildren by twin_group_id
+                                  const twinGroups = new Map<string, typeof group.grandchildren>();
+                                  const nonTwins: typeof group.grandchildren = [];
+                                  
+                                  group.grandchildren.forEach((grandchild) => {
+                                    if (grandchild.is_twin && grandchild.twin_group_id) {
+                                      if (!twinGroups.has(grandchild.twin_group_id)) {
+                                        twinGroups.set(grandchild.twin_group_id, []);
+                                      }
+                                      twinGroups.get(grandchild.twin_group_id)!.push(grandchild);
+                                    } else {
+                                      nonTwins.push(grandchild);
+                                    }
+                                  });
+
+                                  return (
+                                    <>
+                                      {/* Render twin groups */}
+                                      {Array.from(twinGroups.entries()).map(([groupId, twins]) => (
+                                        <div key={`twin-group-${groupId}`} className="col-span-full">
+                                          <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
+                                            <div className="flex items-center gap-1 mb-3 text-xs text-muted-foreground">
+                                              <Users className="h-3 w-3" />
+                                              <span>توأم ({twins.length})</span>
+                                            </div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                              {twins.map((grandchild) => (
+                                                <div 
+                                                  key={grandchild.id} 
+                                                  className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-background/80 cursor-pointer hover:bg-background transition-colors duration-200 border border-transparent hover:border-border/30"
+                                                  onClick={() => onMemberClick?.(grandchild)}
+                                                >
+                                                  <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${
+                                                    grandchild.gender === 'female' 
+                                                      ? 'bg-gradient-to-br from-pink-500 to-pink-600' 
+                                                      : 'bg-gradient-to-br from-blue-500 to-blue-600'
+                                                  }`}>
+                                                    {grandchild.gender === 'female' ? '♀' : '♂'}
+                                                  </div>
+                                                  <div className="flex-1 ps-3">
+                                                    <p className="font-semibold text-foreground">
+                                                      {grandchild.first_name}
+                                                    </p>
+                                                    {grandchild.birth_date && (
+                                                      <p className="text-sm text-muted-foreground">
+                                                        {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} {t('profile.years')}
+                                                      </p>
+                                                    )}
+                                                  </div>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ))}
+
+                                      {/* Render non-twin grandchildren */}
+                                      {nonTwins.map((grandchild) => (
+                                        <div 
+                                          key={grandchild.id} 
+                                          className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-card border border-border/30 shadow-sm cursor-pointer hover:bg-muted/70 transition-colors duration-200 hover:border-border/50"
+                                          onClick={() => onMemberClick?.(grandchild)}
+                                        >
+                                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${
+                                            grandchild.gender === 'female' 
+                                              ? 'bg-gradient-to-br from-pink-500 to-pink-600' 
+                                              : 'bg-gradient-to-br from-blue-500 to-blue-600'
+                                          }`}>
+                                            {grandchild.gender === 'female' ? '♀' : '♂'}
+                                          </div>
+                                          <div className="flex-1 ps-3">
+                                            <p className="font-semibold text-foreground">
+                                              {grandchild.first_name}
+                                            </p>
+                                            {grandchild.birth_date && (
+                                              <p className="text-sm text-muted-foreground">
+                                                {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} {t('profile.years')}
+                                              </p>
+                                            )}
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </>
+                                  );
+                                })()}
                               </div>
                             </div>
                           ))}
