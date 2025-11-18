@@ -3384,7 +3384,7 @@ const FamilyBuilderNew = () => {
                                   </div>
                                   
                                   {/* Main Title */}
-                                  <h1 className="relative text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
+                                  <h1 className="relative text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-relaxed">
                                     <span className="inline-block bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent animate-fade-in hover:scale-105 transition-transform duration-300">
                                       عائلة {familyData?.name || 'غير محدد'}
                                     </span>
