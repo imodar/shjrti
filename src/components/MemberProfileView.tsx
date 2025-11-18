@@ -1179,14 +1179,15 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                        return (
                                          <>
                                             {/* Render twin groups */}
-                                            {Array.from(twinGroups.entries()).map(([groupId, twins]) => (
-                                              <div key={`twin-group-${groupId}`} className="col-span-full">
-                                                <div className="p-3 rounded-lg bg-primary/5 border border-primary/10">
-                                                  <div className="flex items-center gap-1 mb-3 text-xs text-muted-foreground">
-                                                    <Users className="h-3 w-3" />
-                                                    <span>توأم ({twins.length})</span>
-                                                  </div>
-                                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                             {Array.from(twinGroups.entries()).map(([groupId, twins]) => (
+                                               <div key={`twin-group-${groupId}`} className="col-span-full">
+                                                 <div className="bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-3">
+                                                   <div className="flex items-center gap-2 mb-2">
+                                                     <span className="text-xs font-semibold text-yellow-700 dark:text-yellow-300 bg-yellow-200 dark:bg-yellow-800 px-2 py-1 rounded">
+                                                       {t('profile.twins')} ({twins.length})
+                                                     </span>
+                                                   </div>
+                                                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                                      {twins.map((child) => (
                                                    <div 
                                                      key={child.id} 
