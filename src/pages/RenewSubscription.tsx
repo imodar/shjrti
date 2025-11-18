@@ -144,7 +144,7 @@ export default function RenewSubscription() {
                         onClick={() => navigate('/plan-selection')}
                         className="w-full h-auto p-6 justify-start"
                       >
-                        <div className="text-left">
+                        <div>
                           <div className="font-semibold">عرض جميع الباقات</div>
                           <div className="text-sm opacity-90">اختر من بين الباقات المتاحة</div>
                         </div>
@@ -155,7 +155,7 @@ export default function RenewSubscription() {
                         onClick={() => navigate('/payment')}
                         className="w-full h-auto p-6 justify-start"
                       >
-                        <div className="text-left">
+                        <div>
                           <div className="font-semibold">تجديد سريع</div>
                           <div className="text-sm opacity-90">جدد بنفس الباقة الحالية</div>
                         </div>
