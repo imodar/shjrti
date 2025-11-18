@@ -228,7 +228,7 @@ const FamilyStatistics = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
         <GlobalHeader />
         
         {/* Floating Background Elements */}
@@ -238,7 +238,7 @@ const FamilyStatistics = () => {
           <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
         </div>
 
-        <main className="relative z-10 pt-20">
+        <main className="relative z-10 pt-20 flex-1">
           <div className="container mx-auto px-4 sm:px-6 py-8">
             <FamilyStatisticsSkeleton />
           </div>
@@ -250,7 +250,7 @@ const FamilyStatistics = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
       <GlobalHeader />
       
       {/* Floating Background Elements */}
@@ -271,7 +271,7 @@ const FamilyStatistics = () => {
         <Star className="h-8 w-8 text-yellow-400 opacity-60" />
       </div>
 
-      <main className="relative z-10 pt-20">
+      <main className="relative z-10 pt-20 flex-1">
         {/* Family Header */}
         <div className="container mx-auto px-4">
           <FamilyHeader 

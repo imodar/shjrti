@@ -3239,7 +3239,7 @@ const FamilyBuilderNew = () => {
 
   }
   return <SubscriptionGuard requireActiveSubscription={true}>
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
       <GlobalHeader />
       <main className="flex-1 relative">
       
