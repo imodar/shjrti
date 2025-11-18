@@ -1424,31 +1424,37 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                                   </span>
                                                 </div>
                                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                   {twins.map((twin) => (
-                                                     <div 
-                                                       key={twin.id} 
-                                                       className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-                                                       onClick={() => onMemberClick?.(twin)}
-                                                     >
-                                                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
-                                                         twin.gender === 'female' 
-                                                           ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
-                                                           : 'bg-gradient-to-br from-blue-400 to-blue-500'
-                                                       }`}>
-                                                         {twin.gender === 'female' ? '♀' : '♂'}
-                                                       </div>
-                                                       <div className="flex-1 min-w-0 ps-3">
-                                                         <p className="font-medium text-sm text-foreground truncate">
-                                                           {twin.first_name || twin.name}
-                                                         </p>
-                                                         {twin.birth_date && (
-                                                           <p className="text-xs text-muted-foreground">
-                                                             {new Date().getFullYear() - new Date(twin.birth_date).getFullYear()} {t('profile.years')}
+                                                   {twins.map((twin) => {
+                                                     // Check if twin is from outside the family (different last name)
+                                                     const isOutsideFamily = twin.last_name && member.last_name && twin.last_name !== member.last_name;
+                                                     
+                                                     return (
+                                                       <div 
+                                                         key={twin.id} 
+                                                         className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                                                         onClick={() => onMemberClick?.(twin)}
+                                                       >
+                                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
+                                                           twin.gender === 'female' 
+                                                             ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
+                                                             : 'bg-gradient-to-br from-blue-400 to-blue-500'
+                                                         }`}>
+                                                           {twin.gender === 'female' ? '♀' : '♂'}
+                                                         </div>
+                                                         <div className="flex-1 min-w-0 ps-3">
+                                                           <p className="font-medium text-sm text-foreground truncate">
+                                                             {twin.first_name || twin.name}
+                                                             {isOutsideFamily && ` ${twin.last_name}`}
                                                            </p>
-                                                         )}
+                                                           {twin.birth_date && (
+                                                             <p className="text-xs text-muted-foreground">
+                                                               {new Date().getFullYear() - new Date(twin.birth_date).getFullYear()} {t('profile.years')}
+                                                             </p>
+                                                           )}
+                                                         </div>
                                                        </div>
-                                                     </div>
-                                                   ))}
+                                                     );
+                                                   })}
                                                  </div>
                                               </div>
                                             </div>
