@@ -1423,25 +1423,33 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                                     {t('profile.twins')}
                                                   </span>
                                                 </div>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                  {twins.map((twin) => (
-                                                    <div 
-                                                      key={twin.id} 
-                                                      className="flex items-center space-x-3 space-x-reverse p-2 rounded-lg bg-white dark:bg-gray-800"
-                                                    >
-                                                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${
-                                                        twin.gender === 'female' 
-                                                          ? 'bg-gradient-to-br from-pink-500 to-pink-600' 
-                                                          : 'bg-gradient-to-br from-blue-500 to-blue-600'
-                                                      }`}>
-                                                        {twin.gender === 'female' ? '♀' : '♂'}
-                                                      </div>
-                                                      <span className="text-sm font-medium text-foreground">
-                                                        {twin.first_name || twin.name}
-                                                      </span>
-                                                    </div>
-                                                  ))}
-                                                </div>
+                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                   {twins.map((twin) => (
+                                                     <div 
+                                                       key={twin.id} 
+                                                       className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                                                       onClick={() => onMemberClick?.(twin)}
+                                                     >
+                                                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
+                                                         twin.gender === 'female' 
+                                                           ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
+                                                           : 'bg-gradient-to-br from-blue-400 to-blue-500'
+                                                       }`}>
+                                                         {twin.gender === 'female' ? '♀' : '♂'}
+                                                       </div>
+                                                       <div className="flex-1 min-w-0 ps-3">
+                                                         <p className="font-medium text-sm text-foreground truncate">
+                                                           {twin.first_name || twin.name}
+                                                         </p>
+                                                         {twin.birth_date && (
+                                                           <p className="text-xs text-muted-foreground">
+                                                             {new Date().getFullYear() - new Date(twin.birth_date).getFullYear()} {t('profile.years')}
+                                                           </p>
+                                                         )}
+                                                       </div>
+                                                     </div>
+                                                   ))}
+                                                 </div>
                                               </div>
                                             </div>
                                           ))}
@@ -1452,19 +1460,28 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                             const isOutsideFamily = grandchild.last_name && member.last_name && grandchild.last_name !== member.last_name;
                                             
                                             return (
-                                              <div key={grandchild.id} className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-background border border-border">
-                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${
+                                              <div 
+                                                key={grandchild.id} 
+                                                className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/50 cursor-pointer hover:bg-background/80 transition-colors duration-200 border border-transparent hover:border-border/30"
+                                                onClick={() => onMemberClick?.(grandchild)}
+                                              >
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
                                                   grandchild.gender === 'female' 
-                                                    ? 'bg-gradient-to-br from-pink-500 to-pink-600' 
-                                                    : 'bg-gradient-to-br from-blue-500 to-blue-600'
+                                                    ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
+                                                    : 'bg-gradient-to-br from-blue-400 to-blue-500'
                                                 }`}>
                                                   {grandchild.gender === 'female' ? '♀' : '♂'}
                                                 </div>
-                                                <div className="flex-1 min-w-0">
-                                                  <p className="font-medium text-foreground truncate">
+                                                <div className="flex-1 min-w-0 ps-3">
+                                                  <p className="font-medium text-sm text-foreground truncate">
                                                     {grandchild.first_name || grandchild.name}
                                                     {isOutsideFamily && ` ${grandchild.last_name}`}
                                                   </p>
+                                                  {grandchild.birth_date && (
+                                                    <p className="text-xs text-muted-foreground">
+                                                      {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} {t('profile.years')}
+                                                    </p>
+                                                  )}
                                                 </div>
                                               </div>
                                             );
