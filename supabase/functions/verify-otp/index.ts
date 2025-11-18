@@ -63,23 +63,23 @@ serve(async (req) => {
     let authResult;
     
     if (purpose === 'signup') {
-      // استخراج البيانات من otpRecord.user_data
-      const storedUserData = otpRecord.user_data || {};
-      const storedPassword = storedUserData.password || password;
-      
-      if (!storedPassword) {
+      // Password MUST be provided during verification (not stored in database)
+      if (!password) {
         return new Response(
-          JSON.stringify({ error: "Password is required for signup" }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          JSON.stringify({ success: false, error: "Password is required for signup" }),
+          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
+      // استخراج البيانات غير الحساسة من otpRecord.user_data
+      const storedUserData = otpRecord.user_data || {};
 
       console.log(`Creating new user account for ${email}`);
 
       // Create user with email already confirmed
       const { data: signUpData, error: signUpError } = await supabase.auth.admin.createUser({
         email,
-        password: storedPassword,
+        password: password, // Use password from verification request
         email_confirm: true, // Auto-confirm email
         user_metadata: {
           first_name: storedUserData.first_name || userData?.first_name || '',
