@@ -1309,7 +1309,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           </div>
                         </div>
                         
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                            {grandchildren.map((grandchild) => (
                              <div 
                                key={grandchild.id} 
@@ -1324,7 +1324,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                  {grandchild.gender === 'female' ? '♀' : '♂'}
                                </div>
                                 <div className="flex-1 ps-3">
-                                 <p className="font-semibold text-foreground">{grandchild.first_name}</p>
+                                 <p className="font-semibold text-foreground">
+                                   {grandchild.first_name}
+                                   {grandchild.last_name && grandchild.last_name !== member.last_name && (
+                                     <span className="text-muted-foreground"> {grandchild.last_name}</span>
+                                   )}
+                                 </p>
                                   {grandchild.birth_date && (
                                     <p className="text-sm text-muted-foreground">
                                       {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} {t('profile.years')}
