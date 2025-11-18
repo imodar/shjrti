@@ -381,44 +381,31 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
   // Get grandchildren grouped by their parents (children of the current member)
   const getGrandchildrenGroupedByParents = () => {
-    const children = getChildren();
-    const groups = [];
+    const allGrandchildren = getGrandchildren();
+    const groupsMap = new Map<string, { father: any, mother: any, grandchildren: any[] }>();
     
-    children.forEach(child => {
-      const childGrandchildren = familyMembers.filter(m => 
-        (m.fatherId === child.id || m.father_id === child.id) || 
-        (m.motherId === child.id || m.mother_id === child.id)
-      );
+    allGrandchildren.forEach(grandchild => {
+      const fatherId = grandchild.father_id || grandchild.fatherId;
+      const motherId = grandchild.mother_id || grandchild.motherId;
       
-      if (childGrandchildren.length > 0) {
-        // Get spouse of this child (parent of grandchildren)
-        const childSpouse = familyMembers.find(m => 
-          (child.gender === 'male' && (m.id === child.spouse_id || m.spouse_id === child.id)) ||
-          (child.gender === 'female' && (m.id === child.spouse_id || m.spouse_id === child.id))
-        );
-
-        // Also check marriages table for spouse
-        const childMarriage = marriages?.find(m => 
-          (m.husband_id === child.id || m.wife_id === child.id)
-        );
+      // Create unique key based on actual parents
+      const key = `${fatherId || 'no-father'}-${motherId || 'no-mother'}`;
+      
+      if (!groupsMap.has(key)) {
+        const father = fatherId ? familyMembers.find(m => m.id === fatherId) : null;
+        const mother = motherId ? familyMembers.find(m => m.id === motherId) : null;
         
-        const spouseFromMarriage = childMarriage 
-          ? familyMembers.find(m => 
-              m.id === (childMarriage.husband_id === child.id ? childMarriage.wife_id : childMarriage.husband_id)
-            )
-          : null;
-
-        const spouse = childSpouse || spouseFromMarriage;
-        
-        groups.push({
-          father: child.gender === 'male' ? child : spouse,
-          mother: child.gender === 'female' ? child : spouse,
-          grandchildren: childGrandchildren
+        groupsMap.set(key, {
+          father: father || null,
+          mother: mother || null,
+          grandchildren: []
         });
       }
+      
+      groupsMap.get(key)!.grandchildren.push(grandchild);
     });
     
-    return groups;
+    return Array.from(groupsMap.values());
   };
   
   const getChildrenBySpouse = (spouseId?: string) => {
