@@ -34,6 +34,7 @@ import { Slider } from "@/components/ui/slider";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { FamilyHeader } from "@/components/FamilyHeader";
+import { DynamicMetaTags } from "@/components/DynamicMetaTags";
 import { SmartSearchBar } from "@/components/SmartSearchBar";
 import { DateDisplay } from "@/components/DateDisplay";
 import { SuggestionPanel } from "@/components/SuggestionPanel";
