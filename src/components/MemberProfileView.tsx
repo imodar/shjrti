@@ -466,26 +466,30 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     const lineages = [];
     const genderTerm = targetMember.gender === 'female' ? t('profile.daughter_of') : t('profile.son_of');
     
-    // 2. Members with father_id (original family members) - HIGHEST PRIORITY
-    if (targetMember.father_id) {
-      const father = familyMembers?.find(f => f.id === targetMember.father_id);
-      if (father) {
-        const fatherFirstName = father.first_name || father.name.split(' ')[0];
+    // 2. Members with father_id or mother_id (original family members) - HIGHEST PRIORITY
+    const parentId = targetMember.father_id || targetMember.mother_id;
+    if (parentId) {
+      const parent = familyMembers?.find(f => f.id === parentId);
+      if (parent) {
+        const parentFirstName = parent.first_name || parent.name.split(' ')[0];
         
-        // Check if father is founder (children of founder)
-        if (father.is_founder) {
-          lineages.push(`${genderTerm} ${fatherFirstName}`);
+        // Check if parent is founder (children of founder)
+        if (parent.is_founder) {
+          lineages.push(`${genderTerm} ${parentFirstName}`);
         } else {
-          // Later generations: include grandfather
-          const grandfatherId = father.father_id || father.fatherId;
-          const grandfather = familyMembers?.find(f => f.id === grandfatherId);
-          if (grandfather) {
-            const grandfatherFirstName = grandfather.first_name || grandfather.name.split(' ')[0];
-            // Use gender-aware term for father's relation to grandfather
-            const fatherChildTerm = father.gender === 'female' ? t('profile.daughter_of_short') : t('profile.son_of_short');
-            lineages.push(`${genderTerm} ${fatherFirstName} ${fatherChildTerm} ${grandfatherFirstName}`);
+          // Later generations: include grandparent
+          // Use mother_id if parent is female, father_id if parent is male
+          const grandparentId = parent.gender === 'female' 
+            ? (parent.mother_id || parent.motherId)
+            : (parent.father_id || parent.fatherId);
+          const grandparent = familyMembers?.find(f => f.id === grandparentId);
+          if (grandparent) {
+            const grandparentFirstName = grandparent.first_name || grandparent.name.split(' ')[0];
+            // Use gender-aware term for parent's relation to grandparent
+            const parentChildTerm = parent.gender === 'female' ? t('profile.daughter_of_short') : t('profile.son_of_short');
+            lineages.push(`${genderTerm} ${parentFirstName} ${parentChildTerm} ${grandparentFirstName}`);
           } else {
-            lineages.push(`${genderTerm} ${fatherFirstName}`);
+            lineages.push(`${genderTerm} ${parentFirstName}`);
           }
         }
       }
