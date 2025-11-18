@@ -1096,6 +1096,14 @@ export default function EnhancedAdminPanel() {
               <Settings className="h-4 w-4 mr-2" />
               إعدادات API
             </Button>
+            <Button 
+              onClick={() => navigate('/admin/social-media')} 
+              variant="outline"
+              className="border-blue-500 text-blue-600 hover:bg-blue-50"
+            >
+              <Globe className="h-4 w-4 mr-2" />
+              إعدادات المشاركة
+            </Button>
           </div>
         </div>
 
