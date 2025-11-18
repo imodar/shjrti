@@ -94,8 +94,8 @@ serve(async (req) => {
           userData: {
             first_name: firstName,
             last_name: lastName,
-            phone: phone || '',
-            password // حفظ كلمة المرور لاستخدامها عند verify-otp
+            phone: phone || ''
+            // password is NOT sent here (security fix) - will be provided during verification
           }
         }
       }

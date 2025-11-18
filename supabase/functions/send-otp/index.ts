@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { checkRateLimit, getClientIP, validateEmail } from '../_shared/rateLimiter.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -21,11 +22,52 @@ serve(async (req) => {
       );
     }
 
+    // Validate email format
+    if (!validateEmail(email)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid email format" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     // Validate purpose
     if (!['signup', 'login', 'reset_password'].includes(purpose)) {
       return new Response(
         JSON.stringify({ error: "Invalid purpose. Must be: signup, login, or reset_password" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Rate limiting - Email-based (max 3 OTP per email per 15 minutes)
+    const emailLimit = checkRateLimit(`otp_email_${email}`, { 
+      maxAttempts: 3, 
+      windowMs: 15 * 60 * 1000 
+    });
+    if (!emailLimit.allowed) {
+      console.warn(`Rate limit exceeded for email: ${email}`);
+      return new Response(
+        JSON.stringify({ 
+          error: "Too many OTP requests. Please try again later.",
+          retryAfter: emailLimit.retryAfter 
+        }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Rate limiting - IP-based (max 10 OTP per IP per hour)
+    const clientIP = getClientIP(req);
+    const ipLimit = checkRateLimit(`otp_ip_${clientIP}`, { 
+      maxAttempts: 10, 
+      windowMs: 60 * 60 * 1000 
+    });
+    if (!ipLimit.allowed) {
+      console.warn(`Rate limit exceeded for IP: ${clientIP}`);
+      return new Response(
+        JSON.stringify({ 
+          error: "Too many requests from this IP. Please try again later.",
+          retryAfter: ipLimit.retryAfter 
+        }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -44,7 +86,15 @@ serve(async (req) => {
 
     console.log(`Generating OTP for ${email}, purpose: ${purpose}`);
 
-    // Save OTP to database with userData
+    // Save OTP to database WITHOUT password (security fix)
+    // Only store non-sensitive user metadata
+    const sanitizedUserData = userData ? {
+      first_name: userData.first_name,
+      last_name: userData.last_name,
+      phone: userData.phone
+      // password is NOT stored here - will be provided during verification
+    } : null;
+
     const { data: otpRecord, error: otpError } = await supabase
       .from("auth_otp_codes")
       .insert({
@@ -53,7 +103,7 @@ serve(async (req) => {
         purpose,
         expires_at: expiresAt.toISOString(),
         is_used: false,
-        user_data: userData || null // حفظ بيانات المستخدم بما فيها كلمة المرور
+        user_data: sanitizedUserData
       })
       .select()
       .single();

@@ -9,6 +9,7 @@ export interface SendOTPOptions {
     first_name?: string;
     last_name?: string;
     phone?: string;
+    // password is NEVER sent during OTP send (security fix)
   };
 }
 
