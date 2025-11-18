@@ -378,6 +378,48 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     
     return grandchildren;
   };
+
+  // Get grandchildren grouped by their parents (children of the current member)
+  const getGrandchildrenGroupedByParents = () => {
+    const children = getChildren();
+    const groups = [];
+    
+    children.forEach(child => {
+      const childGrandchildren = familyMembers.filter(m => 
+        (m.fatherId === child.id || m.father_id === child.id) || 
+        (m.motherId === child.id || m.mother_id === child.id)
+      );
+      
+      if (childGrandchildren.length > 0) {
+        // Get spouse of this child (parent of grandchildren)
+        const childSpouse = familyMembers.find(m => 
+          (child.gender === 'male' && (m.id === child.spouse_id || m.spouse_id === child.id)) ||
+          (child.gender === 'female' && (m.id === child.spouse_id || m.spouse_id === child.id))
+        );
+
+        // Also check marriages table for spouse
+        const childMarriage = marriages?.find(m => 
+          (m.husband_id === child.id || m.wife_id === child.id)
+        );
+        
+        const spouseFromMarriage = childMarriage 
+          ? familyMembers.find(m => 
+              m.id === (childMarriage.husband_id === child.id ? childMarriage.wife_id : childMarriage.husband_id)
+            )
+          : null;
+
+        const spouse = childSpouse || spouseFromMarriage;
+        
+        groups.push({
+          father: child.gender === 'male' ? child : spouse,
+          mother: child.gender === 'female' ? child : spouse,
+          grandchildren: childGrandchildren
+        });
+      }
+    });
+    
+    return groups;
+  };
   
   const getChildrenBySpouse = (spouseId?: string) => {
     const children = getChildren();
@@ -1286,58 +1328,86 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   return null;
                 })()}
 
-                {/* Grandchildren Section */}
+                {/* Grandchildren Section - Grouped by Parents */}
                 {(() => {
-                  const grandchildren = getGrandchildren();
-                  if (grandchildren.length > 0) {
+                  const grandchildrenGroups = getGrandchildrenGroupedByParents();
+                  const allGrandchildren = getGrandchildren();
+                  
+                  if (allGrandchildren.length > 0) {
                     return (
                       <div className="bg-card rounded-xl border border-border p-6">
                         <h3 className="font-bold text-lg mb-4 text-primary">{t('profile.grandchildren')}</h3>
                         
-                        <div className="flex items-center gap-3 mb-4">
+                        <div className="flex items-center gap-3 mb-6">
                           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
                             <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                             <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                              {t('profile.males')} ({grandchildren.filter(g => g.gender === 'male').length})
+                              {t('profile.males')} ({allGrandchildren.filter(g => g.gender === 'male').length})
                             </span>
                           </div>
                           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800">
                             <User className="w-4 h-4 text-pink-600 dark:text-pink-400" />
                             <span className="text-sm font-medium text-pink-700 dark:text-pink-300">
-                              {t('profile.females')} ({grandchildren.filter(g => g.gender === 'female').length})
+                              {t('profile.females')} ({allGrandchildren.filter(g => g.gender === 'female').length})
                             </span>
                           </div>
                         </div>
                         
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                           {grandchildren.map((grandchild) => (
-                             <div 
-                               key={grandchild.id} 
-                               className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-muted/50 border border-border/30 shadow-sm cursor-pointer hover:bg-muted/70 transition-colors duration-200 hover:border-border/50"
-                               onClick={() => onMemberClick?.(grandchild)}
-                             >
-                               <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${
-                                 grandchild.gender === 'female' 
-                                   ? 'bg-gradient-to-br from-pink-500 to-pink-600' 
-                                   : 'bg-gradient-to-br from-blue-500 to-blue-600'
-                               }`}>
-                                 {grandchild.gender === 'female' ? '♀' : '♂'}
-                               </div>
-                                <div className="flex-1 ps-3">
-                                 <p className="font-semibold text-foreground">
-                                   {grandchild.first_name}
-                                   {grandchild.last_name && grandchild.last_name !== member.last_name && (
-                                     <span className="text-muted-foreground"> {grandchild.last_name}</span>
-                                   )}
-                                 </p>
-                                  {grandchild.birth_date && (
-                                    <p className="text-sm text-muted-foreground">
-                                      {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} {t('profile.years')}
-                                    </p>
-                                  )}
-                               </div>
-                             </div>
-                           ))}
+                        <div className="space-y-4">
+                          {grandchildrenGroups.map((group, groupIndex) => (
+                            <div 
+                              key={`group-${groupIndex}`}
+                              className="bg-gradient-to-br from-muted/30 to-muted/50 rounded-lg p-4 border border-border/50"
+                            >
+                              {/* Parents Header */}
+                              <div className="flex items-center gap-2 mb-3 pb-3 border-b border-border/30">
+                                <Users className="w-5 h-5 text-primary" />
+                                <span className="font-semibold text-foreground">
+                                  {group.father?.first_name || group.father?.name || t('common.unknown')}
+                                  {' '}{t('common.and')}{' '}
+                                  {group.mother?.first_name || group.mother?.name || t('common.unknown')}
+                                </span>
+                                {(group.father?.last_name || group.mother?.last_name) && 
+                                 (group.father?.last_name !== member.last_name || group.mother?.last_name !== member.last_name) && (
+                                  <span className="text-sm text-muted-foreground">
+                                    ({group.father?.last_name || group.mother?.last_name})
+                                  </span>
+                                )}
+                              </div>
+                              
+                              {/* Grandchildren Grid */}
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {group.grandchildren.map((grandchild) => (
+                                  <div 
+                                    key={grandchild.id} 
+                                    className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-card border border-border/30 shadow-sm cursor-pointer hover:bg-muted/70 transition-colors duration-200 hover:border-border/50"
+                                    onClick={() => onMemberClick?.(grandchild)}
+                                  >
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${
+                                      grandchild.gender === 'female' 
+                                        ? 'bg-gradient-to-br from-pink-500 to-pink-600' 
+                                        : 'bg-gradient-to-br from-blue-500 to-blue-600'
+                                    }`}>
+                                      {grandchild.gender === 'female' ? '♀' : '♂'}
+                                    </div>
+                                    <div className="flex-1 ps-3">
+                                      <p className="font-semibold text-foreground">
+                                        {grandchild.first_name}
+                                        {grandchild.last_name && grandchild.last_name !== member.last_name && (
+                                          <span className="text-muted-foreground"> {grandchild.last_name}</span>
+                                        )}
+                                      </p>
+                                      {grandchild.birth_date && (
+                                        <p className="text-sm text-muted-foreground">
+                                          {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} {t('profile.years')}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     );
