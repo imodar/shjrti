@@ -1367,12 +1367,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                   {' '}{t('common.and')}{' '}
                                   {group.mother?.first_name || group.mother?.name || t('common.unknown')}
                                 </span>
-                                {(group.father?.last_name || group.mother?.last_name) && 
-                                 (group.father?.last_name !== member.last_name || group.mother?.last_name !== member.last_name) && (
-                                  <span className="text-sm text-muted-foreground">
-                                    ({group.father?.last_name || group.mother?.last_name})
-                                  </span>
-                                )}
                               </div>
                               
                               {/* Grandchildren Grid */}
@@ -1393,9 +1387,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                     <div className="flex-1 ps-3">
                                       <p className="font-semibold text-foreground">
                                         {grandchild.first_name}
-                                        {grandchild.last_name && grandchild.last_name !== member.last_name && (
-                                          <span className="text-muted-foreground"> {grandchild.last_name}</span>
-                                        )}
                                       </p>
                                       {grandchild.birth_date && (
                                         <p className="text-sm text-muted-foreground">
