@@ -45,6 +45,7 @@ import Store from "./pages/Store";
 import EnhancedAdminPanel from "./pages/EnhancedAdminPanel";
 import AdminBilling from "./pages/AdminBilling";
 import AdminAPISettings from "./pages/AdminAPISettings";
+import AdminSocialMedia from "./pages/AdminSocialMedia";
 import RenewSubscription from "./pages/RenewSubscription";
 import CustomDomainRedirect from "./pages/CustomDomainRedirect";
 import PublicTreeViewWithContext from "./pages/PublicTreeView/PublicTreeViewWithContext";
@@ -207,6 +208,11 @@ const App = () => {
                   <Route path="/admin-api-settings" element={
                     <ProtectedRoute requireAdmin={true}>
                       <AdminAPISettings />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin/social-media" element={
+                    <ProtectedRoute requireAdmin={true}>
+                      <AdminSocialMedia />
                     </ProtectedRoute>
                   } />
                   <Route path="/renew-subscription" element={

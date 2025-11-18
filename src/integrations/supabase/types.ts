@@ -1257,6 +1257,36 @@ export type Database = {
           },
         ]
       }
+      social_media_settings: {
+        Row: {
+          created_at: string
+          default_description: Json
+          id: string
+          og_image_url: string | null
+          site_name: Json
+          twitter_handle: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          default_description?: Json
+          id?: string
+          og_image_url?: string | null
+          site_name?: Json
+          twitter_handle?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          default_description?: Json
+          id?: string
+          og_image_url?: string | null
+          site_name?: Json
+          twitter_handle?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       store_orders: {
         Row: {
           created_at: string

@@ -38,7 +38,8 @@ import {
   AlertTriangle,
   MailOpen,
   TrendingUp,
-  Search
+  Search,
+  Share2
 } from "lucide-react";
 import { PackageEditModal } from '@/components/PackageEditModal';
 import { ChangePackageModal } from '@/components/ChangePackageModal';
@@ -1095,6 +1096,14 @@ export default function EnhancedAdminPanel() {
             >
               <Settings className="h-4 w-4 mr-2" />
               إعدادات API
+            </Button>
+            <Button 
+              onClick={() => navigate('/admin/social-media')} 
+              variant="outline"
+              className="border-emerald-500 text-emerald-600 hover:bg-emerald-50"
+            >
+              <Share2 className="h-4 w-4 mr-2" />
+              إعدادات المشاركة
             </Button>
           </div>
         </div>
