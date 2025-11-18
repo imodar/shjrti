@@ -672,11 +672,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                       <UserRound className="h-3 w-3 mr-1" />
                       {member.gender === 'male' ? 'ذكر' : 'أنثى'}
                     </Badge>
-                    {member.birth_date && (
-                      <Badge variant="secondary" className="text-xs">
-                        {new Date(member.birth_date).getFullYear()}
-                      </Badge>
-                    )}
                     {member.marital_status && (
                       <Badge variant="outline" className="text-xs">
                         {member.marital_status === 'single' ? 'أعزب' : 
