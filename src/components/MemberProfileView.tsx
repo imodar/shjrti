@@ -1444,22 +1444,28 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                           ))}
 
                                           {/* Render non-twins */}
-                                          {nonTwins.map((grandchild) => (
-                                            <div key={grandchild.id} className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-accent/30">
-                                              <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${
-                                                grandchild.gender === 'female' 
-                                                  ? 'bg-gradient-to-br from-pink-500 to-pink-600' 
-                                                  : 'bg-gradient-to-br from-blue-500 to-blue-600'
-                                              }`}>
-                                                {grandchild.gender === 'female' ? '♀' : '♂'}
+                                          {nonTwins.map((grandchild) => {
+                                            // Check if grandchild is from outside the family (different last name)
+                                            const isOutsideFamily = grandchild.last_name && member.last_name && grandchild.last_name !== member.last_name;
+                                            
+                                            return (
+                                              <div key={grandchild.id} className="flex items-center space-x-3 space-x-reverse p-3 rounded-lg bg-background border border-border">
+                                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ${
+                                                  grandchild.gender === 'female' 
+                                                    ? 'bg-gradient-to-br from-pink-500 to-pink-600' 
+                                                    : 'bg-gradient-to-br from-blue-500 to-blue-600'
+                                                }`}>
+                                                  {grandchild.gender === 'female' ? '♀' : '♂'}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                  <p className="font-medium text-foreground truncate">
+                                                    {grandchild.first_name || grandchild.name}
+                                                    {isOutsideFamily && ` ${grandchild.last_name}`}
+                                                  </p>
+                                                </div>
                                               </div>
-                                              <div className="flex-1 min-w-0">
-                                                <p className="font-medium text-foreground truncate">
-                                                  {grandchild.first_name || grandchild.name}
-                                                </p>
-                                              </div>
-                                            </div>
-                                          ))}
+                                            );
+                                          })}
                                         </>
                                       );
                                     })()}
