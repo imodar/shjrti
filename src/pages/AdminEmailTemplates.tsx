@@ -25,6 +25,9 @@ interface EmailTemplate {
   description: string;
   variables: string[];
   is_active: boolean;
+  from_email: string;
+  from_name: string;
+  reply_to?: string;
   created_at: string;
   updated_at: string;
 }
@@ -82,6 +85,9 @@ export default function AdminEmailTemplates() {
       subject: selectedTemplate.subject,
       body: selectedTemplate.body,
       is_active: selectedTemplate.is_active,
+      from_email: selectedTemplate.from_email,
+      from_name: selectedTemplate.from_name,
+      reply_to: selectedTemplate.reply_to,
     });
   };
 
@@ -183,7 +189,23 @@ export default function AdminEmailTemplates() {
                         {template.is_active ? "نشط" : "غير نشط"}
                       </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground">{template.description}</p>
+                    <p className="text-sm text-muted-foreground mb-2">{template.description}</p>
+                    
+                    {/* Sender Info */}
+                    <div className="text-xs text-muted-foreground space-y-1 mb-2 p-2 bg-background rounded">
+                      <div className="flex items-center gap-1">
+                        <Mail className="h-3 w-3" />
+                        <span className="font-medium">من:</span>
+                        <span>{template.from_name} &lt;{template.from_email}&gt;</span>
+                      </div>
+                      {template.reply_to && (
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium">الرد إلى:</span>
+                          <span>{template.reply_to}</span>
+                        </div>
+                      )}
+                    </div>
+
                     <div className="flex flex-wrap gap-1 mt-2">
                       {template.variables?.map((variable) => (
                         <Badge key={variable} variant="outline" className="text-xs">
@@ -264,6 +286,69 @@ export default function AdminEmailTemplates() {
                         }}
                         disabled={!editMode}
                       />
+                    </div>
+
+                    {/* Sender Configuration */}
+                    <div className="space-y-4 p-4 bg-accent/50 rounded-lg border border-border">
+                      <h4 className="font-semibold text-sm">إعدادات المرسل</h4>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>اسم المرسل</Label>
+                          <Input
+                            value={selectedTemplate.from_name || ""}
+                            onChange={(e) => {
+                              if (editMode) {
+                                setSelectedTemplate({
+                                  ...selectedTemplate,
+                                  from_name: e.target.value,
+                                });
+                              }
+                            }}
+                            disabled={!editMode}
+                            placeholder="مثال: شجرتي"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label>إيميل المرسل</Label>
+                          <Input
+                            type="email"
+                            value={selectedTemplate.from_email || ""}
+                            onChange={(e) => {
+                              if (editMode) {
+                                setSelectedTemplate({
+                                  ...selectedTemplate,
+                                  from_email: e.target.value,
+                                });
+                              }
+                            }}
+                            disabled={!editMode}
+                            placeholder="مثال: no-reply@shjrti.com"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label>إيميل الرد (اختياري)</Label>
+                        <Input
+                          type="email"
+                          value={selectedTemplate.reply_to || ""}
+                          onChange={(e) => {
+                            if (editMode) {
+                              setSelectedTemplate({
+                                ...selectedTemplate,
+                                reply_to: e.target.value,
+                              });
+                            }
+                          }}
+                          disabled={!editMode}
+                          placeholder="مثال: support@shjrti.com"
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          إذا لم يتم تحديده، سيتم استخدام إيميل المرسل
+                        </p>
+                      </div>
                     </div>
 
                     {/* Subject */}
