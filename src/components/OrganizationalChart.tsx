@@ -283,8 +283,9 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       return Math.max(UNIT_WIDTH, childrenWidth + spacingWidth);
     };
 
-    const positionSubtree = (unit: FamilyUnit, centerX: number, generation: number) => {
-      const y = generation * (UNIT_HEIGHT + VERTICAL_SPACING);
+    const positionSubtree = (unit: FamilyUnit, centerX: number) => {
+      // Use unit's actual generation value from data, not a parameter
+      const y = (unit.generation - 1) * (UNIT_HEIGHT + VERTICAL_SPACING);
       
       positions.set(unit.id, {
         x: centerX - UNIT_WIDTH / 2,
@@ -304,7 +305,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           const childSubtreeWidth = calculateSubtreeWidth(child);
           const childCenterX = childX + childSubtreeWidth / 2;
           
-          positionSubtree(child, childCenterX, generation + 1);
+          positionSubtree(child, childCenterX);
           childX += childSubtreeWidth + HORIZONTAL_SPACING;
         });
       }
@@ -315,7 +316,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       const subtreeWidth = calculateSubtreeWidth(rootUnit);
       const centerX = currentX + subtreeWidth / 2;
       
-      positionSubtree(rootUnit, centerX, 0);
+      positionSubtree(rootUnit, centerX);
       currentX += subtreeWidth + HORIZONTAL_SPACING * 2;
     });
 
