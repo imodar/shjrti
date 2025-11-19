@@ -307,6 +307,25 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     positionsSize: positions.size,
     positionsEntries: Array.from(positions.entries()).slice(0, 5).map(([id, pos]) => ({ id, x: pos.x, y: pos.y }))
   });
+
+  // Calculate tree dimensions for SVG canvas
+  const treeDimensions = React.useMemo(() => {
+    if (positions.size === 0) return { width: 1000, height: 1000 };
+    
+    let maxX = 0;
+    let maxY = 0;
+    
+    positions.forEach((pos) => {
+      maxX = Math.max(maxX, pos.x + UNIT_WIDTH);
+      maxY = Math.max(maxY, pos.y + UNIT_HEIGHT);
+    });
+    
+    // Add padding for connection lines
+    return {
+      width: maxX + HORIZONTAL_SPACING * 2,
+      height: maxY + VERTICAL_SPACING * 2
+    };
+  }, [positions, UNIT_WIDTH, UNIT_HEIGHT, HORIZONTAL_SPACING, VERTICAL_SPACING]);
   
   // Diagnostic: check if positions is empty despite having units
   if (displayUnits.size > 0 && positions.size === 0) {
@@ -971,8 +990,9 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             {/* SVG for connection lines */}
             <svg
               className="absolute inset-0 pointer-events-none"
-              width="100%"
-              height="100%"
+              width={treeDimensions.width}
+              height={treeDimensions.height}
+              style={{ minWidth: '100%', minHeight: '100%' }}
             >
               <defs>
                 <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
