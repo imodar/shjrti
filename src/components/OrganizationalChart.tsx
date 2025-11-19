@@ -360,18 +360,33 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
         const rootPosition = positions.get(newRootId);
         
         if (rootPosition) {
-          const containerWidth = containerRef.current.offsetWidth;
-          
-          // Calculate the center of the root unit
-          const rootCenterX = rootPosition.x + UNIT_WIDTH / 2;
-          const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
-          
-          // Calculate offset to position the root at the top center of the viewport
-          const offsetX = (containerWidth / 2) - rootCenterX;
-          const offsetY = 150 - rootCenterY;
-          
-          setPanOffset({ x: offsetX, y: offsetY });
-          setCurrentRootId(newRootId);
+          // Wait a moment to ensure container has rendered with proper dimensions
+          setTimeout(() => {
+            if (!containerRef.current) return;
+            
+            const containerWidth = containerRef.current.offsetWidth || 1200;
+            const containerHeight = containerRef.current.offsetHeight || 800;
+            
+            console.log('[OrganizationalChart] Centering root:', {
+              rootId: newRootId,
+              rootPosition,
+              containerWidth,
+              containerHeight
+            });
+            
+            // Calculate the center of the root unit
+            const rootCenterX = rootPosition.x + UNIT_WIDTH / 2;
+            const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
+            
+            // Calculate offset to position the root at the top center of the viewport
+            const offsetX = (containerWidth / 2) - rootCenterX;
+            const offsetY = 150 - rootCenterY;
+            
+            console.log('[OrganizationalChart] Applying offset:', { offsetX, offsetY });
+            
+            setPanOffset({ x: offsetX, y: offsetY });
+            setCurrentRootId(newRootId);
+          }, 100);
         }
       }
     }
