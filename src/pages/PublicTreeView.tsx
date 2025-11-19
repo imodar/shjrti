@@ -574,6 +574,8 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
       if (!hasParentInUnits) roots.push(id);
     });
 
+    console.log('[PublicTreeView] Roots identified:', roots.length, 'out of', units.size, 'units');
+
     const q: Array<{ id: string; gen: number }> = roots.map((id) => ({ id, gen: 0 }));
     const seen = new Set<string>();
 
@@ -603,14 +605,28 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
       });
     }
 
+    console.log('[PublicTreeView] After BFS:', {
+      unitsProcessed: seen.size,
+      unitsWithParents: Array.from(units.values()).filter(u => u.parentUnitId).length,
+      unitsWithoutParents: Array.from(units.values()).filter(u => !u.parentUnitId).length
+    });
+
     // Ensure we have at least one root
     let rootCount = 0;
     units.forEach((u) => { if (!u.parentUnitId) rootCount++; });
     if (rootCount === 0) {
+      console.warn('[PublicTreeView] No roots after BFS! Force-creating roots from generation 0');
       let minGen = Infinity;
       units.forEach((u) => { minGen = Math.min(minGen, u.generation); });
+      console.log('[PublicTreeView] Min generation found:', minGen);
       units.forEach((u) => { if (u.generation === minGen) u.parentUnitId = undefined; });
     }
+
+    console.log('[PublicTreeView] Final state:', {
+      totalUnits: units.size,
+      rootUnits: Array.from(units.values()).filter(u => !u.parentUnitId).length,
+      sampleUnit: Array.from(units.values())[0]
+    });
 
     return units;
   }, [familyMembers, familyMarriages, selectedRootMarriage]);
