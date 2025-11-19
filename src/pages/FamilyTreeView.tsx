@@ -231,14 +231,66 @@ const FamilyTreeView = () => {
 
       unit.members.forEach(member => {
         if (member.father_id || member.mother_id) {
-          // Find parent unit
+          // Find parent unit - must contain ALL required parents
           const fatherId = member.father_id;
           const motherId = member.mother_id;
-          const parentUnit = fatherId ? getUnitByMemberId(fatherId, units) : motherId ? getUnitByMemberId(motherId, units) : undefined;
+          
+          // Search for parent unit that contains the required parent(s)
+          let parentUnit: FamilyUnit | undefined;
+          
+          for (const [potentialParentId, potentialParent] of units.entries()) {
+            if (potentialParentId === unitId) continue; // Skip self
+            
+            const parentIds = potentialParent.members.map(m => m.id);
+            const hasFather = fatherId && parentIds.includes(fatherId);
+            const hasMother = motherId && parentIds.includes(motherId);
+            
+            // DEBUG LOG for problematic members
+            if (member.name === 'أمير الشيخ سعيد' || member.name === 'ميرا الشيخ سعيد') {
+              console.log(`🔍 [FamilyTreeView] Checking ${member.name} against potential parent unit:`, {
+                potentialParentId,
+                parentNames: potentialParent.members.map(m => m.name).join(' + '),
+                memberFatherId: fatherId,
+                memberMotherId: motherId,
+                hasFather,
+                hasMother,
+                parentIds
+              });
+            }
+            
+            // Determine if this unit is the valid parent
+            let isValidParent = false;
+            if (fatherId && motherId) {
+              // Both parents defined - BOTH must be in this unit
+              isValidParent = hasFather && hasMother;
+            } else if (fatherId || motherId) {
+              // Only one parent defined - that parent must be in this unit
+              isValidParent = hasFather || hasMother;
+            }
+            
+            if (isValidParent) {
+              parentUnit = potentialParent;
+              
+              // DEBUG LOG when found
+              if (member.name === 'أمير الشيخ سعيد' || member.name === 'ميرا الشيخ سعيد') {
+                console.log(`🔥 [FamilyTreeView] ${member.name} IS CHILD of unit:`, {
+                  parentUnitId: potentialParentId,
+                  parentNames: potentialParent.members.map(m => m.name).join(' + ')
+                });
+              }
+              break; // Found the parent, stop searching
+            }
+          }
+          
           if (parentUnit && parentUnit.id !== unitId) {
             unit.parentUnitId = parentUnit.id;
             if (!parentUnit.childUnits.includes(unitId)) {
               parentUnit.childUnits.push(unitId);
+              
+              // DEBUG LOG when adding to childUnits
+              if (unit.members.some(m => m.name === 'أمير الشيخ سعيد' || m.name === 'ميرا الشيخ سعيد')) {
+                console.log(`➕ [FamilyTreeView] Adding ${unit.members.map(m => m.name).join(' & ')} as child of ${parentUnit.members.map(m => m.name).join(' & ')}`);
+              }
             }
             console.log(`[FamilyTreeView] Connected ${unit.members.map(m => m.name).join(' & ')} to parent ${parentUnit.members.map(m => m.name).join(' & ')}`);
           }
