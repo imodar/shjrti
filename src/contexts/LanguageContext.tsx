@@ -44,7 +44,7 @@ interface LanguageProviderProps {
 }
 
 // Cache version - increment this to invalidate all cached translations
-const TRANSLATION_CACHE_VERSION = 3;
+const TRANSLATION_CACHE_VERSION = 4;
 
 export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   // Initialize with saved language or default to Arabic (matching HTML)
