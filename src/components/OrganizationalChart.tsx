@@ -265,68 +265,41 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     generations: generations
   });
 
-  // Calculate optimal positions using tree layout algorithm
+  // Calculate optimal positions using simple generation-based layout
   const calculatePositions = (): Map<string, Position> => {
     const positions = new Map<string, Position>();
     
     if (rootUnits.length === 0) return positions;
 
-    // Start with root units
-    let currentX = 0;
+    // Track position within each generation
+    const generationXOffsets: { [gen: number]: number } = {};
     
-    const calculateSubtreeWidth = (unit: FamilyUnit): number => {
-      const children = unit.childUnits
-        .map(id => displayUnits.get(id))
-        .filter(Boolean) as FamilyUnit[];
-      
-      if (children.length === 0) {
-        return UNIT_WIDTH;
-      }
-      
-      const childrenWidth = children.reduce((total, child) => {
-        return total + calculateSubtreeWidth(child);
-      }, 0);
-      
-      const spacingWidth = Math.max(0, (children.length - 1) * HORIZONTAL_SPACING);
-      return Math.max(UNIT_WIDTH, childrenWidth + spacingWidth);
-    };
-
-    const positionSubtree = (unit: FamilyUnit, centerX: number) => {
-      // Use unit's actual generation value from data, not a parameter
-      const y = (unit.generation - 1) * (UNIT_HEIGHT + VERTICAL_SPACING);
-      
-      positions.set(unit.id, {
-        x: centerX - UNIT_WIDTH / 2,
-        y: y,
-        width: UNIT_WIDTH
-      });
-
-      const children = unit.childUnits
-        .map(id => displayUnits.get(id))
-        .filter(Boolean) as FamilyUnit[];
-
-      if (children.length > 0) {
-        const subtreeWidth = calculateSubtreeWidth(unit);
-        let childX = centerX - subtreeWidth / 2;
-
-        children.forEach(child => {
-          const childSubtreeWidth = calculateSubtreeWidth(child);
-          const childCenterX = childX + childSubtreeWidth / 2;
-          
-          positionSubtree(child, childCenterX);
-          childX += childSubtreeWidth + HORIZONTAL_SPACING;
-        });
-      }
-    };
-
-    // Position root units
-    rootUnits.forEach((rootUnit, index) => {
-      const subtreeWidth = calculateSubtreeWidth(rootUnit);
-      const centerX = currentX + subtreeWidth / 2;
-      
-      positionSubtree(rootUnit, centerX);
-      currentX += subtreeWidth + HORIZONTAL_SPACING * 2;
+    // Initialize starting X for each generation
+    generations.forEach(gen => {
+      generationXOffsets[gen] = 0;
     });
+
+    // Simple recursive positioning: each unit gets the next available X position in its generation
+    const positionUnit = (unit: FamilyUnit) => {
+      const gen = unit.generation;
+      const y = (gen - 1) * (UNIT_HEIGHT + VERTICAL_SPACING);
+      const x = generationXOffsets[gen] || 0;
+      
+      positions.set(unit.id, { x, y, width: UNIT_WIDTH });
+      
+      // Advance X for next unit in this generation
+      generationXOffsets[gen] = x + UNIT_WIDTH + HORIZONTAL_SPACING;
+      
+      // Process children
+      const children = unit.childUnits
+        .map(id => displayUnits.get(id))
+        .filter(Boolean) as FamilyUnit[];
+      
+      children.forEach(child => positionUnit(child));
+    };
+
+    // Start with root units
+    rootUnits.forEach(root => positionUnit(root));
 
     return positions;
   };
