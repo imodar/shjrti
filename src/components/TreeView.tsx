@@ -31,8 +31,18 @@ export const TreeView: React.FC<TreeViewProps> = ({
   onResetZoom,
   onSuggestEdit
 }) => {
+  console.log('[TreeView] Rendering with:', {
+    membersCount: familyMembers.length,
+    marriagesCount: familyMarriages.length
+  });
+
   // Generate family tree structure
   const familyUnits = useMemo(() => {
+    console.log('[TreeView] Creating familyUnits from:', {
+      members: familyMembers.length,
+      marriages: familyMarriages.length
+    });
+    
     const units = new Map<string, FamilyUnit>();
 
     // Create units for married couples
@@ -79,26 +89,52 @@ export const TreeView: React.FC<TreeViewProps> = ({
       u.generation = 0;
     });
 
-    // Recompute generations with BFS
+    // Recompute generations with BFS - identify true roots
     const roots: string[] = [];
     units.forEach((u, id) => {
-      // Consider root if none of its members' parents form an existing unit
-      const hasParentInUnits = u.members.some((m: any) => {
+      // Check if this unit contains a founder - founders are ALWAYS roots
+      const hasFounder = u.members.some((m: any) => m.is_founder);
+      if (hasFounder) {
+        roots.push(id);
+        console.log('[TreeView] Founder unit identified as root:', u.members.map((m: any) => m.name).join(' & '));
+        return;
+      }
+      
+      // A unit is a root if BOTH parents of ALL members are either null or not in any unit
+      const isRoot = u.members.every((m: any) => {
         const fatherId = m.father_id;
         const motherId = m.mother_id;
-        // Does any unit include father or mother?
-        let parentFound = false;
+        
+        // If both parents are null, this is definitely a root
+        if (!fatherId && !motherId) return true;
+        
+        // Check if either parent exists in ANY unit
+        let fatherInUnits = false;
+        let motherInUnits = false;
+        
         units.forEach((cand) => {
-          if (cand.members.some((x) => x.id === fatherId || x.id === motherId)) {
-            parentFound = true;
+          if (fatherId && cand.members.some((x) => x.id === fatherId)) {
+            fatherInUnits = true;
+          }
+          if (motherId && cand.members.some((x) => x.id === motherId)) {
+            motherInUnits = true;
           }
         });
-        return parentFound;
+        
+        // If either parent exists in units, this member has parents in the tree
+        if (fatherInUnits || motherInUnits) return false;
+        
+        // If we reach here, both parents are either null or not in the tree
+        return true;
       });
-      if (!hasParentInUnits) roots.push(id);
+      
+      if (isRoot) {
+        roots.push(id);
+        console.log('[TreeView] Identified root unit:', id, 'with members:', u.members.map((m: any) => m.name));
+      }
     });
 
-    const q: Array<{ id: string; gen: number }> = roots.map((id) => ({ id, gen: 0 }));
+    const q: Array<{ id: string; gen: number }> = roots.map((id) => ({ id, gen: 1 }));
     const seen = new Set<string>();
 
     while (q.length) {
@@ -116,7 +152,9 @@ export const TreeView: React.FC<TreeViewProps> = ({
           // locate child's unit
           units.forEach((childUnit, childId) => {
             if (childUnit.members.some((mm: any) => mm.id === member.id)) {
-              if (childId !== id) {
+              // Protect founder units from being assigned parents
+              const isFounderChild = childUnit.members.some((m: any) => m.is_founder);
+              if (!isFounderChild && childId !== id) {
                 childUnit.parentUnitId = id;
                 childUnit.generation = gen + 1;
                 if (!u.childUnits.includes(childId)) u.childUnits.push(childId);
@@ -138,11 +176,32 @@ export const TreeView: React.FC<TreeViewProps> = ({
       units.forEach((u) => { if (u.generation === minGen) u.parentUnitId = undefined; });
     }
 
+    console.log('[TreeView] familyUnits created:', units.size, 'units');
+    console.log('[TreeView] Root units identified:', roots.length, 'roots');
+    
+    // Additional diagnostic: show generations distribution
+    const genDistribution: { [gen: number]: number } = {};
+    units.forEach((u) => {
+      genDistribution[u.generation] = (genDistribution[u.generation] || 0) + 1;
+    });
+    console.log('[TreeView] Generation distribution:', genDistribution);
+    
     return units;
   }, [familyMembers, familyMarriages]);
 
+  console.log('[TreeView] About to render OrganizationalChart with familyUnits.size =', familyUnits.size);
+
   return (
     <div className="space-y-4">
+      {/* Debug Panel */}
+      <div className="bg-yellow-100 dark:bg-yellow-900/20 border-2 border-yellow-600 rounded-lg p-4 text-sm">
+        <p className="font-bold mb-2">🔍 معلومات التصحيح:</p>
+        <p>عدد الأعضاء: {familyMembers.length}</p>
+        <p>عدد الزيجات: {familyMarriages.length}</p>
+        <p>عدد الوحدات المُنشأة: {familyUnits.size}</p>
+        <p>حالة الرسم: {familyUnits.size > 0 ? '✅ جاهز للعرض' : '❌ لا توجد وحدات'}</p>
+      </div>
+
       {/* Zoom Controls */}
       <div className="flex justify-end gap-2 mb-4">
         <Button

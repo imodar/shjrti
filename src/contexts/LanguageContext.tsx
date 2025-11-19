@@ -43,6 +43,9 @@ interface LanguageProviderProps {
   children: ReactNode;
 }
 
+// Cache version - increment this to invalidate all cached translations
+const TRANSLATION_CACHE_VERSION = 4;
+
 export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   // Initialize with saved language or default to Arabic (matching HTML)
   const getInitialLanguage = () => {
@@ -77,11 +80,33 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   useEffect(() => {
     // Pre-hydrate translations from cache to avoid flash
     try {
-      const cached = localStorage.getItem(`translations-${initialLanguage}`);
+      const cacheKey = `translations-${initialLanguage}`;
+      const versionKey = `translations-version`;
+      const cachedVersion = localStorage.getItem(versionKey);
+      
+      // Clear cache if version mismatch
+      if (cachedVersion !== String(TRANSLATION_CACHE_VERSION)) {
+        console.log(`[LanguageContext] Cache version mismatch, clearing all caches...`);
+        localStorage.removeItem(`translations-ar`);
+        localStorage.removeItem(`translations-en`);
+        localStorage.setItem(versionKey, String(TRANSLATION_CACHE_VERSION));
+        return;
+      }
+      
+      const cached = localStorage.getItem(cacheKey);
       if (cached) {
         const parsed = JSON.parse(cached);
-        setTranslations(parsed);
-        setHasCachedTranslations(true);
+        
+        // Check if cache is stale (less than 100 keys means old version)
+        const cacheSize = Object.keys(parsed).length;
+        if (cacheSize < 100) {
+          console.log(`[LanguageContext] Cache is stale (${cacheSize} keys), clearing...`);
+          localStorage.removeItem(cacheKey);
+        } else {
+          setTranslations(parsed);
+          setHasCachedTranslations(true);
+          console.log(`[LanguageContext] Using cached translations (${cacheSize} keys)`);
+        }
       }
     } catch {}
   }, []);
@@ -130,16 +155,20 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   const loadTranslations = async (languageCode: string) => {
     // Prevent duplicate calls for the same language
     if (lastLoadedLanguageRef.current === languageCode) {
+      console.log(`[LanguageContext] Skipping duplicate translation load for ${languageCode}`);
       return;
     }
     
+    console.log(`[LanguageContext] Loading translations for ${languageCode}...`);
     lastLoadedLanguageRef.current = languageCode;
     
     try {
+      // Fetch ALL translations by setting a high limit (Supabase default is 1000)
       const { data, error } = await supabase
         .from('translations')
         .select('key, value')
-        .eq('language_code', languageCode);
+        .eq('language_code', languageCode)
+        .limit(5000); // Increase limit to fetch all translations
 
       if (error) throw error;
       
@@ -148,12 +177,15 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
         translationMap[translation.key] = translation.value;
       });
       
+      console.log(`[LanguageContext] Loaded ${Object.keys(translationMap).length} translations for ${languageCode}`);
+      console.log(`[LanguageContext] Sample keys:`, Object.keys(translationMap).slice(0, 10));
+      
       setTranslations(translationMap);
       setHasCachedTranslations(true);
       // Cache translations for instant next loads
       try { localStorage.setItem(`translations-${languageCode}`, JSON.stringify(translationMap)); } catch {}
     } catch (error) {
-      console.error('Error loading translations:', error);
+      console.error('[LanguageContext] Error loading translations:', error);
       lastLoadedLanguageRef.current = null;
     }
   };
@@ -186,7 +218,14 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   };
 
   const t = (key: string, fallback?: string): string => {
-    return translations[key] || fallback || key;
+    const value = translations[key] || fallback || key;
+    
+    // Debug specific tree_settings keys
+    if (key.startsWith('tree_settings.')) {
+      console.log(`[t] Key: ${key}, Value: ${value}, Has translation: ${!!translations[key]}, Total translations: ${Object.keys(translations).length}`);
+    }
+    
+    return value;
   };
 
   const formatPrice = (amount: number | string | undefined | null): string => {

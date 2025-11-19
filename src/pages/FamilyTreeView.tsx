@@ -88,6 +88,7 @@ const FamilyTreeView = () => {
   // Initialize user and handle authentication
   useEffect(() => {
     const initUser = async () => {
+      console.log('[FamilyTreeView] initUser starting...');
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate('/auth');
@@ -112,11 +113,27 @@ const FamilyTreeView = () => {
         return;
       }
       
+      console.log('[FamilyTreeView] Setting isLoading to false');
       setIsLoading(false);
     };
     
     initUser();
   }, [familyId, familyData, navigate]);
+
+  // Also set isLoading to false when data is loaded from context
+  useEffect(() => {
+    console.log('[FamilyTreeView] Checking data state:', {
+      dataLoading,
+      familyMembersCount: familyMembers?.length,
+      familyDataExists: !!familyData
+    });
+    
+    // Set isLoading to false once data loading completes (even if empty)
+    if (!dataLoading && familyData) {
+      console.log('[FamilyTreeView] Data is ready, setting isLoading to false');
+      setIsLoading(false);
+    }
+  }, [dataLoading, familyData]);
 
   // Show error from context
   useEffect(() => {
@@ -203,7 +220,15 @@ const FamilyTreeView = () => {
     });
 
     // Step 2: Establish parent-child relationships between units
+    // IMPORTANT: Skip parent assignment for founder units - they are always roots
     units.forEach((unit, unitId) => {
+      // Check if this unit contains a founder - if so, it's a root and should not have parents assigned
+      const isFounderUnit = unit.members.some(m => m.is_founder);
+      if (isFounderUnit) {
+        console.log(`[FamilyTreeView] Skipping parent assignment for founder unit: ${unit.members.map(m => m.name).join(' & ')}`);
+        return; // Skip this unit - founders are roots
+      }
+
       unit.members.forEach(member => {
         if (member.father_id || member.mother_id) {
           // Find parent unit
@@ -215,31 +240,55 @@ const FamilyTreeView = () => {
             if (!parentUnit.childUnits.includes(unitId)) {
               parentUnit.childUnits.push(unitId);
             }
-            console.log(`Connected ${unit.members.map(m => m.name).join(' & ')} to parent ${parentUnit.members.map(m => m.name).join(' & ')}`);
+            console.log(`[FamilyTreeView] Connected ${unit.members.map(m => m.name).join(' & ')} to parent ${parentUnit.members.map(m => m.name).join(' & ')}`);
           }
         }
       });
     });
 
-    // Step 3: Assign generations based on parent-child relationships
-    let changed = true;
-    let iterations = 0;
-    const maxIterations = 20;
-    while (changed && iterations < maxIterations) {
-      changed = false;
-      iterations++;
-      units.forEach((unit, unitId) => {
-        if (unit.generation === 0 && unit.parentUnitId) {
-          const parentUnit = units.get(unit.parentUnitId);
-          if (parentUnit && parentUnit.generation > 0) {
-            unit.generation = parentUnit.generation + 1;
-            console.log(`Set ${unit.members.map(m => m.name).join(' & ')} as generation ${unit.generation}`);
-            changed = true;
-          }
+    // Step 3: Assign generations using BFS from root units
+    // First, identify root units (units without parents)
+    const rootUnits: string[] = [];
+    units.forEach((unit, unitId) => {
+      if (!unit.parentUnitId) {
+        rootUnits.push(unitId);
+        unit.generation = 1; // Set roots to generation 1
+      }
+    });
+
+    console.log(`Found ${rootUnits.length} root units for generation assignment`);
+
+    // Use BFS to assign generations to all descendants
+    const queue: Array<{ id: string; gen: number }> = rootUnits.map(id => ({ id, gen: 1 }));
+    const visited = new Set<string>();
+
+    while (queue.length > 0) {
+      const { id, gen } = queue.shift()!;
+      if (visited.has(id)) continue;
+      visited.add(id);
+      
+      const unit = units.get(id);
+      if (!unit) continue;
+      
+      unit.generation = gen;
+      console.log(`Set ${unit.members.map(m => m.name).join(' & ')} as generation ${gen}`);
+      
+      // Add all children to queue
+      unit.childUnits.forEach(childId => {
+        if (!visited.has(childId)) {
+          queue.push({ id: childId, gen: gen + 1 });
         }
       });
     }
-    console.log('Generation assignment completed after', iterations, 'iterations');
+
+    console.log('Generation assignment completed via BFS');
+    
+    // Log generation distribution for debugging
+    const genDistribution = new Map<number, number>();
+    units.forEach(unit => {
+      genDistribution.set(unit.generation, (genDistribution.get(unit.generation) || 0) + 1);
+    });
+    console.log('Generation distribution:', Array.from(genDistribution.entries()).map(([gen, count]) => `gen${gen}: ${count}`).join(', '));
   };
 
   // Group siblings together by their common parent for proper cousin visualization
@@ -376,6 +425,12 @@ const FamilyTreeView = () => {
         </Card>
       </div>;
   };
+  console.log('[FamilyTreeView] Before render check:', {
+    isLoading,
+    dataLoading,
+    willShowSkeleton: isLoading || dataLoading
+  });
+
   if (isLoading || dataLoading) {
     return <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
         <GlobalHeader />
@@ -385,6 +440,8 @@ const FamilyTreeView = () => {
       <GlobalFooterSimplified />
     </div>;
   }
+
+  console.log('[FamilyTreeView] Will call generateFamilyTree with members:', familyMembers.length);
 
   // Generate family tree structure using family units with proper cousin grouping
   const generateFamilyTree = () => {

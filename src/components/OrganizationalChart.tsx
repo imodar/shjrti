@@ -210,18 +210,31 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   const { displayUnits } = mergeMarriedUnits(familyUnits);
 
   // Diagnostic logging
-  console.debug('[OrganizationalChart] displayUnits.size:', displayUnits.size);
+  console.log('[OrganizationalChart] Input:', {
+    familyUnitsSize: familyUnits.size,
+    displayUnitsSize: displayUnits.size
+  });
+  
+  console.log('[OrganizationalChart] displayUnits contents:', Array.from(displayUnits.entries()).map(([id, unit]) => ({
+    id,
+    generation: unit.generation,
+    parentUnitId: unit.parentUnitId,
+    type: unit.type,
+    membersCount: unit.members?.length
+  })));
+  
   if (displayUnits.size > 0) {
     const sample = Array.from(displayUnits.values()).slice(0, 3);
-    console.debug('[OrganizationalChart] Sample units:', sample.map(u => ({
+    console.log('[OrganizationalChart] Sample units:', sample.map(u => ({
       id: u.id,
       type: u.type,
       generation: u.generation,
       parentUnitId: u.parentUnitId,
-      childUnitsCount: u.childUnits.length
+      childUnitsCount: u.childUnits.length,
+      membersCount: u.members?.length
     })));
     const rootsCount = Array.from(displayUnits.values()).filter(u => !u.parentUnitId).length;
-    console.debug('[OrganizationalChart] Units without parentUnitId (roots):', rootsCount);
+    console.log('[OrganizationalChart] Units without parentUnitId (roots):', rootsCount);
   }
 
   // Build hierarchical structure
@@ -245,6 +258,12 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   const { hierarchy, rootUnits } = buildHierarchy();
   const generations = Object.keys(hierarchy).map(Number).sort();
+  
+  console.log('[OrganizationalChart] Hierarchy built:', {
+    generationsCount: generations.length,
+    rootUnitsCount: rootUnits.length,
+    generations: generations
+  });
 
   // Calculate optimal positions using tree layout algorithm
   const calculatePositions = (): Map<string, Position> => {
@@ -272,8 +291,9 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       return Math.max(UNIT_WIDTH, childrenWidth + spacingWidth);
     };
 
-    const positionSubtree = (unit: FamilyUnit, centerX: number, generation: number) => {
-      const y = generation * (UNIT_HEIGHT + VERTICAL_SPACING);
+    const positionSubtree = (unit: FamilyUnit, centerX: number) => {
+      // Use unit's actual generation value from data, not a parameter
+      const y = (unit.generation - 1) * (UNIT_HEIGHT + VERTICAL_SPACING);
       
       positions.set(unit.id, {
         x: centerX - UNIT_WIDTH / 2,
@@ -293,7 +313,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           const childSubtreeWidth = calculateSubtreeWidth(child);
           const childCenterX = childX + childSubtreeWidth / 2;
           
-          positionSubtree(child, childCenterX, generation + 1);
+          positionSubtree(child, childCenterX);
           childX += childSubtreeWidth + HORIZONTAL_SPACING;
         });
       }
@@ -304,7 +324,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       const subtreeWidth = calculateSubtreeWidth(rootUnit);
       const centerX = currentX + subtreeWidth / 2;
       
-      positionSubtree(rootUnit, centerX, 0);
+      positionSubtree(rootUnit, centerX);
       currentX += subtreeWidth + HORIZONTAL_SPACING * 2;
     });
 
@@ -313,9 +333,18 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   const positions = calculatePositions();
   
+  console.log('[OrganizationalChart] Positions calculated:', {
+    positionsSize: positions.size,
+    positionsEntries: Array.from(positions.entries()).slice(0, 5).map(([id, pos]) => ({ id, x: pos.x, y: pos.y }))
+  });
+  
   // Diagnostic: check if positions is empty despite having units
   if (displayUnits.size > 0 && positions.size === 0) {
-    console.warn('[OrganizationalChart] Failed to calculate positions: displayUnits.size =', displayUnits.size, 'but positions.size = 0. This usually means no root units were found.');
+    console.error('[OrganizationalChart] CRITICAL: Failed to calculate positions!', {
+      displayUnitsSize: displayUnits.size,
+      rootUnitsCount: rootUnits.length,
+      rootUnits: rootUnits.map(u => ({ id: u.id, generation: u.generation, parentUnitId: u.parentUnitId }))
+    });
   }
 
   // Center root member in visible area - re-centers when root changes
@@ -813,7 +842,14 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     return connections;
   };
 
+  console.log('[OrganizationalChart] Final check before render:', {
+    displayUnitsSize: displayUnits.size,
+    positionsSize: positions.size,
+    willRender: displayUnits.size > 0 && positions.size > 0
+  });
+
   if (displayUnits.size === 0) {
+    console.log('[OrganizationalChart] Rendering empty state - no display units');
     return (
       <div className="flex items-center justify-center h-64 text-center">
         <div className="text-muted-foreground">
@@ -827,6 +863,10 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   // Visual guardian: if we have units but no positions, show a diagnostic message
   if (displayUnits.size > 0 && positions.size === 0) {
+    console.error('[OrganizationalChart] Have units but no positions calculated!', {
+      displayUnitsSize: displayUnits.size,
+      rootUnitsCount: rootUnits.length
+    });
     return (
       <div className="flex items-center justify-center h-64 text-center p-8">
         <div className="max-w-md">
@@ -838,6 +878,12 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       </div>
     );
   }
+
+  console.log('[OrganizationalChart] ✅ PASSED positions check! About to render:', {
+    displayUnitsSize: displayUnits.size,
+    positionsSize: positions.size,
+    rootUnitsCount: rootUnits.length
+  });
 
   // Calculate chart dimensions
   const allPositions = Array.from(positions.values());

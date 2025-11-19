@@ -27,10 +27,17 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
 
   useEffect(() => {
-    loadGalleryMemories();
+    if (familyId && familyId !== 'null') {
+      loadGalleryMemories();
+    }
   }, [familyId]);
 
   const loadGalleryMemories = async () => {
+    if (!familyId || familyId === 'null') {
+      setLoading(false);
+      return;
+    }
+    
     try {
       setLoading(true);
       const { data, error } = await supabase
