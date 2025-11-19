@@ -265,11 +265,11 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     generations: generations
   });
 
-  // Calculate optimal positions using simple generation-based layout
-  const calculatePositions = (): Map<string, Position> => {
-    const positions = new Map<string, Position>();
+  // Calculate optimal positions using simple generation-based layout - memoized
+  const positions = React.useMemo((): Map<string, Position> => {
+    const positionsMap = new Map<string, Position>();
     
-    if (rootUnits.length === 0) return positions;
+    if (rootUnits.length === 0) return positionsMap;
 
     // Track position within each generation
     const generationXOffsets: { [gen: number]: number } = {};
@@ -279,32 +279,32 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       generationXOffsets[gen] = 0;
     });
 
-    // Simple recursive positioning: each unit gets the next available X position in its generation
     const positionUnit = (unit: FamilyUnit) => {
       const gen = unit.generation;
-      const y = (gen - 1) * (UNIT_HEIGHT + VERTICAL_SPACING);
       const x = generationXOffsets[gen] || 0;
+      const y = (gen - 1) * (UNIT_HEIGHT + VERTICAL_SPACING);
       
-      positions.set(unit.id, { x, y, width: UNIT_WIDTH });
-      
-      // Advance X for next unit in this generation
+      positionsMap.set(unit.id, {
+        x,
+        y,
+        width: UNIT_WIDTH
+      });
+
+      // Update X offset for next unit in this generation
       generationXOffsets[gen] = x + UNIT_WIDTH + HORIZONTAL_SPACING;
-      
-      // Process children
-      const children = unit.childUnits
-        .map(id => displayUnits.get(id))
-        .filter(Boolean) as FamilyUnit[];
-      
+
+      // Position all children
+      const children = Array.from(displayUnits.values()).filter(
+        u => u.parentUnitId === unit.id
+      );
       children.forEach(child => positionUnit(child));
     };
 
     // Start with root units
     rootUnits.forEach(root => positionUnit(root));
 
-    return positions;
-  };
-
-  const positions = calculatePositions();
+    return positionsMap;
+  }, [displayUnits, rootUnits, generations, UNIT_WIDTH, UNIT_HEIGHT, VERTICAL_SPACING, HORIZONTAL_SPACING]);
   
   console.log('[OrganizationalChart] Positions calculated:', {
     positionsSize: positions.size,
