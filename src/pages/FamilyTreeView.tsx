@@ -220,7 +220,15 @@ const FamilyTreeView = () => {
     });
 
     // Step 2: Establish parent-child relationships between units
+    // IMPORTANT: Skip parent assignment for founder units - they are always roots
     units.forEach((unit, unitId) => {
+      // Check if this unit contains a founder - if so, it's a root and should not have parents assigned
+      const isFounderUnit = unit.members.some(m => m.is_founder);
+      if (isFounderUnit) {
+        console.log(`[FamilyTreeView] Skipping parent assignment for founder unit: ${unit.members.map(m => m.name).join(' & ')}`);
+        return; // Skip this unit - founders are roots
+      }
+
       unit.members.forEach(member => {
         if (member.father_id || member.mother_id) {
           // Find parent unit
@@ -232,7 +240,7 @@ const FamilyTreeView = () => {
             if (!parentUnit.childUnits.includes(unitId)) {
               parentUnit.childUnits.push(unitId);
             }
-            console.log(`Connected ${unit.members.map(m => m.name).join(' & ')} to parent ${parentUnit.members.map(m => m.name).join(' & ')}`);
+            console.log(`[FamilyTreeView] Connected ${unit.members.map(m => m.name).join(' & ')} to parent ${parentUnit.members.map(m => m.name).join(' & ')}`);
           }
         }
       });
