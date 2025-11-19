@@ -951,31 +951,35 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
         onTouchStart={handleTouchStart}
       >
         <div
-          className="relative"
           style={{
-            width: chartWidth,
-            height: chartHeight,
             transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
             transformOrigin: '0 0'
           }}
         >
-          {/* Background grid pattern */}
-          <div 
-            className="absolute inset-0 opacity-30 pointer-events-none"
+          <div
+            className="relative"
             style={{
-              backgroundImage: `
-                radial-gradient(circle at 1px 1px, hsl(var(--primary)/0.15) 1px, transparent 0)
-              `,
-              backgroundSize: '40px 40px'
+              width: chartWidth,
+              height: chartHeight
             }}
-          />
-
-          {/* SVG for connection lines */}
-          <svg
-            className="absolute inset-0 pointer-events-none"
-            width={chartWidth}
-            height={chartHeight}
           >
+            {/* Background grid pattern */}
+            <div 
+              className="absolute inset-0 opacity-30 pointer-events-none"
+              style={{
+                backgroundImage: `
+                  radial-gradient(circle at 1px 1px, hsl(var(--primary)/0.15) 1px, transparent 0)
+                `,
+                backgroundSize: '40px 40px'
+              }}
+            />
+
+            {/* SVG for connection lines */}
+            <svg
+              className="absolute inset-0 pointer-events-none"
+              width={chartWidth}
+              height={chartHeight}
+            >
               <defs>
                 <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
                   <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="hsl(var(--primary))" floodOpacity="0.3"/>
@@ -986,15 +990,16 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               </g>
             </svg>
 
-          {/* Render all family units */}
-          {Array.from(displayUnits.values()).map(unit => {
-            const position = positions.get(unit.id);
-            if (!position) {
-              console.warn('[OrganizationalChart] No position found for unit:', unit.id);
-              return null;
-            }
-            return renderFamilyUnit(unit, position);
-          })}
+            {/* Render all family units */}
+            {Array.from(displayUnits.values()).map(unit => {
+              const position = positions.get(unit.id);
+              if (!position) {
+                console.warn('[OrganizationalChart] No position found for unit:', unit.id);
+                return null;
+              }
+              return renderFamilyUnit(unit, position);
+            })}
+          </div>
         </div>
       </div>
     </div>
