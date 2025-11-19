@@ -128,11 +128,12 @@ const FamilyTreeView = () => {
       familyDataExists: !!familyData
     });
     
-    if (!dataLoading && familyMembers && familyMembers.length > 0 && familyData) {
+    // Set isLoading to false once data loading completes (even if empty)
+    if (!dataLoading && familyData) {
       console.log('[FamilyTreeView] Data is ready, setting isLoading to false');
       setIsLoading(false);
     }
-  }, [dataLoading, familyMembers, familyData]);
+  }, [dataLoading, familyData]);
 
   // Show error from context
   useEffect(() => {

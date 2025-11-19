@@ -76,7 +76,7 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
         currentIsLoading: isLoading
       });
 
-      if (!ctxLoading && ctxFamily && ctxMembers && ctxMembers.length > 0) {
+      if (!ctxLoading && ctxFamily) {
         console.log('[PublicTreeView] Context data ready - setting isLoading to false');
         setIsLoading(false);
       }
