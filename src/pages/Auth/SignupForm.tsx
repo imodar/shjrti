@@ -6,7 +6,7 @@ import { Mail, Lock, User, Phone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+
 import { z } from 'zod';
 import { checkPasswordStrength, PasswordStrength } from "@/lib/passwordStrength";
 
@@ -33,7 +33,7 @@ export function SignupForm({ onOTPRequired }: SignupFormProps) {
   const [errors, setErrors] = useState<any>({});
   const { toast } = useToast();
   const { t } = useLanguage();
-  const { executeRecaptcha } = useGoogleReCaptcha();
+  
 
   // Create schema with translated messages
   const signupSchema = z.object({
@@ -86,27 +86,14 @@ export function SignupForm({ onOTPRequired }: SignupFormProps) {
         return;
       }
 
-      // 3. Get reCAPTCHA token (optional for now)
-      let recaptchaToken = null;
-      if (executeRecaptcha) {
-        try {
-          recaptchaToken = await executeRecaptcha('signup');
-        } catch (error) {
-          console.warn('reCAPTCHA execution failed:', error);
-        }
-      } else {
-        console.warn('reCAPTCHA not ready - proceeding without verification');
-      }
-
-      // 4. Call secure-signup edge function
+      // 3. Call secure-signup edge function
       const { data, error } = await supabase.functions.invoke('secure-signup', {
         body: {
           email: validation.data.email,
           password: validation.data.password,
           firstName: validation.data.firstName,
           lastName: validation.data.lastName,
-          phone: validation.data.phone || '',
-          recaptchaToken
+          phone: validation.data.phone || ''
         }
       });
 

@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { email, password, recaptchaToken } = await req.json();
+    const { email, password } = await req.json();
     
     console.log(`[Secure Login] Attempt for email: ${email}`);
 
@@ -71,45 +71,7 @@ serve(async (req) => {
       );
     }
 
-    // 2. التحقق من reCAPTCHA
-    if (recaptchaToken) {
-      console.log('[Secure Login] Verifying reCAPTCHA...');
-      const recaptchaResponse = await fetch(
-        `${supabaseUrl}/functions/v1/verify-recaptcha`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${supabaseServiceKey}`
-          },
-          body: JSON.stringify({ token: recaptchaToken, action: 'login' })
-        }
-      );
-
-      const recaptchaResult = await recaptchaResponse.json();
-      
-      if (!recaptchaResult.success) {
-        console.warn('[Secure Login] reCAPTCHA verification failed');
-        
-        // تسجيل المحاولة الفاشلة
-        await supabase.rpc('log_login_attempt', {
-          user_email: email,
-          user_ip: req.headers.get('x-forwarded-for') || 'unknown',
-          user_agent_text: req.headers.get('user-agent') || 'unknown',
-          is_success: false,
-          reason: 'recaptcha_failed'
-        });
-
-        return new Response(
-          JSON.stringify({ error: 'فشل التحقق الأمني. يرجى المحاولة مرة أخرى' }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      
-      console.log(`[Secure Login] reCAPTCHA passed with score: ${recaptchaResult.score}`);
-    }
-
-    // 3. محاولة تسجيل الدخول
+    // 2. محاولة تسجيل الدخول
     console.log('[Secure Login] Attempting authentication...');
     const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
       email,
