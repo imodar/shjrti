@@ -215,6 +215,14 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     displayUnitsSize: displayUnits.size
   });
   
+  console.log('[OrganizationalChart] displayUnits contents:', Array.from(displayUnits.entries()).map(([id, unit]) => ({
+    id,
+    generation: unit.generation,
+    parentUnitId: unit.parentUnitId,
+    type: unit.type,
+    membersCount: unit.members?.length
+  })));
+  
   if (displayUnits.size > 0) {
     const sample = Array.from(displayUnits.values()).slice(0, 3);
     console.log('[OrganizationalChart] Sample units:', sample.map(u => ({
@@ -325,9 +333,18 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   const positions = calculatePositions();
   
+  console.log('[OrganizationalChart] Positions calculated:', {
+    positionsSize: positions.size,
+    positionsEntries: Array.from(positions.entries()).slice(0, 5).map(([id, pos]) => ({ id, x: pos.x, y: pos.y }))
+  });
+  
   // Diagnostic: check if positions is empty despite having units
   if (displayUnits.size > 0 && positions.size === 0) {
-    console.warn('[OrganizationalChart] Failed to calculate positions: displayUnits.size =', displayUnits.size, 'but positions.size = 0. This usually means no root units were found.');
+    console.error('[OrganizationalChart] CRITICAL: Failed to calculate positions!', {
+      displayUnitsSize: displayUnits.size,
+      rootUnitsCount: rootUnits.length,
+      rootUnits: rootUnits.map(u => ({ id: u.id, generation: u.generation, parentUnitId: u.parentUnitId }))
+    });
   }
 
   // Center root member in visible area - re-centers when root changes
@@ -861,6 +878,12 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       </div>
     );
   }
+
+  console.log('[OrganizationalChart] ✅ PASSED positions check! About to render:', {
+    displayUnitsSize: displayUnits.size,
+    positionsSize: positions.size,
+    rootUnitsCount: rootUnits.length
+  });
 
   // Calculate chart dimensions
   const allPositions = Array.from(positions.values());
