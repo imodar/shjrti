@@ -927,17 +927,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     zoom: zoomLevel
   });
 
-  // Calculate chart dimensions
-  const allPositions = Array.from(positions.values());
-  const chartWidth = Math.max(
-    1000,
-    Math.max(...allPositions.map(pos => pos.x)) + UNIT_WIDTH + 100
-  );
-  const chartHeight = Math.max(
-    600,
-    Math.max(...allPositions.map(pos => pos.y)) + UNIT_HEIGHT + 100
-  );
-
   return (
     <div className="w-full h-full">
       <div
@@ -951,19 +940,23 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
         onTouchStart={handleTouchStart}
       >
         <div
-          className="relative"
-          style={{ 
-            width: chartWidth, 
-            height: chartHeight
+          className="absolute inset-0"
+          style={{
+            transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
+            transformOrigin: '0 0'
           }}
         >
-          <div
-            className="absolute inset-0"
+          {/* Background grid pattern */}
+          <div 
+            className="absolute inset-0 opacity-30 pointer-events-none"
             style={{
-              transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
-              transformOrigin: 'top center'
+              backgroundImage: `
+                linear-gradient(to right, hsl(var(--border) / 0.3) 1px, transparent 1px),
+                linear-gradient(to bottom, hsl(var(--border) / 0.3) 1px, transparent 1px)
+              `,
+              backgroundSize: '50px 50px'
             }}
-          >
+          />
             {/* Background grid pattern */}
             <div 
               className="absolute inset-0 opacity-30 pointer-events-none"
@@ -1003,6 +996,5 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
