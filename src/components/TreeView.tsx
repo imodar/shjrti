@@ -89,23 +89,41 @@ export const TreeView: React.FC<TreeViewProps> = ({
       u.generation = 0;
     });
 
-    // Recompute generations with BFS
+    // Recompute generations with BFS - identify true roots
     const roots: string[] = [];
     units.forEach((u, id) => {
-      // Consider root if none of its members' parents form an existing unit
-      const hasParentInUnits = u.members.some((m: any) => {
+      // A unit is a root if BOTH parents of ALL members are either null or not in any unit
+      const isRoot = u.members.every((m: any) => {
         const fatherId = m.father_id;
         const motherId = m.mother_id;
-        // Does any unit include father or mother?
-        let parentFound = false;
+        
+        // If both parents are null, this is definitely a root
+        if (!fatherId && !motherId) return true;
+        
+        // Check if either parent exists in ANY unit
+        let fatherInUnits = false;
+        let motherInUnits = false;
+        
         units.forEach((cand) => {
-          if (cand.members.some((x) => x.id === fatherId || x.id === motherId)) {
-            parentFound = true;
+          if (fatherId && cand.members.some((x) => x.id === fatherId)) {
+            fatherInUnits = true;
+          }
+          if (motherId && cand.members.some((x) => x.id === motherId)) {
+            motherInUnits = true;
           }
         });
-        return parentFound;
+        
+        // If either parent exists in units, this member has parents in the tree
+        if (fatherInUnits || motherInUnits) return false;
+        
+        // If we reach here, both parents are either null or not in the tree
+        return true;
       });
-      if (!hasParentInUnits) roots.push(id);
+      
+      if (isRoot) {
+        roots.push(id);
+        console.log('[TreeView] Identified root unit:', id, 'with members:', u.members.map((m: any) => m.name));
+      }
     });
 
     const q: Array<{ id: string; gen: number }> = roots.map((id) => ({ id, gen: 0 }));
@@ -149,6 +167,15 @@ export const TreeView: React.FC<TreeViewProps> = ({
     }
 
     console.log('[TreeView] familyUnits created:', units.size, 'units');
+    console.log('[TreeView] Root units identified:', roots.length, 'roots');
+    
+    // Additional diagnostic: show generations distribution
+    const genDistribution: { [gen: number]: number } = {};
+    units.forEach((u) => {
+      genDistribution[u.generation] = (genDistribution[u.generation] || 0) + 1;
+    });
+    console.log('[TreeView] Generation distribution:', genDistribution);
+    
     return units;
   }, [familyMembers, familyMarriages]);
 
