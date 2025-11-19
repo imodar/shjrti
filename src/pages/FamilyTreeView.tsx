@@ -247,9 +247,9 @@ const FamilyTreeView = () => {
             
             // DEBUG LOG for problematic members
             if (member.name === 'أمير الشيخ سعيد' || member.name === 'ميرا الشيخ سعيد') {
-              console.log(`🔍 [FamilyTreeView] Checking ${member.name} against potential parent unit:`, {
+              console.log(`🔍 [FamilyTreeView] Checking ${member.name} (ID: ${member.id}) against potential parent unit:`, {
                 potentialParentId,
-                parentNames: potentialParent.members.map(m => m.name).join(' + '),
+                parentNames: potentialParent.members.map(m => `${m.name} (${m.id})`).join(' + '),
                 memberFatherId: fatherId,
                 memberMotherId: motherId,
                 hasFather,
@@ -273,9 +273,11 @@ const FamilyTreeView = () => {
               
               // DEBUG LOG when found
               if (member.name === 'أمير الشيخ سعيد' || member.name === 'ميرا الشيخ سعيد') {
-                console.log(`🔥 [FamilyTreeView] ${member.name} IS CHILD of unit:`, {
+                console.log(`🔥 [FamilyTreeView] ${member.name} (ID: ${member.id}) IS CHILD of unit:`, {
                   parentUnitId: potentialParentId,
-                  parentNames: potentialParent.members.map(m => m.name).join(' + ')
+                  parentNames: potentialParent.members.map(m => `${m.name} (${m.id})`).join(' + '),
+                  memberFatherId: fatherId,
+                  memberMotherId: motherId
                 });
               }
               break; // Found the parent, stop searching
@@ -289,7 +291,7 @@ const FamilyTreeView = () => {
               
               // DEBUG LOG when adding to childUnits
               if (unit.members.some(m => m.name === 'أمير الشيخ سعيد' || m.name === 'ميرا الشيخ سعيد')) {
-                console.log(`➕ [FamilyTreeView] Adding ${unit.members.map(m => m.name).join(' & ')} as child of ${parentUnit.members.map(m => m.name).join(' & ')}`);
+                console.log(`➕ [FamilyTreeView] Adding ${unit.members.map(m => `${m.name} (${m.id})`).join(' & ')} as child of ${parentUnit.members.map(m => `${m.name} (${m.id})`).join(' & ')}`);
               }
             }
             console.log(`[FamilyTreeView] Connected ${unit.members.map(m => m.name).join(' & ')} to parent ${parentUnit.members.map(m => m.name).join(' & ')}`);
