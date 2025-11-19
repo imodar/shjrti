@@ -276,10 +276,29 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   const handleSavePassword = async () => {
     setIsUpdatingPassword(true);
     try {
+      let passwordToSave = null;
+      
+      // If setting a password, hash it first using the database function
+      if (sharePassword.trim()) {
+        const { data: hashedPassword, error: hashError } = await supabase
+          .rpc('hash_share_password', { plain_password: sharePassword.trim() });
+        
+        if (hashError) {
+          console.error('Error hashing password:', hashError);
+          toast({
+            title: t('tree_settings.toast.error'),
+            description: t('tree_settings.toast.password_save_failed'),
+            variant: "destructive"
+          });
+          return;
+        }
+        passwordToSave = hashedPassword;
+      }
+      
       const { error } = await supabase
         .from('families')
         .update({ 
-          share_password: sharePassword.trim() || null,
+          share_password: passwordToSave,
           updated_at: new Date().toISOString()
         })
         .eq('id', familyData?.id);
@@ -296,7 +315,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
 
       // Update the local family data
       if (familyData) {
-        familyData.share_password = sharePassword.trim() || null;
+        familyData.share_password = passwordToSave;
       }
       
       toast({

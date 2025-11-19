@@ -137,9 +137,20 @@ export const CustomDomainCard: React.FC<CustomDomainCardProps> = ({
   const handlePasswordUpdate = async () => {
     setIsUpdatingPassword(true);
     try {
+      let passwordToSave = null;
+      
+      // If setting a password, hash it first using the database function
+      if (isPasswordProtected && sharePassword.trim()) {
+        const { data: hashedPassword, error: hashError } = await supabase
+          .rpc('hash_share_password', { plain_password: sharePassword.trim() });
+        
+        if (hashError) throw hashError;
+        passwordToSave = hashedPassword;
+      }
+      
       const { error } = await supabase
         .from('families')
-        .update({ share_password: isPasswordProtected ? sharePassword : null })
+        .update({ share_password: passwordToSave })
         .eq('id', familyData.id);
         
       if (error) throw error;
@@ -148,6 +159,11 @@ export const CustomDomainCard: React.FC<CustomDomainCardProps> = ({
         title: isPasswordProtected ? "تم تفعيل حماية كلمة المرور" : "تم إلغاء حماية كلمة المرور",
         description: isPasswordProtected ? "الشجرة محمية بكلمة مرور الآن" : "الشجرة متاحة بدون كلمة مرور"
       });
+      
+      // Update local family data
+      if (familyData) {
+        familyData.share_password = passwordToSave;
+      }
     } catch (error) {
       console.error('Error updating password:', error);
       toast({

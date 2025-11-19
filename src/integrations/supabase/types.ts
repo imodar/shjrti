@@ -87,7 +87,7 @@ export type Database = {
           id: string
           role: string
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -95,7 +95,7 @@ export type Database = {
           id?: string
           role?: string
           updated_at?: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string
@@ -103,7 +103,7 @@ export type Database = {
           id?: string
           role?: string
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -297,7 +297,7 @@ export type Database = {
         Row: {
           archived_at: string | null
           created_at: string
-          creator_id: string | null
+          creator_id: string
           custom_domain: string | null
           description: string | null
           id: string
@@ -312,7 +312,7 @@ export type Database = {
         Insert: {
           archived_at?: string | null
           created_at?: string
-          creator_id?: string | null
+          creator_id: string
           custom_domain?: string | null
           description?: string | null
           id?: string
@@ -327,7 +327,7 @@ export type Database = {
         Update: {
           archived_at?: string | null
           created_at?: string
-          creator_id?: string | null
+          creator_id?: string
           custom_domain?: string | null
           description?: string | null
           id?: string
@@ -1118,7 +1118,7 @@ export type Database = {
           theme_mode: string | null
           theme_variant: string | null
           updated_at: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -1131,7 +1131,7 @@ export type Database = {
           theme_mode?: string | null
           theme_variant?: string | null
           updated_at?: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string
@@ -1144,7 +1144,7 @@ export type Database = {
           theme_mode?: string | null
           theme_variant?: string | null
           updated_at?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -1682,6 +1682,7 @@ export type Database = {
           subscription_id: string
         }[]
       }
+      hash_share_password: { Args: { plain_password: string }; Returns: string }
       is_admin: { Args: { user_uuid: string }; Returns: boolean }
       is_admin_secure: { Args: { user_uuid: string }; Returns: boolean }
       is_maintenance_mode_enabled: { Args: never; Returns: boolean }
@@ -1735,6 +1736,10 @@ export type Database = {
           status_reason?: string
           target_user_id: string
         }
+        Returns: boolean
+      }
+      verify_share_password: {
+        Args: { hashed_password: string; plain_password: string }
         Returns: boolean
       }
     }
