@@ -70,30 +70,16 @@ const FamilyDataContext = createContext<FamilyDataContextType | undefined>(undef
 interface FamilyDataProviderProps {
   children: ReactNode;
   familyId: string | null;
-  initialData?: {
-    family: Family | null;
-    members: Member[];
-    marriages: Marriage[];
-  };
 }
 
-export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children, familyId, initialData }) => {
+export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children, familyId }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-
-  console.log('[FamilyDataContext] Initializing with:', {
-    familyId,
-    hasInitialData: !!initialData,
-    initialFamily: initialData?.family?.id,
-    initialMembersCount: initialData?.members?.length || 0,
-    initialMarriagesCount: initialData?.marriages?.length || 0
-  });
 
   // Query for family data
   const { data: familyData = null, isLoading: familyLoading, error: familyError } = useQuery({
     queryKey: ['family', familyId],
     queryFn: async () => {
-      console.log('[FamilyDataContext] Fetching family from database');
       if (!familyId) return null;
       const { data, error } = await supabase
         .from('families')
@@ -103,8 +89,7 @@ export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children
       if (error) throw error;
       return data as Family;
     },
-    enabled: !!familyId && !initialData, // Disable query if initialData provided
-    initialData: initialData?.family,
+    enabled: !!familyId,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes (previously cacheTime)
   });
@@ -113,7 +98,6 @@ export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children
   const { data: familyMembers = [], isLoading: membersLoading, error: membersError } = useQuery({
     queryKey: ['members', familyId],
     queryFn: async () => {
-      console.log('[FamilyDataContext] Fetching members from database');
       if (!familyId) return [];
       const { data, error } = await supabase
         .from('family_tree_members')
@@ -123,8 +107,7 @@ export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children
       if (error) throw error;
       return data as Member[];
     },
-    enabled: !!familyId && !initialData, // Disable query if initialData provided
-    initialData: initialData?.members,
+    enabled: !!familyId,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
@@ -133,7 +116,6 @@ export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children
   const { data: marriages = [], isLoading: marriagesLoading, error: marriagesError } = useQuery({
     queryKey: ['marriages', familyId],
     queryFn: async () => {
-      console.log('[FamilyDataContext] Fetching marriages from database');
       if (!familyId) return [];
       const { data, error } = await supabase
         .from('marriages')
@@ -142,17 +124,9 @@ export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children
       if (error) throw error;
       return data as Marriage[];
     },
-    enabled: !!familyId && !initialData, // Disable query if initialData provided
-    initialData: initialData?.marriages,
+    enabled: !!familyId,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
-  });
-
-  console.log('[FamilyDataContext] Current data state:', {
-    familyData: familyData?.id,
-    familyMembersCount: familyMembers.length,
-    marriagesCount: marriages.length,
-    isLoading: familyLoading || membersLoading || marriagesLoading
   });
 
   const loading = familyLoading || membersLoading || marriagesLoading;

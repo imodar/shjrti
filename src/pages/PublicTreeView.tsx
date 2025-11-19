@@ -24,65 +24,22 @@ import { Users, AlertCircle, Menu, ZoomIn, ZoomOut, Maximize, Minimize, Check, C
 import { MemberProfileModal } from "@/components/MemberProfileModal";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useFamilyData } from '@/contexts/FamilyDataContext';
 
 interface PublicTreeViewProps {
   shareToken?: string | null;
   overrideFamilyId?: string;
-  skipDataLoading?: boolean; // If true, use data from context instead
 }
 
-const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false }: PublicTreeViewProps = {}) => {
+const PublicTreeView = ({ shareToken, overrideFamilyId }: PublicTreeViewProps = {}) => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const { direction, t } = useLanguage();
   
-  // Get data from context when skipDataLoading is true
-  const contextData = skipDataLoading ? useFamilyData() : null;
-  
-  // Local state for data (used when NOT skipDataLoading)
-  const [localFamilyMembers, setLocalFamilyMembers] = useState<any[]>([]);
-  const [localFamilyMarriages, setLocalFamilyMarriages] = useState<any[]>([]);
-  const [localFamilyData, setLocalFamilyData] = useState<any>(null);
-  
-  // Use context data when available, otherwise use local state
-  const familyMembers = skipDataLoading ? (contextData?.familyMembers || []) : localFamilyMembers;
-  const familyMarriages = skipDataLoading ? (contextData?.marriages || []) : localFamilyMarriages;
-  const familyData = skipDataLoading ? contextData?.familyData : localFamilyData;
-  
-  const [isLoading, setIsLoading] = useState(!skipDataLoading);
-  
-  // Debug: Log when data changes
-  useEffect(() => {
-    console.log('[PublicTreeView] Data state:', {
-      skipDataLoading,
-      familyData: familyData?.name,
-      familyMembersCount: familyMembers?.length,
-      marriagesCount: familyMarriages?.length,
-      isLoading
-    });
-  }, [skipDataLoading, familyData, familyMembers, familyMarriages, isLoading]);
-
-  // When using skipDataLoading, ensure isLoading is false when data is ready
-  useEffect(() => {
-    if (skipDataLoading && contextData) {
-      const { familyData: ctxFamily, familyMembers: ctxMembers, marriages: ctxMarriages, loading: ctxLoading } = contextData;
-      console.log('[PublicTreeView] Context data check:', {
-        ctxLoading,
-        hasFamilyData: !!ctxFamily,
-        membersCount: ctxMembers?.length,
-        marriagesCount: ctxMarriages?.length,
-        currentIsLoading: isLoading
-      });
-
-      if (!ctxLoading && ctxFamily) {
-        console.log('[PublicTreeView] Context data ready - setting isLoading to false');
-        setIsLoading(false);
-      }
-    }
-  }, [skipDataLoading, contextData, isLoading]);
-  
+  const [familyMembers, setFamilyMembers] = useState<any[]>([]);
+  const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
+  const [familyData, setFamilyData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [enteredPassword, setEnteredPassword] = useState<string>("");
   const [isPasswordCorrect, setIsPasswordCorrect] = useState(false);
@@ -107,29 +64,20 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
   // Support both shareToken (new) and familyId (old - for custom domain)
-  const familyIdFromParams = overrideFamilyId || searchParams.get('familyId');
-  
-  // Use familyData.id when available (from context or loaded data), otherwise use params
-  const familyId = familyData?.id || familyIdFromParams;
+  const familyId = overrideFamilyId || searchParams.get('familyId');
 
   useEffect(() => {
-    // Skip data loading if using context data
-    if (skipDataLoading) {
-      setIsLoading(false);
-      return;
-    }
-    
     if (shareToken) {
       // New way: Use Edge Function with share token
       loadFamilyDataViaToken();
-    } else if (familyIdFromParams) {
+    } else if (familyId) {
       // Old way: Direct Supabase calls (for custom domain backward compatibility)
       checkFamilyAccess();
     } else {
       setTokenError('TOKEN_REQUIRED');
       setIsLoading(false);
     }
-  }, [shareToken, familyIdFromParams, skipDataLoading]);
+  }, [shareToken, familyId]);
 
   const checkFamilyAccess = async () => {
     try {
@@ -139,7 +87,7 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
       const { data: family, error: familyError } = await supabase
         .from('families')
         .select('id, name, description, share_password, share_gallery')
-        .eq('id', familyIdFromParams)
+        .eq('id', familyId)
         .single();
 
       if (familyError || !family) {
@@ -152,7 +100,7 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
         return;
       }
 
-      setLocalFamilyData(family);
+      setFamilyData(family);
 
       // Check if password is required
       if (family.share_password) {
@@ -260,9 +208,9 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
         marriages: marriages?.length
       });
 
-      setLocalFamilyData(family);
-      setLocalFamilyMembers(members || []);
-      setLocalFamilyMarriages(marriages || []);
+      setFamilyData(family);
+      setFamilyMembers(members || []);
+      setFamilyMarriages(marriages || []);
       setShowPasswordModal(false);
       setPasswordError(false);
       setIsLoading(false);
@@ -285,7 +233,7 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
       const { data: members, error: membersError } = await supabase
         .from('family_tree_members')
         .select('*')
-        .eq('family_id', familyIdFromParams)
+        .eq('family_id', familyId)
         .order('created_at', { ascending: true });
 
       if (membersError) {
@@ -296,14 +244,14 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
       const { data: marriages, error: marriagesError } = await supabase
         .from('marriages')
         .select('*')
-        .eq('family_id', familyIdFromParams);
+        .eq('family_id', familyId);
 
       if (marriagesError) {
         console.error('Error fetching marriages:', marriagesError);
       }
 
-      setLocalFamilyMembers(members || []);
-      setLocalFamilyMarriages(marriages || []);
+      setFamilyMembers(members || []);
+      setFamilyMarriages(marriages || []);
       
     } catch (error) {
       console.error('Error loading family tree data:', error);
@@ -579,14 +527,6 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
     // Recompute generations with BFS
     const roots: string[] = [];
     units.forEach((u, id) => {
-      // Check if this unit contains a founder - founders are always roots
-      const isFounderUnit = u.members.some((m: any) => m.is_founder);
-      if (isFounderUnit) {
-        roots.push(id);
-        console.log('[PublicTreeView] Founder unit identified as root:', u.members.map((m: any) => m.name).join(' & '));
-        return;
-      }
-
       const hasParentInUnits = u.members.some((m: any) => {
         const fatherId = m.father_id;
         const motherId = m.mother_id;
@@ -600,8 +540,6 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
       });
       if (!hasParentInUnits) roots.push(id);
     });
-
-    console.log('[PublicTreeView] Roots identified:', roots.length, 'out of', units.size, 'units');
 
     const q: Array<{ id: string; gen: number }> = roots.map((id) => ({ id, gen: 0 }));
     const seen = new Set<string>();
@@ -632,47 +570,17 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
       });
     }
 
-    console.log('[PublicTreeView] After BFS:', {
-      unitsProcessed: seen.size,
-      unitsWithParents: Array.from(units.values()).filter(u => u.parentUnitId).length,
-      unitsWithoutParents: Array.from(units.values()).filter(u => !u.parentUnitId).length
-    });
-
     // Ensure we have at least one root
     let rootCount = 0;
     units.forEach((u) => { if (!u.parentUnitId) rootCount++; });
     if (rootCount === 0) {
-      console.warn('[PublicTreeView] No roots after BFS! Force-creating roots from generation 0');
       let minGen = Infinity;
       units.forEach((u) => { minGen = Math.min(minGen, u.generation); });
-      console.log('[PublicTreeView] Min generation found:', minGen);
       units.forEach((u) => { if (u.generation === minGen) u.parentUnitId = undefined; });
     }
 
-    console.log('[PublicTreeView] Final state:', {
-      totalUnits: units.size,
-      rootUnits: Array.from(units.values()).filter(u => !u.parentUnitId).length,
-      sampleUnit: Array.from(units.values())[0]
-    });
-
     return units;
   }, [familyMembers, familyMarriages, selectedRootMarriage]);
-
-  // Debug: Log familyUnits after creation
-  useEffect(() => {
-    console.log('[PublicTreeView] familyUnits created:', {
-      size: familyUnits.size,
-      keys: Array.from(familyUnits.keys()).slice(0, 5), // First 5 keys
-      firstUnit: familyUnits.size > 0 ? Array.from(familyUnits.values())[0] : null,
-      familyMembersLength: familyMembers.length,
-      familyMarriagesLength: familyMarriages.length
-    });
-  }, [familyUnits, familyMembers, familyMarriages]);
-
-  console.log('[PublicTreeView] Before render check:', {
-    isLoading,
-    willShowLoader: isLoading
-  });
 
   if (isLoading) {
     return (
@@ -912,20 +820,14 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
                             
                             {/* Tree Content Area */}
                             <div className="p-4 min-h-[600px] overflow-auto">
-                              {familyUnits.size === 0 ? (
-                                <div className="flex items-center justify-center h-64">
-                                  <p className="text-muted-foreground">لا توجد بيانات شجرة العائلة</p>
-                                </div>
-                              ) : (
-                                <OrganizationalChart 
-                                  familyUnits={familyUnits} 
-                                  zoomLevel={zoomLevel}
-                                  isPublicView={true}
-                                  onSuggestEdit={handleSuggestEdit}
-                                  marriages={familyMarriages}
-                                  members={familyMembers}
-                                />
-                              )}
+                              <OrganizationalChart 
+                                familyUnits={familyUnits} 
+                                zoomLevel={zoomLevel}
+                                isPublicView={true}
+                                onSuggestEdit={handleSuggestEdit}
+                                marriages={familyMarriages}
+                                members={familyMembers}
+                              />
                             </div>
                           </div>
                         </TabsContent>
@@ -944,7 +846,7 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
                     {activeSection === 'gallery' && familyData?.share_gallery && (
                       <div className="p-6">
                         <FamilyGalleryView
-                          familyId={familyData?.id || familyId || ''}
+                          familyId={familyId!}
                           readOnly={true}
                         />
                       </div>

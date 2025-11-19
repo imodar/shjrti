@@ -110,14 +110,7 @@ Deno.serve(async (req) => {
         );
       }
 
-      // Verify password using bcrypt hashing function
-      const { data: verifyResult, error: verifyError } = await supabaseAdmin
-        .rpc('verify_share_password', {
-          plain_password: password,
-          hashed_password: family.share_password,
-        });
-
-      if (verifyError || !verifyResult) {
+      if (password !== family.share_password) {
         console.log('[get-shared-family] Invalid password provided');
         return new Response(
           JSON.stringify({ success: false, error: 'PASSWORD_INCORRECT' }),
