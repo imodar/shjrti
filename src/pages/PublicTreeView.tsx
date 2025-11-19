@@ -24,22 +24,37 @@ import { Users, AlertCircle, Menu, ZoomIn, ZoomOut, Maximize, Minimize, Check, C
 import { MemberProfileModal } from "@/components/MemberProfileModal";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useFamilyData } from '@/contexts/FamilyDataContext';
 
 interface PublicTreeViewProps {
   shareToken?: string | null;
   overrideFamilyId?: string;
+  skipDataLoading?: boolean; // If true, use data from context instead
 }
 
-const PublicTreeView = ({ shareToken, overrideFamilyId }: PublicTreeViewProps = {}) => {
+const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false }: PublicTreeViewProps = {}) => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const { direction, t } = useLanguage();
   
-  const [familyMembers, setFamilyMembers] = useState<any[]>([]);
-  const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
-  const [familyData, setFamilyData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // Try to get data from context (when wrapped in FamilyDataProvider)
+  let contextData: any = null;
+  let hasContext = false;
+  try {
+    const { familyData: ctxFamily, familyMembers: ctxMembers, marriages: ctxMarriages } = useFamilyData?.() || {};
+    if (ctxFamily || ctxMembers?.length > 0) {
+      contextData = { familyData: ctxFamily, familyMembers: ctxMembers, familyMarriages: ctxMarriages };
+      hasContext = true;
+    }
+  } catch (e) {
+    // Not in FamilyDataProvider context, that's OK
+  }
+  
+  const [familyMembers, setFamilyMembers] = useState<any[]>(contextData?.familyMembers || []);
+  const [familyMarriages, setFamilyMarriages] = useState<any[]>(contextData?.familyMarriages || []);
+  const [familyData, setFamilyData] = useState<any>(contextData?.familyData || null);
+  const [isLoading, setIsLoading] = useState(!hasContext);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [enteredPassword, setEnteredPassword] = useState<string>("");
   const [isPasswordCorrect, setIsPasswordCorrect] = useState(false);
@@ -67,6 +82,12 @@ const PublicTreeView = ({ shareToken, overrideFamilyId }: PublicTreeViewProps = 
   const familyId = overrideFamilyId || searchParams.get('familyId');
 
   useEffect(() => {
+    // Skip data loading if we have context data or skipDataLoading is true
+    if (hasContext || skipDataLoading) {
+      setIsLoading(false);
+      return;
+    }
+    
     if (shareToken) {
       // New way: Use Edge Function with share token
       loadFamilyDataViaToken();
@@ -77,7 +98,7 @@ const PublicTreeView = ({ shareToken, overrideFamilyId }: PublicTreeViewProps = 
       setTokenError('TOKEN_REQUIRED');
       setIsLoading(false);
     }
-  }, [shareToken, familyId]);
+  }, [shareToken, familyId, hasContext, skipDataLoading]);
 
   const checkFamilyAccess = async () => {
     try {
