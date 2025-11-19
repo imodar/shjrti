@@ -92,6 +92,14 @@ export const TreeView: React.FC<TreeViewProps> = ({
     // Recompute generations with BFS - identify true roots
     const roots: string[] = [];
     units.forEach((u, id) => {
+      // Check if this unit contains a founder - founders are ALWAYS roots
+      const hasFounder = u.members.some((m: any) => m.is_founder);
+      if (hasFounder) {
+        roots.push(id);
+        console.log('[TreeView] Founder unit identified as root:', u.members.map((m: any) => m.name).join(' & '));
+        return;
+      }
+      
       // A unit is a root if BOTH parents of ALL members are either null or not in any unit
       const isRoot = u.members.every((m: any) => {
         const fatherId = m.father_id;
@@ -126,7 +134,7 @@ export const TreeView: React.FC<TreeViewProps> = ({
       }
     });
 
-    const q: Array<{ id: string; gen: number }> = roots.map((id) => ({ id, gen: 0 }));
+    const q: Array<{ id: string; gen: number }> = roots.map((id) => ({ id, gen: 1 }));
     const seen = new Set<string>();
 
     while (q.length) {
@@ -144,7 +152,9 @@ export const TreeView: React.FC<TreeViewProps> = ({
           // locate child's unit
           units.forEach((childUnit, childId) => {
             if (childUnit.members.some((mm: any) => mm.id === member.id)) {
-              if (childId !== id) {
+              // Protect founder units from being assigned parents
+              const isFounderChild = childUnit.members.some((m: any) => m.is_founder);
+              if (!isFounderChild && childId !== id) {
                 childUnit.parentUnitId = id;
                 childUnit.generation = gen + 1;
                 if (!u.childUnits.includes(childId)) u.childUnits.push(childId);
