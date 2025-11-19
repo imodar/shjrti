@@ -43,6 +43,9 @@ interface LanguageProviderProps {
   children: ReactNode;
 }
 
+// Cache version - increment this to invalidate all cached translations
+const TRANSLATION_CACHE_VERSION = 2;
+
 export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   // Initialize with saved language or default to Arabic (matching HTML)
   const getInitialLanguage = () => {
@@ -77,11 +80,33 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   useEffect(() => {
     // Pre-hydrate translations from cache to avoid flash
     try {
-      const cached = localStorage.getItem(`translations-${initialLanguage}`);
+      const cacheKey = `translations-${initialLanguage}`;
+      const versionKey = `translations-version`;
+      const cachedVersion = localStorage.getItem(versionKey);
+      
+      // Clear cache if version mismatch
+      if (cachedVersion !== String(TRANSLATION_CACHE_VERSION)) {
+        console.log(`[LanguageContext] Cache version mismatch, clearing all caches...`);
+        localStorage.removeItem(`translations-ar`);
+        localStorage.removeItem(`translations-en`);
+        localStorage.setItem(versionKey, String(TRANSLATION_CACHE_VERSION));
+        return;
+      }
+      
+      const cached = localStorage.getItem(cacheKey);
       if (cached) {
         const parsed = JSON.parse(cached);
-        setTranslations(parsed);
-        setHasCachedTranslations(true);
+        
+        // Check if cache is stale (less than 100 keys means old version)
+        const cacheSize = Object.keys(parsed).length;
+        if (cacheSize < 100) {
+          console.log(`[LanguageContext] Cache is stale (${cacheSize} keys), clearing...`);
+          localStorage.removeItem(cacheKey);
+        } else {
+          setTranslations(parsed);
+          setHasCachedTranslations(true);
+          console.log(`[LanguageContext] Using cached translations (${cacheSize} keys)`);
+        }
       }
     } catch {}
   }, []);
