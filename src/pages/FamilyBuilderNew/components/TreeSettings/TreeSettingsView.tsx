@@ -100,27 +100,35 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
     const generateShareToken = async () => {
       setIsGeneratingToken(true);
       try {
+        console.log('[TreeSettings] Generating share token for family:', familyData?.id);
+        
         const { data, error } = await supabase.rpc('regenerate_share_token', {
           p_family_id: familyData?.id,
           p_expires_in_hours: 2
         });
 
         if (error) {
-          console.error('Error generating token:', error);
+          console.error('[TreeSettings] Error generating token:', error);
           return;
         }
 
+        console.log('[TreeSettings] Token generated:', data);
+
         if (data && data.length > 0) {
-          setShareToken(data[0].share_token);
+          const newToken = data[0].share_token;
+          console.log('[TreeSettings] Setting token:', newToken);
+          setShareToken(newToken);
         }
       } catch (error) {
-        console.error('Unexpected error:', error);
+        console.error('[TreeSettings] Unexpected error:', error);
       } finally {
         setIsGeneratingToken(false);
       }
     };
     
-    generateShareToken();
+    if (familyData?.id) {
+      generateShareToken();
+    }
   }, [familyData?.id]);
   
   // Check if user's package has custom domains and image upload enabled
