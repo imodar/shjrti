@@ -620,9 +620,11 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
     console.log('[PublicTreeView] familyUnits created:', {
       size: familyUnits.size,
       keys: Array.from(familyUnits.keys()).slice(0, 5), // First 5 keys
-      firstUnit: familyUnits.size > 0 ? Array.from(familyUnits.values())[0] : null
+      firstUnit: familyUnits.size > 0 ? Array.from(familyUnits.values())[0] : null,
+      familyMembersLength: familyMembers.length,
+      familyMarriagesLength: familyMarriages.length
     });
-  }, [familyUnits]);
+  }, [familyUnits, familyMembers, familyMarriages]);
 
   if (isLoading) {
     return (
