@@ -853,6 +853,17 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             />
           </g>
         );
+        
+        console.log('🎨 [SVG Group Created - Single Child]:', {
+          parentNames: parentUnit.members.map(m => m.name).join(' & '),
+          childName: child.members.map(m => m.name).join(' & '),
+          linesInGroup: 3,
+          segment1Coords: { x1: parentCenterX, y1: parentBottomY, x2: parentCenterX, y2: parentBottomY + VERTICAL_SPACING / 3 },
+          segment2Coords: { x1: parentCenterX, y1: parentBottomY + VERTICAL_SPACING / 3, x2: childCenterX, y2: parentBottomY + VERTICAL_SPACING / 3 },
+          segment3Coords: { x1: childCenterX, y1: parentBottomY + VERTICAL_SPACING / 3, x2: childCenterX, y2: childTopY },
+          stroke: 'hsl(var(--primary))',
+          strokeWidth: 3
+        });
       } else {
         // Multiple children - org chart style
         const childPositions = children
@@ -910,6 +921,23 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             })}
           </g>
         );
+        
+        console.log('🎨 [SVG Group Created - Multiple Children]:', {
+          parentNames: parentUnit.members.map(m => m.name).join(' & '),
+          childCount: children.length,
+          totalLinesInGroup: 2 + children.length, // vertical + horizontal + child lines
+          verticalLineCoords: { x1: parentCenterX, y1: parentBottomY, x2: parentCenterX, y2: distributionY },
+          horizontalLineCoords: { x1: leftmostX, y1: distributionY, x2: rightmostX, y2: distributionY },
+          childLineCoords: children.map(child => {
+            const pos = positions.get(child.id);
+            return pos ? {
+              childName: child.members.map(m => m.name).join(' & '),
+              coords: { x1: pos.x + UNIT_WIDTH / 2, y1: distributionY, x2: pos.x + UNIT_WIDTH / 2, y2: pos.y }
+            } : null;
+          }).filter(Boolean),
+          stroke: 'hsl(var(--primary))',
+          strokeWidth: 3
+        });
       }
     });
 
