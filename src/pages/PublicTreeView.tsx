@@ -26,22 +26,25 @@ import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface PublicTreeViewProps {
+  shareToken?: string | null;
   overrideFamilyId?: string;
 }
 
-const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
+const PublicTreeView = ({ shareToken, overrideFamilyId }: PublicTreeViewProps = {}) => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const isMobile = useIsMobile();
-  const { direction } = useLanguage();
+  const { direction, t } = useLanguage();
   
   const [familyMembers, setFamilyMembers] = useState<any[]>([]);
   const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
   const [familyData, setFamilyData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [enteredPassword, setEnteredPassword] = useState<string>("");
   const [isPasswordCorrect, setIsPasswordCorrect] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
+  const [tokenError, setTokenError] = useState<string | null>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeSection, setActiveSection] = useState('overview');
@@ -59,17 +62,22 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   
   // Member Profile Modal state
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
-  
-  // Get family ID from URL parameters or props
+
+  // Support both shareToken (new) and familyId (old - for custom domain)
   const familyId = overrideFamilyId || searchParams.get('familyId');
 
   useEffect(() => {
-    if (familyId) {
+    if (shareToken) {
+      // New way: Use Edge Function with share token
+      loadFamilyDataViaToken();
+    } else if (familyId) {
+      // Old way: Direct Supabase calls (for custom domain backward compatibility)
       checkFamilyAccess();
     } else {
+      setTokenError('TOKEN_REQUIRED');
       setIsLoading(false);
     }
-  }, [familyId]);
+  }, [shareToken, familyId]);
 
   const checkFamilyAccess = async () => {
     try {
@@ -109,13 +117,111 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
   };
 
   const handlePasswordSubmit = async (password: string) => {
-    if (password === familyData?.share_password) {
-      setIsPasswordCorrect(true);
-      setShowPasswordModal(false);
-      await loadFamilyTreeData();
+    if (shareToken) {
+      // New way: password via token
+      setEnteredPassword(password);
+      await loadFamilyDataViaToken(password);
     } else {
-      setPasswordError(true);
+      // Old way: password via direct check
+      if (password === familyData?.share_password) {
+        setIsPasswordCorrect(true);
+        setShowPasswordModal(false);
+        await loadFamilyTreeData();
+      } else {
+        setPasswordError(true);
+        setShowPasswordModal(false);
+      }
+    }
+  };
+
+  // New way: Load data via Edge Function with share token
+  const loadFamilyDataViaToken = async (password?: string) => {
+    try {
+      setIsLoading(true);
+      setTokenError(null);
+      
+      console.log('[PublicTreeView] Calling get-shared-family with token:', shareToken);
+      
+      // Call Edge Function with share token
+      const { data, error } = await supabase.functions.invoke('get-shared-family', {
+        body: { 
+          share_token: shareToken,
+          password: password || enteredPassword || undefined
+        }
+      });
+
+      console.log('[PublicTreeView] Edge Function response:', { data, error });
+
+      if (error) {
+        console.error('[PublicTreeView] Edge Function error:', error);
+        toast({
+          title: t('common.error') || 'Error',
+          description: t('common.network_error') || 'Network error',
+          variant: 'destructive'
+        });
+        setIsLoading(false);
+        return;
+      }
+
+      if (!data?.success) {
+        const errorCode = data?.error;
+        console.log('[PublicTreeView] Token validation error:', errorCode);
+        
+        // Handle specific error codes
+        if (errorCode === 'PASSWORD_REQUIRED') {
+          setShowPasswordModal(true);
+          setIsLoading(false);
+          return;
+        }
+        
+        if (errorCode === 'PASSWORD_INCORRECT') {
+          setPasswordError(true);
+          setShowPasswordModal(true);
+          setIsLoading(false);
+          return;
+        }
+        
+        if (errorCode === 'TOKEN_EXPIRED') {
+          setTokenError('TOKEN_EXPIRED');
+          setIsLoading(false);
+          return;
+        }
+        
+        if (errorCode === 'TOKEN_INVALID') {
+          setTokenError('TOKEN_INVALID');
+          setIsLoading(false);
+          return;
+        }
+        
+        // Generic error
+        setTokenError(errorCode || 'UNKNOWN_ERROR');
+        setIsLoading(false);
+        return;
+      }
+
+      // Success - extract family data
+      const { family, members, marriages } = data.data;
+      
+      console.log('[PublicTreeView] Data loaded successfully:', {
+        family: family?.name,
+        members: members?.length,
+        marriages: marriages?.length
+      });
+
+      setFamilyData(family);
+      setFamilyMembers(members || []);
+      setFamilyMarriages(marriages || []);
       setShowPasswordModal(false);
+      setPasswordError(false);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('[PublicTreeView] Unexpected error:', error);
+      toast({
+        title: t('common.error') || 'Error',
+        description: t('common.network_error') || 'An unexpected error occurred',
+        variant: 'destructive'
+      });
+      setIsLoading(false);
     }
   };
 
@@ -174,7 +280,11 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await loadFamilyTreeData();
+    if (shareToken) {
+      await loadFamilyDataViaToken();
+    } else {
+      await loadFamilyTreeData();
+    }
     setIsRefreshing(false);
   };
 
@@ -509,9 +619,8 @@ const PublicTreeView = ({ overrideFamilyId }: PublicTreeViewProps = {}) => {
     );
   }
 
-  // Show error page if password is incorrect
-  // Show error page if no family ID is provided
-  if (!familyId && !isLoading) {
+  // Show error page if token error exists
+  if (tokenError && !isLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <GlobalHeader />

@@ -224,6 +224,7 @@ const App = () => {
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/contact" element={<ContactUs />} />
                   <Route path="/tree" element={<PublicTreeViewWithContext />} />
+                  <Route path="/share" element={<PublicTreeViewWithContext />} />
                   {/* Redirect old terms route to new one */}
                   <Route path="/terms" element={<TermsConditions />} />
                   {/* Custom domain route */}
