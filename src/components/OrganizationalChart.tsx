@@ -787,11 +787,30 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       const parentCenterX = parentPos.x + UNIT_WIDTH / 2;
       const parentBottomY = parentPos.y + UNIT_HEIGHT;
       
-      console.log(`✅ [renderConnections] Drawing ${children.length} connections from:`, {
-        parentId: parentUnit.id,
-        parentNames: parentUnit.members.map(m => `${m.name} [${m.id.slice(0, 8)}]`).join(' & '),
-        childrenCount: children.length,
-        childrenNames: children.map(c => c.members.map(m => `${m.name} [${m.id.slice(0, 8)}]`).join(' & '))
+      children.forEach((childUnit, idx) => {
+        const childPos = positions.get(childUnit.id);
+        if (!childPos) {
+          console.log(`🚨 [renderConnections] Child has no position:`, {
+            childId: childUnit.id,
+            childNames: childUnit.members.map(m => `${m.name} [${m.id.slice(0, 8)}]`).join(' & '),
+            parentNames: parentUnit.members.map(m => `${m.name} [${m.id.slice(0, 8)}]`).join(' & ')
+          });
+          return;
+        }
+        
+        const childCenterX = childPos.x + UNIT_WIDTH / 2;
+        const childTopY = childPos.y;
+        
+        console.log(`🔗 [renderConnections] Line ${idx + 1}/${children.length}:`, {
+          from: `${parentUnit.members.map(m => m.name).join(' & ')}`,
+          to: `${childUnit.members.map(m => m.name).join(' & ')}`,
+          parentPos: { x: parentPos.x, y: parentPos.y },
+          childPos: { x: childPos.x, y: childPos.y },
+          lineCoords: {
+            start: { x: parentCenterX, y: parentBottomY },
+            end: { x: childCenterX, y: childTopY }
+          }
+        });
       });
       
       if (children.length === 1) {
