@@ -3,16 +3,13 @@ import { useSearchParams } from 'react-router-dom';
 import { FamilyDataProvider } from '@/contexts/FamilyDataContext';
 import PublicTreeView from '../PublicTreeView';
 
-// Wrapper component that provides FamilyDataContext to PublicTreeView
+// Wrapper component for Share Token based public viewing
 const PublicTreeViewWithContext: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const familyId = searchParams.get('familyId');
+  const shareToken = searchParams.get('token');
 
-  return (
-    <FamilyDataProvider familyId={familyId}>
-      <PublicTreeView />
-    </FamilyDataProvider>
-  );
+  // No FamilyDataProvider needed - PublicTreeView will fetch via Edge Function
+  return <PublicTreeView shareToken={shareToken} />;
 };
 
 export default PublicTreeViewWithContext;

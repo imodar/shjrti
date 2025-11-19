@@ -100,3 +100,6 @@ verify_jwt = false
 
 [functions.secure-signup]
 verify_jwt = false
+
+[functions.get-shared-family]
+verify_jwt = false

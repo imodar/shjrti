@@ -305,6 +305,8 @@ export type Database = {
           name: string
           share_gallery: boolean | null
           share_password: string | null
+          share_token: string | null
+          share_token_expires_at: string | null
           updated_at: string
         }
         Insert: {
@@ -318,6 +320,8 @@ export type Database = {
           name: string
           share_gallery?: boolean | null
           share_password?: string | null
+          share_token?: string | null
+          share_token_expires_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -331,6 +335,8 @@ export type Database = {
           name?: string
           share_gallery?: boolean | null
           share_password?: string | null
+          share_token?: string | null
+          share_token_expires_at?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -1715,6 +1721,13 @@ export type Database = {
       process_scheduled_package_change: {
         Args: { p_scheduled_change_id: string; p_user_id: string }
         Returns: boolean
+      }
+      regenerate_share_token: {
+        Args: { p_expires_in_hours?: number; p_family_id: string }
+        Returns: {
+          expires_at: string
+          share_token: string
+        }[]
       }
       update_user_status: {
         Args: {

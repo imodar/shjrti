@@ -17,10 +17,12 @@ import {
   Twitter, 
   Linkedin, 
   MessageCircle,
-  ExternalLink
+  ExternalLink,
+  RefreshCw
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ShareLinkModalProps {
   isOpen: boolean;
@@ -41,8 +43,54 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
 }) => {
   const { toast } = useToast();
   const { t } = useLanguage();
+  const [isGeneratingToken, setIsGeneratingToken] = React.useState(false);
+  const [shareToken, setShareToken] = React.useState<string | null>(null);
+  const [tokenExpiresAt, setTokenExpiresAt] = React.useState<string | null>(null);
   
-  const publicLink = `${window.location.origin}/tree?familyId=${familyId}`;
+  // Generate share token when modal opens
+  React.useEffect(() => {
+    if (isOpen && !shareToken) {
+      generateShareToken();
+    }
+  }, [isOpen]);
+
+  const generateShareToken = async () => {
+    try {
+      setIsGeneratingToken(true);
+      
+      console.log('[ShareLinkModal] Generating share token for family:', familyId);
+      
+      const { data, error } = await supabase.rpc('regenerate_share_token', {
+        p_family_id: familyId,
+        p_expires_in_hours: 2
+      });
+
+      if (error) {
+        console.error('[ShareLinkModal] Error generating token:', error);
+        toast({
+          title: t('common.error'),
+          description: 'Failed to generate share link',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      console.log('[ShareLinkModal] Token generated:', data);
+      
+      if (data && data.length > 0) {
+        setShareToken(data[0].share_token);
+        setTokenExpiresAt(data[0].expires_at);
+      }
+    } catch (error) {
+      console.error('[ShareLinkModal] Unexpected error:', error);
+    } finally {
+      setIsGeneratingToken(false);
+    }
+  };
+  
+  const publicLink = shareToken 
+    ? `${window.location.origin}/share?token=${shareToken}`
+    : '';
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(shareLink);
@@ -53,6 +101,7 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
   };
 
   const handleCopyPublicLink = () => {
+    if (!publicLink) return;
     navigator.clipboard.writeText(publicLink);
     toast({
       title: t('share_modal.public_link_copied'),
@@ -120,25 +169,50 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
             </div>
           )}
 
-          {/* Public Link Section */}
+          {/* Public Link Section with Token */}
           <div className="space-y-2">
-            <Label>{t('share_modal.public_link')}</Label>
+            <div className="flex items-center justify-between">
+              <Label>{t('share_modal.public_link')}</Label>
+              {isGeneratingToken && (
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <RefreshCw className="h-3 w-3 animate-spin" />
+                  Generating...
+                </span>
+              )}
+              {tokenExpiresAt && !isGeneratingToken && (
+                <span className="text-xs text-muted-foreground">
+                  Expires: {new Date(tokenExpiresAt).toLocaleString()}
+                </span>
+              )}
+            </div>
             <div className="flex gap-2">
               <Input
-                value={publicLink}
+                value={publicLink || 'Generating secure link...'}
                 readOnly
                 className="flex-1 text-sm"
+                disabled={!publicLink}
               />
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleCopyPublicLink}
                 className="flex items-center gap-2"
+                disabled={!publicLink}
               >
                 <Copy className="h-4 w-4" />
                 {t('share_modal.copy')}
               </Button>
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={generateShareToken}
+              disabled={isGeneratingToken}
+              className="w-full flex items-center gap-2"
+            >
+              <RefreshCw className={`h-3 w-3 ${isGeneratingToken ? 'animate-spin' : ''}`} />
+              {t('share_modal.regenerate_link') || 'Generate New Secure Link'}
+            </Button>
           </div>
 
           <Separator />
