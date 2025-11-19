@@ -153,6 +153,19 @@ export const TreeView: React.FC<TreeViewProps> = ({
         const hasFather = member.father_id && parentIds.includes(member.father_id);
         const hasMother = member.mother_id && parentIds.includes(member.mother_id);
         
+        // DEBUG: Log for Amir and Mira
+        if (member.name === 'أمير الشيخ سعيد' || member.name === 'ميرا الشيخ سعيد') {
+          console.log(`[TreeView] Checking ${member.name} (${member.id}) against unit:`, {
+            unitId: id,
+            unitMembers: u.members.map((m: any) => ({ name: m.name, id: m.id })),
+            memberFatherId: member.father_id,
+            memberMotherId: member.mother_id,
+            hasFather,
+            hasMother,
+            parentIds
+          });
+        }
+        
         let isChild = false;
         if (member.father_id && member.mother_id) {
           // Both parents defined - BOTH must be in this unit
@@ -163,6 +176,11 @@ export const TreeView: React.FC<TreeViewProps> = ({
         }
         
         if (isChild) {
+          // DEBUG: Log when marking as child
+          if (member.name === 'أمير الشيخ سعيد' || member.name === 'ميرا الشيخ سعيد') {
+            console.log(`[TreeView] ✅ ${member.name} IS CHILD of unit ${id}`);
+          }
+          
           // locate child's unit
           units.forEach((childUnit, childId) => {
             if (childUnit.members.some((mm: any) => mm.id === member.id)) {
