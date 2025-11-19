@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useGoogleReCaptcha } from 'react-google-recaptcha-v3';
+
 import { z } from 'zod';
 
 // Schema will be created dynamically with translations
@@ -25,7 +25,7 @@ export function LoginForm({ onSwitchToReset, onSwitchToMagicLink }: LoginFormPro
   const { toast } = useToast();
   const { t } = useLanguage();
   const navigate = useNavigate();
-  const { executeRecaptcha } = useGoogleReCaptcha();
+  
 
   // Create schema with translated messages
   const loginSchema = z.object({
@@ -51,25 +51,12 @@ export function LoginForm({ onSwitchToReset, onSwitchToMagicLink }: LoginFormPro
         return;
       }
 
-      // 2. Get reCAPTCHA token (optional for now)
-      let recaptchaToken = null;
-      if (executeRecaptcha) {
-        try {
-          recaptchaToken = await executeRecaptcha('login');
-        } catch (error) {
-          console.warn('reCAPTCHA execution failed:', error);
-        }
-      } else {
-        console.warn('reCAPTCHA not ready - proceeding without verification');
-      }
-
-      // 3. Call secure-login edge function
+      // 2. Call secure-login edge function
       try {
         const { data, error } = await supabase.functions.invoke('secure-login', {
           body: {
             email: validation.data.email,
-            password: validation.data.password,
-            recaptchaToken
+            password: validation.data.password
           }
         });
 
@@ -98,7 +85,7 @@ export function LoginForm({ onSwitchToReset, onSwitchToMagicLink }: LoginFormPro
           return;
         }
 
-        // 4. Set session
+        // 3. Set session
         if (data.session) {
           await supabase.auth.setSession(data.session);
         }

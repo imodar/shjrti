@@ -18,8 +18,7 @@ serve(async (req) => {
       password, 
       firstName, 
       lastName, 
-      phone, 
-      recaptchaToken 
+      phone
     } = await req.json();
     
     console.log(`[Secure Signup] Registration attempt for email: ${email}`);
@@ -38,35 +37,7 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // 1. التحقق من reCAPTCHA
-    if (recaptchaToken) {
-      console.log('[Secure Signup] Verifying reCAPTCHA...');
-      const recaptchaResponse = await fetch(
-        `${supabaseUrl}/functions/v1/verify-recaptcha`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${supabaseServiceKey}`
-          },
-          body: JSON.stringify({ token: recaptchaToken, action: 'signup' })
-        }
-      );
-
-      const recaptchaResult = await recaptchaResponse.json();
-      
-      if (!recaptchaResult.success) {
-        console.warn('[Secure Signup] reCAPTCHA verification failed');
-        return new Response(
-          JSON.stringify({ error: 'فشل التحقق الأمني. يرجى المحاولة مرة أخرى' }),
-          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      
-      console.log(`[Secure Signup] reCAPTCHA passed with score: ${recaptchaResult.score}`);
-    }
-
-    // 2. التحقق من وجود المستخدم
+    // 1. التحقق من وجود المستخدم
     console.log('[Secure Signup] Checking if user exists...');
     const { data: existingUser } = await supabase
       .from('profiles')
@@ -82,7 +53,7 @@ serve(async (req) => {
       );
     }
 
-    // 3. إرسال OTP بدلاً من إنشاء المستخدم مباشرة
+    // 2. إرسال OTP بدلاً من إنشاء المستخدم مباشرة
     console.log('[Secure Signup] Sending OTP...');
     
     const { data: otpData, error: otpError } = await supabase.functions.invoke(
