@@ -209,18 +209,35 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   const { displayUnits } = mergeMarriedUnits(familyUnits);
 
-  // Diagnostic logging
+  // 🔍 STEP 1: Log childUnits population after merge
   console.log('[OrganizationalChart] Input:', {
     familyUnitsSize: familyUnits.size,
     displayUnitsSize: displayUnits.size
   });
+  
+  const unitsWithChildren = Array.from(displayUnits.values()).filter(u => u.childUnits.length > 0);
+  console.log('[OrganizationalChart] 🔍 Units with children:', {
+    total: displayUnits.size,
+    withChildren: unitsWithChildren.length,
+    withoutChildren: displayUnits.size - unitsWithChildren.length
+  });
+  
+  if (unitsWithChildren.length > 0) {
+    console.log('[OrganizationalChart] 🔍 Sample parent-child relationships:');
+    unitsWithChildren.slice(0, 5).forEach(unit => {
+      console.log(`  - ${unit.id} (gen ${unit.generation}) → [${unit.childUnits.join(', ')}]`);
+    });
+  } else {
+    console.warn('[OrganizationalChart] ⚠️ NO UNITS HAVE CHILDREN! childUnits arrays are all empty!');
+  }
   
   console.log('[OrganizationalChart] displayUnits contents:', Array.from(displayUnits.entries()).map(([id, unit]) => ({
     id,
     generation: unit.generation,
     parentUnitId: unit.parentUnitId,
     type: unit.type,
-    membersCount: unit.members?.length
+    membersCount: unit.members?.length,
+    childUnitsCount: unit.childUnits.length
   })));
   
   if (displayUnits.size > 0) {
@@ -778,6 +795,10 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   // Render clean connection lines
   const renderConnections = () => {
     const connections: JSX.Element[] = [];
+    
+    // 🔍 STEP 2: Log connection rendering diagnostics
+    let parentsProcessed = 0;
+    let connectionsGenerated = 0;
 
     displayUnits.forEach(parentUnit => {
       const children = parentUnit.childUnits
@@ -785,6 +806,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
         .filter(Boolean) as FamilyUnit[];
 
       if (children.length === 0) return;
+      
+      parentsProcessed++;
 
       const parentPos = positions.get(parentUnit.id);
       if (!parentPos) return;
@@ -832,6 +855,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             />
           </g>
         );
+        connectionsGenerated += 3; // 3 line segments for single child
       } else {
         // Multiple children - org chart style
         const childPositions = children
@@ -889,8 +913,21 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             })}
           </g>
         );
+        connectionsGenerated += 2 + children.length; // main vertical + horizontal + child verticals
       }
     });
+
+    console.log('[OrganizationalChart] 🔍 Connection rendering:', {
+      parentsProcessed,
+      connectionsGenerated,
+      totalConnectionElements: connections.length
+    });
+    
+    if (connections.length > 0) {
+      console.log('[OrganizationalChart] 🔍 Sample connection (first one):', connections[0]?.props?.children?.[0]?.props);
+    } else {
+      console.warn('[OrganizationalChart] ⚠️ NO CONNECTIONS GENERATED! Check childUnits arrays.');
+    }
 
     return connections;
   };
@@ -944,6 +981,20 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     rootUnits: rootUnits.map(r => r.id),
     panOffset,
     zoom: zoomLevel
+  });
+  
+  // 🔍 STEP 3: Log SVG rendering details
+  const connectionElements = renderConnections();
+  console.log('[OrganizationalChart] 🔍 SVG Rendering:', {
+    svgWidth: treeDimensions.width,
+    svgHeight: treeDimensions.height,
+    connectionElementsCount: connectionElements.length,
+    samplePositions: Array.from(positions.entries()).slice(0, 3).map(([id, pos]) => ({
+      id,
+      x: pos.x,
+      y: pos.y,
+      width: pos.width
+    }))
   });
 
   return (
@@ -999,7 +1050,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                 </filter>
               </defs>
               <g filter="url(#shadow)">
-                {renderConnections()}
+                {connectionElements}
               </g>
             </svg>
 
