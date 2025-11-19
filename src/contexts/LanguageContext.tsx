@@ -130,9 +130,11 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   const loadTranslations = async (languageCode: string) => {
     // Prevent duplicate calls for the same language
     if (lastLoadedLanguageRef.current === languageCode) {
+      console.log(`[LanguageContext] Skipping duplicate translation load for ${languageCode}`);
       return;
     }
     
+    console.log(`[LanguageContext] Loading translations for ${languageCode}...`);
     lastLoadedLanguageRef.current = languageCode;
     
     try {
@@ -148,12 +150,15 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
         translationMap[translation.key] = translation.value;
       });
       
+      console.log(`[LanguageContext] Loaded ${Object.keys(translationMap).length} translations for ${languageCode}`);
+      console.log(`[LanguageContext] Sample keys:`, Object.keys(translationMap).slice(0, 10));
+      
       setTranslations(translationMap);
       setHasCachedTranslations(true);
       // Cache translations for instant next loads
       try { localStorage.setItem(`translations-${languageCode}`, JSON.stringify(translationMap)); } catch {}
     } catch (error) {
-      console.error('Error loading translations:', error);
+      console.error('[LanguageContext] Error loading translations:', error);
       lastLoadedLanguageRef.current = null;
     }
   };
