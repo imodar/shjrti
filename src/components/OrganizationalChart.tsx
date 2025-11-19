@@ -759,10 +759,40 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       if (children.length === 0) return;
 
       const parentPos = positions.get(parentUnit.id);
-      if (!parentPos) return;
+      if (!parentPos) {
+        console.log(`🚨 [renderConnections] Parent unit has no position:`, {
+          parentId: parentUnit.id,
+          parentNames: parentUnit.members.map(m => `${m.name} [${m.id.slice(0, 8)}]`).join(' & '),
+          childUnitsCount: parentUnit.childUnits.length
+        });
+        return;
+      }
+      
+      // Check if any children are missing from displayUnits or positions
+      const missingChildren = parentUnit.childUnits.filter(childId => {
+        const childInDisplay = displayUnits.has(childId);
+        const childPos = positions.get(childId);
+        return !childInDisplay || !childPos;
+      });
+      
+      if (missingChildren.length > 0) {
+        console.log(`🚨 [renderConnections] Parent has children missing from displayUnits or positions:`, {
+          parentId: parentUnit.id,
+          parentNames: parentUnit.members.map(m => `${m.name} [${m.id.slice(0, 8)}]`).join(' & '),
+          missingChildIds: missingChildren,
+          totalChildren: parentUnit.childUnits.length
+        });
+      }
 
       const parentCenterX = parentPos.x + UNIT_WIDTH / 2;
       const parentBottomY = parentPos.y + UNIT_HEIGHT;
+      
+      console.log(`✅ [renderConnections] Drawing ${children.length} connections from:`, {
+        parentId: parentUnit.id,
+        parentNames: parentUnit.members.map(m => `${m.name} [${m.id.slice(0, 8)}]`).join(' & '),
+        childrenCount: children.length,
+        childrenNames: children.map(c => c.members.map(m => `${m.name} [${m.id.slice(0, 8)}]`).join(' & '))
+      });
       
       if (children.length === 1) {
         // Single child - direct line
