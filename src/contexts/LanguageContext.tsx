@@ -44,7 +44,7 @@ interface LanguageProviderProps {
 }
 
 // Cache version - increment this to invalidate all cached translations
-const TRANSLATION_CACHE_VERSION = 2;
+const TRANSLATION_CACHE_VERSION = 3;
 
 export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   // Initialize with saved language or default to Arabic (matching HTML)
@@ -163,10 +163,12 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     lastLoadedLanguageRef.current = languageCode;
     
     try {
+      // Fetch ALL translations by setting a high limit (Supabase default is 1000)
       const { data, error } = await supabase
         .from('translations')
         .select('key, value')
-        .eq('language_code', languageCode);
+        .eq('language_code', languageCode)
+        .limit(5000); // Increase limit to fetch all translations
 
       if (error) throw error;
       
