@@ -107,7 +107,7 @@ const CustomDomainRedirect = () => {
   if (familyId) {
     return (
       <FamilyDataProvider familyId={familyId}>
-        <PublicTreeView />
+        <PublicTreeView overrideFamilyId={familyId} />
       </FamilyDataProvider>
     );
   }
