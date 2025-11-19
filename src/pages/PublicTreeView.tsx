@@ -38,23 +38,32 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
   const isMobile = useIsMobile();
   const { direction, t } = useLanguage();
   
-  // Try to get data from context (when wrapped in FamilyDataProvider)
-  let contextData: any = null;
-  let hasContext = false;
-  try {
-    const { familyData: ctxFamily, familyMembers: ctxMembers, marriages: ctxMarriages } = useFamilyData?.() || {};
-    if (ctxFamily || ctxMembers?.length > 0) {
-      contextData = { familyData: ctxFamily, familyMembers: ctxMembers, familyMarriages: ctxMarriages };
-      hasContext = true;
-    }
-  } catch (e) {
-    // Not in FamilyDataProvider context, that's OK
-  }
+  // Get data from context when skipDataLoading is true
+  const contextData = skipDataLoading ? useFamilyData() : null;
   
-  const [familyMembers, setFamilyMembers] = useState<any[]>(contextData?.familyMembers || []);
-  const [familyMarriages, setFamilyMarriages] = useState<any[]>(contextData?.familyMarriages || []);
-  const [familyData, setFamilyData] = useState<any>(contextData?.familyData || null);
-  const [isLoading, setIsLoading] = useState(!hasContext);
+  // Local state for data (used when NOT skipDataLoading)
+  const [localFamilyMembers, setLocalFamilyMembers] = useState<any[]>([]);
+  const [localFamilyMarriages, setLocalFamilyMarriages] = useState<any[]>([]);
+  const [localFamilyData, setLocalFamilyData] = useState<any>(null);
+  
+  // Use context data when available, otherwise use local state
+  const familyMembers = skipDataLoading ? (contextData?.familyMembers || []) : localFamilyMembers;
+  const familyMarriages = skipDataLoading ? (contextData?.marriages || []) : localFamilyMarriages;
+  const familyData = skipDataLoading ? contextData?.familyData : localFamilyData;
+  
+  const [isLoading, setIsLoading] = useState(!skipDataLoading);
+  
+  // Debug: Log when data changes
+  useEffect(() => {
+    console.log('[PublicTreeView] Data state:', {
+      skipDataLoading,
+      familyData: familyData?.name,
+      familyMembersCount: familyMembers?.length,
+      marriagesCount: familyMarriages?.length,
+      isLoading
+    });
+  }, [skipDataLoading, familyData, familyMembers, familyMarriages, isLoading]);
+  
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [enteredPassword, setEnteredPassword] = useState<string>("");
   const [isPasswordCorrect, setIsPasswordCorrect] = useState(false);
@@ -79,11 +88,14 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
 
   // Support both shareToken (new) and familyId (old - for custom domain)
-  const familyId = overrideFamilyId || searchParams.get('familyId');
+  const familyIdFromParams = overrideFamilyId || searchParams.get('familyId');
+  
+  // Use familyData.id when available (from context or loaded data), otherwise use params
+  const familyId = familyData?.id || familyIdFromParams;
 
   useEffect(() => {
-    // Skip data loading if we have context data or skipDataLoading is true
-    if (hasContext || skipDataLoading) {
+    // Skip data loading if using context data
+    if (skipDataLoading) {
       setIsLoading(false);
       return;
     }
@@ -91,14 +103,14 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
     if (shareToken) {
       // New way: Use Edge Function with share token
       loadFamilyDataViaToken();
-    } else if (familyId) {
+    } else if (familyIdFromParams) {
       // Old way: Direct Supabase calls (for custom domain backward compatibility)
       checkFamilyAccess();
     } else {
       setTokenError('TOKEN_REQUIRED');
       setIsLoading(false);
     }
-  }, [shareToken, familyId, hasContext, skipDataLoading]);
+  }, [shareToken, familyIdFromParams, skipDataLoading]);
 
   const checkFamilyAccess = async () => {
     try {
@@ -108,7 +120,7 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
       const { data: family, error: familyError } = await supabase
         .from('families')
         .select('id, name, description, share_password, share_gallery')
-        .eq('id', familyId)
+        .eq('id', familyIdFromParams)
         .single();
 
       if (familyError || !family) {
@@ -121,7 +133,7 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
         return;
       }
 
-      setFamilyData(family);
+      setLocalFamilyData(family);
 
       // Check if password is required
       if (family.share_password) {
@@ -229,9 +241,9 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
         marriages: marriages?.length
       });
 
-      setFamilyData(family);
-      setFamilyMembers(members || []);
-      setFamilyMarriages(marriages || []);
+      setLocalFamilyData(family);
+      setLocalFamilyMembers(members || []);
+      setLocalFamilyMarriages(marriages || []);
       setShowPasswordModal(false);
       setPasswordError(false);
       setIsLoading(false);
@@ -254,7 +266,7 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
       const { data: members, error: membersError } = await supabase
         .from('family_tree_members')
         .select('*')
-        .eq('family_id', familyId)
+        .eq('family_id', familyIdFromParams)
         .order('created_at', { ascending: true });
 
       if (membersError) {
@@ -265,14 +277,14 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
       const { data: marriages, error: marriagesError } = await supabase
         .from('marriages')
         .select('*')
-        .eq('family_id', familyId);
+        .eq('family_id', familyIdFromParams);
 
       if (marriagesError) {
         console.error('Error fetching marriages:', marriagesError);
       }
 
-      setFamilyMembers(members || []);
-      setFamilyMarriages(marriages || []);
+      setLocalFamilyMembers(members || []);
+      setLocalFamilyMarriages(marriages || []);
       
     } catch (error) {
       console.error('Error loading family tree data:', error);
@@ -867,7 +879,7 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
                     {activeSection === 'gallery' && familyData?.share_gallery && (
                       <div className="p-6">
                         <FamilyGalleryView
-                          familyId={familyId!}
+                          familyId={familyData?.id || familyId || ''}
                           readOnly={true}
                         />
                       </div>
