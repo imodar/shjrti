@@ -579,6 +579,14 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
     // Recompute generations with BFS
     const roots: string[] = [];
     units.forEach((u, id) => {
+      // Check if this unit contains a founder - founders are always roots
+      const isFounderUnit = u.members.some((m: any) => m.is_founder);
+      if (isFounderUnit) {
+        roots.push(id);
+        console.log('[PublicTreeView] Founder unit identified as root:', u.members.map((m: any) => m.name).join(' & '));
+        return;
+      }
+
       const hasParentInUnits = u.members.some((m: any) => {
         const fatherId = m.father_id;
         const motherId = m.mother_id;
