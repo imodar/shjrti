@@ -322,11 +322,17 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   // Center root/founder unit at top-center of viewport
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const [hasCentered, setHasCentered] = React.useState(false);
+  const lastPositionsRef = React.useRef<string>('');
   
   useEffect(() => {
-    // Only center once when data is ready
-    if (hasCentered || rootUnits.length === 0 || positions.size === 0 || !containerRef.current) return;
+    if (rootUnits.length === 0 || positions.size === 0 || !containerRef.current) return;
+
+    // Create stable key from positions to detect real changes
+    const positionsKey = JSON.stringify(Array.from(positions.entries()));
+    
+    // Only center if positions actually changed
+    if (lastPositionsRef.current === positionsKey) return;
+    lastPositionsRef.current = positionsKey;
 
     const rootPosition = positions.get(rootUnits[0].id);
     if (!rootPosition) return;
@@ -351,8 +357,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     });
 
     setPanOffset({ x: offsetX, y: offsetY });
-    setHasCentered(true);
-  }, [hasCentered, rootUnits.length, positions.size]);
+  }, [rootUnits.length, positions.size, UNIT_HEIGHT]);
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
