@@ -927,17 +927,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     zoom: zoomLevel
   });
 
-  // Calculate chart dimensions based on all unit positions
-  const allPositions = Array.from(positions.values());
-  const chartWidth = Math.max(
-    1000,
-    Math.max(...allPositions.map(pos => pos.x + pos.width)) + 500
-  );
-  const chartHeight = Math.max(
-    600,
-    Math.max(...allPositions.map(pos => pos.y)) + UNIT_HEIGHT + 500
-  );
-
   return (
     <div className="w-full h-full">
       <div
@@ -951,18 +940,23 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
         onTouchStart={handleTouchStart}
       >
         <div
+          className="absolute inset-0"
           style={{
             transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
             transformOrigin: '0 0'
           }}
         >
-          <div
-            className="relative"
+          {/* Background grid pattern */}
+          <div 
+            className="absolute inset-0 opacity-30 pointer-events-none"
             style={{
-              width: chartWidth,
-              height: chartHeight
+              backgroundImage: `
+                linear-gradient(to right, hsl(var(--border) / 0.3) 1px, transparent 1px),
+                linear-gradient(to bottom, hsl(var(--border) / 0.3) 1px, transparent 1px)
+              `,
+              backgroundSize: '50px 50px'
             }}
-          >
+          />
             {/* Background grid pattern */}
             <div 
               className="absolute inset-0 opacity-30 pointer-events-none"
@@ -977,8 +971,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             {/* SVG for connection lines */}
             <svg
               className="absolute inset-0 pointer-events-none"
-              width={chartWidth}
-              height={chartHeight}
+              width="100%"
+              height="100%"
             >
               <defs>
                 <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
@@ -1002,6 +996,5 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
