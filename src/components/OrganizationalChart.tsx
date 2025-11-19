@@ -210,18 +210,23 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   const { displayUnits } = mergeMarriedUnits(familyUnits);
 
   // Diagnostic logging
-  console.debug('[OrganizationalChart] displayUnits.size:', displayUnits.size);
+  console.log('[OrganizationalChart] Input:', {
+    familyUnitsSize: familyUnits.size,
+    displayUnitsSize: displayUnits.size
+  });
+  
   if (displayUnits.size > 0) {
     const sample = Array.from(displayUnits.values()).slice(0, 3);
-    console.debug('[OrganizationalChart] Sample units:', sample.map(u => ({
+    console.log('[OrganizationalChart] Sample units:', sample.map(u => ({
       id: u.id,
       type: u.type,
       generation: u.generation,
       parentUnitId: u.parentUnitId,
-      childUnitsCount: u.childUnits.length
+      childUnitsCount: u.childUnits.length,
+      membersCount: u.members?.length
     })));
     const rootsCount = Array.from(displayUnits.values()).filter(u => !u.parentUnitId).length;
-    console.debug('[OrganizationalChart] Units without parentUnitId (roots):', rootsCount);
+    console.log('[OrganizationalChart] Units without parentUnitId (roots):', rootsCount);
   }
 
   // Build hierarchical structure
@@ -245,6 +250,12 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   const { hierarchy, rootUnits } = buildHierarchy();
   const generations = Object.keys(hierarchy).map(Number).sort();
+  
+  console.log('[OrganizationalChart] Hierarchy built:', {
+    generationsCount: generations.length,
+    rootUnitsCount: rootUnits.length,
+    generations: generations
+  });
 
   // Calculate optimal positions using tree layout algorithm
   const calculatePositions = (): Map<string, Position> => {
@@ -813,7 +824,14 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     return connections;
   };
 
+  console.log('[OrganizationalChart] Final check before render:', {
+    displayUnitsSize: displayUnits.size,
+    positionsSize: positions.size,
+    willRender: displayUnits.size > 0 && positions.size > 0
+  });
+
   if (displayUnits.size === 0) {
+    console.log('[OrganizationalChart] Rendering empty state - no display units');
     return (
       <div className="flex items-center justify-center h-64 text-center">
         <div className="text-muted-foreground">
@@ -827,6 +845,10 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   // Visual guardian: if we have units but no positions, show a diagnostic message
   if (displayUnits.size > 0 && positions.size === 0) {
+    console.error('[OrganizationalChart] Have units but no positions calculated!', {
+      displayUnitsSize: displayUnits.size,
+      rootUnitsCount: rootUnits.length
+    });
     return (
       <div className="flex items-center justify-center h-64 text-center p-8">
         <div className="max-w-md">
