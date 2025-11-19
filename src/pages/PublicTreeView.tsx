@@ -615,6 +615,15 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
     return units;
   }, [familyMembers, familyMarriages, selectedRootMarriage]);
 
+  // Debug: Log familyUnits after creation
+  useEffect(() => {
+    console.log('[PublicTreeView] familyUnits created:', {
+      size: familyUnits.size,
+      keys: Array.from(familyUnits.keys()).slice(0, 5), // First 5 keys
+      firstUnit: familyUnits.size > 0 ? Array.from(familyUnits.values())[0] : null
+    });
+  }, [familyUnits]);
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -853,14 +862,20 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
                             
                             {/* Tree Content Area */}
                             <div className="p-4 min-h-[600px] overflow-auto">
-                              <OrganizationalChart 
-                                familyUnits={familyUnits} 
-                                zoomLevel={zoomLevel}
-                                isPublicView={true}
-                                onSuggestEdit={handleSuggestEdit}
-                                marriages={familyMarriages}
-                                members={familyMembers}
-                              />
+                              {familyUnits.size === 0 ? (
+                                <div className="flex items-center justify-center h-64">
+                                  <p className="text-muted-foreground">لا توجد بيانات شجرة العائلة</p>
+                                </div>
+                              ) : (
+                                <OrganizationalChart 
+                                  familyUnits={familyUnits} 
+                                  zoomLevel={zoomLevel}
+                                  isPublicView={true}
+                                  onSuggestEdit={handleSuggestEdit}
+                                  marriages={familyMarriages}
+                                  members={familyMembers}
+                                />
+                              )}
                             </div>
                           </div>
                         </TabsContent>
