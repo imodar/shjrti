@@ -320,50 +320,42 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     });
   }
 
-  // Center root member in visible area - re-centers when root changes
-  const [currentRootId, setCurrentRootId] = useState<string | null>(null);
+  // Center entire tree in visible area
   const containerRef = React.useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    if (displayUnits.size > 0 && rootUnits.length > 0 && containerRef.current) {
-      const newRootId = rootUnits[0].id;
-      
-      // Re-center only if root has changed
-      if (newRootId !== currentRootId) {
-        const rootPosition = positions.get(newRootId);
-        
-        if (rootPosition) {
-          // Wait a moment to ensure container has rendered with proper dimensions
-          setTimeout(() => {
-            if (!containerRef.current) return;
-            
-            const containerWidth = containerRef.current.offsetWidth || 1200;
-            const containerHeight = containerRef.current.offsetHeight || 800;
-            
-            console.log('[OrganizationalChart] Centering root:', {
-              rootId: newRootId,
-              rootPosition,
-              containerWidth,
-              containerHeight
-            });
-            
-            // Calculate the center of the root unit
-            const rootCenterX = rootPosition.x + UNIT_WIDTH / 2;
-            const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
-            
-            // Calculate offset to position the root at the top center of the viewport
-            const offsetX = (containerWidth / 2) - rootCenterX;
-            const offsetY = 150 - rootCenterY;
-            
-            console.log('[OrganizationalChart] Applying offset:', { offsetX, offsetY });
-            
-            setPanOffset({ x: offsetX, y: offsetY });
-            setCurrentRootId(newRootId);
-          }, 100);
-        }
-      }
-    }
-  }, [displayUnits.size, rootUnits.length, rootUnits[0]?.id, positions, currentRootId]);
+    if (positions.size === 0 || !containerRef.current) return;
+
+    // Calculate bounding box of all units
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+
+    positions.forEach((pos) => {
+      minX = Math.min(minX, pos.x);
+      maxX = Math.max(maxX, pos.x + pos.width);
+      minY = Math.min(minY, pos.y);
+      maxY = Math.max(maxY, pos.y + UNIT_HEIGHT);
+    });
+
+    const treeCenterX = (minX + maxX) / 2;
+    const treeCenterY = (minY + maxY) / 2;
+
+    const containerWidth = containerRef.current.offsetWidth || 1200;
+    const containerHeight = containerRef.current.offsetHeight || 800;
+
+    // Center the tree in the viewport
+    const offsetX = containerWidth / 2 - treeCenterX;
+    const offsetY = containerHeight / 2 - treeCenterY;
+
+    console.log('[OrganizationalChart] Centering tree:', {
+      bounds: { minX, maxX, minY, maxY },
+      treeCenter: { x: treeCenterX, y: treeCenterY },
+      containerSize: { width: containerWidth, height: containerHeight },
+      offset: { x: offsetX, y: offsetY }
+    });
+
+    setPanOffset({ x: offsetX, y: offsetY });
+  }, [positions, UNIT_HEIGHT]);
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
