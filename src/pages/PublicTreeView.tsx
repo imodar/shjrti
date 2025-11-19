@@ -175,11 +175,18 @@ const PublicTreeView = ({ shareToken }: PublicTreeViewProps = {}) => {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" dir={direction}>
       <GlobalHeader />
       <main className="flex-1 flex flex-col py-8">
-        <PublicFamilyHeader name={familyData?.name || ''} shareGallery={familyData?.share_gallery || false} activeTab={activeSection} onTabChange={setActiveSection} />
+        <PublicFamilyHeader 
+          familyData={familyData} 
+          familyMembers={familyMembers} 
+          generationCount={generationCount} 
+          activeSection={activeSection} 
+          onSectionChange={setActiveSection} 
+          showGallery={familyData?.share_gallery || false}
+        />
         <div className="flex-1 flex flex-col">
           {activeSection === 'overview' && (
             <div className="container mx-auto px-4 sm:px-6 pb-6">
-              <FamilyOverview familyData={familyData} members={familyMembers} generationCount={generationCount} isPublicView={true} />
+              <FamilyOverview familyData={familyData} familyMembers={familyMembers} generationCount={generationCount} />
             </div>
           )}
           {activeSection === 'tree' && (
@@ -194,16 +201,16 @@ const PublicTreeView = ({ shareToken }: PublicTreeViewProps = {}) => {
                   <PopoverContent><Command><CommandInput placeholder="بحث..." /><CommandEmpty>لا نتائج</CommandEmpty><CommandList><CommandGroup>{marriageOptions.map(opt => <CommandItem key={opt.value} onSelect={() => { setSelectedRootMarriage(opt.value); setOpenCombobox(false); }}><Check className={cn("ml-2 h-4 w-4", selectedRootMarriage === opt.value ? "opacity-100" : "opacity-0")} />{opt.label}</CommandItem>)}</CommandGroup></CommandList></Command></PopoverContent>
                 </Popover>
               </div>
-              <div ref={traditionalRef}><OrganizationalChart familyUnits={familyUnits} zoomLevel={zoomLevel} onMemberClick={handleMemberClick} onSuggestEdit={handleSuggestEdit} isPublicView={true} /></div>
+              <div ref={traditionalRef}><OrganizationalChart familyUnits={familyUnits} zoomLevel={zoomLevel} onSuggestEdit={handleSuggestEdit} isPublicView={true} /></div>
             </div>
           )}
-          {activeSection === 'members' && <div className="container mx-auto px-4 sm:px-6 pb-6"><FamilyMembersList members={familyMembers} onMemberClick={handleMemberClick} onSuggestEdit={handleSuggestEdit} isPublicView={true} /></div>}
-          {activeSection === 'statistics' && <div className="container mx-auto px-4 sm:px-6 pb-6"><FamilyStatisticsView members={familyMembers} /></div>}
-          {activeSection === 'gallery' && familyData?.share_gallery && <div className="container mx-auto px-4 sm:px-6 pb-6"><FamilyGalleryView familyId={familyData?.id || null} isPublicView={true} /></div>}
+          {activeSection === 'members' && <div className="container mx-auto px-4 sm:px-6 pb-6"><FamilyMembersList familyMembers={familyMembers} familyMarriages={familyMarriages} readOnly={true} onMemberClick={handleMemberClick} /></div>}
+          {activeSection === 'statistics' && <div className="container mx-auto px-4 sm:px-6 pb-6"><FamilyStatisticsView familyMembers={familyMembers} familyMarriages={familyMarriages} /></div>}
+          {activeSection === 'gallery' && familyData?.share_gallery && <div className="container mx-auto px-4 sm:px-6 pb-6"><FamilyGalleryView familyId={familyData?.id || ''} readOnly={true} /></div>}
         </div>
       </main>
       <GlobalFooterSimplified />
-      <MemberProfileModal isOpen={!!selectedMemberId} onClose={() => setSelectedMemberId(null)} memberId={selectedMemberId} familyId={familyData?.id || null} onEdit={() => {}} onDelete={() => {}} isPublicView={true} onSuggestEdit={handleSuggestEdit} />
+      <MemberProfileModal isOpen={!!selectedMemberId} onClose={() => setSelectedMemberId(null)} memberId={selectedMemberId} familyId={familyData?.id || ''} onEdit={() => {}} onDelete={() => {}} />
       <SuggestEditDialog isOpen={suggestEditOpen} onClose={() => setSuggestEditOpen(false)} memberId={suggestEditMemberId} memberName={selectedMemberName} familyId={familyData?.id || ''} />
     </div>
   );
