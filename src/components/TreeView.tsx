@@ -31,8 +31,18 @@ export const TreeView: React.FC<TreeViewProps> = ({
   onResetZoom,
   onSuggestEdit
 }) => {
+  console.log('[TreeView] Rendering with:', {
+    membersCount: familyMembers.length,
+    marriagesCount: familyMarriages.length
+  });
+
   // Generate family tree structure
   const familyUnits = useMemo(() => {
+    console.log('[TreeView] Creating familyUnits from:', {
+      members: familyMembers.length,
+      marriages: familyMarriages.length
+    });
+    
     const units = new Map<string, FamilyUnit>();
 
     // Create units for married couples
@@ -138,11 +148,23 @@ export const TreeView: React.FC<TreeViewProps> = ({
       units.forEach((u) => { if (u.generation === minGen) u.parentUnitId = undefined; });
     }
 
+    console.log('[TreeView] familyUnits created:', units.size, 'units');
     return units;
   }, [familyMembers, familyMarriages]);
 
+  console.log('[TreeView] About to render OrganizationalChart with familyUnits.size =', familyUnits.size);
+
   return (
     <div className="space-y-4">
+      {/* Debug Panel */}
+      <div className="bg-yellow-100 dark:bg-yellow-900/20 border-2 border-yellow-600 rounded-lg p-4 text-sm">
+        <p className="font-bold mb-2">🔍 معلومات التصحيح:</p>
+        <p>عدد الأعضاء: {familyMembers.length}</p>
+        <p>عدد الزيجات: {familyMarriages.length}</p>
+        <p>عدد الوحدات المُنشأة: {familyUnits.size}</p>
+        <p>حالة الرسم: {familyUnits.size > 0 ? '✅ جاهز للعرض' : '❌ لا توجد وحدات'}</p>
+      </div>
+
       {/* Zoom Controls */}
       <div className="flex justify-end gap-2 mb-4">
         <Button
