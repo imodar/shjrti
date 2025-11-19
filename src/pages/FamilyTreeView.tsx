@@ -245,19 +245,6 @@ const FamilyTreeView = () => {
             const hasFather = fatherId && parentIds.includes(fatherId);
             const hasMother = motherId && parentIds.includes(motherId);
             
-            // DEBUG LOG for problematic members
-            if (member.name === 'أمير الشيخ سعيد' || member.name === 'ميرا الشيخ سعيد') {
-              console.log(`🔍 [FamilyTreeView] Checking ${member.name} (ID: ${member.id}) against potential parent unit:`, {
-                potentialParentId,
-                parentNames: potentialParent.members.map(m => `${m.name} (${m.id})`).join(' + '),
-                memberFatherId: fatherId,
-                memberMotherId: motherId,
-                hasFather,
-                hasMother,
-                parentIds
-              });
-            }
-            
             // Determine if this unit is the valid parent
             let isValidParent = false;
             if (fatherId && motherId) {
@@ -270,16 +257,6 @@ const FamilyTreeView = () => {
             
             if (isValidParent) {
               parentUnit = potentialParent;
-              
-              // DEBUG LOG when found
-              if (member.name === 'أمير الشيخ سعيد' || member.name === 'ميرا الشيخ سعيد') {
-                console.log(`🔥 [FamilyTreeView] ${member.name} (ID: ${member.id}) IS CHILD of unit:`, {
-                  parentUnitId: potentialParentId,
-                  parentNames: potentialParent.members.map(m => `${m.name} (${m.id})`).join(' + '),
-                  memberFatherId: fatherId,
-                  memberMotherId: motherId
-                });
-              }
               break; // Found the parent, stop searching
             }
           }
@@ -288,11 +265,6 @@ const FamilyTreeView = () => {
             unit.parentUnitId = parentUnit.id;
             if (!parentUnit.childUnits.includes(unitId)) {
               parentUnit.childUnits.push(unitId);
-              
-              // DEBUG LOG when adding to childUnits
-              if (unit.members.some(m => m.name === 'أمير الشيخ سعيد' || m.name === 'ميرا الشيخ سعيد')) {
-                console.log(`➕ [FamilyTreeView] Adding ${unit.members.map(m => `${m.name} (${m.id})`).join(' & ')} as child of ${parentUnit.members.map(m => `${m.name} (${m.id})`).join(' & ')}`);
-              }
             }
             console.log(`[FamilyTreeView] Connected ${unit.members.map(m => m.name).join(' & ')} to parent ${parentUnit.members.map(m => m.name).join(' & ')}`);
           }
