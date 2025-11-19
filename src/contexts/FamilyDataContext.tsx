@@ -70,9 +70,14 @@ const FamilyDataContext = createContext<FamilyDataContextType | undefined>(undef
 interface FamilyDataProviderProps {
   children: ReactNode;
   familyId: string | null;
+  initialData?: {
+    family: Family | null;
+    members: Member[];
+    marriages: Marriage[];
+  };
 }
 
-export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children, familyId }) => {
+export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children, familyId, initialData }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -89,7 +94,8 @@ export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children
       if (error) throw error;
       return data as Family;
     },
-    enabled: !!familyId,
+    enabled: !!familyId && !initialData, // Disable query if initialData provided
+    initialData: initialData?.family,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes (previously cacheTime)
   });
@@ -107,7 +113,8 @@ export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children
       if (error) throw error;
       return data as Member[];
     },
-    enabled: !!familyId,
+    enabled: !!familyId && !initialData, // Disable query if initialData provided
+    initialData: initialData?.members,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
@@ -124,7 +131,8 @@ export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children
       if (error) throw error;
       return data as Marriage[];
     },
-    enabled: !!familyId,
+    enabled: !!familyId && !initialData, // Disable query if initialData provided
+    initialData: initialData?.marriages,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
