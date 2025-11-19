@@ -320,42 +320,36 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     });
   }
 
-  // Center entire tree in visible area
+  // Center root/founder unit at top-center of viewport
   const containerRef = React.useRef<HTMLDivElement>(null);
   
   useEffect(() => {
-    if (positions.size === 0 || !containerRef.current) return;
+    if (rootUnits.length === 0 || positions.size === 0 || !containerRef.current) return;
 
-    // Calculate bounding box of all units
-    let minX = Infinity, maxX = -Infinity;
-    let minY = Infinity, maxY = -Infinity;
-
-    positions.forEach((pos) => {
-      minX = Math.min(minX, pos.x);
-      maxX = Math.max(maxX, pos.x + pos.width);
-      minY = Math.min(minY, pos.y);
-      maxY = Math.max(maxY, pos.y + UNIT_HEIGHT);
-    });
-
-    const treeCenterX = (minX + maxX) / 2;
-    const treeCenterY = (minY + maxY) / 2;
+    const rootPosition = positions.get(rootUnits[0].id);
+    if (!rootPosition) return;
 
     const containerWidth = containerRef.current.offsetWidth || 1200;
     const containerHeight = containerRef.current.offsetHeight || 800;
 
-    // Center the tree in the viewport
-    const offsetX = containerWidth / 2 - treeCenterX;
-    const offsetY = containerHeight / 2 - treeCenterY;
+    // Calculate the center of the root unit
+    const rootCenterX = rootPosition.x + rootPosition.width / 2;
+    const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
 
-    console.log('[OrganizationalChart] Centering tree:', {
-      bounds: { minX, maxX, minY, maxY },
-      treeCenter: { x: treeCenterX, y: treeCenterY },
+    // Position root at top-center of viewport
+    const offsetX = containerWidth / 2 - rootCenterX;
+    const offsetY = 150 - rootCenterY;
+
+    console.log('[OrganizationalChart] Centering root:', {
+      rootId: rootUnits[0].id,
+      rootPosition,
+      rootCenter: { x: rootCenterX, y: rootCenterY },
       containerSize: { width: containerWidth, height: containerHeight },
       offset: { x: offsetX, y: offsetY }
     });
 
     setPanOffset({ x: offsetX, y: offsetY });
-  }, [positions, UNIT_HEIGHT]);
+  }, [rootUnits, positions, UNIT_HEIGHT]);
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
