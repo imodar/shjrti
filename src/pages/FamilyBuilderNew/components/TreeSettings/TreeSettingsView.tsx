@@ -86,8 +86,42 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   const [shareGallery, setShareGallery] = useState(familyData?.share_gallery || false);
   const [isUpdatingGallery, setIsUpdatingGallery] = useState(false);
   
+  // Share Token state
+  const [shareToken, setShareToken] = useState<string | null>(null);
+  const [isGeneratingToken, setIsGeneratingToken] = useState(false);
+  
   const shareableLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
-  const publicShareableLink = `${window.location.origin}/tree?familyId=${familyData?.id}`;
+  const publicShareableLink = shareToken 
+    ? `${window.location.origin}/share?token=${shareToken}`
+    : '';
+  
+  // Generate share token on mount
+  useEffect(() => {
+    const generateShareToken = async () => {
+      setIsGeneratingToken(true);
+      try {
+        const { data, error } = await supabase.rpc('regenerate_share_token', {
+          p_family_id: familyData?.id,
+          p_expires_in_hours: 2
+        });
+
+        if (error) {
+          console.error('Error generating token:', error);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          setShareToken(data[0].share_token);
+        }
+      } catch (error) {
+        console.error('Unexpected error:', error);
+      } finally {
+        setIsGeneratingToken(false);
+      }
+    };
+    
+    generateShareToken();
+  }, [familyData?.id]);
   
   // Check if user's package has custom domains and image upload enabled
   useEffect(() => {
@@ -485,23 +519,31 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                 <Link2 className="h-5 w-5 text-blue-600" />
                 <Label className="font-semibold">الرابط العام للشجرة</Label>
               </div>
-              <div className="flex gap-2 mb-2">
-                <Input 
-                  readOnly 
-                  value={publicShareableLink}
-                  className="flex-1 bg-white dark:bg-gray-800 text-sm"
-                />
-                <Button variant="outline" size="sm" onClick={handleCopyPublicLink}>
-                  <Copy className="h-4 w-4" />
-                </Button>
-                <Button size="sm" onClick={() => setIsShareModalOpen(true)}>
-                  <Share2 className="h-4 w-4 ml-2" />
-                  مشاركة
-                </Button>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                يمكن لأي شخص عرض الشجرة باستخدام هذا الرابط
-              </p>
+              {isGeneratingToken ? (
+                <div className="flex items-center justify-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex gap-2 mb-2">
+                    <Input 
+                      readOnly 
+                      value={publicShareableLink}
+                      className="flex-1 bg-white dark:bg-gray-800 text-sm"
+                    />
+                    <Button variant="outline" size="sm" onClick={handleCopyPublicLink} disabled={!shareToken}>
+                      <Copy className="h-4 w-4" />
+                    </Button>
+                    <Button size="sm" onClick={() => setIsShareModalOpen(true)}>
+                      <Share2 className="h-4 w-4 ml-2" />
+                      مشاركة
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    يمكن لأي شخص عرض الشجرة باستخدام هذا الرابط (صالح لمدة ساعتين)
+                  </p>
+                </>
+              )}
             </div>
 
             <Separator />
