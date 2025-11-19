@@ -25,8 +25,7 @@ import {
   AlertTriangle,
   CheckCircle,
   Pencil,
-  Images,
-  RefreshCw
+  Images
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/contexts/SubscriptionContext";
@@ -89,7 +88,6 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   
   // Share Token state
   const [shareToken, setShareToken] = useState<string | null>(null);
-  const [tokenExpiresAt, setTokenExpiresAt] = useState<string | null>(null);
   const [isGeneratingToken, setIsGeneratingToken] = useState(false);
   
   const shareableLink = `${window.location.origin}/family-tree-view?family=${familyData?.id}`;
@@ -97,57 +95,32 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
     ? `${window.location.origin}/share?token=${shareToken}`
     : '';
   
-  // Generate share token function
-  const generateShareToken = async () => {
-    setIsGeneratingToken(true);
-    try {
-      console.log('[TreeSettings] Generating share token for family:', familyData?.id);
-      
-      const { data, error } = await supabase.rpc('regenerate_share_token', {
-        p_family_id: familyData?.id,
-        p_expires_in_hours: 2
-      });
-
-      if (error) {
-        console.error('[TreeSettings] Error generating token:', error);
-        toast({
-          title: "خطأ",
-          description: "فشل توليد رابط المشاركة",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      console.log('[TreeSettings] Token generated:', data);
-
-      if (data && data.length > 0) {
-        const newToken = data[0].share_token;
-        const expiresAt = data[0].expires_at;
-        console.log('[TreeSettings] Setting token:', newToken);
-        setShareToken(newToken);
-        setTokenExpiresAt(expiresAt);
-        toast({
-          title: "تم بنجاح",
-          description: "تم توليد رابط مشاركة جديد"
-        });
-      }
-    } catch (error) {
-      console.error('[TreeSettings] Unexpected error:', error);
-      toast({
-        title: "خطأ",
-        description: "حدث خطأ غير متوقع",
-        variant: "destructive"
-      });
-    } finally {
-      setIsGeneratingToken(false);
-    }
-  };
-  
   // Generate share token on mount
   useEffect(() => {
-    if (familyData?.id) {
-      generateShareToken();
-    }
+    const generateShareToken = async () => {
+      setIsGeneratingToken(true);
+      try {
+        const { data, error } = await supabase.rpc('regenerate_share_token', {
+          p_family_id: familyData?.id,
+          p_expires_in_hours: 2
+        });
+
+        if (error) {
+          console.error('Error generating token:', error);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          setShareToken(data[0].share_token);
+        }
+      } catch (error) {
+        console.error('Unexpected error:', error);
+      } finally {
+        setIsGeneratingToken(false);
+      }
+    };
+    
+    generateShareToken();
   }, [familyData?.id]);
   
   // Check if user's package has custom domains and image upload enabled
@@ -542,20 +515,9 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
             
             {/* 1. الرابط العام للشجرة - متاح دائماً */}
             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <Link2 className="h-5 w-5 text-blue-600" />
-                  <Label className="font-semibold">الرابط العام للشجرة</Label>
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={generateShareToken}
-                  disabled={isGeneratingToken}
-                >
-                  <RefreshCw className={`h-4 w-4 ml-2 ${isGeneratingToken ? 'animate-spin' : ''}`} />
-                  توليد رابط جديد
-                </Button>
+              <div className="flex items-center gap-2 mb-3">
+                <Link2 className="h-5 w-5 text-blue-600" />
+                <Label className="font-semibold">الرابط العام للشجرة</Label>
               </div>
               {isGeneratingToken ? (
                 <div className="flex items-center justify-center py-4">
@@ -577,20 +539,6 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       مشاركة
                     </Button>
                   </div>
-                  {tokenExpiresAt && (
-                    <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground">
-                      <CheckCircle className="h-3 w-3 text-green-600" />
-                      <span>
-                        ينتهي في: {new Date(tokenExpiresAt).toLocaleString('ar-SA', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </span>
-                    </div>
-                  )}
                   <p className="text-xs text-muted-foreground">
                     يمكن لأي شخص عرض الشجرة باستخدام هذا الرابط (صالح لمدة ساعتين)
                   </p>
