@@ -153,34 +153,29 @@ export const TreeView: React.FC<TreeViewProps> = ({
         const hasFather = member.father_id && parentIds.includes(member.father_id);
         const hasMother = member.mother_id && parentIds.includes(member.mother_id);
         
-        // DEBUG: Log for Amir and Mira
-        if (member.name === 'أمير الشيخ سعيد' || member.name === 'ميرا الشيخ سعيد') {
-          console.log(`[TreeView] Checking ${member.name} (${member.id}) against unit:`, {
-            unitId: id,
-            unitMembers: u.members.map((m: any) => ({ name: m.name, id: m.id })),
-            memberFatherId: member.father_id,
-            memberMotherId: member.mother_id,
-            hasFather,
-            hasMother,
-            parentIds
-          });
-        }
-        
         let isChild = false;
         if (member.father_id && member.mother_id) {
           // Both parents defined - BOTH must be in this unit
           isChild = hasFather && hasMother;
+          
+          // DEBUG LOG for problematic members
+          if ((member.name === 'أمير الشيخ سعيد' || member.name === 'ميرا الشيخ سعيد') && isChild) {
+            console.log(`🔥 [TreeView] ${member.name} IS CHILD:`, {
+              unitId: id,
+              unitNames: u.members.map((m: any) => m.name).join(' + '),
+              memberFatherId: member.father_id,
+              memberMotherId: member.mother_id,
+              hasFather,
+              hasMother,
+              parentIds
+            });
+          }
         } else if (member.father_id || member.mother_id) {
           // Only one parent defined - that parent must be in this unit
           isChild = hasFather || hasMother;
         }
         
         if (isChild) {
-          // DEBUG: Log when marking as child
-          if (member.name === 'أمير الشيخ سعيد' || member.name === 'ميرا الشيخ سعيد') {
-            console.log(`[TreeView] ✅ ${member.name} IS CHILD of unit ${id}`);
-          }
-          
           // locate child's unit
           units.forEach((childUnit, childId) => {
             if (childUnit.members.some((mm: any) => mm.id === member.id)) {
@@ -189,7 +184,14 @@ export const TreeView: React.FC<TreeViewProps> = ({
               if (!isFounderChild && childId !== id) {
                 childUnit.parentUnitId = id;
                 childUnit.generation = gen + 1;
-                if (!u.childUnits.includes(childId)) u.childUnits.push(childId);
+                if (!u.childUnits.includes(childId)) {
+                  u.childUnits.push(childId);
+                  
+                  // DEBUG LOG when adding to childUnits
+                  if (member.name === 'أمير الشيخ سعيد' || member.name === 'ميرا الشيخ سعيد') {
+                    console.log(`➕ [TreeView] Adding ${member.name}'s unit (${childId}) as child of unit ${id}`);
+                  }
+                }
                 q.push({ id: childId, gen: gen + 1 });
               }
             }
