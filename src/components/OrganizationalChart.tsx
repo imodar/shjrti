@@ -363,7 +363,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     });
 
     setPanOffset({ x: offsetX, y: offsetY });
-  }, [rootUnits.length, positions.size, UNIT_HEIGHT]);
+  }, [positions, rootUnits, UNIT_HEIGHT, containerRef]);
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
