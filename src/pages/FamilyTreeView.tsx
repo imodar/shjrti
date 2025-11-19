@@ -88,6 +88,7 @@ const FamilyTreeView = () => {
   // Initialize user and handle authentication
   useEffect(() => {
     const initUser = async () => {
+      console.log('[FamilyTreeView] initUser starting...');
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate('/auth');
@@ -112,11 +113,26 @@ const FamilyTreeView = () => {
         return;
       }
       
+      console.log('[FamilyTreeView] Setting isLoading to false');
       setIsLoading(false);
     };
     
     initUser();
   }, [familyId, familyData, navigate]);
+
+  // Also set isLoading to false when data is loaded from context
+  useEffect(() => {
+    console.log('[FamilyTreeView] Checking data state:', {
+      dataLoading,
+      familyMembersCount: familyMembers?.length,
+      familyDataExists: !!familyData
+    });
+    
+    if (!dataLoading && familyMembers && familyMembers.length > 0 && familyData) {
+      console.log('[FamilyTreeView] Data is ready, setting isLoading to false');
+      setIsLoading(false);
+    }
+  }, [dataLoading, familyMembers, familyData]);
 
   // Show error from context
   useEffect(() => {
@@ -376,6 +392,12 @@ const FamilyTreeView = () => {
         </Card>
       </div>;
   };
+  console.log('[FamilyTreeView] Before render check:', {
+    isLoading,
+    dataLoading,
+    willShowSkeleton: isLoading || dataLoading
+  });
+
   if (isLoading || dataLoading) {
     return <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
         <GlobalHeader />
@@ -385,6 +407,8 @@ const FamilyTreeView = () => {
       <GlobalFooterSimplified />
     </div>;
   }
+
+  console.log('[FamilyTreeView] Will call generateFamilyTree with members:', familyMembers.length);
 
   // Generate family tree structure using family units with proper cousin grouping
   const generateFamilyTree = () => {

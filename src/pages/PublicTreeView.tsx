@@ -63,6 +63,25 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
       isLoading
     });
   }, [skipDataLoading, familyData, familyMembers, familyMarriages, isLoading]);
+
+  // When using skipDataLoading, ensure isLoading is false when data is ready
+  useEffect(() => {
+    if (skipDataLoading && contextData) {
+      const { familyData: ctxFamily, familyMembers: ctxMembers, marriages: ctxMarriages, loading: ctxLoading } = contextData;
+      console.log('[PublicTreeView] Context data check:', {
+        ctxLoading,
+        hasFamilyData: !!ctxFamily,
+        membersCount: ctxMembers?.length,
+        marriagesCount: ctxMarriages?.length,
+        currentIsLoading: isLoading
+      });
+
+      if (!ctxLoading && ctxFamily && ctxMembers && ctxMembers.length > 0) {
+        console.log('[PublicTreeView] Context data ready - setting isLoading to false');
+        setIsLoading(false);
+      }
+    }
+  }, [skipDataLoading, contextData, isLoading]);
   
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [enteredPassword, setEnteredPassword] = useState<string>("");
@@ -641,6 +660,11 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
       familyMarriagesLength: familyMarriages.length
     });
   }, [familyUnits, familyMembers, familyMarriages]);
+
+  console.log('[PublicTreeView] Before render check:', {
+    isLoading,
+    willShowLoader: isLoading
+  });
 
   if (isLoading) {
     return (
