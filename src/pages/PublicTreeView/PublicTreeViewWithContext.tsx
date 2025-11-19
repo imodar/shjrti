@@ -41,6 +41,11 @@ const PublicTreeViewWithContext: React.FC = () => {
       }
 
       const { family, members, marriages } = data.data;
+      console.log('[PublicTreeViewWithContext] Data loaded:', {
+        familyId: family?.id,
+        membersCount: members?.length || 0,
+        marriagesCount: marriages?.length || 0
+      });
       setFamilyData({
         family,
         members: members || [],
@@ -70,7 +75,14 @@ const PublicTreeViewWithContext: React.FC = () => {
   }
 
   return (
-    <FamilyDataProvider familyId={familyData.family?.id} initialData={familyData}>
+    <FamilyDataProvider 
+      familyId={familyData.family?.id || null} 
+      initialData={{
+        family: familyData.family,
+        members: familyData.members || [],
+        marriages: familyData.marriages || []
+      }}
+    >
       <PublicTreeView shareToken={shareToken} skipDataLoading={true} />
     </FamilyDataProvider>
   );
