@@ -989,10 +989,9 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
             {/* SVG for connection lines */}
             <svg
-              className="absolute inset-0 pointer-events-none"
+              className="absolute top-0 left-0 pointer-events-none"
               width={treeDimensions.width}
               height={treeDimensions.height}
-              style={{ minWidth: '100%', minHeight: '100%' }}
             >
               <defs>
                 <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
