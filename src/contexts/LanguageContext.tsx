@@ -191,7 +191,14 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   };
 
   const t = (key: string, fallback?: string): string => {
-    return translations[key] || fallback || key;
+    const value = translations[key] || fallback || key;
+    
+    // Debug specific tree_settings keys
+    if (key.startsWith('tree_settings.')) {
+      console.log(`[t] Key: ${key}, Value: ${value}, Has translation: ${!!translations[key]}, Total translations: ${Object.keys(translations).length}`);
+    }
+    
+    return value;
   };
 
   const formatPrice = (amount: number | string | undefined | null): string => {
