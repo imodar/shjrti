@@ -199,8 +199,8 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   const handleCopyPublicLink = () => {
     navigator.clipboard.writeText(publicShareableLink);
     toast({
-      title: "تم نسخ الرابط العام",
-      description: "تم نسخ رابط المشاركة العام إلى الحافظة"
+      title: t('tree_settings.toast.public_link_copied'),
+      description: t('tree_settings.toast.public_link_copied_desc')
     });
   };
 
@@ -208,8 +208,8 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
     if (familyData?.custom_domain) {
       navigator.clipboard.writeText(`https://shjrti.com/${familyData.custom_domain}`);
       toast({
-        title: "تم نسخ الرابط المخصص",
-        description: "تم نسخ رابط النطاق المخصص بنجاح"
+        title: t('tree_settings.toast.custom_domain_copied'),
+        description: t('tree_settings.toast.custom_domain_copied_desc')
       });
     }
   };
@@ -217,7 +217,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   const handleShareTree = () => {
     if (navigator.share) {
       navigator.share({
-        title: `شجرة عائلة ${familyData?.name || 'غير محدد'}`,
+        title: t('tree_settings.toast.share_title').replace('{name}', familyData?.name || t('tree_settings.unknown')),
         url: shareableLink
       });
     } else {
@@ -239,8 +239,8 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
       if (error) {
         console.error('Error updating family description:', error);
         toast({
-          title: "خطأ",
-          description: "فشل في حفظ وصف العائلة",
+          title: t('tree_settings.toast.error'),
+          description: t('tree_settings.toast.description_save_failed'),
           variant: "destructive"
         });
         return;
@@ -252,15 +252,15 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
       }
       
       toast({
-        title: "تم الحفظ",
-        description: "تم حفظ وصف العائلة بنجاح"
+        title: t('tree_settings.toast.saved'),
+        description: t('tree_settings.toast.description_saved')
       });
       setIsEditingDescription(false);
     } catch (error) {
       console.error('Error updating family description:', error);
       toast({
-        title: "خطأ",
-        description: "حدث خطأ أثناء حفظ وصف العائلة",
+        title: t('tree_settings.toast.error'),
+        description: t('tree_settings.toast.description_save_error'),
         variant: "destructive"
       });
     } finally {
@@ -287,8 +287,8 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
       if (error) {
         console.error('Error updating family password:', error);
         toast({
-          title: "خطأ",
-          description: "فشل في حفظ كلمة مرور المشاركة",
+          title: t('tree_settings.toast.error'),
+          description: t('tree_settings.toast.password_save_failed'),
           variant: "destructive"
         });
         return;
@@ -300,15 +300,15 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
       }
       
       toast({
-        title: "تم الحفظ",
-        description: sharePassword.trim() ? "تم تعيين كلمة مرور للمشاركة العامة" : "تم إزالة كلمة مرور المشاركة"
+        title: t('tree_settings.toast.saved'),
+        description: sharePassword.trim() ? t('tree_settings.toast.password_saved') : t('tree_settings.toast.password_removed')
       });
       setIsEditingPassword(false);
     } catch (error) {
       console.error('Error updating family password:', error);
       toast({
-        title: "خطأ",
-        description: "حدث خطأ أثناء حفظ كلمة المرور",
+        title: t('tree_settings.toast.error'),
+        description: t('tree_settings.toast.password_save_error'),
         variant: "destructive"
       });
     } finally {
@@ -412,16 +412,16 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
       if (error) throw error;
       
       toast({
-        title: "تم حفظ النطاق المخصص",
-        description: customDomain ? `تم تعيين النطاق: ${customDomain}` : "تم إزالة النطاق المخصص"
+        title: t('tree_settings.toast.domain_saved'),
+        description: customDomain ? t('tree_settings.toast.domain_set').replace('{domain}', customDomain) : t('tree_settings.toast.domain_removed')
       });
       
       setIsEditingDomain(false);
     } catch (error) {
       console.error('Error saving custom domain:', error);
       toast({
-        title: "خطأ في حفظ النطاق",
-        description: "حدث خطأ أثناء حفظ النطاق المخصص",
+        title: t('tree_settings.toast.domain_save_error'),
+        description: t('tree_settings.toast.domain_save_error_desc'),
         variant: "destructive"
       });
     } finally {
@@ -440,15 +440,15 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
           className="flex items-center gap-2 text-primary hover:text-primary/80 hover:bg-primary/10 border border-primary/20"
         >
           <ArrowRight className="h-4 w-4" />
-          العودة
+          {t('tree_settings.back_button')}
         </Button>
         <div className="flex items-center gap-3 flex-1">
           <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-md">
             <Settings className="h-4 w-4 text-white" />
           </div>
           <div>
-            <h2 className="font-semibold text-foreground">إعدادات الشجرة</h2>
-            <p className="text-xs text-muted-foreground">عائلة {familyData?.name || 'غير محدد'}</p>
+            <h2 className="font-semibold text-foreground">{t('tree_settings.title')}</h2>
+            <p className="text-xs text-muted-foreground">{t('tree_settings.family_prefix')} {familyData?.name || t('tree_settings.unknown')}</p>
           </div>
         </div>
       </div>
@@ -461,10 +461,10 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FileText className="h-5 w-5" />
-              وصف العائلة
+              {t('tree_settings.family_description')}
             </CardTitle>
             <CardDescription>
-              أضف وصفاً مختصراً عن تاريخ عائلتك
+              {t('tree_settings.family_description_desc')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -473,7 +473,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                 <ReactQuill
                   value={description}
                   onChange={setDescription}
-                  placeholder="أدخل وصف العائلة..."
+                  placeholder={t('tree_settings.description_placeholder')}
                   style={{ height: '120px', marginBottom: '50px' }}
                   modules={{
                     toolbar: [
@@ -496,14 +496,14 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                     disabled={isUpdatingDescription}
                     size="sm"
                   >
-                    {isUpdatingDescription ? "جاري الحفظ..." : "حفظ"}
+                    {isUpdatingDescription ? t('tree_settings.saving') : t('tree_settings.save')}
                   </Button>
                   <Button 
                     variant="outline" 
                     onClick={handleCancelEditDescription}
                     size="sm"
                   >
-                    إلغاء
+                    {t('tree_settings.cancel')}
                   </Button>
                 </div>
               </div>
@@ -512,7 +512,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                 <div 
                   className="text-sm text-muted-foreground min-h-[60px] p-3 border rounded-lg bg-muted/50"
                   dangerouslySetInnerHTML={{ 
-                    __html: description || "لم يتم إضافة وصف بعد..." 
+                    __html: description || t('tree_settings.description_placeholder')
                   }}
                 />
                 <Button 
@@ -520,7 +520,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                   onClick={() => setIsEditingDescription(true)}
                   size="sm"
                 >
-                  {description ? "تعديل الوصف" : "إضافة وصف"}
+                  {description ? t('tree_settings.edit_description') : t('tree_settings.family_description_desc')}
                 </Button>
               </div>
             )}
