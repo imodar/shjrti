@@ -238,25 +238,49 @@ const FamilyTreeView = () => {
       });
     });
 
-    // Step 3: Assign generations based on parent-child relationships
-    let changed = true;
-    let iterations = 0;
-    const maxIterations = 20;
-    while (changed && iterations < maxIterations) {
-      changed = false;
-      iterations++;
-      units.forEach((unit, unitId) => {
-        if (unit.generation === 0 && unit.parentUnitId) {
-          const parentUnit = units.get(unit.parentUnitId);
-          if (parentUnit && parentUnit.generation > 0) {
-            unit.generation = parentUnit.generation + 1;
-            console.log(`Set ${unit.members.map(m => m.name).join(' & ')} as generation ${unit.generation}`);
-            changed = true;
-          }
+    // Step 3: Assign generations using BFS from root units
+    // First, identify root units (units without parents)
+    const rootUnits: string[] = [];
+    units.forEach((unit, unitId) => {
+      if (!unit.parentUnitId) {
+        rootUnits.push(unitId);
+        unit.generation = 1; // Set roots to generation 1
+      }
+    });
+
+    console.log(`Found ${rootUnits.length} root units for generation assignment`);
+
+    // Use BFS to assign generations to all descendants
+    const queue: Array<{ id: string; gen: number }> = rootUnits.map(id => ({ id, gen: 1 }));
+    const visited = new Set<string>();
+
+    while (queue.length > 0) {
+      const { id, gen } = queue.shift()!;
+      if (visited.has(id)) continue;
+      visited.add(id);
+      
+      const unit = units.get(id);
+      if (!unit) continue;
+      
+      unit.generation = gen;
+      console.log(`Set ${unit.members.map(m => m.name).join(' & ')} as generation ${gen}`);
+      
+      // Add all children to queue
+      unit.childUnits.forEach(childId => {
+        if (!visited.has(childId)) {
+          queue.push({ id: childId, gen: gen + 1 });
         }
       });
     }
-    console.log('Generation assignment completed after', iterations, 'iterations');
+
+    console.log('Generation assignment completed via BFS');
+    
+    // Log generation distribution for debugging
+    const genDistribution = new Map<number, number>();
+    units.forEach(unit => {
+      genDistribution.set(unit.generation, (genDistribution.get(unit.generation) || 0) + 1);
+    });
+    console.log('Generation distribution:', Array.from(genDistribution.entries()).map(([gen, count]) => `gen${gen}: ${count}`).join(', '));
   };
 
   // Group siblings together by their common parent for proper cousin visualization
