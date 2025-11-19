@@ -960,6 +960,15 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   });
 
   const connectionElements = renderConnections();
+  
+  console.log('📐 [SVG Dimensions Debug]:', {
+    treeDimensions,
+    connectionElementsCount: connectionElements.length,
+    maxPositionX: Math.max(...Array.from(positions.values()).map(p => p.x + UNIT_WIDTH)),
+    maxPositionY: Math.max(...Array.from(positions.values()).map(p => p.y + UNIT_HEIGHT)),
+    VERTICAL_SPACING,
+    HORIZONTAL_SPACING
+  });
 
   return (
     <div className="w-full h-full">
