@@ -265,7 +265,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     generations: generations
   });
 
-  // Calculate optimal positions using simple generation-based layout - memoized
+  // Calculate optimal positions using generation-based layout (breadth-first) - memoized
   const positions = React.useMemo((): Map<string, Position> => {
     const positionsMap = new Map<string, Position>();
     
@@ -279,29 +279,26 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       generationXOffsets[gen] = 0;
     });
 
-    const positionUnit = (unit: FamilyUnit) => {
-      const gen = unit.generation;
-      const x = generationXOffsets[gen] || 0;
-      const y = (gen - 1) * (UNIT_HEIGHT + VERTICAL_SPACING);
+    // Process units generation by generation (breadth-first)
+    generations.forEach(gen => {
+      // Get all units in this generation
+      const unitsInGen = Array.from(displayUnits.values()).filter(u => u.generation === gen);
       
-      positionsMap.set(unit.id, {
-        x,
-        y,
-        width: UNIT_WIDTH
+      // Position each unit in this generation from left to right
+      unitsInGen.forEach(unit => {
+        const x = generationXOffsets[gen] || 0;
+        const y = (gen - 1) * (UNIT_HEIGHT + VERTICAL_SPACING);
+        
+        positionsMap.set(unit.id, {
+          x,
+          y,
+          width: UNIT_WIDTH
+        });
+
+        // Update X offset for next unit in this generation
+        generationXOffsets[gen] = x + UNIT_WIDTH + HORIZONTAL_SPACING;
       });
-
-      // Update X offset for next unit in this generation
-      generationXOffsets[gen] = x + UNIT_WIDTH + HORIZONTAL_SPACING;
-
-      // Position all children
-      const children = Array.from(displayUnits.values()).filter(
-        u => u.parentUnitId === unit.id
-      );
-      children.forEach(child => positionUnit(child));
-    };
-
-    // Start with root units
-    rootUnits.forEach(root => positionUnit(root));
+    });
 
     return positionsMap;
   }, [displayUnits, rootUnits, generations, UNIT_WIDTH, UNIT_HEIGHT, VERTICAL_SPACING, HORIZONTAL_SPACING]);
@@ -323,18 +320,26 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   // Center root/founder unit at top-center of viewport
   const containerRef = React.useRef<HTMLDivElement>(null);
   const lastPositionsRef = React.useRef<string>('');
+  const lastRootIdRef = React.useRef<string>('');
   
   useEffect(() => {
     if (rootUnits.length === 0 || positions.size === 0 || !containerRef.current) return;
 
+    const currentRootId = rootUnits[0].id;
+    
     // Create stable key from positions to detect real changes
     const positionsKey = JSON.stringify(Array.from(positions.entries()));
     
-    // Only center if positions actually changed
-    if (lastPositionsRef.current === positionsKey) return;
+    // Re-center if positions changed OR if root unit changed (user selected different root)
+    const positionsChanged = lastPositionsRef.current !== positionsKey;
+    const rootChanged = lastRootIdRef.current !== currentRootId;
+    
+    if (!positionsChanged && !rootChanged) return;
+    
     lastPositionsRef.current = positionsKey;
+    lastRootIdRef.current = currentRootId;
 
-    const rootPosition = positions.get(rootUnits[0].id);
+    const rootPosition = positions.get(currentRootId);
     if (!rootPosition) return;
 
     const containerWidth = containerRef.current.offsetWidth || 1200;
@@ -349,11 +354,12 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     const offsetY = 150 - rootCenterY;
 
     console.log('[OrganizationalChart] Centering root:', {
-      rootId: rootUnits[0].id,
+      rootId: currentRootId,
       rootPosition,
       rootCenter: { x: rootCenterX, y: rootCenterY },
       containerSize: { width: containerWidth, height: containerHeight },
-      offset: { x: offsetX, y: offsetY }
+      offset: { x: offsetX, y: offsetY },
+      trigger: positionsChanged ? 'positions changed' : 'root changed'
     });
 
     setPanOffset({ x: offsetX, y: offsetY });
