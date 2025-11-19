@@ -321,9 +321,17 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   const containerRef = React.useRef<HTMLDivElement>(null);
   const lastPositionsRef = React.useRef<string>('');
   const lastRootIdRef = React.useRef<string>('');
+  const [containerMounted, setContainerMounted] = React.useState(false);
+  
+  // Track when container is mounted
+  useEffect(() => {
+    if (containerRef.current) {
+      setContainerMounted(true);
+    }
+  }, []);
   
   useEffect(() => {
-    if (rootUnits.length === 0 || positions.size === 0 || !containerRef.current) return;
+    if (rootUnits.length === 0 || positions.size === 0 || !containerMounted || !containerRef.current) return;
 
     const currentRootId = rootUnits[0].id;
     
@@ -363,7 +371,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     });
 
     setPanOffset({ x: offsetX, y: offsetY });
-  }, [positions, rootUnits, UNIT_HEIGHT, containerRef]);
+  }, [positions, rootUnits, UNIT_HEIGHT, containerMounted]);
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
