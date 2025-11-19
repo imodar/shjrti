@@ -319,62 +319,100 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   // Center root/founder unit at top-center of viewport
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const lastPositionsRef = React.useRef<string>('');
   const lastRootIdRef = React.useRef<string>('');
-  const [containerMounted, setContainerMounted] = React.useState(false);
+  const hasCenteredOnce = React.useRef(false);
+  const [containerReady, setContainerReady] = React.useState(false);
   
-  // Track when container is mounted
-  useEffect(() => {
-    if (containerRef.current) {
-      setContainerMounted(true);
+  // Callback ref for reliable container mounting detection
+  const containerRefCallback = React.useCallback((node: HTMLDivElement | null) => {
+    if (node) {
+      console.log('[OrganizationalChart] Container mounted, dimensions:', {
+        width: node.offsetWidth,
+        height: node.offsetHeight
+      });
+      containerRef.current = node;
+      setContainerReady(true);
     }
   }, []);
   
+  // Create stable positions key for dependency tracking
+  const positionsKey = React.useMemo(() => {
+    const key = JSON.stringify(Array.from(positions.entries()));
+    console.log('[OrganizationalChart] Positions key generated, size:', positions.size);
+    return key;
+  }, [positions]);
+  
   useEffect(() => {
-    if (rootUnits.length === 0 || positions.size === 0 || !containerMounted || !containerRef.current) return;
+    console.log('[OrganizationalChart] Centering useEffect triggered:', {
+      containerReady,
+      rootUnitsLength: rootUnits.length,
+      positionsSize: positions.size,
+      hasCenteredOnce: hasCenteredOnce.current
+    });
+
+    if (rootUnits.length === 0 || positions.size === 0 || !containerReady || !containerRef.current) {
+      console.log('[OrganizationalChart] Centering skipped - conditions not met');
+      return;
+    }
 
     const currentRootId = rootUnits[0].id;
-    
-    // Create stable key from positions to detect real changes
-    const positionsKey = JSON.stringify(Array.from(positions.entries()));
-    
-    // Re-center if positions changed OR if root unit changed (user selected different root)
-    const positionsChanged = lastPositionsRef.current !== positionsKey;
-    const rootChanged = lastRootIdRef.current !== currentRootId;
-    
-    if (!positionsChanged && !rootChanged) return;
-    
-    lastPositionsRef.current = positionsKey;
-    lastRootIdRef.current = currentRootId;
-
     const rootPosition = positions.get(currentRootId);
-    if (!rootPosition) return;
+    
+    if (!rootPosition) {
+      console.warn('[OrganizationalChart] No position found for root unit:', currentRootId);
+      return;
+    }
+
+    // Check if root changed or if this is the first centering
+    const rootChanged = lastRootIdRef.current !== currentRootId;
+    const shouldCenter = rootChanged || !hasCenteredOnce.current;
+
+    if (!shouldCenter) {
+      console.log('[OrganizationalChart] Centering skipped - already centered on this root');
+      return;
+    }
+
+    lastRootIdRef.current = currentRootId;
+    hasCenteredOnce.current = true;
 
     const containerWidth = containerRef.current.offsetWidth || 1200;
     const containerHeight = containerRef.current.offsetHeight || 800;
 
-    // Calculate the center of the root unit
     const rootCenterX = rootPosition.x + rootPosition.width / 2;
     const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
 
-    // Position root at top-center of viewport
     const offsetX = containerWidth / 2 - rootCenterX;
     const offsetY = 150 - rootCenterY;
 
-    console.log('[OrganizationalChart] Centering root:', {
+    console.log('[OrganizationalChart] APPLYING CENTERING:', {
       rootId: currentRootId,
       rootPosition,
       rootCenter: { x: rootCenterX, y: rootCenterY },
       containerSize: { width: containerWidth, height: containerHeight },
-      offset: { x: offsetX, y: offsetY },
-      trigger: positionsChanged ? 'positions changed' : 'root changed'
+      calculatedOffset: { x: offsetX, y: offsetY },
+      isFirstCenter: !rootChanged,
+      rootChanged
     });
 
     setPanOffset({ x: offsetX, y: offsetY });
-  }, [positions, rootUnits, UNIT_HEIGHT, containerMounted]);
+  }, [containerReady, positionsKey, rootUnits, UNIT_HEIGHT]);
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
+    console.log('[OrganizationalChart] Rendering unit:', {
+      unitId: unit.id,
+      generation: unit.generation,
+      type: unit.type,
+      membersCount: unit.members?.length || 0,
+      position: {
+        x: position.x,
+        y: position.y,
+        width: position.width
+      },
+      isFounder: unit.members?.some(m => m.is_founder) || false,
+      isRoot: rootUnits.some(r => r.id === unit.id)
+    });
+    
     if (unit.type === 'married' && unit.members.length >= 2) {
       // Find husband and wives
       const husband = unit.members.find(member => member.gender === 'male');
@@ -881,6 +919,14 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     rootUnitsCount: rootUnits.length
   });
 
+  console.log('[OrganizationalChart] Starting render of displayUnits:', {
+    totalUnits: displayUnits.size,
+    visibleUnits: Array.from(displayUnits.values()).filter(u => positions.has(u.id)).length,
+    rootUnits: rootUnits.map(r => r.id),
+    panOffset,
+    zoom: zoomLevel
+  });
+
   // Calculate chart dimensions
   const allPositions = Array.from(positions.values());
   const chartWidth = Math.max(
@@ -895,7 +941,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   return (
     <div className="w-full h-full">
       <div
-        ref={containerRef}
+        ref={containerRefCallback}
         className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5 rounded-xl border border-border/50 shadow-inner cursor-grab active:cursor-grabbing select-none"
         style={{ 
           minHeight: '600px',
@@ -948,7 +994,10 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             {/* Render all family units */}
             {Array.from(displayUnits.values()).map(unit => {
               const position = positions.get(unit.id);
-              if (!position) return null;
+              if (!position) {
+                console.warn('[OrganizationalChart] No position found for unit:', unit.id);
+                return null;
+              }
               return renderFamilyUnit(unit, position);
             })}
           </div>
