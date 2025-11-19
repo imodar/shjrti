@@ -532,10 +532,10 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Share2 className="h-5 w-5" />
-              إعدادات المشاركة والنطاق
+              {t('tree_settings.sharing_domain_title')}
             </CardTitle>
             <CardDescription>
-              تحكم في كيفية مشاركة شجرة العائلة ونطاقها المخصص
+              {t('tree_settings.sharing_domain_desc')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -545,7 +545,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <Link2 className="h-5 w-5 text-blue-600" />
-                  <Label className="font-semibold">الرابط العام للشجرة</Label>
+                  <Label className="font-semibold">{t('tree_settings.public_link_title')}</Label>
                 </div>
                 <Button 
                   variant="outline" 
@@ -554,7 +554,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                   disabled={isGeneratingToken}
                 >
                   <RefreshCw className={`h-4 w-4 ml-2 ${isGeneratingToken ? 'animate-spin' : ''}`} />
-                  توليد رابط جديد
+                  {t('tree_settings.generate_new_link')}
                 </Button>
               </div>
               {isGeneratingToken ? (
@@ -574,14 +574,14 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                     </Button>
                     <Button size="sm" onClick={() => setIsShareModalOpen(true)}>
                       <Share2 className="h-4 w-4 ml-2" />
-                      مشاركة
+                      {t('tree_settings.share_button')}
                     </Button>
                   </div>
                   {tokenExpiresAt && (
                     <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground">
                       <CheckCircle className="h-3 w-3 text-green-600" />
                       <span>
-                        ينتهي في: {new Date(tokenExpiresAt).toLocaleString('ar-SA', {
+                        {t('tree_settings.expires_at')} {new Date(tokenExpiresAt).toLocaleString('ar-SA', {
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric',
@@ -592,7 +592,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                     </div>
                   )}
                   <p className="text-xs text-muted-foreground">
-                    يمكن لأي شخص عرض الشجرة باستخدام هذا الرابط (صالح لمدة ساعتين)
+                    {t('tree_settings.public_link_desc')}
                   </p>
                 </>
               )}
@@ -604,7 +604,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Globe className="h-5 w-5" />
-                <Label className="text-base font-semibold">الرابط المخصص</Label>
+                <Label className="text-base font-semibold">{t('tree_settings.custom_link_title')}</Label>
               </div>
               
               {checkingFeature ? (
@@ -624,18 +624,18 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       </div>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold">الرابط المخصص</span>
+                          <span className="font-semibold">{t('tree_settings.custom_link_title')}</span>
                           <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs">
                             👑 Premium
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          احصل على رابط مخصص سهل التذكر لشجرتك
+                          {t('tree_settings.custom_link_premium_desc')}
                         </p>
                       </div>
                     </div>
                     <Button variant="outline" size="sm">
-                      ترقية الآن
+                      {t('tree_settings.upgrade_now')}
                     </Button>
                   </div>
                 </div>
@@ -644,8 +644,8 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                 <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
                   <div className="flex items-center gap-2 mb-3">
                     <Globe className="h-5 w-5 text-green-600" />
-                    <span className="font-semibold">الرابط المخصص</span>
-                    <Badge variant="outline" className="text-xs">متاح</Badge>
+                    <span className="font-semibold">{t('tree_settings.custom_link_title')}</span>
+                    <Badge variant="outline" className="text-xs">{t('tree_settings.available_badge')}</Badge>
                   </div>
                   <Button 
                     variant="outline" 
@@ -653,10 +653,10 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                     className="w-full"
                   >
                     <Globe className="h-4 w-4 ml-2" />
-                    إضافة رابط مخصص لشجرتك
+                    {t('tree_settings.add_custom_link')}
                   </Button>
                   <p className="text-xs text-muted-foreground mt-2">
-                    اختر رابطاً سهلاً مثل: https://shjrti.com/my-family
+                    {t('tree_settings.custom_link_example')}
                   </p>
                 </div>
               ) : (
@@ -664,7 +664,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                 <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
                   <div className="flex items-center gap-2 mb-3">
                     <Globe className="h-5 w-5 text-green-600" />
-                    <span className="font-semibold">الرابط المخصص</span>
+                    <span className="font-semibold">{t('tree_settings.custom_link_title')}</span>
                     <CheckCircle className="h-4 w-4 text-green-600" />
                   </div>
                   <div className="flex gap-2 mb-2">
@@ -675,11 +675,11 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                     />
                     <Button variant="outline" size="sm" onClick={handleCopyCustomDomain}>
                       <Copy className="h-4 w-4 ml-1" />
-                      نسخ
+                      {t('tree_settings.copy_button')}
                     </Button>
                     <Button variant="default" size="sm" onClick={() => setIsShareModalOpen(true)}>
                       <Share2 className="h-4 w-4 ml-1" />
-                      مشاركة
+                      {t('tree_settings.share_button')}
                     </Button>
                     <Button 
                       variant="outline" 
@@ -687,7 +687,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       onClick={() => setIsDomainModalOpen(true)}
                     >
                       <Pencil className="h-4 w-4 ml-1" />
-                      تعديل
+                      {t('tree_settings.edit_button')}
                     </Button>
                   </div>
                 </div>
@@ -700,7 +700,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Images className="h-5 w-5" />
-                <Label className="text-base font-semibold">مشاركة ألبوم صور العائلة</Label>
+                <Label className="text-base font-semibold">{t('tree_settings.gallery_sharing_title')}</Label>
               </div>
               
               {checkingFeature ? (
@@ -720,18 +720,18 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       </div>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold">مشاركة ألبوم الصور</span>
+                          <span className="font-semibold">{t('tree_settings.gallery_sharing_premium')}</span>
                           <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs">
                             👑 Premium
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          اسمح للزوار بمشاهدة ألبوم صور العائلة
+                          {t('tree_settings.gallery_sharing_premium_desc')}
                         </p>
                       </div>
                     </div>
                     <Button variant="outline" size="sm">
-                      ترقية الآن
+                      {t('tree_settings.upgrade_now')}
                     </Button>
                   </div>
                 </div>
@@ -742,9 +742,9 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                   <div className="flex items-center gap-3">
                     <Images className={`h-5 w-5 ${shareGallery ? 'text-green-600' : 'text-gray-400'}`} />
                     <div>
-                      <p className="font-semibold text-sm">السماح للزوار بمشاهدة ألبوم الصور</p>
+                      <p className="font-semibold text-sm">{t('tree_settings.allow_visitors_view_album')}</p>
                       <p className="text-xs text-muted-foreground">
-                        عند التفعيل، سيتمكن زوار الشجرة من رؤية جميع صور الألبوم
+                        {t('tree_settings.gallery_sharing_desc')}
                       </p>
                     </div>
                   </div>
@@ -769,16 +769,16 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                         }
 
                         toast({
-                          title: checked ? "تم تفعيل المشاركة" : "تم إلغاء المشاركة",
+                          title: checked ? t('tree_settings.gallery_sharing_enabled') : t('tree_settings.gallery_sharing_disabled'),
                           description: checked 
-                            ? "أصبح ألبوم الصور متاحاً للزوار" 
-                            : "لم يعد ألبوم الصور متاحاً للزوار"
+                            ? t('tree_settings.gallery_now_available')
+                            : t('tree_settings.gallery_no_longer_available')
                         });
                       } catch (error) {
                         console.error('Error updating gallery sharing:', error);
                         toast({
-                          title: "خطأ",
-                          description: "حدث خطأ أثناء تحديث إعدادات المشاركة",
+                          title: t('common.error'),
+                          description: t('tree_settings.gallery_update_error'),
                           variant: "destructive"
                         });
                       } finally {
@@ -790,7 +790,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                 </div>
                 
                 <Badge className={shareGallery ? "bg-green-600 text-white" : "bg-gray-400 text-white"}>
-                  {shareGallery ? "مفعل" : "معطل"}
+                  {shareGallery ? t('tree_settings.gallery_enabled_badge') : t('tree_settings.gallery_disabled_badge')}
                 </Badge>
                 
                 {shareGallery && (
@@ -798,8 +798,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                     <div className="flex items-start gap-2">
                       <AlertTriangle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
                       <p className="text-xs text-amber-700 dark:text-amber-300">
-                        <strong>تنبيه:</strong> جميع صور ألبوم العائلة ستكون مرئية لأي شخص يزور الشجرة. 
-                        تأكد من أن الصور مناسبة للمشاركة العامة.
+                        <strong>{t('tree_settings.gallery_warning_title')}</strong> {t('tree_settings.gallery_warning_desc')}
                       </p>
                     </div>
                   </div>
@@ -814,7 +813,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Lock className="h-5 w-5" />
-                <Label className="text-base font-semibold">حماية بكلمة المرور</Label>
+                <Label className="text-base font-semibold">{t('tree_settings.password_protection_title')}</Label>
               </div>
 
               {checkingFeature ? (
@@ -834,18 +833,18 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       </div>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold">حماية بكلمة مرور</span>
+                          <span className="font-semibold">{t('tree_settings.password_protection_title')}</span>
                           <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs">
                             👑 Premium
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          احمِ شجرتك بكلمة مرور لمنع الوصول غير المصرح
+                          {t('tree_settings.password_protection_premium_desc')}
                         </p>
                       </div>
                     </div>
                     <Button variant="outline" size="sm">
-                      ترقية الآن
+                      {t('tree_settings.upgrade_now')}
                     </Button>
                   </div>
                 </div>
@@ -855,7 +854,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                     type="password"
                     value={sharePassword}
                     onChange={(e) => setSharePassword(e.target.value)}
-                    placeholder="أدخل كلمة مرور قوية..."
+                    placeholder={t('tree_settings.password_placeholder')}
                   />
                   <div className="flex gap-2">
                     <Button 
@@ -863,14 +862,14 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       disabled={isUpdatingPassword}
                       size="sm"
                     >
-                      {isUpdatingPassword ? "جاري الحفظ..." : "حفظ"}
+                      {isUpdatingPassword ? t('tree_settings.saving') : t('tree_settings.save')}
                     </Button>
                     <Button 
                       variant="outline" 
                       onClick={handleCancelEditPassword}
                       size="sm"
                     >
-                      إلغاء
+                      {t('tree_settings.cancel')}
                     </Button>
                   </div>
                 </div>
@@ -886,18 +885,18 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       </div>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold">حماية بكلمة مرور</span>
+                          <span className="font-semibold">{t('tree_settings.password_protection_title')}</span>
                           <Badge className="bg-red-500 text-white text-xs">
-                            🔓 غير محمية
+                            {t('tree_settings.password_unprotected_badge')}
                           </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          أضف كلمة مرور لحماية شجرتك من الوصول غير المصرح
+                          {t('tree_settings.password_add_desc')}
                         </p>
                       </div>
                     </div>
                     <Button variant="outline" size="sm">
-                      إضافة كلمة مرور
+                      {t('tree_settings.add_password')}
                     </Button>
                   </div>
                 </div>
@@ -907,14 +906,14 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <Lock className="h-5 w-5 text-green-600" />
-                      <span className="font-semibold">حماية بكلمة المرور</span>
+                      <span className="font-semibold">{t('tree_settings.password_protection_title')}</span>
                       <CheckCircle className="h-4 w-4 text-green-600" />
                     </div>
-                    <Badge className="bg-green-600 text-white">🔒 محمية</Badge>
+                    <Badge className="bg-green-600 text-white">{t('tree_settings.password_protected_badge')}</Badge>
                   </div>
                   
                   <p className="text-sm text-green-700 dark:text-green-300 mb-3">
-                    شجرتك محمية بكلمة مرور. فقط من يملك كلمة المرور يمكنه الوصول.
+                    {t('tree_settings.password_protected_desc')}
                   </p>
                   
                   <div className="flex gap-2">
@@ -923,7 +922,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       size="sm"
                       onClick={() => setIsEditingPassword(true)}
                     >
-                      تغيير كلمة المرور
+                      {t('tree_settings.change_password')}
                     </Button>
                     <Button 
                       variant="outline" 
@@ -933,7 +932,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
                       <Trash2 className="h-4 w-4 ml-2" />
-                      {isUpdatingPassword ? "جاري الإزالة..." : "إزالة الحماية"}
+                      {isUpdatingPassword ? t('tree_settings.removing_protection') : t('tree_settings.remove_protection')}
                     </Button>
                   </div>
                 </div>
@@ -1031,36 +1030,36 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
               <Shield className="h-6 w-6 text-white" />
             </div>
             <DialogTitle className="text-xl font-bold">
-              ترقية الباقة مطلوبة
+              {t('tree_settings.upgrade_required')}
             </DialogTitle>
             <DialogDescription className="text-gray-600 mt-2">
-              للوصول إلى ميزة النطاق المخصص وميزات أخرى متطورة، تحتاج إلى ترقية باقتك الحالية.
+              {t('tree_settings.upgrade_modal_desc')}
             </DialogDescription>
           </DialogHeader>
 
           <div className="py-4">
             <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 p-4 rounded-lg border border-amber-200 dark:border-amber-800">
               <h4 className="font-semibold text-amber-800 dark:text-amber-200 mb-2">
-                المميزات المتاحة بعد الترقية:
+                {t('tree_settings.upgrade_features_title')}
               </h4>
               <ul className="text-sm text-amber-700 dark:text-amber-300 space-y-1">
-                <li>• نطاق مخصص لشجرة العائلة</li>
-                <li>• ميزات متقدمة للمشاركة</li>
-                <li>• دعم أولوية</li>
-                <li>• مساحة تخزين إضافية</li>
+                <li>• {t('tree_settings.upgrade_feature_domain')}</li>
+                <li>• {t('tree_settings.upgrade_feature_sharing')}</li>
+                <li>• {t('tree_settings.upgrade_feature_support')}</li>
+                <li>• {t('tree_settings.upgrade_feature_storage')}</li>
               </ul>
             </div>
           </div>
 
           <DialogFooter className="gap-2 sm:gap-2 flex-col sm:flex-row">
             <Button variant="outline" onClick={() => setShowUpgradeModal(false)} className="flex-1">
-              إلغاء
+              {t('tree_settings.cancel')}
             </Button>
             <Button onClick={() => {
             setShowUpgradeModal(false);
             navigate('/plan-selection');
           }} className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white">
-              ترقية الآن
+              {t('tree_settings.upgrade_now')}
             </Button>
           </DialogFooter>
         </DialogContent>
