@@ -148,7 +148,21 @@ export const TreeView: React.FC<TreeViewProps> = ({
       // find children by checking if u.members contains the father/mother of a member
       familyMembers.forEach((member: any) => {
         const parentIds = u.members.map((mm: any) => mm.id);
-        if (parentIds.includes(member.father_id) || parentIds.includes(member.mother_id)) {
+        
+        // Check if this member is a child of this unit
+        const hasFather = member.father_id && parentIds.includes(member.father_id);
+        const hasMother = member.mother_id && parentIds.includes(member.mother_id);
+        
+        let isChild = false;
+        if (member.father_id && member.mother_id) {
+          // Both parents defined - BOTH must be in this unit
+          isChild = hasFather && hasMother;
+        } else if (member.father_id || member.mother_id) {
+          // Only one parent defined - that parent must be in this unit
+          isChild = hasFather || hasMother;
+        }
+        
+        if (isChild) {
           // locate child's unit
           units.forEach((childUnit, childId) => {
             if (childUnit.members.some((mm: any) => mm.id === member.id)) {
