@@ -44,7 +44,7 @@ interface LanguageProviderProps {
 }
 
 // Cache version - increment this to invalidate all cached translations
-const TRANSLATION_CACHE_VERSION = 4;
+const TRANSLATION_CACHE_VERSION = 5;
 
 export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   // Initialize with saved language or default to Arabic (matching HTML)
@@ -163,19 +163,36 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
     lastLoadedLanguageRef.current = languageCode;
     
     try {
-      // Fetch ALL translations by setting a high limit (Supabase default is 1000)
-      const { data, error } = await supabase
-        .from('translations')
-        .select('key, value')
-        .eq('language_code', languageCode)
-        .limit(5000); // Increase limit to fetch all translations
-
-      if (error) throw error;
-      
+      // Fetch ALL translations using pagination to bypass any limits
       const translationMap: Record<string, string> = {};
-      data?.forEach((translation) => {
-        translationMap[translation.key] = translation.value;
-      });
+      let hasMore = true;
+      let offset = 0;
+      const pageSize = 1000;
+      
+      while (hasMore) {
+        const { data, error } = await supabase
+          .from('translations')
+          .select('key, value')
+          .eq('language_code', languageCode)
+          .range(offset, offset + pageSize - 1);
+
+        if (error) throw error;
+        
+        if (data && data.length > 0) {
+          data.forEach((translation) => {
+            translationMap[translation.key] = translation.value;
+          });
+          
+          // Check if we got less than pageSize, meaning we've reached the end
+          if (data.length < pageSize) {
+            hasMore = false;
+          } else {
+            offset += pageSize;
+          }
+        } else {
+          hasMore = false;
+        }
+      }
       
       console.log(`[LanguageContext] Loaded ${Object.keys(translationMap).length} translations for ${languageCode}`);
       console.log(`[LanguageContext] Sample keys:`, Object.keys(translationMap).slice(0, 10));
