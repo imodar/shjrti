@@ -120,15 +120,8 @@ const FamilyTreeView = () => {
 
   // Also set isLoading to false when data is loaded from context
   useEffect(() => {
-    console.log('[FamilyTreeView] Checking data state:', {
-      dataLoading,
-      familyMembersCount: familyMembers?.length,
-      familyDataExists: !!familyData
-    });
-    
     // Set isLoading to false once data loading completes (even if empty)
     if (!dataLoading && familyData) {
-      console.log('[FamilyTreeView] Data is ready, setting isLoading to false');
       setIsLoading(false);
     }
   }, [dataLoading, familyData]);
@@ -156,7 +149,6 @@ const FamilyTreeView = () => {
   const createFamilyUnits = (): Map<string, FamilyUnit> => {
     const units = new Map<string, FamilyUnit>();
     const processedMembers = new Set<string>();
-    console.log('Creating family units from members:', familyMembers.length);
 
     // Step 1: Create units for married couples
     familyMarriages.forEach(marriage => {
@@ -202,8 +194,6 @@ const FamilyTreeView = () => {
     return undefined;
   };
   const assignGenerationsToUnits = (units: Map<string, FamilyUnit>) => {
-    console.log('Assigning generations to units...');
-
     // Step 1: Find founder units (units containing founders)
     const founderUnits: string[] = [];
     units.forEach((unit, unitId) => {
@@ -274,8 +264,6 @@ const FamilyTreeView = () => {
       }
     });
 
-    console.log(`Found ${rootUnits.length} root units for generation assignment`);
-
     // Use BFS to assign generations to all descendants
     const queue: Array<{ id: string; gen: number }> = rootUnits.map(id => ({ id, gen: 1 }));
     const visited = new Set<string>();
@@ -297,14 +285,6 @@ const FamilyTreeView = () => {
         }
       });
     }
-
-    console.log('Generation assignment completed via BFS');
-    
-    // Log generation distribution for debugging
-    const genDistribution = new Map<number, number>();
-    units.forEach(unit => {
-      genDistribution.set(unit.generation, (genDistribution.get(unit.generation) || 0) + 1);
-    });
   };
 
   // Group siblings together by their common parent for proper cousin visualization
@@ -451,8 +431,6 @@ const FamilyTreeView = () => {
       <GlobalFooterSimplified />
     </div>;
   }
-
-  console.log('[FamilyTreeView] Will call generateFamilyTree with members:', familyMembers.length);
 
   // Generate family tree structure using family units with proper cousin grouping
   const generateFamilyTree = () => {
