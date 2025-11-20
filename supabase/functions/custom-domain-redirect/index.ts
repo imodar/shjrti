@@ -17,8 +17,8 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    const url = new URL(req.url);
-    const customDomain = url.pathname.replace('/', ''); // Remove leading slash
+    // Read customDomain from request body
+    const { customDomain } = await req.json();
 
     if (!customDomain) {
       return new Response(
@@ -30,8 +30,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log('Looking up custom domain:', customDomain);
-
     // Look up the family by custom domain
     const { data: family, error } = await supabase
       .from('families')
@@ -40,7 +38,6 @@ Deno.serve(async (req) => {
       .single();
 
     if (error || !family) {
-      console.error('Family not found for domain:', customDomain, error);
       return new Response(
         JSON.stringify({ 
           error: 'Family not found',
@@ -52,8 +49,6 @@ Deno.serve(async (req) => {
         }
       );
     }
-
-    console.log('Found family:', family);
 
     // Return the family data for redirect
     return new Response(

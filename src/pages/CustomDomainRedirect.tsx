@@ -22,37 +22,31 @@ const CustomDomainRedirect = () => {
       }
 
       try {
-        console.log('Looking up custom domain:', customDomain);
+        // Use edge function with service role access for custom domain lookup
+        const { data, error: functionError } = await supabase.functions.invoke(
+          'custom-domain-redirect',
+          {
+            body: { customDomain }
+          }
+        );
 
-        // Look up family by custom domain
-        const { data: family, error: lookupError } = await supabase
-          .from('families')
-          .select('id, name, custom_domain')
-          .eq('custom_domain', customDomain)
-          .maybeSingle();
-
-        if (lookupError) {
-          console.error('Error looking up family:', lookupError);
+        if (functionError) {
           setError('خطأ في البحث عن العائلة');
           setLoading(false);
           return;
         }
 
-        if (!family) {
-          console.log('No family found for domain:', customDomain);
+        if (data?.error || !data?.family_id) {
           setError('لم يتم العثور على عائلة بهذا النطاق المخصص');
           setLoading(false);
           return;
         }
-
-        console.log('Found family, displaying tree for:', family.id);
         
-        // Set family ID to display the tree without redirecting
-        setFamilyId(family.id);
+        // Set family ID to display the tree
+        setFamilyId(data.family_id);
         setLoading(false);
 
       } catch (error) {
-        console.error('Error in custom domain lookup:', error);
         setError('حدث خطأ غير متوقع');
         setLoading(false);
       }
