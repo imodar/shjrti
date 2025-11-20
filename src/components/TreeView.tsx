@@ -31,17 +31,8 @@ export const TreeView: React.FC<TreeViewProps> = ({
   onResetZoom,
   onSuggestEdit
 }) => {
-  console.log('[TreeView] Rendering with:', {
-    membersCount: familyMembers.length,
-    marriagesCount: familyMarriages.length
-  });
-
   // Generate family tree structure
   const familyUnits = useMemo(() => {
-    console.log('[TreeView] Creating familyUnits from:', {
-      members: familyMembers.length,
-      marriages: familyMarriages.length
-    });
     
     const units = new Map<string, FamilyUnit>();
 
@@ -96,7 +87,6 @@ export const TreeView: React.FC<TreeViewProps> = ({
       const hasFounder = u.members.some((m: any) => m.is_founder);
       if (hasFounder) {
         roots.push(id);
-        console.log('[TreeView] Founder unit identified as root:', u.members.map((m: any) => m.name).join(' & '));
         return;
       }
       
@@ -130,7 +120,6 @@ export const TreeView: React.FC<TreeViewProps> = ({
       
       if (isRoot) {
         roots.push(id);
-        console.log('[TreeView] Identified root unit:', id, 'with members:', u.members.map((m: any) => m.name));
       }
     });
 
@@ -157,19 +146,6 @@ export const TreeView: React.FC<TreeViewProps> = ({
         if (member.father_id && member.mother_id) {
           // Both parents defined - BOTH must be in this unit
           isChild = hasFather && hasMother;
-          
-          // DEBUG LOG for problematic members
-          if ((member.name === 'أمير الشيخ سعيد' || member.name === 'ميرا الشيخ سعيد') && isChild) {
-            console.log(`🔥 [TreeView] ${member.name} IS CHILD:`, {
-              unitId: id,
-              unitNames: u.members.map((m: any) => m.name).join(' + '),
-              memberFatherId: member.father_id,
-              memberMotherId: member.mother_id,
-              hasFather,
-              hasMother,
-              parentIds
-            });
-          }
         } else if (member.father_id || member.mother_id) {
           // Only one parent defined - that parent must be in this unit
           isChild = hasFather || hasMother;
@@ -186,11 +162,6 @@ export const TreeView: React.FC<TreeViewProps> = ({
                 childUnit.generation = gen + 1;
                 if (!u.childUnits.includes(childId)) {
                   u.childUnits.push(childId);
-                  
-                  // DEBUG LOG when adding to childUnits
-                  if (member.name === 'أمير الشيخ سعيد' || member.name === 'ميرا الشيخ سعيد') {
-                    console.log(`➕ [TreeView] Adding ${member.name}'s unit (${childId}) as child of unit ${id}`);
-                  }
                 }
                 q.push({ id: childId, gen: gen + 1 });
               }
@@ -209,21 +180,9 @@ export const TreeView: React.FC<TreeViewProps> = ({
       units.forEach((u) => { minGen = Math.min(minGen, u.generation); });
       units.forEach((u) => { if (u.generation === minGen) u.parentUnitId = undefined; });
     }
-
-    console.log('[TreeView] familyUnits created:', units.size, 'units');
-    console.log('[TreeView] Root units identified:', roots.length, 'roots');
-    
-    // Additional diagnostic: show generations distribution
-    const genDistribution: { [gen: number]: number } = {};
-    units.forEach((u) => {
-      genDistribution[u.generation] = (genDistribution[u.generation] || 0) + 1;
-    });
-    console.log('[TreeView] Generation distribution:', genDistribution);
     
     return units;
   }, [familyMembers, familyMarriages]);
-
-  console.log('[TreeView] About to render OrganizationalChart with familyUnits.size =', familyUnits.size);
 
   return (
     <div className="space-y-4">

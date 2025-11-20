@@ -421,13 +421,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     const offsetX = containerWidth / 2 - rootCenterX;
     const offsetY = 150 - rootCenterY;
 
-    console.log('⚡🔍 ZOOM LOG:', {
-      zoomLevel,
-      rootCenter: { x: rootCenterX, y: rootCenterY },
-      containerWidth,
-      panOffset: { x: offsetX, y: offsetY }
-    });
-
     setPanOffset({ x: offsetX, y: offsetY });
   }, [containerReady, positionsKey, rootUnits, UNIT_HEIGHT]);
 
@@ -678,26 +671,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       if (motherId && fatherHasMultipleWives) {
         const motherMember = members.find((m: any) => m.id === motherId);
         motherName = motherMember?.name;
-      }
-
-      // Enhanced debug for شهد case
-      if ((member?.name || '').includes('شهد') || member?.id === '7e280f45-571b-4eba-be6c-93da2558522b') {
-        console.log('=== [شهد Debug] ===', {
-          memberName: member?.name,
-          memberId: member?.id,
-          fatherId,
-          motherId,
-          marriagesTotal: marriages.length,
-          fatherMarriages,
-          uniqueWivesArray: Array.from(uniqueWives),
-          uniqueWivesCount: uniqueWives.size,
-          parentWivesCount,
-          fatherHasMultipleWives,
-          membersTotal: members.length,
-          motherMember: members.find((m: any) => m.id === motherId),
-          motherName,
-          willShowBadge: fatherHasMultipleWives && motherName ? 'YES' : 'NO'
-        });
       }
 
       const motherLabel = (member.gender === 'female' ? 'والدتها ' : 'والدته ');
