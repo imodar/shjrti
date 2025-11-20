@@ -72,12 +72,10 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
   }
 
   if (!user || (requireAdmin && !isAdmin)) {
-    console.log('ProtectedRoute: Access denied - user not authenticated or not admin');
     return null;
   }
 
   if (requireActiveSubscription && !hasActiveSubscription) {
-    console.log('ProtectedRoute: Access denied - subscription required but not active');
     return null;
   }
 

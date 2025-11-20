@@ -15,9 +15,6 @@ export function useTrackingConsent() {
     if (window.gtag) {
       window.gtag('event', eventName, eventParams);
     }
-
-    // Add other analytics providers here
-    console.log('Analytics Event:', eventName, eventParams);
   };
 
   // Track page view (only if consent given)
@@ -31,8 +28,6 @@ export function useTrackingConsent() {
         page_title: title,
       });
     }
-
-    console.log('Page View:', path, title);
   };
 
   // Track marketing conversion (only if consent given)
@@ -46,8 +41,6 @@ export function useTrackingConsent() {
         ...conversionData,
       });
     }
-
-    console.log('Marketing Conversion:', conversionId, conversionData);
   };
 
   // Update consent mode for Google Analytics

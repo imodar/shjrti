@@ -86,7 +86,6 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
       
       // Clear cache if version mismatch
       if (cachedVersion !== String(TRANSLATION_CACHE_VERSION)) {
-        console.log(`[LanguageContext] Cache version mismatch, clearing all caches...`);
         localStorage.removeItem(`translations-ar`);
         localStorage.removeItem(`translations-en`);
         localStorage.setItem(versionKey, String(TRANSLATION_CACHE_VERSION));
@@ -100,12 +99,10 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
         // Check if cache is stale (less than 100 keys means old version)
         const cacheSize = Object.keys(parsed).length;
         if (cacheSize < 100) {
-          console.log(`[LanguageContext] Cache is stale (${cacheSize} keys), clearing...`);
           localStorage.removeItem(cacheKey);
         } else {
           setTranslations(parsed);
           setHasCachedTranslations(true);
-          console.log(`[LanguageContext] Using cached translations (${cacheSize} keys)`);
         }
       }
     } catch {}
@@ -155,11 +152,9 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   const loadTranslations = async (languageCode: string) => {
     // Prevent duplicate calls for the same language
     if (lastLoadedLanguageRef.current === languageCode) {
-      console.log(`[LanguageContext] Skipping duplicate translation load for ${languageCode}`);
       return;
     }
     
-    console.log(`[LanguageContext] Loading translations for ${languageCode}...`);
     lastLoadedLanguageRef.current = languageCode;
     
     try {
@@ -193,9 +188,6 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
           hasMore = false;
         }
       }
-      
-      console.log(`[LanguageContext] Loaded ${Object.keys(translationMap).length} translations for ${languageCode}`);
-      console.log(`[LanguageContext] Sample keys:`, Object.keys(translationMap).slice(0, 10));
       
       setTranslations(translationMap);
       setHasCachedTranslations(true);
@@ -236,12 +228,6 @@ export const LanguageProvider = ({ children }: LanguageProviderProps) => {
 
   const t = (key: string, fallback?: string): string => {
     const value = translations[key] || fallback || key;
-    
-    // Debug specific tree_settings keys
-    if (key.startsWith('tree_settings.')) {
-      console.log(`[t] Key: ${key}, Value: ${value}, Has translation: ${!!translations[key]}, Total translations: ${Object.keys(translations).length}`);
-    }
-    
     return value;
   };
 

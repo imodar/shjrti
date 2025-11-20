@@ -15,8 +15,6 @@ export const useMaintenanceMode = () => {
     
     const checkMaintenanceMode = async () => {
       try {
-        console.log('🔧 Checking maintenance mode...');
-        
         // Add timeout to prevent hanging
         const timeoutPromise = new Promise((_, reject) => 
           setTimeout(() => reject(new Error('Maintenance check timeout')), 5000)
@@ -33,14 +31,12 @@ export const useMaintenanceMode = () => {
         }
         
         const maintenanceEnabled = Boolean(data);
-        console.log('🔧 Maintenance mode status:', maintenanceEnabled);
         setIsMaintenanceMode(maintenanceEnabled);
       } catch (error) {
         console.error('Error checking maintenance mode (with timeout):', error);
         // Default to false if check fails
         setIsMaintenanceMode(false);
       } finally {
-        console.log('🔧 Maintenance mode check completed');
         setLoading(false);
       }
     };
