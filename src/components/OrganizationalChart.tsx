@@ -427,8 +427,9 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     const rootCenterX = rootPosition.x + rootPosition.width / 2;
     const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
 
-    const offsetX = containerWidth / 2 - rootCenterX;
-    const offsetY = 150 - rootCenterY;
+      // Calculate offset accounting for current zoom level
+      const offsetX = (containerWidth / 2 - rootCenterX * zoomLevel) / zoomLevel;
+      const offsetY = (150 - rootCenterY * zoomLevel) / zoomLevel;
 
     console.log('[OrganizationalChart] APPLYING CENTERING:', {
       rootId: currentRootId,
@@ -441,7 +442,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     });
 
     setPanOffset({ x: offsetX, y: offsetY });
-  }, [containerReady, positionsKey, rootUnits, UNIT_HEIGHT]);
+  }, [containerReady, positionsKey, rootUnits, UNIT_HEIGHT, zoomLevel]);
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
@@ -1072,7 +1073,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           className="absolute inset-0"
           style={{
             transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
-            transformOrigin: '0 0'
+            transformOrigin: 'center center',
+            transition: 'transform 0.15s ease-out'
           }}
         >
           {/* Background grid pattern */}
