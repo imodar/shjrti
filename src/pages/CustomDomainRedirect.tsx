@@ -6,29 +6,15 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AlertTriangle } from 'lucide-react';
 import { FamilyDataProvider } from '@/contexts/FamilyDataContext';
 import PublicTreeView from './PublicTreeView';
-import { useAuth } from '@/contexts/AuthContext';
 
 const CustomDomainRedirect = () => {
   const { customDomain } = useParams();
-  const { user, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [familyId, setFamilyId] = useState<string | null>(null);
 
   useEffect(() => {
     const lookupAndRedirect = async () => {
-      // Wait for auth to load
-      if (authLoading) {
-        return;
-      }
-
-      // Check if user is authenticated
-      if (!user) {
-        setError('لم يتم العثور على بيانات العائلة المطلوبة');
-        setLoading(false);
-        return;
-      }
-
       if (!customDomain) {
         setError('لم يتم تحديد النطاق المخصص');
         setLoading(false);
@@ -67,7 +53,7 @@ const CustomDomainRedirect = () => {
     };
 
     lookupAndRedirect();
-  }, [customDomain, user, authLoading]);
+  }, [customDomain]);
 
   if (loading) {
     return (
