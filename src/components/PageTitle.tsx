@@ -13,6 +13,21 @@ const PageTitle = () => {
       const path = pathname.slice(1).split('?')[0];
       
       if (!path || path === '') return 'page_title_home';
+      
+      // Skip setting title for /share and custom domain pages - DynamicMetaTags will handle them
+      if (path.startsWith('share')) return null;
+      
+      // Check if it's a custom domain route (not a protected route)
+      const customDomain = path.split('/')[0];
+      const protectedRoutes = ['dashboard', 'profile', 'family-creator', 'family-builder', 
+                                'family-tree-view', 'family-statistics', 'family-gallery', 
+                                'admin', 'payments', 'payment-success', 'renew-subscription', 
+                                'plan-selection', 'terms', 'privacy', 'contact', 'store', 
+                                'auth', 'change-password', 'public-tree'];
+      if (customDomain && !protectedRoutes.includes(customDomain.toLowerCase())) {
+        return null; // Let DynamicMetaTags handle custom domain titles
+      }
+      
       if (path.startsWith('dashboard')) return 'page_title_dashboard';
       if (path.startsWith('profile')) return 'page_title_profile';
       if (path.startsWith('family-creator')) return 'page_title_family_creator';
@@ -37,15 +52,17 @@ const PageTitle = () => {
       if (path.startsWith('auth')) return 'page_title_auth';
       if (path.startsWith('change-password')) return 'page_title_change_password';
       if (path.startsWith('public-tree')) return 'page_title_public_tree';
-      if (path.startsWith('share')) return 'page_title_public_tree'; // Public share links use same title as public tree
       
       return 'page_title_not_found';
     };
 
     const titleKey = getTitleKey(location.pathname);
-    const pageTitle = t(titleKey, 'شجرتي');
     
-    document.title = pageTitle;
+    // Only set title if titleKey is not null (not a /share or custom domain page)
+    if (titleKey) {
+      const pageTitle = t(titleKey, 'شجرتي');
+      document.title = pageTitle;
+    }
   }, [location.pathname, t]);
 
   return null;
