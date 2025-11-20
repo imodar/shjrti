@@ -231,54 +231,105 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   const { hierarchy, rootUnits } = buildHierarchy();
   const generations = Object.keys(hierarchy).map(Number).sort();
   
-  console.log('[OrganizationalChart] Hierarchy built:', {
-    generationsCount: generations.length,
-    rootUnitsCount: rootUnits.length,
-    generations: generations
-  });
-
-  // Calculate optimal positions using generation-based layout (breadth-first) - memoized
+  // Calculate optimal positions using centered tree layout (bottom-up) - memoized
   const positions = React.useMemo((): Map<string, Position> => {
     const positionsMap = new Map<string, Position>();
     
     if (rootUnits.length === 0) return positionsMap;
 
-    // Track position within each generation
-    const generationXOffsets: { [gen: number]: number } = {};
-    
-    // Initialize starting X for each generation
-    generations.forEach(gen => {
-      generationXOffsets[gen] = 0;
+    // Helper: Calculate subtree width recursively
+    const calculateSubtreeWidth = (unitId: string, memo: Map<string, number>): number => {
+      if (memo.has(unitId)) return memo.get(unitId)!;
+      
+      const unit = displayUnits.get(unitId);
+      if (!unit) return UNIT_WIDTH;
+      
+      // If no children, width is just the unit itself
+      if (unit.childUnits.length === 0) {
+        memo.set(unitId, UNIT_WIDTH);
+        return UNIT_WIDTH;
+      }
+      
+      // Calculate total width of all children + spacing between them
+      let totalWidth = 0;
+      unit.childUnits.forEach((childId, index) => {
+        const childWidth = calculateSubtreeWidth(childId, memo);
+        totalWidth += childWidth;
+        if (index < unit.childUnits.length - 1) {
+          totalWidth += HORIZONTAL_SPACING;
+        }
+      });
+      
+      // Width is the maximum of unit width or total children width
+      const width = Math.max(UNIT_WIDTH, totalWidth);
+      memo.set(unitId, width);
+      return width;
+    };
+
+    // 1. Calculate subtree widths for all units
+    const subtreeWidths = new Map<string, number>();
+    rootUnits.forEach(root => {
+      calculateSubtreeWidth(root.id, subtreeWidths);
     });
 
-    // Process units generation by generation (breadth-first)
-    generations.forEach(gen => {
-      // Get all units in this generation
-      const unitsInGen = Array.from(displayUnits.values()).filter(u => u.generation === gen);
+    // 2. Recursive function to position units (bottom-up approach)
+    const positionUnit = (
+      unitId: string,
+      startX: number, // Starting X position
+      generation: number
+    ): void => {
+      const unit = displayUnits.get(unitId);
+      if (!unit) return;
       
-      // Position each unit in this generation from left to right
-      unitsInGen.forEach(unit => {
-        const x = generationXOffsets[gen] || 0;
-        const y = (gen - 1) * (UNIT_HEIGHT + VERTICAL_SPACING);
+      const y = (generation - 1) * (UNIT_HEIGHT + VERTICAL_SPACING);
+      const subtreeWidth = subtreeWidths.get(unitId) || UNIT_WIDTH;
+      
+      // If no children, place unit directly
+      if (unit.childUnits.length === 0) {
+        positionsMap.set(unitId, { x: startX, y, width: UNIT_WIDTH });
+        return;
+      }
+      
+      // 3. Position children first (left to right)
+      let currentX = startX;
+      const childCenters: number[] = []; // Centers of children
+      
+      unit.childUnits.forEach((childId, index) => {
+        const childWidth = subtreeWidths.get(childId) || UNIT_WIDTH;
         
-        positionsMap.set(unit.id, {
-          x,
-          y,
-          width: UNIT_WIDTH
-        });
-
-        // Update X offset for next unit in this generation
-        generationXOffsets[gen] = x + UNIT_WIDTH + HORIZONTAL_SPACING;
+        // Position child recursively
+        positionUnit(childId, currentX, generation + 1);
+        
+        // Save center position of child
+        const childCenter = currentX + childWidth / 2;
+        childCenters.push(childCenter);
+        
+        // Move to next child
+        currentX += childWidth + HORIZONTAL_SPACING;
       });
+      
+      // 4. Position parent centered above children
+      const leftmostChild = childCenters[0];
+      const rightmostChild = childCenters[childCenters.length - 1];
+      const childrenCenter = (leftmostChild + rightmostChild) / 2;
+      
+      // Parent X position (centered above children)
+      const parentX = childrenCenter - UNIT_WIDTH / 2;
+      
+      positionsMap.set(unitId, { x: parentX, y, width: UNIT_WIDTH });
+    };
+
+    // 5. Position each root unit
+    let currentRootX = 0;
+    rootUnits.forEach((root, index) => {
+      positionUnit(root.id, currentRootX, root.generation);
+      
+      const rootWidth = subtreeWidths.get(root.id) || UNIT_WIDTH;
+      currentRootX += rootWidth + HORIZONTAL_SPACING * 3; // Extra spacing between trees
     });
 
     return positionsMap;
-  }, [displayUnits, rootUnits, generations, UNIT_WIDTH, UNIT_HEIGHT, VERTICAL_SPACING, HORIZONTAL_SPACING]);
-  
-  console.log('[OrganizationalChart] Positions calculated:', {
-    positionsSize: positions.size,
-    positionsEntries: Array.from(positions.entries()).slice(0, 5).map(([id, pos]) => ({ id, x: pos.x, y: pos.y }))
-  });
+  }, [displayUnits, rootUnits, UNIT_WIDTH, UNIT_HEIGHT, VERTICAL_SPACING, HORIZONTAL_SPACING]);
 
   // Calculate tree dimensions for SVG canvas
   const treeDimensions = React.useMemo(() => {
@@ -1000,16 +1051,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   }, []);
 
   const connectionElements = renderConnections();
-  
-  console.log('🎯 [CONNECTION ELEMENTS CHECK]:', {
-    totalElements: connectionElements.length,
-    primaryColor,
-    elementsPreview: connectionElements.slice(0, 3).map(el => ({
-      key: el.key,
-      type: el.type,
-      children: el.props?.children?.length || 0
-    }))
-  });
 
   return (
     <div className="w-full h-full">
