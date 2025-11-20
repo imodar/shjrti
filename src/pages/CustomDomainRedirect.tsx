@@ -6,107 +6,87 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AlertTriangle } from 'lucide-react';
 import { FamilyDataProvider } from '@/contexts/FamilyDataContext';
 import PublicTreeView from './PublicTreeView';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { useToast } from '@/hooks/use-toast';
 
 const CustomDomainRedirect = () => {
   const { customDomain } = useParams();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [familyId, setFamilyId] = useState<string | null>(null);
+  const { toast } = useToast();
+  const { t } = useLanguage();
+  const [familyData, setFamilyData] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const lookupAndRedirect = async () => {
-      if (!customDomain) {
-        setError('لم يتم تحديد النطاق المخصص');
-        setLoading(false);
+    if (customDomain) {
+      loadFamilyData();
+    }
+  }, [customDomain]);
+
+  const loadFamilyData = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase.functions.invoke('custom-domain-redirect', {
+        body: { customDomain }
+      });
+
+      if (error) throw error;
+
+      if (data?.error) {
+        toast({
+          title: t('common.error') || 'Error',
+          description: t(`tree_settings.${data.error.toLowerCase()}`) || data.error,
+          variant: 'destructive'
+        });
+        setIsLoading(false);
         return;
       }
 
-      try {
-        // Use edge function with service role access for custom domain lookup
-        const { data, error: functionError } = await supabase.functions.invoke(
-          'custom-domain-redirect',
-          {
-            body: { customDomain }
-          }
-        );
+      const { family, members, marriages } = data.data;
+      console.log('[CustomDomainRedirect] Data loaded:', {
+        familyId: family?.id,
+        membersCount: members?.length || 0,
+        marriagesCount: marriages?.length || 0
+      });
+      setFamilyData({
+        family,
+        members: members || [],
+        marriages: marriages || []
+      });
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error loading family data:', error);
+      toast({
+        title: t('common.error') || 'Error',
+        description: t('common.network_error') || 'Failed to load family tree',
+        variant: 'destructive'
+      });
+      setIsLoading(false);
+    }
+  };
 
-        if (functionError) {
-          setError('خطأ في البحث عن العائلة');
-          setLoading(false);
-          return;
-        }
-
-        if (data?.error || !data?.family_id) {
-          setError('لم يتم العثور على عائلة بهذا النطاق المخصص');
-          setLoading(false);
-          return;
-        }
-        
-        // Set family ID to display the tree
-        setFamilyId(data.family_id);
-        setLoading(false);
-
-      } catch (error) {
-        setError('حدث خطأ غير متوقع');
-        setLoading(false);
-      }
-    };
-
-    lookupAndRedirect();
-  }, [customDomain]);
-
-  if (loading) {
+  if (isLoading || !familyData) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-6 space-y-4">
-            <div className="text-center space-y-2">
-              <Skeleton className="h-6 w-48 mx-auto" />
-              <Skeleton className="h-4 w-64 mx-auto" />
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-            </div>
-          </CardContent>
-        </Card>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">{t('common.loading') || 'Loading...'}</p>
+        </div>
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="p-6 text-center space-y-4">
-            <div className="flex justify-center">
-              <div className="w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center">
-                <AlertTriangle className="h-6 w-6 text-destructive" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold">عذراً، حدث خطأ</h3>
-              <p className="text-muted-foreground">{error}</p>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              يرجى التحقق من الرابط والمحاولة مرة أخرى
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Display PublicTreeView with the found familyId
-  if (familyId) {
-    return (
-      <FamilyDataProvider familyId={familyId}>
-        <PublicTreeView overrideFamilyId={familyId} />
-      </FamilyDataProvider>
-    );
-  }
-
-  return null;
+  return (
+    <FamilyDataProvider 
+      familyId={familyData.family?.id || null} 
+      initialData={{
+        family: familyData.family,
+        members: familyData.members || [],
+        marriages: familyData.marriages || []
+      }}
+    >
+      <PublicTreeView skipDataLoading={true} />
+    </FamilyDataProvider>
+  );
 };
 
 export default CustomDomainRedirect;
