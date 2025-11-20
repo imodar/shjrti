@@ -38,9 +38,9 @@ export const uploadMemberImage = async (
 };
 
 /**
- * Get a signed URL for a member's image from storage
+ * Get a public URL for a member's image from storage
  * @param filePath - The storage file path
- * @returns The signed URL or null if failed
+ * @returns The public URL or null if failed
  */
 export const getMemberImageUrl = async (filePath: string): Promise<string | null> => {
   try {
@@ -53,16 +53,6 @@ export const getMemberImageUrl = async (filePath: string): Promise<string | null
       filePath.startsWith('http://') ||
       filePath.startsWith('https://')
     ) {
-      // If it's a Supabase storage HTTP URL, try to re-sign it for private buckets
-      if (filePath.includes('/storage/v1/object/') && filePath.includes('member-memories')) {
-        const bucketMarker = 'member-memories/';
-        const idx = filePath.indexOf(bucketMarker);
-        const relative = idx !== -1 ? filePath.substring(idx + bucketMarker.length) : filePath;
-        const { data } = await supabase.storage
-          .from('member-memories')
-          .createSignedUrl(relative.replace(/^\/+/, ''), 60 * 60);
-        return data?.signedUrl || filePath;
-      }
       return filePath;
     }
 
@@ -74,11 +64,11 @@ export const getMemberImageUrl = async (filePath: string): Promise<string | null
       relativePath = relativePath.substring(idx + bucketMarker.length);
     }
 
-    const { data } = await supabase.storage
+    const { data } = supabase.storage
       .from('member-memories')
-      .createSignedUrl(relativePath, 60 * 60); // 1 hour
+      .getPublicUrl(relativePath);
     
-    return data?.signedUrl || null;
+    return data.publicUrl || null;
   } catch (error) {
     console.error('Failed to get image URL:', error);
     return null;
