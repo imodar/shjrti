@@ -2,11 +2,10 @@ import React, { useEffect, useRef } from 'react';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Calendar, Package } from 'lucide-react';
+import { AlertTriangle, Calendar, Package, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { DateDisplay } from '@/components/DateDisplay';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 interface SubscriptionGuardProps {
   children: React.ReactNode;
@@ -34,14 +33,16 @@ export function SubscriptionGuard({
     }
   }, [requireActiveSubscription, loading, subscription, refreshSubscription]);
 
-  // Don't block rendering - let child components handle loading states
-  if (!requireActiveSubscription) {
-    return <>{children}</>;
-  }
-
-  // Only show blocking UI if subscription check is complete and there's an issue
-  if (!hasInitialized || loading) {
-    return <>{children}</>; // Let Dashboard show its skeleton
+  // While initializing or loading, show a lightweight loader to prevent false prompts
+  if (requireActiveSubscription && (!hasInitialized || loading)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-6">
+        <div className="text-center">
+          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">جاري التحقق من الاشتراك...</p>
+        </div>
+      </div>
+    );
   }
 
   // If subscription is required and user has no active subscription, redirect to plan selection

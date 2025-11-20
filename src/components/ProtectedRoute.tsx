@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { Loader } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -48,18 +48,35 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
     }
   }, [requireActiveSubscription, hasActiveSubscription, subscriptionLoading, navigate, user]);
 
-  // Don't block rendering - let child components handle loading states
-  // Just perform auth/subscription checks without showing intermediate loaders
-  if (!loading && !user) {
-    return null; // Will redirect via useEffect
+  if (loading || (requireAdmin && adminLoading)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <Loader className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">جاري التحميل...</p>
+        </div>
+      </div>
+    );
   }
 
-  if (requireAdmin && !adminLoading && !isAdmin) {
-    return null; // Will redirect via useEffect
+  // Wait for subscription loading to complete before making decisions
+  if (requireActiveSubscription && subscriptionLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <Loader className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">جاري التحقق من الاشتراك...</p>
+        </div>
+      </div>
+    );
   }
 
-  if (requireActiveSubscription && !subscriptionLoading && !hasActiveSubscription) {
-    return null; // Will redirect via useEffect
+  if (!user || (requireAdmin && !isAdmin)) {
+    return null;
+  }
+
+  if (requireActiveSubscription && !hasActiveSubscription) {
+    return null;
   }
 
   
