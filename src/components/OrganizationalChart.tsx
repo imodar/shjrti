@@ -411,12 +411,11 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
     // Check if root changed or if this is the first centering
     const rootChanged = lastRootIdRef.current !== currentRootId;
-    const shouldCenter = rootChanged || !hasCenteredOnce.current;
-
-    if (!shouldCenter) {
-      console.log('[OrganizationalChart] Centering skipped - already centered on this root');
-      return;
-    }
+    
+    // Always recalculate when zoom changes (added to dependencies)
+    // Only skip if root is same AND we've already centered AND zoom hasn't changed
+    // But since zoomLevel is in dependencies, this useEffect runs on zoom change
+    // So we should always recalculate to keep root centered
 
     lastRootIdRef.current = currentRootId;
     hasCenteredOnce.current = true;
