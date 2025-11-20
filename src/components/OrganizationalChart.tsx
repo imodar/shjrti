@@ -372,10 +372,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   // Callback ref for reliable container mounting detection
   const containerRefCallback = React.useCallback((node: HTMLDivElement | null) => {
     if (node) {
-      console.log('[OrganizationalChart] Container mounted, dimensions:', {
-        width: node.offsetWidth,
-        height: node.offsetHeight
-      });
       containerRef.current = node;
       setContainerReady(true);
     }
@@ -384,20 +380,11 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   // Create stable positions key for dependency tracking
   const positionsKey = React.useMemo(() => {
     const key = JSON.stringify(Array.from(positions.entries()));
-    console.log('[OrganizationalChart] Positions key generated, size:', positions.size);
     return key;
   }, [positions]);
   
   useEffect(() => {
-    console.log('[OrganizationalChart] Centering useEffect triggered:', {
-      containerReady,
-      rootUnitsLength: rootUnits.length,
-      positionsSize: positions.size,
-      hasCenteredOnce: hasCenteredOnce.current
-    });
-
     if (rootUnits.length === 0 || positions.size === 0 || !containerReady || !containerRef.current) {
-      console.log('[OrganizationalChart] Centering skipped - conditions not met');
       return;
     }
 
@@ -414,7 +401,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     const shouldCenter = rootChanged || !hasCenteredOnce.current;
 
     if (!shouldCenter) {
-      console.log('[OrganizationalChart] Centering skipped - already centered on this root');
       return;
     }
 
@@ -431,12 +417,11 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     const offsetX = containerWidth / 2 - rootCenterX;
     const offsetY = 150 - rootCenterY;
 
-    console.log('[OrganizationalChart] 🎯 SIMPLE CENTERING:', {
-      rootId: currentRootId,
+    console.log('🎯 ZOOM:', {
+      zoomLevel,
       rootCenter: { x: rootCenterX, y: rootCenterY },
       containerWidth,
-      offset: { x: offsetX, y: offsetY },
-      note: 'Zoom applied via transform-origin: center center'
+      panOffset: { x: offsetX, y: offsetY }
     });
 
     setPanOffset({ x: offsetX, y: offsetY });
@@ -444,19 +429,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
-    console.log('[OrganizationalChart] Rendering unit:', {
-      unitId: unit.id,
-      generation: unit.generation,
-      type: unit.type,
-      membersCount: unit.members?.length || 0,
-      position: {
-        x: position.x,
-        y: position.y,
-        width: position.width
-      },
-      isFounder: unit.members?.some(m => m.is_founder) || false,
-      isRoot: rootUnits.some(r => r.id === unit.id)
-    });
     
     if (unit.type === 'married' && unit.members.length >= 2) {
       // Find husband and wives
@@ -814,11 +786,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
       const parentPos = positions.get(parentUnit.id);
       if (!parentPos) {
-        console.log(`🚨 [renderConnections] Parent unit has no position:`, {
-          parentId: parentUnit.id,
-          parentNames: parentUnit.members.map(m => `${m.name} [${m.id.slice(0, 8)}]`).join(' & '),
-          childUnitsCount: parentUnit.childUnits.length
-        });
         return;
       }
       
@@ -828,15 +795,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
         const childPos = positions.get(childId);
         return !childInDisplay || !childPos;
       });
-      
-      if (missingChildren.length > 0) {
-        console.log(`🚨 [renderConnections] Parent has children missing from displayUnits or positions:`, {
-          parentId: parentUnit.id,
-          parentNames: parentUnit.members.map(m => `${m.name} [${m.id.slice(0, 8)}]`).join(' & '),
-          missingChildIds: missingChildren,
-          totalChildren: parentUnit.childUnits.length
-        });
-      }
 
       const parentCenterX = parentPos.x + UNIT_WIDTH / 2;
       const parentBottomY = parentPos.y + UNIT_HEIGHT;
@@ -844,27 +802,11 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       children.forEach((childUnit, idx) => {
         const childPos = positions.get(childUnit.id);
         if (!childPos) {
-          console.log(`🚨 [renderConnections] Child has no position:`, {
-            childId: childUnit.id,
-            childNames: childUnit.members.map(m => `${m.name} [${m.id.slice(0, 8)}]`).join(' & '),
-            parentNames: parentUnit.members.map(m => `${m.name} [${m.id.slice(0, 8)}]`).join(' & ')
-          });
           return;
         }
         
         const childCenterX = childPos.x + UNIT_WIDTH / 2;
         const childTopY = childPos.y;
-        
-        console.log(`🔗 [renderConnections] Line ${idx + 1}/${children.length}:`, {
-          from: `${parentUnit.members.map(m => m.name).join(' & ')}`,
-          to: `${childUnit.members.map(m => m.name).join(' & ')}`,
-          parentPos: { x: parentPos.x, y: parentPos.y },
-          childPos: { x: childPos.x, y: childPos.y },
-          lineCoords: {
-            start: { x: parentCenterX, y: parentBottomY },
-            end: { x: childCenterX, y: childTopY }
-          }
-        });
       });
       
       if (children.length === 1) {
@@ -910,17 +852,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             />
           </g>
         );
-        
-        console.log('🎨 [SVG Group Created - Single Child]:', {
-          parentNames: parentUnit.members.map(m => m.name).join(' & '),
-          childName: child.members.map(m => m.name).join(' & '),
-          linesInGroup: 3,
-          segment1Coords: { x1: parentCenterX, y1: parentBottomY, x2: parentCenterX, y2: parentBottomY + VERTICAL_SPACING / 3 },
-          segment2Coords: { x1: parentCenterX, y1: parentBottomY + VERTICAL_SPACING / 3, x2: childCenterX, y2: parentBottomY + VERTICAL_SPACING / 3 },
-          segment3Coords: { x1: childCenterX, y1: parentBottomY + VERTICAL_SPACING / 3, x2: childCenterX, y2: childTopY },
-          stroke: primaryColor,
-          strokeWidth: 3
-        });
       } else {
         // Multiple children - org chart style
         const childPositions = children
@@ -981,37 +912,13 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
             })}
           </g>
         );
-        
-        console.log('🎨 [SVG Group Created - Multiple Children]:', {
-          parentNames: parentUnit.members.map(m => m.name).join(' & '),
-          childCount: children.length,
-          totalLinesInGroup: 2 + children.length, // vertical + horizontal + child lines
-          verticalLineCoords: { x1: parentCenterX, y1: parentBottomY, x2: parentCenterX, y2: distributionY },
-          horizontalLineCoords: { x1: leftmostX, y1: distributionY, x2: rightmostX, y2: distributionY },
-          childLineCoords: children.map(child => {
-            const pos = positions.get(child.id);
-            return pos ? {
-              childName: child.members.map(m => m.name).join(' & '),
-              coords: { x1: pos.x + UNIT_WIDTH / 2, y1: distributionY, x2: pos.x + UNIT_WIDTH / 2, y2: pos.y }
-            } : null;
-          }).filter(Boolean),
-          stroke: primaryColor,
-          strokeWidth: 3
-        });
       }
     });
 
     return connections;
   };
 
-  console.log('[OrganizationalChart] Final check before render:', {
-    displayUnitsSize: displayUnits.size,
-    positionsSize: positions.size,
-    willRender: displayUnits.size > 0 && positions.size > 0
-  });
-
   if (displayUnits.size === 0) {
-    console.log('[OrganizationalChart] Rendering empty state - no display units');
     return (
       <div className="flex items-center justify-center h-64 text-center">
         <div className="text-muted-foreground">
@@ -1040,12 +947,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       </div>
     );
   }
-
-  console.log('[OrganizationalChart] ✅ PASSED positions check! About to render:', {
-    displayUnitsSize: displayUnits.size,
-    positionsSize: positions.size,
-    rootUnitsCount: rootUnits.length
-  });
 
   // Get the computed primary color for SVG stroke
   const primaryColor = React.useMemo(() => {
