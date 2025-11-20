@@ -19,8 +19,6 @@ export function useImageUploadPermission() {
       const cacheKey = `image_upload_permission_${user.id}`;
       localStorage.removeItem(cacheKey);
       localStorage.removeItem(`${cacheKey}_timestamp`);
-      
-      console.log('🔍 Checking image upload permission for user:', user.id);
 
       try {
         const { data: subscriptionData, error } = await supabase
@@ -44,19 +42,11 @@ export function useImageUploadPermission() {
           return;
         }
 
-        console.log('📦 Subscription data:', subscriptionData);
-        console.log('📋 Package data:', subscriptionData?.packages);
-
         // If user has an active subscription, allow if either the boolean flag or the feature toggle is enabled
         const pkg: any = subscriptionData?.packages;
         const featureFlag = pkg?.features?.member_memories;
         const memberMemoriesEnabled = featureFlag === true || featureFlag === 'true' || featureFlag === 1;
         const hasPermission = Boolean(pkg?.image_upload_enabled) || memberMemoriesEnabled;
-        
-        console.log('🎛️ Image upload enabled (boolean):', pkg?.image_upload_enabled);
-        console.log('🎛️ Feature flag value:', featureFlag);
-        console.log('🎛️ Member memories enabled:', memberMemoriesEnabled);
-        console.log('✅ Final permission result:', hasPermission);
         
         setIsImageUploadEnabled(hasPermission);
         
