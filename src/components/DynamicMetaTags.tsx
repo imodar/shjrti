@@ -20,10 +20,12 @@ export const DynamicMetaTags = () => {
   const location = useLocation();
   const { currentLanguage } = useLanguage();
   const [settings, setSettings] = useState<SocialMediaSettings | null>(null);
+  const [familyName, setFamilyName] = useState<string | null>(null);
 
   useEffect(() => {
     loadSettings();
-  }, []);
+    loadFamilyName();
+  }, [location]);
 
   const loadSettings = async () => {
     try {
@@ -45,6 +47,41 @@ export const DynamicMetaTags = () => {
     }
   };
 
+  const loadFamilyName = async () => {
+    try {
+      // Check if this is a custom domain route
+      const pathParts = location.pathname.split('/');
+      const customDomain = pathParts[1]; // Get first path segment
+      
+      if (customDomain && customDomain !== 'share' && customDomain !== 'family-builder-new') {
+        // Try to fetch family by custom domain
+        const { data, error } = await supabase.functions.invoke('custom-domain-redirect', {
+          body: { customDomain }
+        });
+        
+        if (!error && data?.data?.family) {
+          setFamilyName(data.data.family.name);
+        }
+      } else if (location.search.includes('token=')) {
+        // Try to fetch family by share token
+        const urlParams = new URLSearchParams(location.search);
+        const token = urlParams.get('token');
+        
+        if (token) {
+          const { data, error } = await supabase.functions.invoke('get-shared-family', {
+            body: { share_token: token }
+          });
+          
+          if (!error && data?.data?.family) {
+            setFamilyName(data.data.family.name);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error loading family name:', error);
+    }
+  };
+
   useEffect(() => {
     if (!settings) return;
 
@@ -55,10 +92,19 @@ export const DynamicMetaTags = () => {
     const urlLang = urlParams.get('lang');
     const lang = urlLang === 'en' || currentLanguage === 'en' ? 'en' : 'ar';
     
-    // Get title and description based on determined language
-    const title = settings.site_name[lang];
+    // Get base title from settings
+    let title = settings.site_name[lang];
+    
+    // If we have a family name, append it
+    if (familyName) {
+      title = `${title} - ${lang === 'ar' ? 'عائلة' : 'Family'} ${familyName}`;
+    }
+    
     const description = settings.default_description[lang];
     const imageUrl = settings.og_image_url || 'https://lovable.dev/opengraph-image-p98pqg.png';
+    
+    // Update document title
+    document.title = title;
     
     // Update or create Open Graph meta tags
     updateMetaTag('property', 'og:title', title);
@@ -80,7 +126,7 @@ export const DynamicMetaTags = () => {
     // Update regular meta description
     updateMetaTag('name', 'description', description);
     
-  }, [settings, currentLanguage, location]);
+  }, [settings, currentLanguage, location, familyName]);
 
   const updateMetaTag = (attribute: 'property' | 'name', value: string, content: string) => {
     let element = document.querySelector(`meta[${attribute}="${value}"]`);
