@@ -831,7 +831,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               y2={parentBottomY + VERTICAL_SPACING / 3}
               stroke={primaryColor}
               strokeWidth="3"
-              className="drop-shadow-sm"
+              fill="none"
+              strokeOpacity="1"
             />
             <line
               x1={parentCenterX}
@@ -840,7 +841,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               y2={parentBottomY + VERTICAL_SPACING / 3}
               stroke={primaryColor}
               strokeWidth="3"
-              className="drop-shadow-sm"
+              fill="none"
+              strokeOpacity="1"
             />
             <line
               x1={childCenterX}
@@ -849,7 +851,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               y2={childTopY}
               stroke={primaryColor}
               strokeWidth="3"
-              className="drop-shadow-sm"
+              fill="none"
+              strokeOpacity="1"
             />
           </g>
         );
@@ -884,7 +887,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               y2={distributionY}
               stroke={primaryColor}
               strokeWidth="3"
-              className="drop-shadow-sm"
+              fill="none"
+              strokeOpacity="1"
             />
             
             {/* Horizontal distribution line */}
@@ -895,7 +899,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               y2={distributionY}
               stroke={primaryColor}
               strokeWidth="3"
-              className="drop-shadow-sm"
+              fill="none"
+              strokeOpacity="1"
             />
             
             {/* Vertical lines to each child */}
@@ -915,7 +920,8 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                   y2={childTopY}
                   stroke={primaryColor}
                   strokeWidth="3"
-                  className="drop-shadow-sm"
+                  fill="none"
+                  strokeOpacity="1"
                 />
               );
             })}
@@ -994,6 +1000,16 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   }, []);
 
   const connectionElements = renderConnections();
+  
+  console.log('🎯 [CONNECTION ELEMENTS CHECK]:', {
+    totalElements: connectionElements.length,
+    primaryColor,
+    elementsPreview: connectionElements.slice(0, 3).map(el => ({
+      key: el.key,
+      type: el.type,
+      children: el.props?.children?.length || 0
+    }))
+  });
 
   return (
     <div className="w-full h-full">
