@@ -229,6 +229,8 @@ const App = () => {
                   <Route path="/share" element={<PublicTreeViewWithContext />} />
                   {/* Redirect old terms route to new one */}
                   <Route path="/terms" element={<TermsConditions />} />
+                  {/* 404 error page - must be before custom domain route */}
+                  <Route path="/404" element={<NotFound />} />
                   {/* Custom domain route */}
                   <Route path="/:customDomain" element={<CustomDomainRedirect />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
