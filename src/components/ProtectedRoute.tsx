@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { Loader } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -49,26 +49,12 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
   }, [requireActiveSubscription, hasActiveSubscription, subscriptionLoading, navigate, user]);
 
   if (loading || (requireAdmin && adminLoading)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-muted-foreground">جاري التحميل...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message="جاري التحميل..." />;
   }
 
   // Wait for subscription loading to complete before making decisions
   if (requireActiveSubscription && subscriptionLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-muted-foreground">جاري التحقق من الاشتراك...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message="جاري التحقق من الاشتراك..." />;
   }
 
   if (!user || (requireAdmin && !isAdmin)) {
