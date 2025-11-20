@@ -1048,12 +1048,10 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                 </filter>
               </defs>
 
-              {/* Test line for debugging - سهيل صنديد vertical line */}
-              <line x1="630" y1="1680" x2="630" y2="1740" stroke="#ff0000" strokeWidth="5" />
-              <line x1="1070" y1="1740" x2="1950" y2="1740" stroke="#00ff00" strokeWidth="5" />
+              {connectionElements}
               
-              <g filter="url(#shadow)">
-                {connectionElements}
+              <g filter="url(#shadow)" opacity="0.2">
+                {/* Shadow layer */}
               </g>
             </svg>
 
