@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { AlertTriangle } from 'lucide-react';
 import { FamilyDataProvider } from '@/contexts/FamilyDataContext';
 import PublicTreeView from './PublicTreeView';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -11,16 +8,20 @@ import { useToast } from '@/hooks/use-toast';
 
 const CustomDomainRedirect = () => {
   const { customDomain } = useParams();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
   const [familyData, setFamilyData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (customDomain) {
-      loadFamilyData();
+    if (!customDomain) {
+      // No custom domain provided - redirect to 404
+      navigate('/404', { replace: true });
+      return;
     }
-  }, [customDomain]);
+    loadFamilyData();
+  }, [customDomain, navigate]);
 
   const loadFamilyData = async () => {
     try {
@@ -32,12 +33,9 @@ const CustomDomainRedirect = () => {
       if (error) throw error;
 
       if (data?.error) {
-        toast({
-          title: t('common.error') || 'Error',
-          description: t(`tree_settings.${data.error.toLowerCase()}`) || data.error,
-          variant: 'destructive'
-        });
-        setIsLoading(false);
+        // Invalid custom domain - redirect to 404
+        console.error('[CustomDomainRedirect] Invalid domain:', data.error);
+        navigate('/404', { replace: true });
         return;
       }
 
@@ -55,12 +53,8 @@ const CustomDomainRedirect = () => {
       setIsLoading(false);
     } catch (error) {
       console.error('Error loading family data:', error);
-      toast({
-        title: t('common.error') || 'Error',
-        description: t('common.network_error') || 'Failed to load family tree',
-        variant: 'destructive'
-      });
-      setIsLoading(false);
+      // Network error or invalid response - redirect to 404
+      navigate('/404', { replace: true });
     }
   };
 

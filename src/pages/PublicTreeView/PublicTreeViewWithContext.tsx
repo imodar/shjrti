@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { FamilyDataProvider } from '@/contexts/FamilyDataContext';
 import PublicTreeView from '../PublicTreeView';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,16 +10,20 @@ import { useLanguage } from '@/contexts/LanguageContext';
 const PublicTreeViewWithContext: React.FC = () => {
   const [searchParams] = useSearchParams();
   const shareToken = searchParams.get('token');
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
   const [familyData, setFamilyData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (shareToken) {
-      loadFamilyData();
+    if (!shareToken) {
+      // No token provided - redirect to 404
+      navigate('/404', { replace: true });
+      return;
     }
-  }, [shareToken]);
+    loadFamilyData();
+  }, [shareToken, navigate]);
 
   const loadFamilyData = async () => {
     try {
@@ -31,12 +35,9 @@ const PublicTreeViewWithContext: React.FC = () => {
       if (error) throw error;
 
       if (data?.error) {
-        toast({
-          title: t('common.error') || 'Error',
-          description: t(`tree_settings.${data.error.toLowerCase()}`) || data.error,
-          variant: 'destructive'
-        });
-        setIsLoading(false);
+        // Invalid or expired token - redirect to 404
+        console.error('[PublicTreeViewWithContext] Invalid token:', data.error);
+        navigate('/404', { replace: true });
         return;
       }
 
@@ -54,12 +55,8 @@ const PublicTreeViewWithContext: React.FC = () => {
       setIsLoading(false);
     } catch (error) {
       console.error('Error loading family data:', error);
-      toast({
-        title: t('common.error') || 'Error',
-        description: t('common.network_error') || 'Failed to load family tree',
-        variant: 'destructive'
-      });
-      setIsLoading(false);
+      // Network error or invalid response - redirect to 404
+      navigate('/404', { replace: true });
     }
   };
 
