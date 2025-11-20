@@ -34,9 +34,14 @@ export function SubscriptionGuard({
     }
   }, [requireActiveSubscription, loading, subscription, refreshSubscription]);
 
-  // While initializing or loading, show a lightweight loader to prevent false prompts
-  if (requireActiveSubscription && (!hasInitialized || loading)) {
-    return <LoadingSpinner message="جاري التحقق من الاشتراك..." size="lg" />;
+  // Don't block rendering - let child components handle loading states
+  if (!requireActiveSubscription) {
+    return <>{children}</>;
+  }
+
+  // Only show blocking UI if subscription check is complete and there's an issue
+  if (!hasInitialized || loading) {
+    return <>{children}</>; // Let Dashboard show its skeleton
   }
 
   // If subscription is required and user has no active subscription, redirect to plan selection
