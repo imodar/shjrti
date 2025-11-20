@@ -31,6 +31,7 @@ Deno.serve(async (req) => {
     }
 
     // Look up the family by custom domain
+    // Note: Custom domains have permanent access (no expiration check)
     const { data: family, error } = await supabase
       .from('families')
       .select('id, name, custom_domain')
