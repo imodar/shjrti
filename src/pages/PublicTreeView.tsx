@@ -5,8 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { GlobalHeader } from "@/components/GlobalHeader";
@@ -20,9 +18,8 @@ import { FamilyGalleryView } from "@/components/FamilyGalleryView";
 import { PublicFamilyHeader } from "@/components/PublicFamilyHeader";
 import { FamilyOverview } from "@/components/FamilyOverview";
 import { OrganizationalChart } from "@/components/OrganizationalChart";
-import { Users, AlertCircle, Menu, ZoomIn, ZoomOut, Maximize, Minimize, Check, ChevronsUpDown } from "lucide-react";
+import { Users, AlertCircle, Menu, ZoomIn, ZoomOut, Maximize, Minimize } from "lucide-react";
 import { MemberProfileModal } from "@/components/MemberProfileModal";
-import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useFamilyData } from '@/contexts/FamilyDataContext';
 
@@ -95,7 +92,6 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
   const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>("all");
   const [activeTab, setActiveTab] = useState("traditional");
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [openCombobox, setOpenCombobox] = useState(false);
   const traditionalRef = useRef<HTMLDivElement>(null);
   
   // Suggest Edit Dialog state
@@ -384,32 +380,8 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
   // Handle root marriage change
   const handleRootMarriageChange = (value: string) => {
     setSelectedRootMarriage(value);
-    setOpenCombobox(false);
   };
   
-  // Prepare marriage options for combobox
-  const marriageOptions = useMemo(() => {
-    const options = [{ value: "all", label: "عرض الشجرة الكاملة" }];
-    
-    familyMarriages
-      .filter(marriage => marriage.is_active)
-      .forEach(marriage => {
-        const husband = familyMembers.find(m => m.id === marriage.husband_id);
-        const wife = familyMembers.find(m => m.id === marriage.wife_id);
-        if (husband && wife) {
-          options.push({
-            value: marriage.id,
-            label: `عائلة ${husband.name} و ${wife.name}`
-          });
-        }
-      });
-    
-    return options;
-  }, [familyMarriages, familyMembers]);
-  
-  // Get selected label
-  const selectedLabel = marriageOptions.find(opt => opt.value === selectedRootMarriage)?.label || "اختر زواجاً لعرضه";
-
   // Toggle fullscreen
   const handleToggleFullscreen = () => {
     if (!document.fullscreenElement) {
@@ -847,64 +819,48 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
                         <TabsContent value="traditional">
                           <div ref={traditionalRef} className="relative bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-xl shadow-lg overflow-hidden">
                             {/* Filter Bar at Top */}
-                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 border-b border-white/40 dark:border-gray-600/40 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10">
-                              <div className="flex-1 w-full md:max-w-md">
+                            <div className="flex items-center justify-between p-4 border-b border-white/40 dark:border-gray-600/40 bg-gradient-to-r from-emerald-500/10 via-teal-500/20 to-amber-500/10">
+                              {/* Root Selection */}
+                              <div className="flex-1 max-w-md me-4">
                                 <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
-                                  اختر الجذر
+                                  {t('tree_view.choose_root')}
                                 </label>
-                                <Popover open={openCombobox} onOpenChange={setOpenCombobox}>
-                                  <PopoverTrigger asChild>
-                                    <Button
-                                      variant="outline"
-                                      role="combobox"
-                                      aria-expanded={openCombobox}
-                                      className="w-full justify-between bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-emerald-200/50 dark:border-emerald-600/50"
-                                    >
-                                      {selectedLabel}
-                                      <ChevronsUpDown className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-                                    </Button>
-                                  </PopoverTrigger>
-                                  <PopoverContent className="w-[400px] p-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-emerald-200/50 dark:border-emerald-600/50">
-                                    <Command className="bg-transparent">
-                                      <CommandInput placeholder="ابحث عن عائلة..." className="h-9" />
-                                      <CommandList>
-                                        <CommandEmpty>لم يتم العثور على نتائج</CommandEmpty>
-                                        <CommandGroup>
-                                          {marriageOptions.map((option) => (
-                                            <CommandItem
-                                              key={option.value}
-                                              value={option.label}
-                                              onSelect={() => handleRootMarriageChange(option.value)}
-                                              className="cursor-pointer"
-                                            >
-                                              <Check
-                                                className={cn(
-                                                  "ml-2 h-4 w-4",
-                                                  selectedRootMarriage === option.value ? "opacity-100" : "opacity-0"
-                                                )}
-                                              />
-                                              {option.label}
-                                            </CommandItem>
-                                          ))}
-                                        </CommandGroup>
-                                      </CommandList>
-                                    </Command>
-                                  </PopoverContent>
-                                </Popover>
+                                <Select value={selectedRootMarriage} onValueChange={handleRootMarriageChange}>
+                                  <SelectTrigger className="w-full bg-white/70 dark:bg-gray-700/70 backdrop-blur-sm border-emerald-200/50 dark:border-emerald-600/50">
+                                    <SelectValue placeholder={t('tree_view.choose_marriage_placeholder')} />
+                                  </SelectTrigger>
+                                  <SelectContent searchable searchPlaceholder={t('tree_view.search_family_placeholder')} className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl border-emerald-200/50 dark:border-emerald-600/50">
+                                    <SelectItem value="all">{t('tree_view.display_full_tree')}</SelectItem>
+                                    {familyMarriages
+                                      .filter(marriage => marriage.is_active)
+                                      .map(marriage => {
+                                        const husband = familyMembers.find(m => m.id === marriage.husband_id);
+                                        const wife = familyMembers.find(m => m.id === marriage.wife_id);
+                                        if (husband && wife) {
+                                          return (
+                                            <SelectItem key={marriage.id} value={marriage.id}>
+                                              عائلة {husband.name} و {wife.name}
+                                            </SelectItem>
+                                          );
+                                        }
+                                        return null;
+                                      })}
+                                  </SelectContent>
+                                </Select>
                               </div>
                               
                               {/* Zoom Controls */}
-                              <div className="flex items-center justify-center md:justify-end gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30 w-full md:w-auto">
-                                <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20 h-8 w-8 md:h-auto md:w-auto p-2">
+                              <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
+                                <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
                                   <ZoomOut className="h-4 w-4" />
                                 </Button>
                                 <span className="text-sm min-w-[3rem] text-center font-medium">
                                   {Math.round(zoomLevel * 100)}%
                                 </span>
-                                <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20 h-8 w-8 md:h-auto md:w-auto p-2">
+                                <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
                                   <ZoomIn className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="sm" onClick={handleToggleFullscreen} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20 h-8 w-8 md:h-auto md:w-auto p-2">
+                                <Button variant="ghost" size="sm" onClick={handleToggleFullscreen} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
                                   {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
                                 </Button>
                               </div>
