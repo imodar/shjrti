@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useTrackingConsent } from "@/hooks/useTrackingConsent";
 import { Button } from "@/components/ui/button";
 import { Home, AlertCircle } from "lucide-react";
 
@@ -8,13 +9,22 @@ const NotFound = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useLanguage();
+  const { trackEvent, trackPageView } = useTrackingConsent();
 
   useEffect(() => {
     console.error(
       "404 Error: User attempted to access non-existent route:",
       location.pathname
     );
-  }, [location.pathname]);
+
+    // Track 404 error in Google Analytics
+    trackPageView('/404', 'Page Not Found');
+    trackEvent('404_error', {
+      page_path: location.pathname,
+      page_search: location.search,
+      referrer: document.referrer || 'direct',
+    });
+  }, [location.pathname, location.search, trackEvent, trackPageView]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
