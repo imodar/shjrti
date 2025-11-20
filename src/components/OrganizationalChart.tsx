@@ -466,14 +466,14 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity h-8 px-2 bg-background/80 hover:bg-background shadow-sm z-20"
+                  className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-300 h-8 px-3 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary hover:to-primary/90 text-primary-foreground shadow-lg hover:shadow-xl border border-primary/20 backdrop-blur-sm z-20"
                   onClick={(e) => {
                     e.stopPropagation();
                     onSuggestEdit(husband.id, husband.name);
                   }}
                 >
                   <Edit3 className="h-3 w-3 ml-1" />
-                  <span className="text-xs">اقتراح تعديل</span>
+                  <span className="text-xs font-medium">اقتراح تعديل</span>
                 </Button>
               )}
               <CardContent className="p-4 h-full flex flex-col justify-center">
@@ -719,14 +719,14 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               <Button
                 size="sm"
                 variant="ghost"
-                className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity h-8 px-2 bg-background/80 hover:bg-background shadow-sm z-20"
+                className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-all duration-300 h-8 px-3 bg-gradient-to-r from-primary/90 to-primary/80 hover:from-primary hover:to-primary/90 text-primary-foreground shadow-lg hover:shadow-xl border border-primary/20 backdrop-blur-sm z-20"
                 onClick={(e) => {
                   e.stopPropagation();
                   onSuggestEdit(member.id, member.name);
                 }}
               >
                 <Edit3 className="h-3 w-3 ml-1" />
-                <span className="text-xs">اقتراح تعديل</span>
+                <span className="text-xs font-medium">اقتراح تعديل</span>
               </Button>
             )}
             <CardContent className="p-4 h-full flex flex-col justify-between">
