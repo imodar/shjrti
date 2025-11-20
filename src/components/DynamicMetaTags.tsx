@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SocialMediaSettings {
   site_name: {
@@ -17,6 +18,7 @@ interface SocialMediaSettings {
 
 export const DynamicMetaTags = () => {
   const location = useLocation();
+  const { currentLanguage } = useLanguage();
   const [settings, setSettings] = useState<SocialMediaSettings | null>(null);
 
   useEffect(() => {
@@ -48,10 +50,10 @@ export const DynamicMetaTags = () => {
 
     const currentUrl = window.location.href;
     
-    // Default to Arabic, use English only if explicitly specified in URL
+    // Default to Arabic unless current language is explicitly English or ?lang=en in URL
     const urlParams = new URLSearchParams(window.location.search);
     const urlLang = urlParams.get('lang');
-    const lang = urlLang === 'en' ? 'en' : 'ar';
+    const lang = urlLang === 'en' || currentLanguage === 'en' ? 'en' : 'ar';
     
     // Get title and description based on determined language
     const title = settings.site_name[lang];
@@ -78,7 +80,7 @@ export const DynamicMetaTags = () => {
     // Update regular meta description
     updateMetaTag('name', 'description', description);
     
-  }, [settings, location]);
+  }, [settings, currentLanguage, location]);
 
   const updateMetaTag = (attribute: 'property' | 'name', value: string, content: string) => {
     let element = document.querySelector(`meta[${attribute}="${value}"]`);
