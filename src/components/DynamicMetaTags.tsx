@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SocialMediaSettings {
   site_name: {
@@ -18,7 +17,6 @@ interface SocialMediaSettings {
 
 export const DynamicMetaTags = () => {
   const location = useLocation();
-  const { currentLanguage } = useLanguage();
   const [settings, setSettings] = useState<SocialMediaSettings | null>(null);
 
   useEffect(() => {
@@ -49,11 +47,15 @@ export const DynamicMetaTags = () => {
     if (!settings) return;
 
     const currentUrl = window.location.href;
-    const lang = currentLanguage || 'ar';
     
-    // Get title and description based on current language
-    const title = settings.site_name[lang as 'ar' | 'en'] || settings.site_name.ar;
-    const description = settings.default_description[lang as 'ar' | 'en'] || settings.default_description.ar;
+    // Default to Arabic, use English only if explicitly specified in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlLang = urlParams.get('lang');
+    const lang = urlLang === 'en' ? 'en' : 'ar';
+    
+    // Get title and description based on determined language
+    const title = settings.site_name[lang];
+    const description = settings.default_description[lang];
     const imageUrl = settings.og_image_url || 'https://lovable.dev/opengraph-image-p98pqg.png';
     
     // Update or create Open Graph meta tags
@@ -76,7 +78,7 @@ export const DynamicMetaTags = () => {
     // Update regular meta description
     updateMetaTag('name', 'description', description);
     
-  }, [settings, currentLanguage, location]);
+  }, [settings, location]);
 
   const updateMetaTag = (attribute: 'property' | 'name', value: string, content: string) => {
     let element = document.querySelector(`meta[${attribute}="${value}"]`);
