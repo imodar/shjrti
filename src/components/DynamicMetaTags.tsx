@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { PROTECTED_ROUTES } from '@/constants/routes';
 
 interface SocialMediaSettings {
   site_name: {
@@ -53,7 +54,8 @@ export const DynamicMetaTags = () => {
       const pathParts = location.pathname.split('/');
       const customDomain = pathParts[1]; // Get first path segment
       
-      if (customDomain && customDomain !== 'share' && customDomain !== 'family-builder-new') {
+      // Only call edge function if it's NOT a protected app route
+      if (customDomain && !PROTECTED_ROUTES.includes(customDomain.toLowerCase())) {
         // Try to fetch family by custom domain
         const { data, error } = await supabase.functions.invoke('custom-domain-redirect', {
           body: { customDomain }
