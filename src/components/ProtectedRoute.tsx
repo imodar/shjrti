@@ -48,21 +48,18 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
     }
   }, [requireActiveSubscription, hasActiveSubscription, subscriptionLoading, navigate, user]);
 
-  if (loading || (requireAdmin && adminLoading)) {
-    return <LoadingSpinner message="جاري التحميل..." />;
+  // Don't block rendering - let child components handle loading states
+  // Just perform auth/subscription checks without showing intermediate loaders
+  if (!loading && !user) {
+    return null; // Will redirect via useEffect
   }
 
-  // Wait for subscription loading to complete before making decisions
-  if (requireActiveSubscription && subscriptionLoading) {
-    return <LoadingSpinner message="جاري التحقق من الاشتراك..." />;
+  if (requireAdmin && !adminLoading && !isAdmin) {
+    return null; // Will redirect via useEffect
   }
 
-  if (!user || (requireAdmin && !isAdmin)) {
-    return null;
-  }
-
-  if (requireActiveSubscription && !hasActiveSubscription) {
-    return null;
+  if (requireActiveSubscription && !subscriptionLoading && !hasActiveSubscription) {
+    return null; // Will redirect via useEffect
   }
 
   
