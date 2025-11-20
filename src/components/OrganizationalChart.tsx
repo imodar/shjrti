@@ -427,45 +427,20 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     const rootCenterX = rootPosition.x + rootPosition.width / 2;
     const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
 
-    // Calculate offset accounting for current zoom level
-    const offsetX = (containerWidth / 2 - rootCenterX * zoomLevel) / zoomLevel;
-    const offsetY = (150 - rootCenterY * zoomLevel) / zoomLevel;
+    // Simple offset calculation - zoom is applied separately via transform-origin
+    const offsetX = containerWidth / 2 - rootCenterX;
+    const offsetY = 150 - rootCenterY;
 
-    console.log('[OrganizationalChart] 🎯 CENTERING DEBUG:', {
-      '1_INPUT': {
-        zoomLevel,
-        containerWidth,
-        containerHeight,
-        rootPosition: { x: rootPosition.x, y: rootPosition.y, width: rootPosition.width }
-      },
-      '2_ROOT_CENTER': {
-        rootCenterX,
-        rootCenterY
-      },
-      '3_FORMULA': {
-        offsetX_formula: `(${containerWidth}/2 - ${rootCenterX}*${zoomLevel})/${zoomLevel}`,
-        offsetY_formula: `(150 - ${rootCenterY}*${zoomLevel})/${zoomLevel}`,
-        simplified_offsetX: `${containerWidth}/(2*${zoomLevel}) - ${rootCenterX}`,
-        simplified_offsetY: `150/${zoomLevel} - ${rootCenterY}`
-      },
-      '4_CALCULATED_OFFSET': {
-        offsetX,
-        offsetY
-      },
-      '5_VERIFICATION': {
-        expectedScreenX: (rootCenterX + offsetX) * zoomLevel,
-        expectedScreenY: (rootCenterY + offsetY) * zoomLevel,
-        targetScreenX: containerWidth / 2,
-        targetScreenY: 150,
-        match: {
-          x: Math.abs((rootCenterX + offsetX) * zoomLevel - containerWidth / 2) < 1,
-          y: Math.abs((rootCenterY + offsetY) * zoomLevel - 150) < 1
-        }
-      }
+    console.log('[OrganizationalChart] 🎯 SIMPLE CENTERING:', {
+      rootId: currentRootId,
+      rootCenter: { x: rootCenterX, y: rootCenterY },
+      containerWidth,
+      offset: { x: offsetX, y: offsetY },
+      note: 'Zoom applied via transform-origin: center center'
     });
 
     setPanOffset({ x: offsetX, y: offsetY });
-  }, [containerReady, positionsKey, rootUnits, UNIT_HEIGHT, zoomLevel]);
+  }, [containerReady, positionsKey, rootUnits, UNIT_HEIGHT]);
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
@@ -1096,7 +1071,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           className="absolute inset-0"
           style={{
             transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
-            transformOrigin: '0 0',
+            transformOrigin: 'center center',
             transition: 'transform 0.15s ease-out'
           }}
         >
