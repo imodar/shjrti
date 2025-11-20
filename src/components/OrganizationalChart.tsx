@@ -396,17 +396,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       return;
     }
 
-    // Check if root changed or if this is the first centering
-    const rootChanged = lastRootIdRef.current !== currentRootId;
-    const shouldCenter = rootChanged || !hasCenteredOnce.current;
-
-    if (!shouldCenter) {
-      return;
-    }
-
-    lastRootIdRef.current = currentRootId;
-    hasCenteredOnce.current = true;
-
     const containerWidth = containerRef.current.offsetWidth || 1200;
     const containerHeight = containerRef.current.offsetHeight || 800;
 
