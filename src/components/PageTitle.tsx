@@ -37,6 +37,7 @@ const PageTitle = () => {
       if (path.startsWith('auth')) return 'page_title_auth';
       if (path.startsWith('change-password')) return 'page_title_change_password';
       if (path.startsWith('public-tree')) return 'page_title_public_tree';
+      if (path.startsWith('share')) return 'page_title_public_tree'; // Public share links use same title as public tree
       
       return 'page_title_not_found';
     };
