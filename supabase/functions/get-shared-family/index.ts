@@ -17,8 +17,8 @@ Deno.serve(async (req) => {
     // Rate limiting
     const clientIP = getClientIP(req);
     const rateLimitResult = checkRateLimit(clientIP, {
-      maxAttempts: 30,
-      windowMs: 60 * 60 * 1000, // 30 requests per hour
+      maxAttempts: 100,
+      windowMs: 30 * 60 * 1000, // 100 requests per 30 minutes
       backoffMultiplier: 2,
     });
 

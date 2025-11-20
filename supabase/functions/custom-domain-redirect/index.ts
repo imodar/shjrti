@@ -1,14 +1,58 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { checkRateLimit, getClientIP } from '../_shared/rateLimiter.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+/**
+ * Validate custom domain format
+ * Allows: alphanumeric, hyphens, forward slashes
+ * Max length: 100 characters
+ */
+const validateCustomDomain = (domain: string): boolean => {
+  if (!domain || typeof domain !== 'string') {
+    return false;
+  }
+  
+  // Length validation
+  if (domain.length > 100) {
+    return false;
+  }
+  
+  // Character whitelist: alphanumeric, hyphens, forward slashes
+  const domainRegex = /^[a-zA-Z0-9\-\/]+$/;
+  return domainRegex.test(domain.trim());
+};
+
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
+  }
+
+  // Rate limiting - 100 requests per 30 minutes
+  const clientIP = getClientIP(req);
+  const rateLimitResult = checkRateLimit(clientIP, {
+    maxAttempts: 100,
+    windowMs: 30 * 60 * 1000, // 30 minutes
+    backoffMultiplier: 2,
+  });
+
+  if (!rateLimitResult.allowed) {
+    console.log(`[custom-domain-redirect] Rate limit exceeded for IP: ${clientIP}`);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: 'TOO_MANY_REQUESTS',
+        retryAfter: rateLimitResult.retryAfter,
+      }),
+      {
+        status: 429,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 
   try {
@@ -24,13 +68,29 @@ Deno.serve(async (req) => {
       }
     );
 
-    // Read customDomain from request body
+    // Read and validate customDomain from request body
     const { customDomain } = await req.json();
 
     if (!customDomain) {
       console.error('[custom-domain-redirect] Missing customDomain in request');
       return new Response(
         JSON.stringify({ success: false, error: 'DOMAIN_REQUIRED' }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    // Validate domain format
+    if (!validateCustomDomain(customDomain)) {
+      console.error('[custom-domain-redirect] Invalid domain format:', customDomain);
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          error: 'INVALID_DOMAIN_FORMAT',
+          message: 'Domain must be alphanumeric with hyphens/slashes, max 100 chars'
+        }),
         { 
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
