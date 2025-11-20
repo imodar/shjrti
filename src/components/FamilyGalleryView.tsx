@@ -70,16 +70,11 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
 
   const getImageUrl = async (filePath: string): Promise<string> => {
     try {
-      const { data, error } = await supabase.storage
+      const { data } = supabase.storage
         .from('family-memories')
-        .createSignedUrl(filePath, 3600); // URL valid for 1 hour
+        .getPublicUrl(filePath);
       
-      if (error) {
-        console.error('Error creating signed URL:', error);
-        return '';
-      }
-      
-      return data.signedUrl;
+      return data.publicUrl;
     } catch (error) {
       console.error('Error getting image URL:', error);
       return '';
