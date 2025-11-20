@@ -417,7 +417,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     const offsetX = containerWidth / 2 - rootCenterX;
     const offsetY = 150 - rootCenterY;
 
-    console.log('🎯 ZOOM:', {
+    console.log('⚡🔍 ZOOM LOG:', {
       zoomLevel,
       rootCenter: { x: rootCenterX, y: rootCenterY },
       containerWidth,
