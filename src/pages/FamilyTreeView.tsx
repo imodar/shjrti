@@ -264,20 +264,6 @@ const FamilyTreeView = () => {
       });
     });
 
-    // DEBUG: Print all units with their children
-    console.log('🏗️ [FamilyTreeView] All units with children:');
-    units.forEach((unit, unitId) => {
-      if (unit.childUnits.length > 0) {
-        console.log(`  📦 Unit ${unitId.slice(0, 20)}... (${unit.members.map(m => `${m.name} [${m.id.slice(0, 8)}]`).join(' & ')}) has ${unit.childUnits.length} children:`);
-        unit.childUnits.forEach(childId => {
-          const childUnit = units.get(childId);
-          if (childUnit) {
-            console.log(`    ↳ ${childUnit.members.map(m => `${m.name} [${m.id.slice(0, 8)}]`).join(' & ')}`);
-          }
-        });
-      }
-    });
-
     // Step 3: Assign generations using BFS from root units
     // First, identify root units (units without parents)
     const rootUnits: string[] = [];
