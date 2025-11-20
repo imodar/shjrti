@@ -88,7 +88,6 @@ const FamilyTreeView = () => {
   // Initialize user and handle authentication
   useEffect(() => {
     const initUser = async () => {
-      console.log('[FamilyTreeView] initUser starting...');
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         navigate('/auth');
@@ -113,7 +112,6 @@ const FamilyTreeView = () => {
         return;
       }
       
-      console.log('[FamilyTreeView] Setting isLoading to false');
       setIsLoading(false);
     };
     
@@ -176,7 +174,6 @@ const FamilyTreeView = () => {
           });
           processedMembers.add(husband.id);
           processedMembers.add(wife.id);
-          console.log(`Created married unit: ${husband.name} & ${wife.name}`);
         }
       }
     });
@@ -192,10 +189,8 @@ const FamilyTreeView = () => {
           generation: 0,
           childUnits: []
         });
-        console.log(`Created single unit: ${member.name}`);
       }
     });
-    console.log('Created units:', units.size);
     return units;
   };
   const getUnitByMemberId = (memberId: string, units: Map<string, FamilyUnit>): FamilyUnit | undefined => {
@@ -215,7 +210,6 @@ const FamilyTreeView = () => {
       if (unit.members.some(m => m.is_founder)) {
         unit.generation = 1;
         founderUnits.push(unitId);
-        console.log(`Set ${unit.members.map(m => m.name).join(' & ')} as generation 1 (founder unit)`);
       }
     });
 
@@ -225,7 +219,6 @@ const FamilyTreeView = () => {
       // Check if this unit contains a founder - if so, it's a root and should not have parents assigned
       const isFounderUnit = unit.members.some(m => m.is_founder);
       if (isFounderUnit) {
-        console.log(`[FamilyTreeView] Skipping parent assignment for founder unit: ${unit.members.map(m => m.name).join(' & ')}`);
         return; // Skip this unit - founders are roots
       }
 
@@ -266,7 +259,6 @@ const FamilyTreeView = () => {
             if (!parentUnit.childUnits.includes(unitId)) {
               parentUnit.childUnits.push(unitId);
             }
-            console.log(`[FamilyTreeView] Connected ${unit.members.map(m => m.name).join(' & ')} to parent ${parentUnit.members.map(m => m.name).join(' & ')}`);
           }
         }
       });
@@ -311,7 +303,6 @@ const FamilyTreeView = () => {
       if (!unit) continue;
       
       unit.generation = gen;
-      console.log(`Set ${unit.members.map(m => m.name).join(' & ')} as generation ${gen}`);
       
       // Add all children to queue
       unit.childUnits.forEach(childId => {
@@ -328,7 +319,6 @@ const FamilyTreeView = () => {
     units.forEach(unit => {
       genDistribution.set(unit.generation, (genDistribution.get(unit.generation) || 0) + 1);
     });
-    console.log('Generation distribution:', Array.from(genDistribution.entries()).map(([gen, count]) => `gen${gen}: ${count}`).join(', '));
   };
 
   // Group siblings together by their common parent for proper cousin visualization
@@ -465,11 +455,6 @@ const FamilyTreeView = () => {
         </Card>
       </div>;
   };
-  console.log('[FamilyTreeView] Before render check:', {
-    isLoading,
-    dataLoading,
-    willShowSkeleton: isLoading || dataLoading
-  });
 
   if (isLoading || dataLoading) {
     return <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
@@ -485,7 +470,6 @@ const FamilyTreeView = () => {
 
   // Generate family tree structure using family units with proper cousin grouping
   const generateFamilyTree = () => {
-    console.log('Generating family tree with members:', familyMembers.length);
     if (familyMembers.length === 0) return {
       tree: [],
       units: new Map()
@@ -526,8 +510,6 @@ const FamilyTreeView = () => {
         filteredUnits.forEach((unit, id) => {
           units.set(id, unit);
         });
-        
-        console.log(`Filtered to ${filteredUnits.size} units from original ${originalUnits.size} units`);
 
         // Clean up parent/child references to only include ids within filtered set
         units.forEach((unit) => {
@@ -603,7 +585,6 @@ const FamilyTreeView = () => {
       generations.set(generation, siblingGroups);
     });
     const result = Array.from(generations.entries()).sort((a, b) => a[0] - b[0]);
-    console.log('Final family tree structure with sibling groups:', result);
     return {
       tree: result,
       units
@@ -612,13 +593,10 @@ const FamilyTreeView = () => {
   const familyTreeData = generateFamilyTree();
   const familyTree = familyTreeData.tree;
   const familyUnits = familyTreeData.units;
-  console.log('Family tree for rendering:', familyTree);
-  console.log('Family tree length:', familyTree.length);
   const handleZoomIn = () => setZoomLevel(prev => Math.min(prev + 0.2, 3));
   const handleZoomOut = () => setZoomLevel(prev => Math.max(prev - 0.2, 0.25));
   const handleResetZoom = () => setZoomLevel(1);
   const handleSearchResultSelect = (member: any) => {
-    console.log('Selected member from search:', member);
     // يمكن إضافة منطق للتنقل إلى العضو في شجرة العائلة
     toast({
       title: "تم اختيار العضو",
