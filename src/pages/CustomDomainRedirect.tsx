@@ -5,16 +5,7 @@ import { FamilyDataProvider } from '@/contexts/FamilyDataContext';
 import PublicTreeView from './PublicTreeView';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
-
-// List of protected app routes that should never be treated as custom domains
-const PROTECTED_ROUTES = [
-  'dashboard', 'dashboard-backup', 'auth', 'profile', 'family-creator',
-  'family-builder', 'family-builder-new', 'family-tree-view', 
-  'family-statistics', 'family-gallery', 'payments', 'plan-selection',
-  'payment-success', 'payment', 'change-password', 'store', 'admin',
-  'admin-api-settings', 'renew-subscription', 'terms-conditions',
-  'privacy-policy', 'contact', 'tree', 'share', 'terms', '404'
-];
+import { PROTECTED_ROUTES } from '@/constants/routes';
 
 const CustomDomainRedirect = () => {
   const { customDomain } = useParams();
