@@ -24,8 +24,10 @@ export const DynamicMetaTags = () => {
   const [familyName, setFamilyName] = useState<string | null>(null);
 
   useEffect(() => {
-    loadSettings();
-    loadFamilyName();
+    const loadData = async () => {
+      await Promise.all([loadSettings(), loadFamilyName()]);
+    };
+    loadData();
   }, [location]);
 
   const loadSettings = async () => {
@@ -85,7 +87,19 @@ export const DynamicMetaTags = () => {
   };
 
   useEffect(() => {
+    // Only update title/meta tags when we have settings AND family name (if applicable)
     if (!settings) return;
+    
+    // Check if this is a /share or custom domain page that needs family name
+    const pathParts = location.pathname.split('/');
+    const customDomain = pathParts[1];
+    const isSharePage = location.search.includes('token=');
+    const isCustomDomain = customDomain && !PROTECTED_ROUTES.includes(customDomain.toLowerCase());
+    
+    // If it's a share/custom domain page, wait for family name to load
+    if ((isSharePage || isCustomDomain) && !familyName) {
+      return; // Don't update title until family name is loaded
+    }
 
     const currentUrl = window.location.href;
     
