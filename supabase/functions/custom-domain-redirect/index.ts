@@ -12,17 +12,25 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
+    // Create Supabase Admin client using Service Role Key
+    const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
+    );
 
     // Read customDomain from request body
     const { customDomain } = await req.json();
 
     if (!customDomain) {
+      console.error('[custom-domain-redirect] Missing customDomain in request');
       return new Response(
-        JSON.stringify({ error: 'Custom domain not provided' }),
+        JSON.stringify({ success: false, error: 'DOMAIN_REQUIRED' }),
         { 
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -30,20 +38,20 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Look up the family by custom domain
+    console.log(`[custom-domain-redirect] Received request for domain: ${customDomain}`);
+
+    // Step 1: Look up the family by custom domain
     // Note: Custom domains have permanent access (no expiration check)
-    const { data: family, error } = await supabase
+    const { data: family, error: familyError } = await supabaseAdmin
       .from('families')
-      .select('id, name, custom_domain')
+      .select('*')
       .eq('custom_domain', customDomain)
       .single();
 
-    if (error || !family) {
+    if (familyError || !family) {
+      console.error('[custom-domain-redirect] Domain not found:', familyError);
       return new Response(
-        JSON.stringify({ 
-          error: 'Family not found',
-          message: 'No family found with this custom domain'
-        }),
+        JSON.stringify({ success: false, error: 'DOMAIN_NOT_FOUND' }),
         { 
           status: 404,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -51,13 +59,53 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Return the family data for redirect
+    console.log(`[custom-domain-redirect] Family found: ${family.id}`);
+
+    // Step 2: Fetch all family members using Service Role Key (bypasses RLS)
+    const { data: members, error: membersError } = await supabaseAdmin
+      .from('family_tree_members')
+      .select('*')
+      .eq('family_id', family.id);
+
+    if (membersError) {
+      console.error('[custom-domain-redirect] Error fetching members:', membersError);
+      return new Response(
+        JSON.stringify({ success: false, error: 'DATA_FETCH_ERROR' }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    // Step 3: Fetch all marriages using Service Role Key (bypasses RLS)
+    const { data: marriages, error: marriagesError } = await supabaseAdmin
+      .from('marriages')
+      .select('*')
+      .eq('family_id', family.id);
+
+    if (marriagesError) {
+      console.error('[custom-domain-redirect] Error fetching marriages:', marriagesError);
+      return new Response(
+        JSON.stringify({ success: false, error: 'DATA_FETCH_ERROR' }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    console.log(`[custom-domain-redirect] Successfully fetched data - Members: ${members?.length || 0}, Marriages: ${marriages?.length || 0}`);
+
+    // Return all family data (same structure as get-shared-family)
     return new Response(
       JSON.stringify({
-        family_id: family.id,
-        family_name: family.name,
-        custom_domain: family.custom_domain,
-        redirect_url: `/family-tree-view?family=${family.id}`
+        success: true,
+        data: {
+          family,
+          members: members || [],
+          marriages: marriages || [],
+        },
       }),
       {
         status: 200,
