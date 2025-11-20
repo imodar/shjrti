@@ -74,13 +74,9 @@ export function SubscriptionGuard({
                 <CardTitle className="text-2xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">
                   🎉 اختر باقتك المناسبة
                 </CardTitle>
-                <CardDescription className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed font-medium">
-                  <div className="space-y-2">
-                    <div>
-                      للاستمرار في استخدام شجرتي، يرجى اختيار الباقة المناسبة لك
-                    </div>
-                  </div>
-                </CardDescription>
+                <div className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed font-medium text-center mt-2">
+                  للاستمرار في استخدام شجرتي، يرجى اختيار الباقة المناسبة لك
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Button 
@@ -116,16 +112,14 @@ export function SubscriptionGuard({
               <CardTitle className="text-2xl font-bold bg-gradient-to-r from-orange-600 via-red-600 to-amber-600 bg-clip-text text-transparent">
                 🚫 انتهت صلاحية اشتراكك
               </CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed font-medium">
-                <div className="space-y-2">
-                  <div className="text-red-600 dark:text-red-400 font-semibold">
-                    ⚠️ لا يمكنك الوصول لحسابك حالياً
-                  </div>
-                  <div>
-                    يجب تجديد اشتراكك أو اختيار باقة جديدة للمتابعة واستخدام جميع الميزات
-                  </div>
+              <div className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed font-medium text-center mt-2 space-y-2">
+                <div className="text-red-600 dark:text-red-400 font-semibold">
+                  ⚠️ لا يمكنك الوصول لحسابك حالياً
                 </div>
-              </CardDescription>
+                <div>
+                  يجب تجديد اشتراكك أو اختيار باقة جديدة للمتابعة واستخدام جميع الميزات
+                </div>
+              </div>
             </CardHeader>
             <CardContent className="space-y-6">
               {subscription?.package_name && (
