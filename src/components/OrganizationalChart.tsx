@@ -427,18 +427,41 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     const rootCenterX = rootPosition.x + rootPosition.width / 2;
     const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
 
-      // Calculate offset accounting for current zoom level
-      const offsetX = (containerWidth / 2 - rootCenterX * zoomLevel) / zoomLevel;
-      const offsetY = (150 - rootCenterY * zoomLevel) / zoomLevel;
+    // Calculate offset accounting for current zoom level
+    const offsetX = (containerWidth / 2 - rootCenterX * zoomLevel) / zoomLevel;
+    const offsetY = (150 - rootCenterY * zoomLevel) / zoomLevel;
 
-    console.log('[OrganizationalChart] APPLYING CENTERING:', {
-      rootId: currentRootId,
-      rootPosition,
-      rootCenter: { x: rootCenterX, y: rootCenterY },
-      containerSize: { width: containerWidth, height: containerHeight },
-      calculatedOffset: { x: offsetX, y: offsetY },
-      isFirstCenter: !rootChanged,
-      rootChanged
+    console.log('[OrganizationalChart] 🎯 CENTERING DEBUG:', {
+      '1_INPUT': {
+        zoomLevel,
+        containerWidth,
+        containerHeight,
+        rootPosition: { x: rootPosition.x, y: rootPosition.y, width: rootPosition.width }
+      },
+      '2_ROOT_CENTER': {
+        rootCenterX,
+        rootCenterY
+      },
+      '3_FORMULA': {
+        offsetX_formula: `(${containerWidth}/2 - ${rootCenterX}*${zoomLevel})/${zoomLevel}`,
+        offsetY_formula: `(150 - ${rootCenterY}*${zoomLevel})/${zoomLevel}`,
+        simplified_offsetX: `${containerWidth}/(2*${zoomLevel}) - ${rootCenterX}`,
+        simplified_offsetY: `150/${zoomLevel} - ${rootCenterY}`
+      },
+      '4_CALCULATED_OFFSET': {
+        offsetX,
+        offsetY
+      },
+      '5_VERIFICATION': {
+        expectedScreenX: (rootCenterX + offsetX) * zoomLevel,
+        expectedScreenY: (rootCenterY + offsetY) * zoomLevel,
+        targetScreenX: containerWidth / 2,
+        targetScreenY: 150,
+        match: {
+          x: Math.abs((rootCenterX + offsetX) * zoomLevel - containerWidth / 2) < 1,
+          y: Math.abs((rootCenterY + offsetY) * zoomLevel - 150) < 1
+        }
+      }
     });
 
     setPanOffset({ x: offsetX, y: offsetY });
