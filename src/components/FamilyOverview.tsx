@@ -31,30 +31,37 @@ export const FamilyOverview: React.FC<FamilyOverviewProps> = ({
       <div className="relative z-10 pt-4">
         {/* Hero Content */}
         <div className="text-center space-y-8">
-          {/* Logo Section */}
-          <div className="relative inline-block">
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-2xl opacity-30 animate-pulse"></div>
-            <div className="relative w-24 h-24 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-2xl border-4 border-white/30 dark:border-gray-700/30 mx-auto">
-              <TreePine className="h-12 w-12 text-white" />
+          {/* Logo Section with Enhanced Design */}
+          <div className="relative inline-flex items-center gap-4">
+            {/* Family Avatar with Glow Effect */}
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-40 animate-pulse"></div>
+              <div className="relative w-20 h-20 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-full flex items-center justify-center shadow-2xl border-4 border-white/30 dark:border-gray-700/30">
+                <TreePine className="h-10 w-10 text-white" />
+              </div>
+              {/* Status Indicator */}
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-3 border-white dark:border-gray-800 flex items-center justify-center shadow-lg">
+                <div className="w-2.5 h-2.5 bg-white rounded-full animate-ping"></div>
+              </div>
+            </div>
+            
+            {/* Title Section */}
+            <div className="text-right">
+              <h1 className="text-4xl md:text-5xl font-bold">
+                <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
+                  عائلة {familyData?.name || 'شجرة العائلة'}
+                </span>
+              </h1>
             </div>
           </div>
           
-          {/* Title Section */}
-          <div className="space-y-4">
-            <h1 className="text-4xl md:text-5xl font-bold">
-              <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent">
-                عائلة {familyData?.name || 'شجرة العائلة'}
-              </span>
-            </h1>
-            
-            {/* Description */}
-            {familyData?.description && (
-              <div 
-                className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(familyData.description) }}
-              />
-            )}
-          </div>
+          {/* Description */}
+          {familyData?.description && (
+            <div 
+              className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(familyData.description) }}
+            />
+          )}
           
           {/* Statistics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mt-12">
