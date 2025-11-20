@@ -411,11 +411,12 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
 
     // Check if root changed or if this is the first centering
     const rootChanged = lastRootIdRef.current !== currentRootId;
-    
-    // Always recalculate when zoom changes (added to dependencies)
-    // Only skip if root is same AND we've already centered AND zoom hasn't changed
-    // But since zoomLevel is in dependencies, this useEffect runs on zoom change
-    // So we should always recalculate to keep root centered
+    const shouldCenter = rootChanged || !hasCenteredOnce.current;
+
+    if (!shouldCenter) {
+      console.log('[OrganizationalChart] Centering skipped - already centered on this root');
+      return;
+    }
 
     lastRootIdRef.current = currentRootId;
     hasCenteredOnce.current = true;
@@ -426,27 +427,20 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     const rootCenterX = rootPosition.x + rootPosition.width / 2;
     const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
 
-    // Calculate offset to center root, accounting for zoom
-    // When transformOrigin is '0 0', final position = (position + offset) * zoom
-    // We want: (rootCenter + offset) * zoom = containerCenter
-    // Therefore: offset = containerCenter / zoom - rootCenter
-    const offsetX = containerWidth / (2 * zoomLevel) - rootCenterX;
-    const offsetY = 150 / zoomLevel - rootCenterY;
+    // Simple offset calculation - zoom is applied separately via transform-origin
+    const offsetX = containerWidth / 2 - rootCenterX;
+    const offsetY = 150 - rootCenterY;
 
-    console.log('[OrganizationalChart] 🎯 CENTERING (with zoom):', {
-      zoomLevel,
-      containerWidth,
+    console.log('[OrganizationalChart] 🎯 SIMPLE CENTERING:', {
+      rootId: currentRootId,
       rootCenter: { x: rootCenterX, y: rootCenterY },
-      targetScreen: { x: containerWidth / 2, y: 150 },
-      calculatedOffset: { x: offsetX, y: offsetY },
-      verification: {
-        finalScreenX: (rootCenterX + offsetX) * zoomLevel,
-        finalScreenY: (rootCenterY + offsetY) * zoomLevel
-      }
+      containerWidth,
+      offset: { x: offsetX, y: offsetY },
+      note: 'Zoom applied via transform-origin: center center'
     });
 
     setPanOffset({ x: offsetX, y: offsetY });
-  }, [containerReady, positionsKey, rootUnits, UNIT_HEIGHT, zoomLevel]);
+  }, [containerReady, positionsKey, rootUnits, UNIT_HEIGHT]);
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
@@ -1073,15 +1067,12 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
       >
-        {/* Zoom wrapper - applies scale from origin */}
         <div
-          className="absolute"
+          className="absolute inset-0"
           style={{
             transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
-            transformOrigin: '0 0',
-            transition: 'transform 0.15s ease-out',
-            width: treeDimensions.width,
-            height: treeDimensions.height
+            transformOrigin: 'center center',
+            transition: 'transform 0.15s ease-out'
           }}
         >
           {/* Background grid pattern */}
