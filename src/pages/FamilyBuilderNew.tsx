@@ -4365,7 +4365,7 @@ const FamilyBuilderNew = () => {
               </AlertDialogTitle>
             </AlertDialogHeader>
 
-            <AlertDialogDescription className="font-arabic text-center space-y-4 px-2">
+            <div className="font-arabic text-center space-y-4 px-2">
               {/* Main message card */}
               <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg p-4 border border-amber-200 animate-fade-in">
                  <div className="flex items-center justify-center mb-3">
@@ -4402,7 +4402,7 @@ const FamilyBuilderNew = () => {
                    </div>
                  </div>
               </div>
-            </AlertDialogDescription>
+            </div>
 
             <AlertDialogFooter className="pt-6 flex flex-col gap-3">
               <AlertDialogCancel className="font-arabic w-full bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 border border-gray-300 text-gray-700 hover:text-gray-800 transition-all duration-200 hover-scale">
