@@ -142,25 +142,6 @@ export const FamilyOverview: React.FC<FamilyOverviewProps> = ({
             </div>
           </div>
           
-          {/* Additional Info Card */}
-          <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl p-6 border border-white/40 dark:border-gray-600/40 shadow-xl max-w-2xl mx-auto mt-8">
-            <div className="grid grid-cols-2 gap-6 text-center">
-              <div>
-                <div className="text-3xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
-                  {generationCount}
-                </div>
-                <div className="text-sm text-muted-foreground mt-2">عدد الأجيال</div>
-              </div>
-              
-              <div>
-                <div className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  {familyMembers.filter(m => m.is_founder).length}
-                </div>
-                <div className="text-sm text-muted-foreground mt-2">المؤسسون</div>
-              </div>
-            </div>
-          </div>
-          
           {/* Last Updated */}
           {familyData?.updated_at && (
             <div className="text-sm text-muted-foreground mt-8">
