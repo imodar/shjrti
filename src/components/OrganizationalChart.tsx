@@ -300,9 +300,13 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
         // Position child recursively
         positionUnit(childId, currentX, generation + 1);
         
-        // Save center position of child
-        const childCenter = currentX + childWidth / 2;
-        childCenters.push(childCenter);
+        // Read child's ACTUAL position after placement
+        const childActualPosition = positionsMap.get(childId);
+        if (childActualPosition) {
+          // Calculate center based on ACTUAL position (not startX)
+          const childCenter = childActualPosition.x + UNIT_WIDTH / 2;
+          childCenters.push(childCenter);
+        }
         
         // Move to next child
         currentX += childWidth + HORIZONTAL_SPACING;
