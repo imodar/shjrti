@@ -20,6 +20,7 @@ import PageTitle from "@/components/PageTitle";
 import ConsentAwareScriptInjector from "@/components/ConsentAwareScriptInjector";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
+import { DynamicMetaTags } from "@/components/DynamicMetaTags";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
@@ -110,6 +111,7 @@ const App = () => {
             <ScrollToTop />
             <PageViewTracker />
             <PageTitle />
+            <DynamicMetaTags />
             <ConsentAwareScriptInjector />
                   {gaId && <GoogleAnalytics measurementId={gaId} />}
                   <Routes>
