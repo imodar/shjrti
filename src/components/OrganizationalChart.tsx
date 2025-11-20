@@ -1047,6 +1047,10 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                   <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="hsl(var(--primary))" floodOpacity="0.3"/>
                 </filter>
               </defs>
+
+              {/* Test line for debugging - سهيل صنديد vertical line */}
+              <line x1="630" y1="1680" x2="630" y2="1740" stroke="#ff0000" strokeWidth="5" />
+              <line x1="1070" y1="1740" x2="1950" y2="1740" stroke="#00ff00" strokeWidth="5" />
               
               <g filter="url(#shadow)">
                 {connectionElements}
