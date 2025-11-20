@@ -829,7 +829,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               y1={parentBottomY}
               x2={parentCenterX}
               y2={parentBottomY + VERTICAL_SPACING / 3}
-              stroke="hsl(var(--primary))"
+              stroke={primaryColor}
               strokeWidth="3"
               className="drop-shadow-sm"
             />
@@ -838,7 +838,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               y1={parentBottomY + VERTICAL_SPACING / 3}
               x2={childCenterX}
               y2={parentBottomY + VERTICAL_SPACING / 3}
-              stroke="hsl(var(--primary))"
+              stroke={primaryColor}
               strokeWidth="3"
               className="drop-shadow-sm"
             />
@@ -847,7 +847,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               y1={parentBottomY + VERTICAL_SPACING / 3}
               x2={childCenterX}
               y2={childTopY}
-              stroke="hsl(var(--primary))"
+              stroke={primaryColor}
               strokeWidth="3"
               className="drop-shadow-sm"
             />
@@ -861,7 +861,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           segment1Coords: { x1: parentCenterX, y1: parentBottomY, x2: parentCenterX, y2: parentBottomY + VERTICAL_SPACING / 3 },
           segment2Coords: { x1: parentCenterX, y1: parentBottomY + VERTICAL_SPACING / 3, x2: childCenterX, y2: parentBottomY + VERTICAL_SPACING / 3 },
           segment3Coords: { x1: childCenterX, y1: parentBottomY + VERTICAL_SPACING / 3, x2: childCenterX, y2: childTopY },
-          stroke: 'hsl(var(--primary))',
+          stroke: primaryColor,
           strokeWidth: 3
         });
       } else {
@@ -882,7 +882,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               y1={parentBottomY}
               x2={parentCenterX}
               y2={distributionY}
-              stroke="hsl(var(--primary))"
+              stroke={primaryColor}
               strokeWidth="3"
               className="drop-shadow-sm"
             />
@@ -893,7 +893,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               y1={distributionY}
               x2={rightmostX}
               y2={distributionY}
-              stroke="hsl(var(--primary))"
+              stroke={primaryColor}
               strokeWidth="3"
               className="drop-shadow-sm"
             />
@@ -913,7 +913,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                   y1={distributionY}
                   x2={childCenterX}
                   y2={childTopY}
-                  stroke="hsl(var(--primary))"
+                  stroke={primaryColor}
                   strokeWidth="3"
                   className="drop-shadow-sm"
                 />
@@ -935,7 +935,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
               coords: { x1: pos.x + UNIT_WIDTH / 2, y1: distributionY, x2: pos.x + UNIT_WIDTH / 2, y2: pos.y }
             } : null;
           }).filter(Boolean),
-          stroke: 'hsl(var(--primary))',
+          stroke: primaryColor,
           strokeWidth: 3
         });
       }
@@ -987,16 +987,13 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     rootUnitsCount: rootUnits.length
   });
 
+  // Get the computed primary color for SVG stroke
+  const primaryColor = React.useMemo(() => {
+    const computed = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim();
+    return `hsl(${computed})`;
+  }, []);
+
   const connectionElements = renderConnections();
-  
-  console.log('📐 [SVG Dimensions Debug]:', {
-    treeDimensions,
-    connectionElementsCount: connectionElements.length,
-    maxPositionX: Math.max(...Array.from(positions.values()).map(p => p.x + UNIT_WIDTH)),
-    maxPositionY: Math.max(...Array.from(positions.values()).map(p => p.y + UNIT_HEIGHT)),
-    VERTICAL_SPACING,
-    HORIZONTAL_SPACING
-  });
 
   return (
     <div className="w-full h-full">
@@ -1050,9 +1047,6 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
                   <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="hsl(var(--primary))" floodOpacity="0.3"/>
                 </filter>
               </defs>
-              
-              {/* Test line with hardcoded color */}
-              <line x1="100" y1="100" x2="500" y2="500" stroke="#ef4444" strokeWidth="5" />
               
               <g filter="url(#shadow)">
                 {connectionElements}
