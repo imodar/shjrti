@@ -368,6 +368,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
   const lastRootIdRef = React.useRef<string>('');
   const hasCenteredOnce = React.useRef(false);
   const [containerReady, setContainerReady] = React.useState(false);
+  const [rootCenter, setRootCenter] = React.useState({ x: 0, y: 0 });
   
   // Callback ref for reliable container mounting detection
   const containerRefCallback = React.useCallback((node: HTMLDivElement | null) => {
@@ -396,11 +397,25 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
       return;
     }
 
+    // Check if root changed or if this is the first centering
+    const rootChanged = lastRootIdRef.current !== currentRootId;
+    const shouldCenter = rootChanged || !hasCenteredOnce.current;
+
+    if (!shouldCenter) {
+      return;
+    }
+
+    lastRootIdRef.current = currentRootId;
+    hasCenteredOnce.current = true;
+
     const containerWidth = containerRef.current.offsetWidth || 1200;
     const containerHeight = containerRef.current.offsetHeight || 800;
 
     const rootCenterX = rootPosition.x + rootPosition.width / 2;
     const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
+
+    // Save root center for transform-origin
+    setRootCenter({ x: rootCenterX, y: rootCenterY });
 
     // Simple offset calculation - zoom is applied separately via transform-origin
     const offsetX = containerWidth / 2 - rootCenterX;
@@ -414,7 +429,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
     });
 
     setPanOffset({ x: offsetX, y: offsetY });
-  }, [containerReady, positionsKey, rootUnits, UNIT_HEIGHT, zoomLevel]);
+  }, [containerReady, positionsKey, rootUnits, UNIT_HEIGHT]);
 
   // Render family unit with modern design
   const renderFamilyUnit = (unit: FamilyUnit, position: Position) => {
@@ -961,7 +976,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           className="absolute inset-0"
           style={{
             transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
-            transformOrigin: 'center center',
+            transformOrigin: `${rootCenter.x}px ${rootCenter.y}px`,
             transition: 'transform 0.15s ease-out'
           }}
         >
