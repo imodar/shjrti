@@ -393,7 +393,7 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
     }
   };
 
-  // Generate family units for organizational chart
+  // Family Units - Core logic for tree structure
   interface FamilyUnit {
     id: string;
     type: 'married' | 'single';
@@ -403,132 +403,35 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
     childUnits: string[];
   }
 
-  const familyUnits = useMemo(() => {
+  const createFamilyUnits = (): Map<string, FamilyUnit> => {
     const units = new Map<string, FamilyUnit>();
+    const processedMembers = new Set<string>();
+    console.log('[PublicTreeView] Creating family units from members:', familyMembers.length);
 
-    // Determine relevant members and marriages based on selected root
-    let relevantMemberIds = new Set<string>();
-    let marriagesToShow: any[] = [];
-    
-    if (selectedRootMarriage === "all") {
-      // If showing full tree, include all members and marriages
-      familyMembers.forEach(m => relevantMemberIds.add(m.id));
-      marriagesToShow = familyMarriages;
-    } else {
-      // Find the specific marriage
-      const rootMarriage = familyMarriages.find(m => m.id === selectedRootMarriage);
-      if (rootMarriage) {
-        const husbandId = rootMarriage.husband_id;
-        
-        // Add husband
-        relevantMemberIds.add(husbandId);
-        
-        // Find ALL marriages of this husband (not just the selected one)
-        const allHusbandMarriages = familyMarriages.filter(m => m.husband_id === husbandId);
-        
-        console.log('[PublicTreeView] Selected root marriage:', selectedRootMarriage);
-        console.log('[PublicTreeView] Husband ID:', husbandId);
-        console.log('[PublicTreeView] All husband marriages:', allHusbandMarriages.length);
-        
-        // Add all wives of this husband
-        allHusbandMarriages.forEach(marriage => {
-          relevantMemberIds.add(marriage.wife_id);
-        });
-        
-        // Use BFS to find all children and descendants from ALL marriages
-        const queue = [husbandId];
-        allHusbandMarriages.forEach(m => queue.push(m.wife_id));
-        const visited = new Set<string>();
-        
-        while (queue.length > 0) {
-          const parentId = queue.shift()!;
-          if (visited.has(parentId)) continue;
-          visited.add(parentId);
-          
-          // Find all children
-          familyMembers.forEach(member => {
-            if (member.father_id === parentId || member.mother_id === parentId) {
-              if (!relevantMemberIds.has(member.id)) {
-                relevantMemberIds.add(member.id);
-                queue.push(member.id);
-              }
-            }
+    // Step 1: Create units for married couples
+    familyMarriages.forEach(marriage => {
+      if (marriage.is_active) {
+        const husband = familyMembers.find(m => m.id === marriage.husband_id);
+        const wife = familyMembers.find(m => m.id === marriage.wife_id);
+        if (husband && wife) {
+          const unitId = `married_${marriage.id}`;
+          units.set(unitId, {
+            id: unitId,
+            type: 'married',
+            members: [husband, wife],
+            generation: 0,
+            childUnits: []
           });
+          processedMembers.add(husband.id);
+          processedMembers.add(wife.id);
         }
-        
-        // After collecting descendants, include marriages of ALL relevant members
-        const relevantMarriages = familyMarriages.filter(marriage => 
-          relevantMemberIds.has(marriage.husband_id) || 
-          relevantMemberIds.has(marriage.wife_id)
-        );
-        // Ensure both spouses are included as relevant members
-        relevantMarriages.forEach(m => {
-          relevantMemberIds.add(m.husband_id);
-          relevantMemberIds.add(m.wife_id);
-        });
-        marriagesToShow = relevantMarriages;
-        
-        console.log('[PublicTreeView] Marriages to show (including descendants):', marriagesToShow.length);
-        console.log('[PublicTreeView] Relevant member IDs count:', relevantMemberIds.size);
-      }
-    }
-    
-    // Filter members
-    const relevantMembers = familyMembers.filter(m => relevantMemberIds.has(m.id));
-    
-    console.log('[PublicTreeView] Relevant members count:', relevantMembers.length);
-    console.log('[PublicTreeView] Female relevant members:', relevantMembers.filter(m => m.gender === 'female').map(m => ({ id: m.id, name: m.name })));
-
-    // Create units for married couples - group by husband to show all wives together
-    const marriagesByHusband = new Map<string, any[]>();
-    marriagesToShow.forEach((marriage: any) => {
-      if (!marriagesByHusband.has(marriage.husband_id)) {
-        marriagesByHusband.set(marriage.husband_id, []);
-      }
-      marriagesByHusband.get(marriage.husband_id)!.push(marriage);
-    });
-
-    marriagesByHusband.forEach((marriages, husbandId) => {
-      const husband = relevantMembers.find((m: any) => m.id === husbandId);
-      if (!husband) {
-        console.log('[PublicTreeView] Husband not found in relevantMembers:', husbandId);
-        return;
-      }
-
-      const wives = marriages
-        .map(m => {
-          const wife = relevantMembers.find((w: any) => w.id === m.wife_id);
-          if (!wife) {
-            console.log('[PublicTreeView] Wife not found in relevantMembers:', m.wife_id, 'for marriage:', m.id);
-          }
-          return wife;
-        })
-        .filter(Boolean) as any[];
-
-      console.log('[PublicTreeView] Creating unit for husband:', husband.name, 'with wives:', wives.map(w => w.name));
-
-      if (wives.length > 0) {
-        // Use the first marriage ID as the unit ID
-        const unitId = `marriage-${marriages[0].id}`;
-        units.set(unitId, {
-          id: unitId,
-          type: 'married',
-          members: [husband, ...wives],
-          generation: 0,
-          childUnits: []
-        });
-        console.log('[PublicTreeView] Unit created:', unitId, 'members count:', [husband, ...wives].length);
       }
     });
 
-    // Create units for single members - only from relevantMembers
-    relevantMembers.forEach((member: any) => {
-      const isInMarriage = marriagesToShow.some(
-        (m: any) => m.husband_id === member.id || m.wife_id === member.id
-      );
-
-      if (!isInMarriage) {
-        const unitId = `single-${member.id}`;
+    // Step 2: Create units for single members
+    familyMembers.forEach(member => {
+      if (!processedMembers.has(member.id)) {
+        const unitId = `single_${member.id}`;
         units.set(unitId, {
           id: unitId,
           type: 'single',
@@ -538,87 +441,212 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
         });
       }
     });
+    return units;
+  };
 
-    // Clean invalid links
-    units.forEach((u) => {
-      u.childUnits = Array.from(new Set(u.childUnits.filter((cid) => units.has(cid))));
-      if (u.parentUnitId && !units.has(u.parentUnitId)) {
-        u.parentUnitId = undefined;
+  const getUnitByMemberId = (memberId: string, units: Map<string, FamilyUnit>): FamilyUnit | undefined => {
+    for (const unit of units.values()) {
+      if (unit.members.some(m => m.id === memberId)) {
+        return unit;
       }
-      u.generation = 0;
+    }
+    return undefined;
+  };
+
+  const assignGenerationsToUnits = (units: Map<string, FamilyUnit>) => {
+    console.log('[PublicTreeView] Assigning generations to units...');
+
+    // Step 1: Find founder units (units containing founders)
+    const founderUnits: string[] = [];
+    units.forEach((unit, unitId) => {
+      if (unit.members.some(m => m.is_founder)) {
+        unit.generation = 1;
+        founderUnits.push(unitId);
+      }
     });
 
-    // Recompute generations with BFS
-    const roots: string[] = [];
-    units.forEach((u, id) => {
-      // Check if this unit contains a founder - founders are always roots
-      const isFounderUnit = u.members.some((m: any) => m.is_founder);
+    // Step 2: Establish parent-child relationships between units
+    // IMPORTANT: Skip parent assignment for founder units - they are always roots
+    units.forEach((unit, unitId) => {
+      // Check if this unit contains a founder - if so, it's a root and should not have parents assigned
+      const isFounderUnit = unit.members.some(m => m.is_founder);
       if (isFounderUnit) {
-        roots.push(id);
-        console.log('[PublicTreeView] Founder unit identified as root:', u.members.map((m: any) => m.name).join(' & '));
-        return;
+        return; // Skip this unit - founders are roots
       }
 
-      const hasParentInUnits = u.members.some((m: any) => {
-        const fatherId = m.father_id;
-        const motherId = m.mother_id;
-        let parentFound = false;
-        units.forEach((cand) => {
-          if (cand.members.some((x) => x.id === fatherId || x.id === motherId)) {
-            parentFound = true;
+      unit.members.forEach(member => {
+        if (member.father_id || member.mother_id) {
+          // Find parent unit - must contain ALL required parents
+          const fatherId = member.father_id;
+          const motherId = member.mother_id;
+          
+          // Search for parent unit that contains the required parent(s)
+          let parentUnit: FamilyUnit | undefined;
+          
+          for (const [potentialParentId, potentialParent] of units.entries()) {
+            if (potentialParentId === unitId) continue; // Skip self
+            
+            const parentIds = potentialParent.members.map(m => m.id);
+            const hasFather = fatherId && parentIds.includes(fatherId);
+            const hasMother = motherId && parentIds.includes(motherId);
+            
+            // Determine if this unit is the valid parent
+            let isValidParent = false;
+            if (fatherId && motherId) {
+              // Both parents defined - BOTH must be in this unit
+              isValidParent = hasFather && hasMother;
+            } else if (fatherId || motherId) {
+              // Only one parent defined - that parent must be in this unit
+              isValidParent = hasFather || hasMother;
+            }
+            
+            if (isValidParent) {
+              parentUnit = potentialParent;
+              break; // Found the parent, stop searching
+            }
           }
-        });
-        return parentFound;
+          
+          if (parentUnit && parentUnit.id !== unitId) {
+            unit.parentUnitId = parentUnit.id;
+            if (!parentUnit.childUnits.includes(unitId)) {
+              parentUnit.childUnits.push(unitId);
+            }
+          }
+        }
       });
-      if (!hasParentInUnits) roots.push(id);
     });
 
-    console.log('[PublicTreeView] Roots identified:', roots.length, 'out of', units.size, 'units');
+    // Step 3: Assign generations using BFS from root units
+    // First, identify root units (units without parents)
+    const rootUnits: string[] = [];
+    units.forEach((unit, unitId) => {
+      if (!unit.parentUnitId) {
+        rootUnits.push(unitId);
+        unit.generation = 1; // Set roots to generation 1
+      }
+    });
 
-    const q: Array<{ id: string; gen: number }> = roots.map((id) => ({ id, gen: 0 }));
-    const seen = new Set<string>();
+    console.log(`[PublicTreeView] Found ${rootUnits.length} root units for generation assignment`);
 
-    while (q.length) {
-      const { id, gen } = q.shift()!;
-      if (seen.has(id)) continue;
-      seen.add(id);
-      const u = units.get(id);
-      if (!u) continue;
-      u.generation = gen;
+    // Use BFS to assign generations to all descendants
+    const queue: Array<{ id: string; gen: number }> = rootUnits.map(id => ({ id, gen: 1 }));
+    const visited = new Set<string>();
 
-      // Use relevantMembers instead of familyMembers
-      relevantMembers.forEach((member: any) => {
-        const parentIds = u.members.map((mm: any) => mm.id);
-        if (parentIds.includes(member.father_id) || parentIds.includes(member.mother_id)) {
-          units.forEach((childUnit, childId) => {
-            if (childUnit.members.some((mm: any) => mm.id === member.id)) {
-              if (childId !== id) {
-                childUnit.parentUnitId = id;
-                childUnit.generation = gen + 1;
-                if (!u.childUnits.includes(childId)) u.childUnits.push(childId);
-                q.push({ id: childId, gen: gen + 1 });
-              }
-            }
-          });
+    while (queue.length > 0) {
+      const { id, gen } = queue.shift()!;
+      if (visited.has(id)) continue;
+      visited.add(id);
+      
+      const unit = units.get(id);
+      if (!unit) continue;
+      
+      unit.generation = gen;
+      
+      // Add all children to queue
+      unit.childUnits.forEach(childId => {
+        if (!visited.has(childId)) {
+          queue.push({ id: childId, gen: gen + 1 });
         }
       });
     }
 
-    console.log('[PublicTreeView] After BFS:', {
-      unitsProcessed: seen.size,
-      unitsWithParents: Array.from(units.values()).filter(u => u.parentUnitId).length,
-      unitsWithoutParents: Array.from(units.values()).filter(u => !u.parentUnitId).length
-    });
+    console.log('[PublicTreeView] Generation assignment completed via BFS');
+  };
 
-    // Ensure we have at least one root
-    let rootCount = 0;
-    units.forEach((u) => { if (!u.parentUnitId) rootCount++; });
-    if (rootCount === 0) {
-      console.warn('[PublicTreeView] No roots after BFS! Force-creating roots from generation 0');
-      let minGen = Infinity;
-      units.forEach((u) => { minGen = Math.min(minGen, u.generation); });
-      console.log('[PublicTreeView] Min generation found:', minGen);
-      units.forEach((u) => { if (u.generation === minGen) u.parentUnitId = undefined; });
+  const familyUnits = useMemo(() => {
+    if (familyMembers.length === 0) {
+      return new Map();
+    }
+
+    // Create family units
+    const units = createFamilyUnits();
+
+    // Assign generations to units first (establishes parent-child relationships)
+    assignGenerationsToUnits(units);
+
+    // Filter units based on selected root marriage AFTER relationships are established
+    if (selectedRootMarriage !== "all") {
+      const rootMarriage = familyMarriages.find(m => m.id === selectedRootMarriage);
+      if (rootMarriage) {
+        const filteredUnits = new Map<string, FamilyUnit>();
+        const rootUnitId = `married_${rootMarriage.id}`;
+        
+        // Function to collect descendants recursively
+        const collectDescendants = (unitId: string, visited = new Set<string>()) => {
+          if (visited.has(unitId)) return;
+          visited.add(unitId);
+          
+          const unit = units.get(unitId);
+          if (unit) {
+            filteredUnits.set(unitId, unit);
+            // Now childUnits should be populated
+            unit.childUnits.forEach(childId => collectDescendants(childId, visited));
+          }
+        };
+        
+        // Start from root marriage and collect all descendants
+        collectDescendants(rootUnitId);
+        
+        // Update units to only filtered ones - preserve the relationships
+        units.clear();
+        filteredUnits.forEach((unit, id) => {
+          units.set(id, unit);
+        });
+
+        // Clean up parent/child references to only include ids within filtered set
+        units.forEach((unit) => {
+          if (unit.parentUnitId && !units.has(unit.parentUnitId)) {
+            unit.parentUnitId = undefined;
+          }
+          unit.childUnits = unit.childUnits.filter((id) => units.has(id));
+        });
+
+        // Recompute generations starting from selected root so layout algorithms find a root
+        units.forEach((u) => { u.generation = 0; });
+        if (units.has(rootUnitId)) {
+          const q: Array<{ id: string; gen: number }> = [{ id: rootUnitId, gen: 1 }];
+          const seen = new Set<string>();
+          while (q.length) {
+            const { id, gen } = q.shift()!;
+            if (seen.has(id)) continue;
+            seen.add(id);
+            const u = units.get(id);
+            if (!u) continue;
+            u.generation = gen;
+            u.childUnits.forEach((cid) => { if (units.has(cid)) q.push({ id: cid, gen: gen + 1 }); });
+          }
+        }
+      }
+    }
+
+    // Ensure generations exist in the current subset
+    let hasAnyGeneration = false;
+    units.forEach(u => { if (u.generation > 0) hasAnyGeneration = true; });
+
+    if (!hasAnyGeneration) {
+      // Determine roots: selected root marriage if provided, otherwise units without parents
+      const roots: string[] = [];
+      if (selectedRootMarriage !== "all") {
+        const rm = familyMarriages.find(m => m.id === selectedRootMarriage);
+        if (rm) roots.push(`married_${rm.id}`);
+      }
+      if (roots.length === 0) {
+        units.forEach((u, id) => { if (!u.parentUnitId) roots.push(id); });
+      }
+
+      // Reset generations and BFS assign
+      units.forEach(u => { u.generation = 0; });
+      const queue: Array<{ id: string; gen: number }> = roots.map(id => ({ id, gen: 1 }));
+      const visited = new Set<string>();
+      while (queue.length) {
+        const { id, gen } = queue.shift()!;
+        if (visited.has(id)) continue;
+        visited.add(id);
+        const u = units.get(id);
+        if (!u) continue;
+        u.generation = gen;
+        u.childUnits.forEach(cid => { if (units.has(cid)) queue.push({ id: cid, gen: gen + 1 }); });
+      }
     }
 
     console.log('[PublicTreeView] Final state:', {
