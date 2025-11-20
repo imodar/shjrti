@@ -1073,7 +1073,7 @@ export const OrganizationalChart: React.FC<OrganizationalChartProps> = ({
           className="absolute inset-0"
           style={{
             transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
-            transformOrigin: 'center center',
+            transformOrigin: '0 0',
             transition: 'transform 0.15s ease-out'
           }}
         >
