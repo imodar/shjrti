@@ -5,7 +5,7 @@ enabled = true
 port = 54321
 schemas = ["public", "graphql_public"]
 extra_schemas = ["graphql_public"]
-max_rows = 1000
+max_rows = 5000
 
 [graphql]
 enabled = true
