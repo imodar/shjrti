@@ -2,7 +2,24 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = "https://xzakoccnfswabrdwvukp.supabase.co";
+// Check for custom domain settings in localStorage
+const getCustomDomainSettings = () => {
+  try {
+    const settings = localStorage.getItem('custom_domain_settings');
+    return settings ? JSON.parse(settings) : null;
+  } catch {
+    return null;
+  }
+};
+
+const customSettings = getCustomDomainSettings();
+const useCustomDomain = customSettings?.enabled && customSettings?.api_key;
+
+// Use custom domain if enabled, otherwise use default Supabase URL
+const SUPABASE_URL = useCustomDomain 
+  ? "https://api.shjrti.com" 
+  : "https://xzakoccnfswabrdwvukp.supabase.co";
+
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh6YWtvY2NuZnN3YWJyZHd2dWtwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI3MTM2NDYsImV4cCI6MjA2ODI4OTY0Nn0.857V_wR-bulDdbigASI0QCFKgPy1s7hhGDgozR80Zr8";
 
 // Import the supabase client like this:
@@ -13,5 +30,10 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+  },
+  global: {
+    headers: useCustomDomain && customSettings?.api_key 
+      ? { 'apikey': customSettings.api_key }
+      : {}
   }
 });
