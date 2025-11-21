@@ -1105,6 +1105,14 @@ export default function EnhancedAdminPanel() {
               <Share2 className="h-4 w-4 mr-2" />
               إعدادات المشاركة
             </Button>
+            <Button 
+              onClick={() => navigate('/admin/custom-domain')} 
+              variant="outline"
+              className="border-blue-500 text-blue-600 hover:bg-blue-50 hover:!text-blue-700"
+            >
+              <Globe className="h-4 w-4 mr-2" />
+              الروابط المخصصة
+            </Button>
           </div>
         </div>
 
