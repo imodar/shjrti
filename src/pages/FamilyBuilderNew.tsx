@@ -3996,7 +3996,6 @@ const FamilyBuilderNew = () => {
                                                        {husband.name || 'الزوج'}
                                                      </h5>
                                                      
-                                                     <div className="space-y-2">
                                                        <div className="flex items-center gap-2 flex-wrap">
                                                          {husband.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
                                                              <Check className="h-3 w-3" />
@@ -4010,10 +4009,6 @@ const FamilyBuilderNew = () => {
                                                            {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
                                                          </span>
                                                        </div>
-                                                       {husband.isSaved && <p className="text-xs text-blue-600 dark:text-blue-400 font-arabic">
-                                                           انقر للتعديل
-                                                         </p>}
-                                                     </div>
                                                    </div>
                                                  </div>
                                                  
