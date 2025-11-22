@@ -3998,7 +3998,7 @@ const FamilyBuilderNew = () => {
                                                       </h5>
                                                       
                                                       <div className="space-y-2">
-                                                        <div className="flex items-center gap-2 flex-wrap">
+                                                        <div className="flex items-center gap-2 flex-nowrap">
                                                           {husband.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
                                                               <Check className="h-3 w-3" />
                                                               محفوظ
