@@ -42,8 +42,7 @@ import {
   Clock,
   Eye,
   Sparkles,
-  X,
-  UserPlus
+  X
 } from 'lucide-react';
 
 interface MemberProfileViewProps {
@@ -57,7 +56,7 @@ interface MemberProfileViewProps {
   onSpouseEditWarning?: () => void;
   onSpouseDeleteWarning?: () => void;
   onMemberClick?: (member: any) => void;
-  onAddChild?: (parentMember: any, spouseId?: string) => void;
+  onAddChild?: (parentMember: any) => void;
   readOnly?: boolean;
 }
 
@@ -81,7 +80,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [showImageUploadModal, setShowImageUploadModal] = useState(false);
   const [showSuggestDialog, setShowSuggestDialog] = useState(false);
-  const [showSpouseSelector, setShowSpouseSelector] = useState(false);
   const { toast } = useToast();
   const location = useLocation();
   const { t, direction } = useLanguage();
@@ -1302,70 +1300,21 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                        );
                                      })()}
                                      
-                                      {!readOnly && onAddChild && (() => {
-                                        const allSpouses = getSpouses();
-                                        
-                                        const handleAddChildClick = () => {
-                                          if (allSpouses.length > 1) {
-                                            setShowSpouseSelector(true);
-                                          } else {
-                                            onAddChild(member);
-                                          }
-                                        };
-                                        
-                                        return (
-                                          <div className="relative">
-                                            <div 
-                                              className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors duration-200 border border-dashed border-primary/30 hover:border-primary/50"
-                                              onClick={handleAddChildClick}
-                                            >
-                                              <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/30 text-primary">
-                                                <Users className="h-4 w-4" />
-                                              </div>
-                                              <div className="flex-1 min-w-0">
-                                                <p className="font-medium text-sm text-primary">
-                                                  {t('family_builder.add_child')}
-                                                </p>
-                                              </div>
-                                            </div>
-                                            
-                                            {showSpouseSelector && allSpouses.length > 1 && (
-                                              <>
-                                                <div 
-                                                  className="fixed inset-0 z-40" 
-                                                  onClick={() => setShowSpouseSelector(false)}
-                                                />
-                                                <div className="absolute z-50 mt-2 w-full bg-card border border-border rounded-lg shadow-lg p-2">
-                                                  <p className="text-xs text-muted-foreground px-2 py-1 mb-1">
-                                                    {t('family_builder.select_spouse')}
-                                                  </p>
-                                                  {allSpouses.map((spouse) => (
-                                                    <div
-                                                      key={spouse.id}
-                                                      className="flex items-center space-x-2 space-x-reverse p-2 rounded-md cursor-pointer hover:bg-accent transition-colors"
-                                                      onClick={() => {
-                                                        onAddChild(member, spouse.id);
-                                                        setShowSpouseSelector(false);
-                                                      }}
-                                                    >
-                                                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs ${
-                                                        spouse.gender === 'female' 
-                                                          ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
-                                                          : 'bg-gradient-to-br from-blue-400 to-blue-500'
-                                                      }`}>
-                                                        {spouse.gender === 'female' ? '♀' : '♂'}
-                                                      </div>
-                                                      <span className="text-sm font-medium text-foreground">
-                                                        {spouse.first_name} {spouse.last_name}
-                                                      </span>
-                                                    </div>
-                                                  ))}
-                                                </div>
-                                              </>
-                                            )}
+                                     {!readOnly && onAddChild && (
+                                       <div 
+                                         className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors duration-200 border border-dashed border-primary/30 hover:border-primary/50"
+                                         onClick={() => onAddChild(member)}
+                                       >
+                                          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/30 text-primary">
+                                            <Users className="h-4 w-4" />
                                           </div>
-                                        );
-                                      })()}
+                                          <div className="flex-1 min-w-0">
+                                            <p className="font-medium text-sm text-primary">
+                                              {t('family_builder.add_child')}
+                                            </p>
+                                          </div>
+                                       </div>
+                                     )}
                                   </div>
                                 </div>
                               )}
@@ -1375,70 +1324,21 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                   <div className="text-center mb-3">
                                     <p className="text-sm text-muted-foreground">{t('profile.no_children_registered')}</p>
                                   </div>
-                               {!readOnly && onAddChild && (() => {
-                                 const allSpouses = getSpouses();
-                                 
-                                 const handleAddChildClick = () => {
-                                   if (allSpouses.length > 1) {
-                                     setShowSpouseSelector(true);
-                                   } else {
-                                     onAddChild(member);
-                                   }
-                                 };
-                                 
-                                 return (
-                                   <div className="relative">
-                                     <div 
-                                       className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors duration-200 border border-dashed border-primary/30 hover:border-primary/50"
-                                       onClick={handleAddChildClick}
-                                     >
-                                       <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/30 text-primary">
-                                         <Users className="h-4 w-4" />
-                                       </div>
-                                       <div className="flex-1 min-w-0">
-                                         <p className="font-medium text-sm text-primary">
-                                           {t('family_builder.add_child')}
-                                         </p>
-                                       </div>
-                                     </div>
-                                     
-                                     {showSpouseSelector && allSpouses.length > 1 && (
-                                       <>
-                                         <div 
-                                           className="fixed inset-0 z-40" 
-                                           onClick={() => setShowSpouseSelector(false)}
-                                         />
-                                         <div className="absolute z-50 mt-2 w-full bg-card border border-border rounded-lg shadow-lg p-2">
-                                           <p className="text-xs text-muted-foreground px-2 py-1 mb-1">
-                                             {t('family_builder.select_spouse')}
-                                           </p>
-                                           {allSpouses.map((spouse) => (
-                                             <div
-                                               key={spouse.id}
-                                               className="flex items-center space-x-2 space-x-reverse p-2 rounded-md cursor-pointer hover:bg-accent transition-colors"
-                                               onClick={() => {
-                                                 onAddChild(member, spouse.id);
-                                                 setShowSpouseSelector(false);
-                                               }}
-                                             >
-                                               <div className={`w-6 h-6 rounded-full flex items-center justify-center text-white text-xs ${
-                                                 spouse.gender === 'female' 
-                                                   ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
-                                                   : 'bg-gradient-to-br from-blue-400 to-blue-500'
-                                               }`}>
-                                                 {spouse.gender === 'female' ? '♀' : '♂'}
-                                               </div>
-                                               <span className="text-sm font-medium text-foreground">
-                                                 {spouse.first_name} {spouse.last_name}
-                                               </span>
-                                             </div>
-                                           ))}
-                                         </div>
-                                       </>
-                                     )}
-                                   </div>
-                                 );
-                               })()}
+                                  {!readOnly && onAddChild && (
+                                    <div 
+                                      className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors duration-200 border border-dashed border-primary/30 hover:border-primary/50"
+                                      onClick={() => onAddChild(member)}
+                                    >
+                                      <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/30 text-primary">
+                                        <Users className="h-4 w-4" />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="font-medium text-sm text-primary">
+                                          {t('family_builder.add_child')}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </div>
