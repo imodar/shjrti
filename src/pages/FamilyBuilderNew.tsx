@@ -3979,17 +3979,17 @@ const FamilyBuilderNew = () => {
                                           </div> : <div className="space-y-4">
                                              <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
                                                <div className="flex items-start justify-between gap-4">
-                                                 <div className="flex items-start gap-4 flex-1 min-w-0">
-                                                   <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg flex-shrink-0">
-                                                     {husband.croppedImage ? (
-                                                       <img 
-                                                         src={husband.croppedImage} 
-                                                         alt={husband.name || 'الزوج'}
-                                                         className="w-full h-full object-cover rounded-2xl"
-                                                       />
-                                                     ) : (
-                                                       <User className="w-5 h-5" />
-                                                     )}
+                                                  <div className="flex items-start gap-4 flex-1 min-w-0">
+                                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 rounded-xl flex items-center justify-center text-white font-bold shadow-md flex-shrink-0">
+                                                      {husband.croppedImage ? (
+                                                        <img 
+                                                          src={husband.croppedImage} 
+                                                          alt={husband.name || 'الزوج'}
+                                                          className="w-full h-full object-cover rounded-xl"
+                                                        />
+                                                      ) : (
+                                                        <User className="w-4 h-4" />
+                                                      )}
                                                    </div>
                                                    <div className="flex-1 min-w-0">
                                                      <h5 className="font-semibold text-gray-900 dark:text-gray-100 font-arabic text-lg mb-2">
