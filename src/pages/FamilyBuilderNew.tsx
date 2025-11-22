@@ -3891,7 +3891,7 @@ const FamilyBuilderNew = () => {
                                                     }} className="gap-1 border-pink-200/50 dark:border-pink-700/50 text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-950/50 transition-all duration-300 h-8 px-2">
                                                         <Edit className="h-3 w-3" />
                                                       </Button>}
-                                                    <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(wife, index)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
+                                                    <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(wife, index)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
                                                       <X className="h-3 w-3" />
                                                     </Button>
                                                   </div>
@@ -4018,7 +4018,7 @@ const FamilyBuilderNew = () => {
                                                         }} className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2">
                                                           <Edit className="h-3 w-3" />
                                                         </Button>}
-                                                        <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(husband, -1)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
+                                                        <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(husband, -1)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
                                                           <X className="h-3 w-3" />
                                                         </Button>
                                                       </div>
