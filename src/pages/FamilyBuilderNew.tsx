@@ -721,7 +721,7 @@ const FamilyBuilderNew = () => {
     selected_twins: [] as string[]
   });
   const [wives, setWives] = useState<SpouseData[]>([]);
-  const [husband, setHusband] = useState<SpouseData | null>(null);
+  const [husbands, setHusbands] = useState<SpouseData[]>([]);
 
   // Sync croppedImage with formData when croppedImage changes
   useEffect(() => {
@@ -988,11 +988,39 @@ const FamilyBuilderNew = () => {
         }
         setEditingWifeIndex(null);
       } else {
-        // Update husband
-        setHusband(updatedSpouse);
-        
-        // Save husband to localStorage
-        saveSpouseDataToLocalStorage('husband', updatedSpouse);
+        // Update husband - similar logic to wives
+        console.log('🔍 HUSBAND SAVE - Determining index logic...');
+        console.log('🔍 currentSpouse.id:', currentSpouse.id);
+        console.log('🔍 husbands array:', husbands.map(h => ({
+          id: h.id,
+          name: h.name
+        })));
+
+        // Try to find by ID match
+        let husbandIndex = husbands.findIndex(h => h.id === currentSpouse.id);
+        console.log('🔍 Index by ID match:', husbandIndex);
+
+        if (husbandIndex >= 0) {
+          // Update existing husband
+          console.log('🔍 UPDATING existing husband at index:', husbandIndex);
+          const existingHusband = husbands[husbandIndex];
+          const updatedHusband = {
+            ...updatedSpouse,
+            id: existingHusband.id || updatedSpouse.id,
+            existingFamilyMemberId: existingHusband.existingFamilyMemberId || updatedSpouse.existingFamilyMemberId,
+            isSaved: true
+          };
+          const updatedHusbands = [...husbands];
+          updatedHusbands[husbandIndex] = updatedHusband;
+          setHusbands(updatedHusbands);
+          saveSpouseDataToLocalStorage('husband', updatedHusbands);
+        } else {
+          // Add new husband
+          console.log('🔍 ADDING new husband');
+          const newHusbands = [...husbands, updatedSpouse];
+          setHusbands(newHusbands);
+          saveSpouseDataToLocalStorage('husband', newHusbands);
+        }
       }
 
       // Reset form state
@@ -1049,16 +1077,15 @@ const FamilyBuilderNew = () => {
     }
     
     if (activeSpouseType === 'husband' && showSpouseForm) {
-      console.log('Closing husband form, current husband before close:', husband);
+      console.log('Closing husband form, current husbands before close:', husbands);
 
-      // Ensure husband is marked as saved when closing
-      if (husband) {
-        setHusband({
-          ...husband,
-          isSaved: true
-        });
-      }
-      console.log('Husband form closed, husband marked as saved');
+      // Ensure all husbands are marked as saved when closing
+      const updatedHusbands = husbands.map(husband => ({
+        ...husband,
+        isSaved: true
+      }));
+      setHusbands(updatedHusbands);
+      console.log('Husband form closed, all husbands marked as saved');
     }
 
     // Close the form
@@ -1115,11 +1142,13 @@ const FamilyBuilderNew = () => {
       setWives(updatedWives);
       setEditingWifeIndex(index);
     } else {
-      setHusband({
+      const updatedHusbands = [...husbands];
+      updatedHusbands[index] = {
         ...normalizedSpouseData,
         isSaved: false,
         isFamilyMember: isSpouseFamilyMember
-      });
+      };
+      setHusbands(updatedHusbands);
     }
     
     // Set unified spouse state with normalized data
@@ -1620,12 +1649,14 @@ const FamilyBuilderNew = () => {
     console.log('🚨 DELETING SPOUSE:', { wife: wife?.name, index });
     
     try {
-      if (index === -1) {
+      if (index === -1 || index >= 0) {
         // This is a husband deletion
-        console.log('🚨 DELETING HUSBAND');
+        console.log('🚨 DELETING HUSBAND AT INDEX:', index);
         
-        if (husband && husband.isSaved && editingMember) {
-          const husbandId = husband.id || husband.existingFamilyMemberId;
+        const husbandToDelete = index >= 0 ? husbands[index] : null;
+        
+        if (husbandToDelete && husbandToDelete.isSaved && editingMember) {
+          const husbandId = husbandToDelete.id || husbandToDelete.existingFamilyMemberId;
           
           // Delete marriage record
           const { error: marriageDeleteError } = await supabase
@@ -1645,7 +1676,7 @@ const FamilyBuilderNew = () => {
           }
           
           // If husband is not a family member, delete his record
-          if (!husband.isFamilyMember) {
+          if (!husbandToDelete.isFamilyMember) {
             const { error: husbandDeleteError } = await supabase
               .from('family_tree_members')
               .delete()
@@ -1669,7 +1700,8 @@ const FamilyBuilderNew = () => {
           }
         }
         
-        setHusband(null);
+        const updatedHusbands = husbands.filter((_, i) => i !== index);
+        setHusbands(updatedHusbands);
         toast({
           title: "تم الحذف بنجاح",
           description: "تم حذف الزوج نهائياً",
@@ -1955,7 +1987,7 @@ const FamilyBuilderNew = () => {
     });
     setParentsLocked(false);
     setWives([]);
-    setHusband(null);
+    setHusbands([]);
     setOriginalWivesData([]);
     setOriginalHusbandData(null);
     // Clear image states
@@ -2009,7 +2041,7 @@ const FamilyBuilderNew = () => {
 
     // Reset spouse states first
     setWives([]);
-    setHusband(null);
+    setHusbands([]);
     setOriginalWivesData([]);
     setOriginalHusbandData(null);
     if (member.gender === "male") {
@@ -2097,12 +2129,12 @@ const FamilyBuilderNew = () => {
           existingFamilyMemberId: husbandMember ? husbandMember.id : '',
           isSaved: true // Mark existing husband as saved
         };
-        setHusband(husbandData);
+        setHusbands([husbandData]);
         setOriginalHusbandData({
           ...husbandData
         }); // Store original data for change detection
       } else {
-        setHusband(null);
+        setHusbands([]);
         setOriginalHusbandData(null);
       }
     }
@@ -2132,17 +2164,20 @@ const FamilyBuilderNew = () => {
     }
 
     // Handle husband for female members
-    if (submissionData.gender === 'female' && husband && husband.isSaved === true) {
-      await processSpouse({
-        spouse: husband,
-        spouseType: 'husband',
-        memberData,
-        familyId,
-        familyData,
-        marriageResults,
-        activeMarriageIds,
-        isMainMember: true
-      });
+    if (submissionData.gender === 'female' && husbands.length > 0) {
+      const savedHusbands = husbands.filter(husband => husband.isSaved === true);
+      for (const husband of savedHusbands) {
+        await processSpouse({
+          spouse: husband,
+          spouseType: 'husband',
+          memberData,
+          familyId,
+          familyData,
+          marriageResults,
+          activeMarriageIds,
+          isMainMember: true
+        });
+      }
     }
   };
   const processSpouse = async ({
@@ -2433,14 +2468,14 @@ const FamilyBuilderNew = () => {
       setIsSaving(true);
 
       // Determine marital status based on presence of spouses
-      const hasSpouses = submissionData.gender === "male" && wives.length > 0 || submissionData.gender === "female" && husband;
+      const hasSpouses = submissionData.gender === "male" && wives.length > 0 || submissionData.gender === "female" && husbands.length > 0;
 
       // Prepare final submission data matching modal structure
       const finalData = {
         ...submissionData,
         maritalStatus: hasSpouses ? "married" : "single",
         wives: submissionData.gender === "male" ? wives : [],
-        husband: submissionData.gender === "female" && husband ? husband : null
+        husbands: submissionData.gender === "female" ? husbands : []
       };
 
       // Handle image uploads with safer flow:
@@ -2741,7 +2776,7 @@ const FamilyBuilderNew = () => {
 
         // Handle deleted husband for female members
         if (submissionData.gender === 'female' && originalHusbandData) {
-          const hasCurrentHusband = husband && husband.isSaved;
+          const hasCurrentHusbands = husbands.length > 0 && husbands.some(h => h.isSaved);
           console.log('🔍 HUSBAND DELETION DEBUG:');
           console.log('Original husband:', originalHusbandData ? {
             id: originalHusbandData.id,
@@ -2749,14 +2784,9 @@ const FamilyBuilderNew = () => {
             name: originalHusbandData.name,
             isSaved: originalHusbandData.isSaved
           } : null);
-          console.log('Current husband:', husband ? {
-            id: husband.id,
-            existingFamilyMemberId: husband.existingFamilyMemberId,
-            name: husband.name,
-            isSaved: husband.isSaved
-          } : null);
-          console.log('Has current husband:', hasCurrentHusband);
-          if (!hasCurrentHusband) {
+          console.log('Current husbands:', husbands.length);
+          console.log('Has current husbands:', hasCurrentHusbands);
+          if (!hasCurrentHusbands) {
             // Husband was deleted
             if (process.env.NODE_ENV === 'development') {
               console.log('DELETED HUSBAND detected:', originalHusbandData.name);
@@ -3092,9 +3122,12 @@ const FamilyBuilderNew = () => {
         }
 
         // Process husband for female members
-        if (submissionData.gender === 'female' && husband && husband.isSaved === true) {
-          console.log('🔍 Processing husband for female member:', husband.name, 'ID:', husband.id || husband.existingFamilyMemberId);
-          await processSpouseMarriage(husband, 'husband');
+        if (submissionData.gender === 'female' && husbands.length > 0) {
+          const savedHusbands = husbands.filter(h => h.isSaved === true);
+          for (const husband of savedHusbands) {
+            console.log('🔍 Processing husband for female member:', husband.name, 'ID:', husband.id || husband.existingFamilyMemberId);
+            await processSpouseMarriage(husband, 'husband');
+          }
         }
       }
 
@@ -3109,7 +3142,7 @@ const FamilyBuilderNew = () => {
       setCurrentStep(1);
       resetFormData();
       setWives([]);
-      setHusband(null);
+      setHusbands([]);
 
       // Show success toast with detailed information
       const actionText = isEditMode ? "تحديث" : "إضافة";
@@ -3164,7 +3197,7 @@ const FamilyBuilderNew = () => {
       isSavingRef.current = false;
       setIsSaving(false);
     }
-  }, [formData, familyData, wives, husband, subscription, editingMember, toast, t, refetchFamilyData]);
+  }, [formData, familyData, wives, husbands, subscription, editingMember, toast, t, refetchFamilyData]);
   const nextStep = () => {
     // Validate required fields for step 1
     if (currentStep === 1) {
@@ -3474,7 +3507,7 @@ const FamilyBuilderNew = () => {
                     selected_twins: []
                   });
                   setWives([]);
-                  setHusband(null);
+                  setHusbands([]);
                   setEditingMember(null);
                   setFormMode('add');
                   setCurrentStep(1);
@@ -3966,7 +3999,7 @@ const FamilyBuilderNew = () => {
                                     </div>
                                     
                                      <div className="space-y-3">
-                                       {!husband ? <div className="text-center py-8 text-muted-foreground">
+                                       {husbands.length === 0 ? <div className="text-center py-8 text-muted-foreground">
                                             <User className="w-12 h-12 mx-auto mb-3 opacity-30" />
                                             <p className="font-arabic mb-4">لم يتم إضافة زوج بعد</p>
                                             <Button
@@ -3977,54 +4010,56 @@ const FamilyBuilderNew = () => {
                                               إضافة زوج
                                             </Button>
                                           </div> : <div className="space-y-4">
-                                             <div className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
-                                                <div className="flex items-start gap-4">
-                                                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 rounded-xl flex items-center justify-center text-white font-bold shadow-md flex-shrink-0">
-                                                     {husband.croppedImage ? (
-                                                       <img 
-                                                         src={husband.croppedImage} 
-                                                         alt={husband.name || 'الزوج'}
-                                                         className="w-full h-full object-cover rounded-xl"
-                                                       />
-                                                     ) : (
-                                                       <User className="w-4 h-4" />
-                                                     )}
-                                                  </div>
-                                                  <div className="flex-1 min-w-0">
-                                                    <h5 className="font-semibold text-gray-900 dark:text-gray-100 font-arabic text-lg mb-2">
-                                                      {husband.name || 'الزوج'}
-                                                    </h5>
-                                                    
-                                                      <div className="flex items-center gap-2 flex-wrap mb-3">
-                                                        {husband.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
-                                                            <Check className="h-3 w-3" />
-                                                            محفوظ
-                                                          </span>}
-                                                        <span className="inline-flex items-center gap-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full text-xs font-medium">
-                                                          <User className="h-3 w-3" />
-                                                          {husband.maritalStatus === 'divorced' ? 'زوج سابق' : 'متزوج'}
-                                                        </span>
-                                                        <span className="text-xs text-muted-foreground font-arabic">
-                                                          {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
-                                                        </span>
-                                                      </div>
+                                             {husbands.map((husband, index) => (
+                                               <div key={husband.id || index} className="bg-white/40 dark:bg-gray-800/40 rounded-xl p-6 border-2 border-dashed border-blue-400/60 dark:border-blue-500/60">
+                                                  <div className="flex items-start gap-4">
+                                                     <div className="w-10 h-10 bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-500 rounded-xl flex items-center justify-center text-white font-bold shadow-md flex-shrink-0">
+                                                       {husband.croppedImage ? (
+                                                         <img 
+                                                           src={husband.croppedImage} 
+                                                           alt={husband.name || 'الزوج'}
+                                                           className="w-full h-full object-cover rounded-xl"
+                                                         />
+                                                       ) : (
+                                                         <User className="w-4 h-4" />
+                                                       )}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                      <h5 className="font-semibold text-gray-900 dark:text-gray-100 font-arabic text-lg mb-2">
+                                                        {husband.name || 'الزوج'}
+                                                      </h5>
                                                       
-                                                      {/* Action Buttons */}
-                                                      <div className="flex gap-2">
-                                                        {husband.isSaved && <Button variant="outline" size="sm" onClick={() => {
-                                                          if (husband.isSaved) {
-                                                            handleSpouseEditAttempt('husband', husband, -1);
-                                                          }
-                                                        }} className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2">
-                                                          <Edit className="h-3 w-3" />
-                                                        </Button>}
-                                                        <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(husband, -1)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
-                                                          <X className="h-3 w-3" />
-                                                        </Button>
-                                                      </div>
+                                                        <div className="flex items-center gap-2 flex-wrap mb-3">
+                                                          {husband.isSaved && <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-2 py-1 rounded-full text-xs font-medium">
+                                                              <Check className="h-3 w-3" />
+                                                              محفوظ
+                                                            </span>}
+                                                          <span className="inline-flex items-center gap-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full text-xs font-medium">
+                                                            <User className="h-3 w-3" />
+                                                            {husband.maritalStatus === 'divorced' ? 'زوج سابق' : 'متزوج'}
+                                                          </span>
+                                                          <span className="text-xs text-muted-foreground font-arabic">
+                                                            {husband.isFamilyMember ? 'من نفس العائلة' : 'خارج العائلة'}
+                                                          </span>
+                                                        </div>
+                                                        
+                                                        {/* Action Buttons */}
+                                                        <div className="flex gap-2">
+                                                          {husband.isSaved && <Button variant="outline" size="sm" onClick={() => {
+                                                            if (husband.isSaved) {
+                                                              handleSpouseEditAttempt('husband', husband, index);
+                                                            }
+                                                          }} className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2">
+                                                            <Edit className="h-3 w-3" />
+                                                          </Button>}
+                                                          <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(husband, index)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
+                                                            <X className="h-3 w-3" />
+                                                          </Button>
+                                                        </div>
+                                                    </div>
                                                   </div>
-                                                </div>
-                                             </div>
+                                               </div>
+                                             ))}
                                        
                                        {/* Always show Add Husband button */}
                                       <div className="text-center">
