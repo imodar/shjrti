@@ -4015,7 +4015,7 @@ const FamilyBuilderNew = () => {
                                                           if (husband.isSaved) {
                                                             handleSpouseEditAttempt('husband', husband, -1);
                                                           }
-                                                        }} className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2">
+                                                        }} className="gap-1 border-blue-200/50 dark:border-blue-700/50 text-blue-600 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/50 transition-all duration-300 h-8 px-2">
                                                           <Edit className="h-3 w-3" />
                                                         </Button>}
                                                         <Button variant="outline" size="sm" onClick={() => handleSpouseDelete(husband, -1)} className="gap-1 border-red-200/50 dark:border-red-700/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/50 transition-all duration-300 h-8 px-2">
@@ -4031,7 +4031,7 @@ const FamilyBuilderNew = () => {
                                         <Button
                                           onClick={handleAddHusband}
                                           variant="outline"
-                                          className="border-2 border-dashed border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 font-arabic w-full"
+                                          className="border-2 border-dashed border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 font-arabic w-full"
                                         >
                                           <Plus className="w-4 h-4 ml-2" />
                                           إضافة زوج آخر
