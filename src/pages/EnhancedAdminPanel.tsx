@@ -1243,6 +1243,17 @@ export default function EnhancedAdminPanel() {
                   <span className="hidden lg:inline">الإعدادات</span>
                 </div>
               </TabsTrigger>
+              
+              <TabsTrigger 
+                value="seo" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <Search className="h-5 w-5 transition-transform group-hover:scale-110 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline text-xs">SEO</span>
+                </div>
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -2187,6 +2198,35 @@ export default function EnhancedAdminPanel() {
                     مسح الكود
                   </Button>
                 </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="seo" className="space-y-6">
+            <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30">
+              <CardHeader>
+                <CardTitle className="text-xl font-bold text-emerald-600">إعدادات SEO</CardTitle>
+                <CardDescription>
+                  إدارة إعدادات محركات البحث والبيانات المهيكلة
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  قم بإدارة إعدادات تحسين محركات البحث (SEO) من خلال الصفحة المخصصة التي تتضمن:
+                </p>
+                <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground ps-4">
+                  <li>إعدادات meta tags للصفحة الرئيسية (عربي/إنجليزي)</li>
+                  <li>إدارة robots.txt</li>
+                  <li>البيانات المهيكلة (JSON-LD Schemas)</li>
+                  <li>إعدادات متقدمة (Canonical URLs، Hreflang Tags)</li>
+                </ul>
+                <Button 
+                  onClick={() => navigate('/admin/seo')} 
+                  className="bg-gradient-to-r from-emerald-500 to-teal-500 mt-4"
+                >
+                  <Settings className="h-4 w-4 me-2" />
+                  فتح إعدادات SEO
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
