@@ -49,6 +49,7 @@ import AdminBilling from "./pages/AdminBilling";
 import AdminAPISettings from "./pages/AdminAPISettings";
 import AdminSocialMedia from "./pages/AdminSocialMedia";
 import AdminSEOSettings from "./pages/AdminSEOSettings";
+import AdminNewsletterSubscriptions from "./pages/AdminNewsletterSubscriptions";
 import RenewSubscription from "./pages/RenewSubscription";
 import CustomDomainRedirect from "./pages/CustomDomainRedirect";
 import PublicTreeViewWithContext from "./pages/PublicTreeView/PublicTreeViewWithContext";
@@ -223,6 +224,11 @@ const App = () => {
                   <Route path="/admin/seo" element={
                     <ProtectedRoute requireAdmin={true}>
                       <AdminSEOSettings />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin/newsletter" element={
+                    <ProtectedRoute requireAdmin={true}>
+                      <AdminNewsletterSubscriptions />
                     </ProtectedRoute>
                   } />
                   <Route path="/renew-subscription" element={

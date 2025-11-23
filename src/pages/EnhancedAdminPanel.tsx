@@ -1254,6 +1254,17 @@ export default function EnhancedAdminPanel() {
                   <span className="hidden lg:inline text-xs">SEO</span>
                 </div>
               </TabsTrigger>
+
+              <TabsTrigger 
+                value="newsletter" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <Mail className="h-5 w-5 transition-transform group-hover:scale-110 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline text-xs">{direction === 'rtl' ? 'النشرة' : 'Newsletter'}</span>
+                </div>
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -2226,6 +2237,39 @@ export default function EnhancedAdminPanel() {
                 >
                   <Settings className="h-4 w-4 me-2" />
                   فتح إعدادات SEO
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="newsletter" className="space-y-6">
+            <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30">
+              <CardHeader>
+                <CardTitle className="text-xl font-bold text-emerald-600">
+                  {direction === 'rtl' ? 'اشتراكات النشرة البريدية' : 'Newsletter Subscriptions'}
+                </CardTitle>
+                <CardDescription>
+                  {direction === 'rtl' ? 'إدارة جميع المشتركين في النشرة البريدية' : 'Manage all newsletter subscribers'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  {direction === 'rtl' 
+                    ? 'قم بإدارة اشتراكات النشرة البريدية من خلال الصفحة المخصصة التي تتضمن:'
+                    : 'Manage newsletter subscriptions through the dedicated page which includes:'}
+                </p>
+                <ul className="list-disc list-inside space-y-2 text-sm text-muted-foreground ps-4">
+                  <li>{direction === 'rtl' ? 'عرض جميع المشتركين' : 'View all subscribers'}</li>
+                  <li>{direction === 'rtl' ? 'البحث والتصفية' : 'Search and filter'}</li>
+                  <li>{direction === 'rtl' ? 'تفعيل/تعطيل الاشتراكات' : 'Activate/deactivate subscriptions'}</li>
+                  <li>{direction === 'rtl' ? 'تصدير البيانات إلى CSV' : 'Export data to CSV'}</li>
+                </ul>
+                <Button 
+                  onClick={() => navigate('/admin/newsletter')} 
+                  className="bg-gradient-to-r from-emerald-500 to-teal-500 mt-4"
+                >
+                  <Mail className="h-4 w-4 me-2" />
+                  {direction === 'rtl' ? 'إدارة الاشتراكات' : 'Manage Subscriptions'}
                 </Button>
               </CardContent>
             </Card>
