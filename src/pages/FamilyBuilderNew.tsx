@@ -3342,7 +3342,7 @@ const FamilyBuilderNew = () => {
                          </div>}
                          
                          {/* Title and Icon - positioned to the right */}
-                         <div className="flex items-center gap-2 mr-auto">
+                         <div className="flex items-center gap-2 me-auto">
                             {formMode === 'view' && <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
                             {formMode === 'add' && <UserPlus className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
                             {formMode === 'edit' && <Edit className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />}
