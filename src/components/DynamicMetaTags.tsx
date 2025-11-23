@@ -17,6 +17,18 @@ interface SocialMediaSettings {
   twitter_handle: string | null;
 }
 
+interface PageMetaTags {
+  meta_title: {
+    ar: string;
+    en: string;
+  };
+  meta_description: {
+    ar: string;
+    en: string;
+  };
+  slug: string;
+}
+
 export const DynamicMetaTags = () => {
   const location = useLocation();
   const { currentLanguage } = useLanguage();
@@ -25,7 +37,7 @@ export const DynamicMetaTags = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      await Promise.all([loadSettings(), loadFamilyName()]);
+      await Promise.all([loadSettings(), loadFamilyName(), loadPageMetaTags()]);
     };
     loadData();
   }, [location]);
@@ -86,6 +98,51 @@ export const DynamicMetaTags = () => {
     }
   };
 
+  const loadPageMetaTags = async () => {
+    try {
+      // Extract slug from pathname
+      const slug = location.pathname.substring(1); // Remove leading slash
+      if (!slug || slug === '') return; // Skip homepage
+
+      // Fetch meta tags for current page
+      const { data, error } = await supabase
+        .from('pages')
+        .select('meta_title, meta_description, slug')
+        .eq('slug', slug)
+        .eq('is_active', true)
+        .maybeSingle();
+
+      if (error || !data) {
+        console.log('[DynamicMetaTags] No meta tags found for page:', slug);
+        return;
+      }
+
+      const pageMetaTags = data as PageMetaTags;
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlLang = urlParams.get('lang');
+      const lang = urlLang === 'en' || currentLanguage === 'en' ? 'en' : 'ar';
+      
+      const title = pageMetaTags.meta_title?.[lang] || pageMetaTags.meta_title?.ar;
+      const description = pageMetaTags.meta_description?.[lang] || pageMetaTags.meta_description?.ar;
+      
+      if (title) {
+        document.title = title;
+        updateMetaTag('property', 'og:title', title);
+        updateMetaTag('name', 'twitter:title', title);
+      }
+      
+      if (description) {
+        updateMetaTag('name', 'description', description);
+        updateMetaTag('property', 'og:description', description);
+        updateMetaTag('name', 'twitter:description', description);
+      }
+      
+      console.log('[DynamicMetaTags] Updated meta tags for page:', slug);
+    } catch (error) {
+      console.error('[DynamicMetaTags] Error loading page meta tags:', error);
+    }
+  };
+
   useEffect(() => {
     // Only update title/meta tags when we have settings AND family name (if applicable)
     if (!settings) return;
@@ -142,7 +199,52 @@ export const DynamicMetaTags = () => {
     // Update regular meta description
     updateMetaTag('name', 'description', description);
     
+    // Add canonical URL
+    updateCanonicalUrl(currentUrl);
+    
+    // Add hreflang tags
+    updateHreflangTags();
+    
   }, [settings, currentLanguage, location, familyName]);
+
+  const updateCanonicalUrl = (url: string) => {
+    let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+    
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link');
+      canonicalLink.rel = 'canonical';
+      document.head.appendChild(canonicalLink);
+    }
+    
+    canonicalLink.href = url;
+  };
+
+  const updateHreflangTags = () => {
+    // Remove existing hreflang tags
+    const existingTags = document.querySelectorAll('link[rel="alternate"][hreflang]');
+    existingTags.forEach(tag => tag.remove());
+    
+    // Add new hreflang tags
+    const baseUrl = window.location.origin + window.location.pathname;
+    
+    const arLink = document.createElement('link');
+    arLink.rel = 'alternate';
+    arLink.hreflang = 'ar';
+    arLink.href = baseUrl;
+    document.head.appendChild(arLink);
+    
+    const enLink = document.createElement('link');
+    enLink.rel = 'alternate';
+    enLink.hreflang = 'en';
+    enLink.href = `${baseUrl}?lang=en`;
+    document.head.appendChild(enLink);
+    
+    const defaultLink = document.createElement('link');
+    defaultLink.rel = 'alternate';
+    defaultLink.hreflang = 'x-default';
+    defaultLink.href = baseUrl;
+    document.head.appendChild(defaultLink);
+  };
 
   const updateMetaTag = (attribute: 'property' | 'name', value: string, content: string) => {
     let element = document.querySelector(`meta[${attribute}="${value}"]`);

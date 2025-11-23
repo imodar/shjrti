@@ -21,6 +21,7 @@ import ConsentAwareScriptInjector from "@/components/ConsentAwareScriptInjector"
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { DynamicMetaTags } from "@/components/DynamicMetaTags";
+import StructuredData from "@/components/StructuredData";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
@@ -47,6 +48,7 @@ import EnhancedAdminPanel from "./pages/EnhancedAdminPanel";
 import AdminBilling from "./pages/AdminBilling";
 import AdminAPISettings from "./pages/AdminAPISettings";
 import AdminSocialMedia from "./pages/AdminSocialMedia";
+import AdminSEOSettings from "./pages/AdminSEOSettings";
 import RenewSubscription from "./pages/RenewSubscription";
 import CustomDomainRedirect from "./pages/CustomDomainRedirect";
 import PublicTreeViewWithContext from "./pages/PublicTreeView/PublicTreeViewWithContext";
@@ -112,6 +114,7 @@ const App = () => {
             <PageViewTracker />
             <PageTitle />
             <DynamicMetaTags />
+            <StructuredData />
             <ConsentAwareScriptInjector />
                   {gaId && <GoogleAnalytics measurementId={gaId} />}
                   <Routes>
@@ -215,6 +218,11 @@ const App = () => {
                   <Route path="/admin/social-media" element={
                     <ProtectedRoute requireAdmin={true}>
                       <AdminSocialMedia />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin/seo" element={
+                    <ProtectedRoute requireAdmin={true}>
+                      <AdminSEOSettings />
                     </ProtectedRoute>
                   } />
                   <Route path="/renew-subscription" element={

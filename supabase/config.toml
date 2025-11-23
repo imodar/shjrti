@@ -106,3 +106,6 @@ verify_jwt = false
 
 [functions.custom-domain-redirect]
 verify_jwt = false
+
+[functions.homepage-seo]
+verify_jwt = false

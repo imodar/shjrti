@@ -957,6 +957,7 @@ export type Database = {
           is_active: boolean
           meta_description: Json | null
           meta_keywords: Json | null
+          meta_title: Json | null
           quick_info: Json | null
           slug: string
           title: Json
@@ -970,6 +971,7 @@ export type Database = {
           is_active?: boolean
           meta_description?: Json | null
           meta_keywords?: Json | null
+          meta_title?: Json | null
           quick_info?: Json | null
           slug: string
           title?: Json
@@ -983,6 +985,7 @@ export type Database = {
           is_active?: boolean
           meta_description?: Json | null
           meta_keywords?: Json | null
+          meta_title?: Json | null
           quick_info?: Json | null
           slug?: string
           title?: Json
@@ -1148,6 +1151,30 @@ export type Database = {
         }
         Relationships: []
       }
+      robots_txt_settings: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       scheduled_package_changes: {
         Row: {
           created_at: string
@@ -1218,6 +1245,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      seo_settings: {
+        Row: {
+          created_at: string
+          enable_search_action: boolean | null
+          homepage_description: Json
+          homepage_keywords: Json
+          homepage_title: Json
+          id: string
+          organization_logo_url: string | null
+          organization_name: Json
+          organization_social_links: Json | null
+          theme_color: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          enable_search_action?: boolean | null
+          homepage_description?: Json
+          homepage_keywords?: Json
+          homepage_title?: Json
+          id?: string
+          organization_logo_url?: string | null
+          organization_name?: Json
+          organization_social_links?: Json | null
+          theme_color?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          enable_search_action?: boolean | null
+          homepage_description?: Json
+          homepage_keywords?: Json
+          homepage_title?: Json
+          id?: string
+          organization_logo_url?: string | null
+          organization_name?: Json
+          organization_social_links?: Json | null
+          theme_color?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       smart_suggestions: {
         Row: {
@@ -1332,6 +1401,36 @@ export type Database = {
           tracking_number?: string | null
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      structured_data: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean | null
+          page_slug: string | null
+          schema_data: Json
+          schema_type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          page_slug?: string | null
+          schema_data: Json
+          schema_type: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          page_slug?: string | null
+          schema_data?: Json
+          schema_type?: string
+          updated_at?: string
         }
         Relationships: []
       }
