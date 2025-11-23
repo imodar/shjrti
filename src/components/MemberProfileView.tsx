@@ -968,7 +968,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         <div>
                           <div className="text-sm text-blue-700">{t('profile.birth_date')}</div>
                           <div className="font-semibold">
-                            {member.birth_date ? <DateDisplay date={member.birth_date} className="inline" /> : t('common.not_specified')}
+                            {(member.birthDate || member.birth_date) ? <DateDisplay date={member.birthDate || member.birth_date} className="inline" /> : t('common.not_specified')}
                           </div>
                         </div>
                       </div>
@@ -999,13 +999,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     </div>
 
                     {/* Death Date - if applicable */}
-                    {member.death_date && (
+                    {(member.deathDate || member.death_date) && (
                       <div className="flex items-center gap-3 p-4 bg-red-50 rounded-xl border border-red-200">
                         <Calendar className="h-5 w-5 text-red-600" />
                         <div>
                           <div className="text-sm text-red-700">{t('profile.death_date')}</div>
                           <div className="font-semibold">
-                            <DateDisplay date={member.death_date} className="inline" />
+                            <DateDisplay date={member.deathDate || member.death_date} className="inline" />
                           </div>
                         </div>
                       </div>
