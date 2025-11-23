@@ -176,7 +176,7 @@ const Home2 = () => {
                   <TreePine className="h-5 w-5 ml-2" />
                   {t('hero_cta_primary', 'ابدأ رحلتك الآن')}
                 </Button>
-                <Button variant="outline" size="lg" className="w-full sm:w-auto border-2 border-emerald-200 hover:bg-emerald-50 dark:border-emerald-800 dark:hover:bg-emerald-900/20 text-lg px-8 py-4 rounded-full">
+                <Button variant="outline" size="lg" className="w-full sm:w-auto border-2 border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 dark:border-emerald-800 dark:hover:bg-emerald-900/20 dark:hover:text-emerald-300 text-lg px-8 py-4 rounded-full">
                   <Play className="h-5 w-5 ml-2" />
                   {t('hero_cta_secondary', 'شاهد العرض التوضيحي')}
                 </Button>
