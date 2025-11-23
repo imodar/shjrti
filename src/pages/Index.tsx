@@ -548,7 +548,7 @@ const Home2 = () => {
                       <Button 
                         type="submit"
                         disabled={isLoading}
-                        className="bg-white text-emerald-600 hover:bg-gray-100 font-medium px-6 h-12 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-white text-emerald-600 hover:bg-gray-100 hover:text-emerald-700 font-medium px-6 h-12 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <span>{isLoading ? t('newsletter_loading', 'جاري الإرسال...') : t('newsletter_subscribe_button', 'اشتراك')}</span>
                         <ArrowRight className="h-4 w-4 ml-2 rtl:hidden" />
