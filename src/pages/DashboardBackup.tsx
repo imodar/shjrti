@@ -265,7 +265,7 @@ export default function Dashboard() {
                         إدارة الأفراد
                       </Button>
                     </Link>
-                    <Button size="sm" variant="outline" className="flex-1 hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                    <Button size="sm" variant="outline" className="flex-1 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-700 dark:hover:text-emerald-300">
                       <TreePine className="h-4 w-4 mr-1" />
                       عرض الشجرة
                     </Button>
