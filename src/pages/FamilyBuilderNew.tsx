@@ -3482,11 +3482,16 @@ const FamilyBuilderNew = () => {
                   setEditingMember(member);
                   setFormMode('profile');
                   await fetchMemberProfile(member.id);
-                }} onAddChild={(parentMember) => {
-                  // Reset form for new child with pre-selected parent
-                  const selectedMarriage = familyMarriages.find(m => 
-                    (m.husband?.id === parentMember.id) || (m.wife?.id === parentMember.id)
-                  );
+                }} onAddChild={(parentMember, spouseId) => {
+                  // Reset form for new child with pre-selected parent and specific spouse
+                  const selectedMarriage = spouseId 
+                    ? familyMarriages.find(m => 
+                        (m.husband_id === parentMember.id || m.wife_id === parentMember.id) &&
+                        (m.husband_id === spouseId || m.wife_id === spouseId)
+                      )
+                    : familyMarriages.find(m => 
+                        (m.husband?.id === parentMember.id) || (m.wife?.id === parentMember.id)
+                      );
                   
                   setFormData({
                     name: "",
