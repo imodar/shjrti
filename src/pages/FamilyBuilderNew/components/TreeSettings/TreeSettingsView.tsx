@@ -143,12 +143,26 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
     }
   };
   
-  // Generate share token on mount
+  // Check for existing valid token on mount
   useEffect(() => {
     if (familyData?.id) {
-      generateShareToken();
+      // Check if there's an existing valid token
+      if (familyData.share_token && familyData.share_token_expires_at) {
+        const expiresAt = new Date(familyData.share_token_expires_at);
+        const now = new Date();
+        
+        // If token hasn't expired, use it
+        if (expiresAt > now) {
+          console.log('[TreeSettings] Using existing valid token');
+          setShareToken(familyData.share_token);
+          setTokenExpiresAt(familyData.share_token_expires_at);
+          return; // Don't generate a new token
+        }
+      }
+      // If no token or expired, user can manually generate one
+      console.log('[TreeSettings] No valid token found, user can generate new one');
     }
-  }, [familyData?.id]);
+  }, [familyData?.id, familyData?.share_token, familyData?.share_token_expires_at]);
   
   // Check if user's package has custom domains and image upload enabled
   useEffect(() => {
