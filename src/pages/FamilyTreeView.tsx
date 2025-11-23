@@ -684,16 +684,16 @@ const FamilyTreeView = () => {
                     
                     {/* Zoom Controls */}
                     <div className="flex items-center gap-2 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl rounded-lg p-2 border border-emerald-200/30 dark:border-emerald-700/30">
-                      <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                      <Button variant="ghost" size="sm" onClick={handleZoomOut} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-700 dark:hover:text-emerald-300">
                         <ZoomOut className="h-4 w-4" />
                       </Button>
                       <span className="text-sm min-w-[3rem] text-center font-medium">
                         {Math.round(zoomLevel * 100)}%
                       </span>
-                      <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                      <Button variant="ghost" size="sm" onClick={handleZoomIn} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-700 dark:hover:text-emerald-300">
                         <ZoomIn className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={handleToggleFullscreen} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20">
+                      <Button variant="ghost" size="sm" onClick={handleToggleFullscreen} className="hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:text-emerald-700 dark:hover:text-emerald-300">
                         {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
                       </Button>
                     </div>
