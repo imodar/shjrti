@@ -11,6 +11,8 @@ interface Family {
   custom_domain?: string;
   share_password?: string;
   share_gallery?: boolean;
+  share_token?: string;
+  share_token_expires_at?: string;
   created_at: string;
   updated_at: string;
 }

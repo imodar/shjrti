@@ -5,6 +5,8 @@ export interface Family {
   custom_domain?: string;
   share_password?: string;
   share_gallery?: boolean;
+  share_token?: string;
+  share_token_expires_at?: string;
   creator_id: string;
   is_archived?: boolean;
   archived_at?: string;
