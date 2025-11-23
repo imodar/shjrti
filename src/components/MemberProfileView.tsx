@@ -56,7 +56,7 @@ interface MemberProfileViewProps {
   onSpouseEditWarning?: () => void;
   onSpouseDeleteWarning?: () => void;
   onMemberClick?: (member: any) => void;
-  onAddChild?: (parentMember: any) => void;
+  onAddChild?: (parentMember: any, spouseId?: string) => void;
   readOnly?: boolean;
 }
 
@@ -1300,10 +1300,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                        );
                                      })()}
                                      
-                                     {!readOnly && onAddChild && (
-                                       <div 
-                                         className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors duration-200 border border-dashed border-primary/30 hover:border-primary/50"
-                                         onClick={() => onAddChild(member)}
+                                      {!readOnly && onAddChild && (
+                                        <div 
+                                          className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors duration-200 border border-dashed border-primary/30 hover:border-primary/50"
+                                          onClick={() => onAddChild(member, spouse.id)}
                                        >
                                           <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/30 text-primary">
                                             <Users className="h-4 w-4" />
@@ -1324,10 +1324,10 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                   <div className="text-center mb-3">
                                     <p className="text-sm text-muted-foreground">{t('profile.no_children_registered')}</p>
                                   </div>
-                                  {!readOnly && onAddChild && (
-                                    <div 
-                                      className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors duration-200 border border-dashed border-primary/30 hover:border-primary/50"
-                                      onClick={() => onAddChild(member)}
+                                   {!readOnly && onAddChild && (
+                                     <div 
+                                       className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-primary/5 cursor-pointer hover:bg-primary/10 transition-colors duration-200 border border-dashed border-primary/30 hover:border-primary/50"
+                                       onClick={() => onAddChild(member, spouse.id)}
                                     >
                                       <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/30 text-primary">
                                         <Users className="h-4 w-4" />
