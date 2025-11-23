@@ -16,20 +16,8 @@ export const GoogleAnalytics = ({ measurementId }: GoogleAnalyticsProps) => {
   const { hasAnalytics } = useCookieConsent();
 
   useEffect(() => {
-    // Only load GA if user has consented to analytics and measurementId is provided
-    if (!hasAnalytics || !measurementId) {
-      // Remove GA scripts if consent is revoked
-      const existingScript = document.getElementById('ga-script');
-      const existingConfigScript = document.getElementById('ga-config');
-      if (existingScript) existingScript.remove();
-      if (existingConfigScript) existingConfigScript.remove();
-      
-      // Clear dataLayer
-      if (window.dataLayer) {
-        window.dataLayer = [];
-      }
-      return;
-    }
+    // Don't load if no measurementId provided
+    if (!measurementId) return;
 
     // Check if already loaded
     if (document.getElementById('ga-script')) {
@@ -41,25 +29,29 @@ export const GoogleAnalytics = ({ measurementId }: GoogleAnalyticsProps) => {
     window.gtag = function() {
       window.dataLayer?.push(arguments);
     };
+
+    // Set default consent mode BEFORE loading gtag script (Google Consent Mode v2)
+    window.gtag('consent', 'default', {
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied',
+      'analytics_storage': 'denied',
+      'personalization_storage': 'denied',
+      'functionality_storage': 'denied',
+      'security_storage': 'granted', // Always granted for security
+    });
+
     window.gtag('js', new Date());
     window.gtag('config', measurementId, {
       anonymize_ip: true, // Anonymize IPs for GDPR compliance
       cookie_flags: 'SameSite=None;Secure',
     });
 
-    // Load GA script
+    // Load GA script - ALWAYS load regardless of consent
     const script = document.createElement('script');
     script.id = 'ga-script';
     script.async = true;
     script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
-    script.onload = () => {
-      if (window.gtag) {
-        window.gtag('config', measurementId, {
-          anonymize_ip: true,
-          cookie_flags: 'SameSite=None;Secure',
-        });
-      }
-    };
     document.head.appendChild(script);
 
     // Cleanup function
@@ -69,6 +61,20 @@ export const GoogleAnalytics = ({ measurementId }: GoogleAnalyticsProps) => {
         gaScript.remove();
       }
     };
+  }, [measurementId]);
+
+  // Update consent when user preferences change
+  useEffect(() => {
+    if (window.gtag && measurementId) {
+      window.gtag('consent', 'update', {
+        'analytics_storage': hasAnalytics ? 'granted' : 'denied',
+        'ad_storage': hasAnalytics ? 'granted' : 'denied',
+        'ad_user_data': hasAnalytics ? 'granted' : 'denied',
+        'ad_personalization': hasAnalytics ? 'granted' : 'denied',
+        'functionality_storage': hasAnalytics ? 'granted' : 'denied',
+        'personalization_storage': hasAnalytics ? 'granted' : 'denied',
+      });
+    }
   }, [hasAnalytics, measurementId]);
 
   return null;
