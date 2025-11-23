@@ -819,13 +819,13 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   <div className="space-y-1 text-center flex-[3]">
                     <div>
                       {/* Member Name */}
-                      <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2 w-full max-w-none">
+                      <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2 w-full max-w-none text-start">
                         {member.name}
                       </h1>
                       
                       {/* Lineage Display or Founder Badge */}
                       {[member.is_founder, (member as any).isFounder, (member as any).family_founder, (member as any).founder].some(v => v === true || v === 1 || v === 'true') ? (
-                        <div className="flex items-center justify-center sm:justify-start gap-1 mb-2">
+                        <div className="flex items-center justify-start gap-1 mb-2">
                           <div className="flex items-center gap-1 bg-yellow-50 px-2 py-1 rounded-full">
                             <Crown className="h-4 w-4 text-yellow-600" />
                             <span className="text-xs text-yellow-700 font-medium font-arabic">{t('profile.founder')}</span>
@@ -835,14 +835,14 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         (() => {
                           const lineages = getLineageDisplay();
                           return lineages.length > 0 ? lineages.map((lineage, index) => (
-                            <p key={index} className="text-lg text-muted-foreground mb-1">
+                            <p key={index} className="text-lg text-muted-foreground mb-1 text-start">
                               {lineage}
                             </p>
                           )) : null;
                         })()
                       )}
                       {member.bio && (
-                        <p className="text-lg italic text-muted-foreground max-w-md">
+                        <p className="text-lg italic text-muted-foreground max-w-md text-start">
                           "{member.bio}"
                         </p>
                       )}
