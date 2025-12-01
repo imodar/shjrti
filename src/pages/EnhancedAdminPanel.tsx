@@ -1454,16 +1454,28 @@ export default function EnhancedAdminPanel() {
                     
                     <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg p-3 border border-orange-200/50 dark:border-orange-700/50">
                       <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                        {users.filter(u => u.subscription_status === 'active' && u.subscription_package_name && (u.subscription_package_name.ar?.includes('مجاني') || u.subscription_package_name.en?.toLowerCase().includes('free'))).length}
+                        {users.filter(u => {
+                          if (u.subscription_status !== 'active' || !u.subscription_package_name) return false;
+                          const arName = u.subscription_package_name.ar?.toLowerCase() || '';
+                          const enName = u.subscription_package_name.en?.toLowerCase() || '';
+                          return arName.includes('اساسية') || arName.includes('الاساسية') || 
+                                 enName.includes('basic') || enName.includes('free');
+                        }).length}
                       </div>
-                      <div className="text-xs text-orange-700 dark:text-orange-300 font-medium">باقات مجانية</div>
+                      <div className="text-xs text-orange-700 dark:text-orange-300 font-medium">باقات أساسية</div>
                     </div>
                     
                     <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-lg p-3 border border-emerald-200/50 dark:border-emerald-700/50">
                       <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                        {users.filter(u => u.subscription_status === 'active' && u.subscription_package_name && !(u.subscription_package_name.ar?.includes('مجاني') || u.subscription_package_name.en?.toLowerCase().includes('free'))).length}
+                        {users.filter(u => {
+                          if (u.subscription_status !== 'active' || !u.subscription_package_name) return false;
+                          const arName = u.subscription_package_name.ar?.toLowerCase() || '';
+                          const enName = u.subscription_package_name.en?.toLowerCase() || '';
+                          return arName.includes('متكاملة') || arName.includes('المتكاملة') || 
+                                 enName.includes('complete') || enName.includes('premium');
+                        }).length}
                       </div>
-                      <div className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">باقات مدفوعة</div>
+                      <div className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">باقات متكاملة</div>
                     </div>
                   </div>
                 </div>
