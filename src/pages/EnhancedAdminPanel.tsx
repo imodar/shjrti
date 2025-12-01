@@ -211,6 +211,7 @@ export default function EnhancedAdminPanel() {
   const [userSubscriptions, setUserSubscriptions] = useState<UserSubscription[]>([]);
   const [editingUser, setEditingUser] = useState<UserProfile | null>(null);
   const [deletingUser, setDeletingUser] = useState<UserProfile | null>(null);
+  const [userSearchQuery, setUserSearchQuery] = useState('');
   
   // Custom JavaScript management state
   const [customJavaScript, setCustomJavaScript] = useState('');
@@ -1402,11 +1403,23 @@ export default function EnhancedAdminPanel() {
             <Card className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-emerald-200/30 dark:border-emerald-700/30">
               <CardHeader>
                 <div className="flex items-start justify-between gap-6">
-                  <div>
+                  <div className="flex-1">
                     <CardTitle className="text-xl font-bold text-emerald-600">إدارة المستخدمين</CardTitle>
                     <CardDescription>
                       عرض وإدارة جميع المستخدمين المشتركين في الموقع
                     </CardDescription>
+                  </div>
+                  
+                  {/* Search Box */}
+                  <div className="relative w-80">
+                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="بحث عن مستخدم (الاسم، البريد الإلكتروني، الهاتف)..."
+                      value={userSearchQuery}
+                      onChange={(e) => setUserSearchQuery(e.target.value)}
+                      className="pe-10"
+                    />
                   </div>
                   
                   {/* Quick Statistics */}
@@ -1420,7 +1433,7 @@ export default function EnhancedAdminPanel() {
                     
                     <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-3 border border-green-200/50 dark:border-green-700/50">
                       <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                        {users.filter(u => u.subscription_status === 'active').length}
+                        {users.filter(u => u.subscription_status === 'active' && u.subscription_expires_at && new Date(u.subscription_expires_at) > new Date()).length}
                       </div>
                       <div className="text-xs text-green-700 dark:text-green-300 font-medium">اشتراك نشط</div>
                     </div>
@@ -1441,14 +1454,14 @@ export default function EnhancedAdminPanel() {
                     
                     <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg p-3 border border-orange-200/50 dark:border-orange-700/50">
                       <div className="text-2xl font-bold text-orange-600 dark:text-orange-400">
-                        {users.filter(u => u.subscription_package_name && (u.subscription_package_name.ar?.includes('مجاني') || u.subscription_package_name.en?.toLowerCase().includes('free'))).length}
+                        {users.filter(u => u.subscription_status === 'active' && u.subscription_package_name && (u.subscription_package_name.ar?.includes('مجاني') || u.subscription_package_name.en?.toLowerCase().includes('free'))).length}
                       </div>
                       <div className="text-xs text-orange-700 dark:text-orange-300 font-medium">باقات مجانية</div>
                     </div>
                     
                     <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 rounded-lg p-3 border border-emerald-200/50 dark:border-emerald-700/50">
                       <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                        {users.filter(u => u.subscription_package_name && !(u.subscription_package_name.ar?.includes('مجاني') || u.subscription_package_name.en?.toLowerCase().includes('free'))).length}
+                        {users.filter(u => u.subscription_status === 'active' && u.subscription_package_name && !(u.subscription_package_name.ar?.includes('مجاني') || u.subscription_package_name.en?.toLowerCase().includes('free'))).length}
                       </div>
                       <div className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">باقات مدفوعة</div>
                     </div>
@@ -1457,7 +1470,19 @@ export default function EnhancedAdminPanel() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {users.map((user) => {
+                  {users
+                    .filter((user) => {
+                      if (!userSearchQuery.trim()) return true;
+                      const query = userSearchQuery.toLowerCase();
+                      return (
+                        user.email?.toLowerCase().includes(query) ||
+                        user.first_name?.toLowerCase().includes(query) ||
+                        user.last_name?.toLowerCase().includes(query) ||
+                        user.phone?.toLowerCase().includes(query) ||
+                        user.profile_phone?.toLowerCase().includes(query)
+                      );
+                    })
+                    .map((user) => {
                     const subscription = getUserSubscription(user.id);
                     const getStatusBadge = (status: string) => {
                       switch (status) {
