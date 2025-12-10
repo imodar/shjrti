@@ -34,6 +34,17 @@ export default function PaymentSuccess() {
     verifyPayment();
   }, [invoiceId, orderId]);
 
+  // Google Ads Conversion Tracking - fires when payment is successful
+  useEffect(() => {
+    if (paymentStatus === 'success' && typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'conversion', {
+        'send_to': 'AW-17753947012/lVMyCIaUkc8bEIT33pFC',
+        'transaction_id': invoiceId || orderId || ''
+      });
+      console.log('Google Ads conversion tracked for payment success');
+    }
+  }, [paymentStatus, invoiceId, orderId]);
+
   const verifyPayment = async () => {
     try {
       if (orderId) {
