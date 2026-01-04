@@ -170,12 +170,23 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
       setEnteredPassword(password);
       await loadFamilyDataViaToken(password);
     } else {
-      // Old way: password via direct check
-      if (password === familyData?.share_password) {
-        setIsPasswordCorrect(true);
-        setShowPasswordModal(false);
-        await loadFamilyTreeData();
-      } else {
+      // Old way: password via direct check using bcrypt verification
+      try {
+        const { data: isValid, error } = await supabase.rpc('verify_share_password', {
+          plain_password: password,
+          hashed_password: familyData?.share_password
+        });
+        
+        if (error || !isValid) {
+          setPasswordError(true);
+          setShowPasswordModal(false);
+        } else {
+          setIsPasswordCorrect(true);
+          setShowPasswordModal(false);
+          await loadFamilyTreeData();
+        }
+      } catch (error) {
+        console.error('Error verifying password:', error);
         setPasswordError(true);
         setShowPasswordModal(false);
       }
