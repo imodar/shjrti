@@ -10,7 +10,7 @@ interface AdminContextType {
 const AdminContext = createContext<AdminContextType | undefined>(undefined);
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -18,6 +18,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     let isMounted = true;
 
     const checkAdminStatus = async () => {
+      // Wait for auth to finish loading before making any decisions
+      if (authLoading) {
+        return;
+      }
+
       if (!user) {
         if (isMounted) {
           setIsAdmin(false);
@@ -72,7 +77,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     return () => {
       isMounted = false;
     };
-  }, [user?.id]);
+  }, [user?.id, authLoading]);
 
   const value = {
     isAdmin,
