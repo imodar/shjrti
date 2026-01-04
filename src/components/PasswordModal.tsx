@@ -34,7 +34,13 @@ const PasswordModal: React.FC<PasswordModalProps> = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        // Radix calls this for both opening and closing; we only want to run onClose when closing.
+        if (!open) onClose();
+      }}
+    >
       <DialogContent className="sm:max-w-md mx-auto" dir={direction}>
         <DialogHeader className="text-center">
           <div className="flex justify-center mb-4">
