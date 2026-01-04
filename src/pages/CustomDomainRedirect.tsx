@@ -45,39 +45,56 @@ const CustomDomainRedirect = () => {
     try {
       setIsLoading(true);
 
-      const { data, error } = await supabase.functions.invoke('custom-domain-redirect', {
+      const response = await supabase.functions.invoke('custom-domain-redirect', {
         body: { customDomain, password },
       });
 
-      if (error) throw error;
-
-      // Expected error format: { success: false, error: 'PASSWORD_REQUIRED' | ... }
-      if (!data?.success) {
-        if (data?.error === 'PASSWORD_REQUIRED') {
-          setFamilyName(data?.familyName || customDomain || '');
-          setShowPasswordModal(true);
-          setIsLoading(false);
-          return;
+      // Handle both data and error responses - edge function returns 401 for password required
+      const data = response.data || (response.error as any)?.context;
+      
+      // Parse error response body if needed
+      let parsedData = data;
+      if (!parsedData && response.error) {
+        // Try to parse from error message
+        const errorMessage = response.error.message || '';
+        const match = errorMessage.match(/\{.*\}/);
+        if (match) {
+          try {
+            parsedData = JSON.parse(match[0]);
+          } catch {
+            // Ignore parse errors
+          }
         }
+      }
 
-        if (data?.error === 'PASSWORD_INCORRECT') {
-          toast({
-            title: 'خطأ',
-            description: 'كلمة المرور غير صحيحة',
-            variant: 'destructive',
-          });
-          setFamilyName(data?.familyName || familyName || customDomain || '');
-          setShowPasswordModal(true);
-          setIsLoading(false);
-          return;
-        }
+      // Handle password required response (comes as 401)
+      if (parsedData?.error === 'PASSWORD_REQUIRED') {
+        setFamilyName(parsedData?.familyName || customDomain || '');
+        setShowPasswordModal(true);
+        setIsLoading(false);
+        return;
+      }
 
-        console.error('[CustomDomainRedirect] Invalid domain:', data?.error);
+      if (parsedData?.error === 'PASSWORD_INCORRECT') {
+        toast({
+          title: 'خطأ',
+          description: 'كلمة المرور غير صحيحة',
+          variant: 'destructive',
+        });
+        setFamilyName(parsedData?.familyName || familyName || customDomain || '');
+        setShowPasswordModal(true);
+        setIsLoading(false);
+        return;
+      }
+
+      // If no success and no password error, it's a real error
+      if (!parsedData?.success) {
+        console.error('[CustomDomainRedirect] Invalid domain:', parsedData?.error);
         navigate('/404', { replace: true });
         return;
       }
 
-      const { family, members, marriages } = data.data;
+      const { family, members, marriages } = parsedData.data;
       console.log('[CustomDomainRedirect] Data loaded:', {
         familyId: family?.id,
         membersCount: members?.length || 0,
