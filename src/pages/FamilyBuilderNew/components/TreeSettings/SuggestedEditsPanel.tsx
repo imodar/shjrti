@@ -258,7 +258,7 @@ export function SuggestedEditsPanel({ familyId }: SuggestedEditsPanelProps) {
                       <Badge variant="outline">{suggestion.suggestion_type.replace("_", " ")}</Badge>
                       {suggestion.family_tree_members && (
                         <Badge variant="secondary">
-                          <Eye className="mr-1 h-3 w-3" />
+                          <Eye className="me-1 h-3 w-3" />
                           {suggestion.family_tree_members.name}
                         </Badge>
                       )}
