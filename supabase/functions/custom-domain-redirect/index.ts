@@ -75,8 +75,8 @@ Deno.serve(async (req) => {
       }
     );
 
-    // Read and validate customDomain from request body
-    const { customDomain } = await req.json();
+    // Read and validate customDomain (+ optional password) from request body
+    const { customDomain, password } = await req.json();
 
     if (!customDomain) {
       console.error('[custom-domain-redirect] Missing customDomain in request');
@@ -127,6 +127,51 @@ Deno.serve(async (req) => {
     }
 
     console.log(`[custom-domain-redirect] Family found: ${family.id}`);
+
+    // Step 1.5: Enforce share password (same behavior as token sharing)
+    if (family.share_password) {
+      if (!password) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: 'PASSWORD_REQUIRED',
+            familyName:
+              typeof family.name === 'string'
+                ? family.name
+                : family?.name?.ar || family?.name?.en || 'عائلة',
+          }),
+          {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+
+      const { data: verifyResult, error: verifyError } = await supabaseAdmin.rpc(
+        'verify_share_password',
+        {
+          plain_password: password,
+          hashed_password: family.share_password,
+        }
+      );
+
+      if (verifyError || !verifyResult) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            error: 'PASSWORD_INCORRECT',
+            familyName:
+              typeof family.name === 'string'
+                ? family.name
+                : family?.name?.ar || family?.name?.en || 'عائلة',
+          }),
+          {
+            status: 403,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+    }
 
     // If bot detected, return HTML with OG tags
     if (isBot) {
