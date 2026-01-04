@@ -83,8 +83,11 @@ export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // If initialData is provided, skip queries entirely
+  const shouldFetch = !!familyId && !initialData;
+
   // Query for family data
-  const { data: familyData = null, isLoading: familyLoading, error: familyError } = useQuery({
+  const { data: familyData = initialData?.family ?? null, isLoading: familyLoading, error: familyError } = useQuery({
     queryKey: ['family', familyId],
     queryFn: async () => {
       if (!familyId) return null;
@@ -96,14 +99,14 @@ export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children
       if (error) throw error;
       return data as Family;
     },
-    enabled: !!familyId && !initialData, // Disable query if initialData provided
+    enabled: shouldFetch,
     initialData: initialData?.family,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes (previously cacheTime)
   });
 
   // Query for family members
-  const { data: familyMembers = [], isLoading: membersLoading, error: membersError } = useQuery({
+  const { data: familyMembers = initialData?.members ?? [], isLoading: membersLoading, error: membersError } = useQuery({
     queryKey: ['members', familyId],
     queryFn: async () => {
       if (!familyId) return [];
@@ -115,14 +118,14 @@ export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children
       if (error) throw error;
       return data as Member[];
     },
-    enabled: !!familyId && !initialData, // Disable query if initialData provided
+    enabled: shouldFetch,
     initialData: initialData?.members,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
 
   // Query for marriages
-  const { data: marriages = [], isLoading: marriagesLoading, error: marriagesError } = useQuery({
+  const { data: marriages = initialData?.marriages ?? [], isLoading: marriagesLoading, error: marriagesError } = useQuery({
     queryKey: ['marriages', familyId],
     queryFn: async () => {
       if (!familyId) return [];
@@ -133,13 +136,14 @@ export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children
       if (error) throw error;
       return data as Marriage[];
     },
-    enabled: !!familyId && !initialData, // Disable query if initialData provided
+    enabled: shouldFetch,
     initialData: initialData?.marriages,
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
 
-  const loading = familyLoading || membersLoading || marriagesLoading;
+  // If initialData is provided, never show loading state
+  const loading = initialData ? false : (familyLoading || membersLoading || marriagesLoading);
   const error = familyError?.message || membersError?.message || marriagesError?.message || null;
 
   // Refetch all data
