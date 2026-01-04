@@ -1540,13 +1540,13 @@ export default function EnhancedAdminPanel() {
 
                     return (
                       <div key={user.id} className="p-4 border border-emerald-200/30 dark:border-emerald-700/30 rounded-lg bg-white/50 dark:bg-gray-800/50">
-                        <div className="grid grid-cols-6 gap-4 items-center">
+                        <div className="grid grid-cols-7 gap-4 items-center">
                           <div>
                             <p className="font-medium">{user.first_name || 'غير محدد'}</p>
                             <p className="text-sm text-gray-500">الاسم</p>
                           </div>
-                          <div>
-                            <p className="font-medium text-emerald-700">{user.email}</p>
+                          <div className="col-span-2">
+                            <p className="font-medium text-emerald-700 truncate">{user.email}</p>
                             <p className="text-sm text-gray-500">البريد الإلكتروني</p>
                           </div>
                           <div>
