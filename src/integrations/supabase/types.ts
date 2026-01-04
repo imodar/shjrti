@@ -1724,6 +1724,24 @@ export type Database = {
         Returns: boolean
       }
       generate_invoice_number: { Args: never; Returns: string }
+      get_admin_user_statistics: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          first_name: string
+          last_login: string
+          last_name: string
+          subscription_package_name: Json
+          subscription_status: string
+          total_family_photos: number
+          total_member_photos: number
+          total_members: number
+          total_trees: number
+          trees_detail: Json
+          user_id: string
+        }[]
+      }
       get_all_users_for_admin: {
         Args: never
         Returns: {
