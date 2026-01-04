@@ -45,24 +45,40 @@ const CustomDomainRedirect = () => {
     try {
       setIsLoading(true);
 
-      const response = await supabase.functions.invoke('custom-domain-redirect', {
+      const { data, error } = await supabase.functions.invoke('custom-domain-redirect', {
         body: { customDomain, password },
       });
 
-      // Handle both data and error responses - edge function returns 401 for password required
-      const data = response.data || (response.error as any)?.context;
-      
-      // Parse error response body if needed
-      let parsedData = data;
-      if (!parsedData && response.error) {
-        // Try to parse from error message
-        const errorMessage = response.error.message || '';
-        const match = errorMessage.match(/\{.*\}/);
-        if (match) {
+      // Edge function returns non-2xx (e.g., 401) for password-related flows.
+      // In that case Supabase puts the response on error.context.
+      let parsedData: any = data;
+
+      if (!parsedData && error) {
+        const ctx: any = (error as any).context;
+
+        // Preferred: context.json() when available (see other auth flows)
+        if (ctx && typeof ctx.json === 'function') {
           try {
-            parsedData = JSON.parse(match[0]);
+            parsedData = await ctx.json();
           } catch {
-            // Ignore parse errors
+            // ignore
+          }
+        }
+
+        // Fallbacks
+        if (!parsedData && ctx?.body) {
+          parsedData = ctx.body;
+        }
+
+        if (!parsedData && (error as any)?.message) {
+          const errorMessage = (error as any).message || '';
+          const match = errorMessage.match(/\{.*\}/);
+          if (match) {
+            try {
+              parsedData = JSON.parse(match[0]);
+            } catch {
+              // ignore
+            }
           }
         }
       }
