@@ -135,22 +135,33 @@ serve(async (req) => {
 
     // Send verification email using templated email service
     try {
-      await supabase.functions.invoke('send-templated-email', {
+      console.log("Attempting to send verification email to:", submitterEmail);
+      console.log("Family name for email:", family?.name);
+      
+      const { data: emailResult, error: emailError } = await supabase.functions.invoke('send-templated-email', {
         body: {
           templateKey: 'edit_suggestion_verification',
           recipientEmail: submitterEmail,
           recipientName: submitterName,
           variables: {
             name: submitterName,
-            familyName: family?.name || 'Family Tree',
+            familyName: family?.name || 'شجرة العائلة',
             verificationCode: verificationCode,
             expiryMinutes: '10',
           },
-          languageCode: 'ar', // Default to Arabic, could be made dynamic
+          languageCode: 'ar',
         },
       });
+      
+      if (emailError) {
+        console.error("Email function invoke error:", emailError);
+      } else if (emailResult?.error) {
+        console.error("Email function returned error:", emailResult.error);
+      } else {
+        console.log("Verification email sent successfully:", emailResult);
+      }
     } catch (emailError) {
-      console.error("Email sending error:", emailError);
+      console.error("Email sending exception:", emailError);
       // Continue even if email fails - user can request new code
     }
 
