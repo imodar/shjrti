@@ -973,14 +973,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl">
-                        <MapPin className="h-5 w-5 text-green-600" />
-                        <div>
-                          <div className="text-sm text-green-700">{t('profile.birth_place')}</div>
-                          <div className="font-semibold">{member.birthPlace || t('common.not_specified')}</div>
-                        </div>
-                      </div>
-
                       <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl">
                         <Heart className="h-5 w-5 text-purple-600" />
                         <div>
