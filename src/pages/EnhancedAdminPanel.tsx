@@ -39,7 +39,8 @@ import {
   MailOpen,
   TrendingUp,
   Search,
-  Share2
+  Share2,
+  BarChart3
 } from "lucide-react";
 import { PackageEditModal } from '@/components/PackageEditModal';
 import { ChangePackageModal } from '@/components/ChangePackageModal';
@@ -50,6 +51,7 @@ import { PaymentGatewaySettings } from '@/components/PaymentGatewaySettings';
 import AdminEmailTemplates from './AdminEmailTemplates';
 import AdminEmailLogs from './AdminEmailLogs';
 import AdminPaymentAnalytics from './AdminPaymentAnalytics';
+import AdminUserStatistics from './AdminUserStatistics';
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
@@ -1266,6 +1268,17 @@ export default function EnhancedAdminPanel() {
                   <span className="hidden lg:inline text-xs">{direction === 'rtl' ? 'النشرة' : 'Newsletter'}</span>
                 </div>
               </TabsTrigger>
+
+              <TabsTrigger 
+                value="user-statistics" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <BarChart3 className="h-5 w-5 transition-transform group-hover:scale-110 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline text-xs">{direction === 'rtl' ? 'إحصائيات' : 'Statistics'}</span>
+                </div>
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -2366,6 +2379,10 @@ export default function EnhancedAdminPanel() {
                 </Button>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="user-statistics" className="space-y-6">
+            <AdminUserStatistics />
           </TabsContent>
         </Tabs>
         
