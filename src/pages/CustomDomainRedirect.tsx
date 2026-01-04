@@ -124,6 +124,8 @@ const CustomDomainRedirect = () => {
           : family?.name?.ar || family?.name?.en || customDomain || '';
 
       setFamilyName(name);
+      // Success: close the password modal (if it was open) and render the tree.
+      setShowPasswordModal(false);
       setFamilyData({
         family,
         members: members || [],
