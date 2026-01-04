@@ -6,14 +6,18 @@ import PublicTreeView from './PublicTreeView';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { PROTECTED_ROUTES } from '@/constants/routes';
+import PasswordModal from '@/components/PasswordModal';
 
 const CustomDomainRedirect = () => {
   const { customDomain } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useLanguage();
+
   const [familyData, setFamilyData] = useState<any>(null);
+  const [familyName, setFamilyName] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   useEffect(() => {
     if (!customDomain) {
@@ -29,21 +33,46 @@ const CustomDomainRedirect = () => {
       return;
     }
 
+    // Reset state when domain changes
+    setFamilyData(null);
+    setFamilyName('');
+    setShowPasswordModal(false);
+
     loadFamilyData();
   }, [customDomain, navigate]);
 
-  const loadFamilyData = async () => {
+  const loadFamilyData = async (password?: string) => {
     try {
       setIsLoading(true);
+
       const { data, error } = await supabase.functions.invoke('custom-domain-redirect', {
-        body: { customDomain }
+        body: { customDomain, password },
       });
 
       if (error) throw error;
 
-      if (data?.error) {
-        // Invalid custom domain - redirect to 404
-        console.error('[CustomDomainRedirect] Invalid domain:', data.error);
+      // Expected error format: { success: false, error: 'PASSWORD_REQUIRED' | ... }
+      if (!data?.success) {
+        if (data?.error === 'PASSWORD_REQUIRED') {
+          setFamilyName(data?.familyName || customDomain || '');
+          setShowPasswordModal(true);
+          setIsLoading(false);
+          return;
+        }
+
+        if (data?.error === 'PASSWORD_INCORRECT') {
+          toast({
+            title: 'خطأ',
+            description: 'كلمة المرور غير صحيحة',
+            variant: 'destructive',
+          });
+          setFamilyName(data?.familyName || familyName || customDomain || '');
+          setShowPasswordModal(true);
+          setIsLoading(false);
+          return;
+        }
+
+        console.error('[CustomDomainRedirect] Invalid domain:', data?.error);
         navigate('/404', { replace: true });
         return;
       }
@@ -52,12 +81,20 @@ const CustomDomainRedirect = () => {
       console.log('[CustomDomainRedirect] Data loaded:', {
         familyId: family?.id,
         membersCount: members?.length || 0,
-        marriagesCount: marriages?.length || 0
+        marriagesCount: marriages?.length || 0,
       });
+
+      // Extract a display name for the password modal (string or JSON)
+      const name =
+        typeof family?.name === 'string'
+          ? family.name
+          : family?.name?.ar || family?.name?.en || customDomain || '';
+
+      setFamilyName(name);
       setFamilyData({
         family,
         members: members || [],
-        marriages: marriages || []
+        marriages: marriages || [],
       });
       setIsLoading(false);
     } catch (error) {
@@ -66,6 +103,22 @@ const CustomDomainRedirect = () => {
       navigate('/404', { replace: true });
     }
   };
+
+  if (showPasswordModal) {
+    return (
+      <PasswordModal
+        isOpen={showPasswordModal}
+        familyName={familyName || ''}
+        onClose={() => {
+          setShowPasswordModal(false);
+          navigate('/404', { replace: true });
+        }}
+        onSubmit={async (password) => {
+          await loadFamilyData(password);
+        }}
+      />
+    );
+  }
 
   if (isLoading || !familyData) {
     return (
@@ -79,12 +132,12 @@ const CustomDomainRedirect = () => {
   }
 
   return (
-    <FamilyDataProvider 
-      familyId={familyData.family?.id || null} 
+    <FamilyDataProvider
+      familyId={familyData.family?.id || null}
       initialData={{
         family: familyData.family,
         members: familyData.members || [],
-        marriages: familyData.marriages || []
+        marriages: familyData.marriages || [],
       }}
     >
       <PublicTreeView skipDataLoading={true} />
