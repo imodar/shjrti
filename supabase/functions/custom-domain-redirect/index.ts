@@ -128,20 +128,22 @@ Deno.serve(async (req) => {
 
     console.log(`[custom-domain-redirect] Family found: ${family.id}`);
 
-    // Step 1.5: Enforce share password (same behavior as token sharing)
+    // Step 1.5: Enforce share password (return 200 with structured response so supabase-js doesn't treat it as a network error)
     if (family.share_password) {
+      const familyName =
+        typeof family.name === 'string'
+          ? family.name
+          : family?.name?.ar || family?.name?.en || 'عائلة';
+
       if (!password) {
         return new Response(
           JSON.stringify({
             success: false,
             error: 'PASSWORD_REQUIRED',
-            familyName:
-              typeof family.name === 'string'
-                ? family.name
-                : family?.name?.ar || family?.name?.en || 'عائلة',
+            familyName,
           }),
           {
-            status: 401,
+            status: 200,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           }
         );
@@ -160,13 +162,10 @@ Deno.serve(async (req) => {
           JSON.stringify({
             success: false,
             error: 'PASSWORD_INCORRECT',
-            familyName:
-              typeof family.name === 'string'
-                ? family.name
-                : family?.name?.ar || family?.name?.en || 'عائلة',
+            familyName,
           }),
           {
-            status: 403,
+            status: 200,
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           }
         );
