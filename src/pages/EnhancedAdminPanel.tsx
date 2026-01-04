@@ -1423,7 +1423,7 @@ export default function EnhancedAdminPanel() {
                   </div>
                   
                   {/* Quick Statistics */}
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3 flex-shrink-0">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 flex-shrink-0">
                     <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-3 border border-blue-200/50 dark:border-blue-700/50">
                       <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                         {users.length}
@@ -1476,6 +1476,13 @@ export default function EnhancedAdminPanel() {
                         }).length}
                       </div>
                       <div className="text-xs text-emerald-700 dark:text-emerald-300 font-medium">باقات متكاملة</div>
+                    </div>
+                    
+                    <div className="bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 rounded-lg p-3 border border-red-200/50 dark:border-red-700/50">
+                      <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                        {users.filter(u => u.subscription_status !== 'active' || !u.subscription_package_name).length}
+                      </div>
+                      <div className="text-xs text-red-700 dark:text-red-300 font-medium">غير مشتركين</div>
                     </div>
                   </div>
                 </div>
