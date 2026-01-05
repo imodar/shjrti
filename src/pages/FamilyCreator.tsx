@@ -301,7 +301,17 @@ const FamilyCreator = () => {
     }
   };
 
+  // Synchronous lock to prevent double-click race condition
+  const creationLockRef = useRef(false);
+
   const handleCreateFamily = async () => {
+    // Immediate synchronous lock - prevents double-click before async operations
+    if (creationLockRef.current) {
+      console.log('⚠️ Creation already in progress - ignoring duplicate request');
+      return;
+    }
+    creationLockRef.current = true;
+    
     setIsCreatingFamily(true);
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -340,7 +350,19 @@ const FamilyCreator = () => {
         .select()
         .single();
 
-      if (familyError) throw familyError;
+      // Handle database trigger error for family limit
+      if (familyError) {
+        if (familyError.message?.includes('FAMILY_LIMIT_EXCEEDED')) {
+          const errorMessage = familyError.message.split(':')[1] || 'تم الوصول للحد الأقصى من الأشجار';
+          toast({
+            title: "تم الوصول للحد الأقصى",
+            description: errorMessage,
+            variant: "destructive"
+          });
+          return;
+        }
+        throw familyError;
+      }
 
       // حفظ معرف العائلة المنشأة
       setCreatedFamilyId(family.id);
@@ -458,6 +480,7 @@ const FamilyCreator = () => {
       });
     } finally {
       setIsCreatingFamily(false);
+      creationLockRef.current = false; // Reset lock
     }
   };
 
