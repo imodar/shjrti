@@ -343,6 +343,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                 {(() => {
                   const buildFullMemberName = (member: any, members: any[]) => {
                     const firstName = member.first_name || member.firstName || member.name?.split(' ')[0] || '';
+                    const lastName = member.last_name || member.lastName || '';
                     const father = members.find(m => m?.id === (member?.father_id ?? member?.fatherId));
                     const grandfather = father ? members.find(m => m?.id === (father?.father_id ?? father?.fatherId)) : null;
                     const isInternal = Boolean(father) || Boolean(member.is_founder);
@@ -351,21 +352,20 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                       const fatherFirst = father.first_name || father.firstName || father.name?.split(' ')[0] || father.name;
                       if (grandfather) {
                         const grandFirst = grandfather.first_name || grandfather.firstName || grandfather.name?.split(' ')[0] || grandfather.name;
-                        return `${firstName} بنت ${fatherFirst} بن ${grandFirst}`;
+                        return lastName ? `${firstName} بنت ${fatherFirst} بن ${grandFirst} (${lastName})` : `${firstName} بنت ${fatherFirst} بن ${grandFirst}`;
                       }
-                      return `${firstName} بنت ${fatherFirst}`;
+                      return lastName ? `${firstName} بنت ${fatherFirst} (${lastName})` : `${firstName} بنت ${fatherFirst}`;
                     }
                     if (isInternal && member.gender === 'male' && father) {
                       const fatherFirst = father.first_name || father.firstName || father.name?.split(' ')[0] || father.name;
                       if (grandfather) {
                         const grandFirst = grandfather.first_name || grandfather.firstName || grandfather.name?.split(' ')[0] || grandfather.name;
-                        return `${firstName} ابن ${fatherFirst} ابن ${grandFirst}`;
+                        return lastName ? `${firstName} ابن ${fatherFirst} ابن ${grandFirst} (${lastName})` : `${firstName} ابن ${fatherFirst} ابن ${grandFirst}`;
                       }
-                      return `${firstName} ابن ${fatherFirst}`;
+                      return lastName ? `${firstName} ابن ${fatherFirst} (${lastName})` : `${firstName} ابن ${fatherFirst}`;
                     }
                     
-                    const lastName = member.last_name || member.lastName;
-                    return lastName ? `${member.first_name || member.firstName || firstName} ${lastName}` : (member.name || firstName);
+                    return lastName ? `${firstName} ${lastName}` : (member.name || firstName);
                   };
 
                   const selectedMember = familyMembers.find(m => m.id === spouse.existingFamilyMemberId);
