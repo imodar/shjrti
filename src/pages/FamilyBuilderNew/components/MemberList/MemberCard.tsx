@@ -89,8 +89,13 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     
     const genderTerm = member.gender === 'female' ? 'ابنة' : 'ابن';
     
-    // PRIORITY: Father's lineage first (if father is from the family or exists)
-    if (father) {
+    // PRIORITY LOGIC:
+    // 1. If father is from family → show father's lineage
+    // 2. If mother is from family AND father is NOT from family → show mother's lineage
+    // 3. If father exists but not from family, and mother not from family → show father's name only
+    
+    if (fatherIsFromFamily) {
+      // Father is from the family - show paternal lineage
       const fatherName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
       const grandfather = familyMembers?.find(m => m?.id === (father.father_id || (father as any).fatherId));
       
@@ -100,7 +105,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         const grandfatherName = grandfather.first_name || (grandfather as any).name?.split(' ')[0] || (grandfather as any).name;
         lineage += ` بن ${grandfatherName}`;
         
-        // Add great-grandfather if exists
         const greatGrandfather = familyMembers?.find(m => m?.id === (grandfather.father_id || (grandfather as any).fatherId));
         if (greatGrandfather) {
           const greatGrandfatherName = greatGrandfather.first_name || (greatGrandfather as any).name?.split(' ')[0] || (greatGrandfather as any).name;
@@ -113,7 +117,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         </p>;
     }
     
-    // Fallback: If no father, show mother's lineage (for members with only mother in tree)
+    // Mother is from family AND father is NOT from family - show maternal lineage
     if (motherIsFromFamily) {
       const motherName = mother.first_name || (mother as any).name?.split(' ')[0] || (mother as any).name;
       const motherFather = familyMembers?.find(m => m?.id === (mother.father_id || (mother as any).fatherId));
