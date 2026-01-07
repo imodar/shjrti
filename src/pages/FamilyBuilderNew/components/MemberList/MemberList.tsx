@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Plus, Users } from "lucide-react";
+import { Search, Plus, Users, UserIcon, UserRoundIcon, Crown } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { MemberCard } from "./MemberCard";
 
@@ -27,6 +27,7 @@ interface MemberListProps {
   formMode: 'add' | 'edit' | 'view' | 'profile' | 'tree-settings';
   onAddMember: () => void;
   packageData: any;
+  generationCount: number;
 }
 
 export const MemberList: React.FC<MemberListProps> = ({
@@ -47,7 +48,8 @@ export const MemberList: React.FC<MemberListProps> = ({
   memberListLoading,
   formMode,
   onAddMember,
-  packageData
+  packageData,
+  generationCount
 }) => {
   const { t } = useLanguage();
   const containerRef = React.useRef<HTMLDivElement>(null);

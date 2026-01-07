@@ -4174,21 +4174,41 @@ const FamilyBuilderNew = () => {
                   </DrawerTrigger>
                   <DrawerContent className="h-[80vh] flex flex-col">
                     <div className="flex-1 overflow-y-auto mobile-smooth-scroll p-4">
-                        <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={contextLoading || memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={subscription?.package_name} />
+                        <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={contextLoading || memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={subscription?.package_name} generationCount={generationCount} />
                     </div>
                   </DrawerContent>
                 </Drawer> : <Card className="bg-white backdrop-blur-xl border-white/30 shadow-xl h-full min-h-0 flex flex-col">
                   <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-white/5 rounded-lg"></div>
                    <CardHeader className="pb-4 relative shrink-0">
-                     <CardTitle className="flex items-center gap-2">
-                       <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                        <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                          {t('family_builder.members_title')} ({familyMembers.length})
-                        </span>
-                      </CardTitle>
+                     <CardTitle className="flex items-center justify-between gap-2">
+                       <div className="flex items-center gap-2">
+                         <Users className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                         <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                           {t('family_builder.members_title')}
+                         </span>
+                       </div>
+                       <div className="flex items-center gap-1">
+                         <div className="flex items-center gap-1 px-2 py-1 bg-primary/10 rounded-full text-xs">
+                           <Users className="h-3 w-3 text-primary" />
+                           <span className="font-medium">{familyMembers.length}</span>
+                         </div>
+                         <div className="flex items-center gap-1 px-2 py-1 bg-blue-500/10 rounded-full text-xs">
+                           <span className="font-medium text-blue-600">{familyMembers.filter(m => m.gender === 'male').length}</span>
+                           <span className="text-blue-600">♂</span>
+                         </div>
+                         <div className="flex items-center gap-1 px-2 py-1 bg-rose-500/10 rounded-full text-xs">
+                           <span className="font-medium text-rose-600">{familyMembers.filter(m => m.gender === 'female').length}</span>
+                           <span className="text-rose-600">♀</span>
+                         </div>
+                         <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/10 rounded-full text-xs">
+                           <span className="font-medium text-amber-600">{generationCount}</span>
+                           <span className="text-amber-600">🏛</span>
+                         </div>
+                       </div>
+                     </CardTitle>
                    </CardHeader>
                   <CardContent className="relative overflow-y-auto flex-1 min-h-0 pt-2">
-                      <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={contextLoading || memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={subscription?.package_name} />
+                      <MemberList members={filteredMembers} onEditMember={handleEditMember} onViewMember={handleViewMember} onDeleteMember={handleDeleteMember} onSpouseEditAttempt={handleSpouseEditWarning} checkIfMemberIsSpouse={checkIfMemberIsSpouse} searchTerm={searchTerm} onSearchChange={setSearchTerm} selectedFilter={selectedFilter} onFilterChange={setSelectedFilter} getAdditionalInfo={getAdditionalInfo} getGenderColor={getGenderColor} familyMembers={familyMembers} marriages={familyMarriages} memberListLoading={contextLoading || memberListLoading} formMode={formMode} onAddMember={handleAddMember} packageData={subscription?.package_name} generationCount={generationCount} />
                   </CardContent>
                 </Card>}
             </div>
