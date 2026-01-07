@@ -44,8 +44,9 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     return memberWithLastName?.last_name || '';
   };
 
-  // Helper: Build lineage chain (WITHOUT founder's last_name - that's in the card header)
+  // Helper: Build lineage chain - max 3 generations (father, grandfather, great-grandfather)
   const buildLineageChain = (startMember: Member): string => {
+    const MAX_GENERATIONS = 3;
     const parts: string[] = [];
     let current: Member | undefined = startMember;
     let depth = 0;
@@ -63,8 +64,8 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         }
       }
       
-      // Check if current is founder - stop here (don't add last_name)
-      if (current.is_founder || (current as any).isFounder) {
+      // Check if current is founder OR we reached max generations - stop here
+      if (current.is_founder || (current as any).isFounder || depth >= MAX_GENERATIONS) {
         break;
       }
       
