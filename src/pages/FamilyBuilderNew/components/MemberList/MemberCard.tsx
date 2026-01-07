@@ -44,9 +44,8 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     return memberWithLastName?.last_name || '';
   };
 
-  // Helper: Build lineage chain ending with founder's last_name
+  // Helper: Build lineage chain (WITHOUT founder's last_name - that's in the card header)
   const buildLineageChain = (startMember: Member): string => {
-    const founderLastName = getFounderLastName();
     const parts: string[] = [];
     let current: Member | undefined = startMember;
     let depth = 0;
@@ -64,15 +63,12 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         }
       }
       
-      // Check if current is founder - stop here and add last_name
+      // Check if current is founder - stop here (don't add last_name)
       if (current.is_founder || (current as any).isFounder) {
-        if (founderLastName && !parts[parts.length - 1]?.includes(founderLastName)) {
-          parts[parts.length - 1] = `${parts[parts.length - 1]} ${founderLastName}`;
-        }
         break;
       }
       
-      // Move to father (or mother if no father)
+      // Move to father
       const fatherId = current.father_id || (current as any).fatherId;
       const father = fatherId ? familyMembers?.find(m => m?.id === fatherId) : undefined;
       
@@ -80,15 +76,20 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         current = father;
         depth++;
       } else {
-        // No more parents - add founder's last_name at the end
-        if (founderLastName && parts.length > 0) {
-          parts[parts.length - 1] = `${parts[parts.length - 1]} ${founderLastName}`;
-        }
         break;
       }
     }
     
     return parts.join(' ');
+  };
+
+  // Helper: Build short lineage (parent only) + founder's last_name for spouses from outside
+  const buildSpouseLineage = (parentMember: Member): string => {
+    const founderLastName = getFounderLastName();
+    const parentName = parentMember.first_name || (parentMember as any).name?.split(' ')[0] || (parentMember as any).name;
+    
+    // Just show parent's name + founder's last_name
+    return `${parentName} ${founderLastName}`;
   };
 
   const generateMemberDisplayName = () => {
@@ -205,19 +206,19 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     const spouse = familyMembers?.find(m => m?.id === spouseId);
     if (!spouse) return null;
 
-    // عرض معلومات الزوج بالتفصيل مع النسب منتهيا باسم العائلة
+    // عرض معلومات الزوج بالتفصيل: اسم الزوج + أبوهم + اسم العائلة
     const spouseName = (spouse as any).first_name || (spouse as any).name?.split(' ')[0] || (spouse as any).name || '';
     const spouseGenderTerm = (spouse as any).gender === 'female' ? 'ابنة' : 'ابن';
     
-    // Build spouse's lineage ending with founder's last_name
+    // Get spouse's parent and build short lineage with founder's last_name
     const spouseFatherId = (spouse as any).father_id || (spouse as any).fatherId;
     const spouseFather = spouseFatherId ? familyMembers?.find(m => m?.id === spouseFatherId) : null;
     
     let spouseInfo = spouseName;
     
     if (spouseFather) {
-      const fatherLineage = buildLineageChain(spouseFather);
-      spouseInfo += ` ${spouseGenderTerm} ${fatherLineage}`;
+      const parentLineage = buildSpouseLineage(spouseFather);
+      spouseInfo += ` ${spouseGenderTerm} ${parentLineage}`;
     }
 
     const relationLabel = (member as any).gender === 'male' ? 'زوج' : 'زوجة';
