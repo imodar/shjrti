@@ -513,9 +513,15 @@ const FamilySuggestions = () => {
                           <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10 text-primary font-semibold text-sm">
                             {suggestion.submitter_name.charAt(0).toUpperCase()}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm truncate">{suggestion.submitter_name}</p>
-                            <p className="text-xs text-muted-foreground truncate">{suggestion.submitter_email}</p>
+                          <div className="flex-1 min-w-0 space-y-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">{t('suggestions.submitter_name') || 'الاسم'}:</span>
+                              <span className="font-medium text-sm truncate">{suggestion.submitter_name}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">{t('suggestions.submitter_email') || 'البريد'}:</span>
+                              <span className="text-xs text-muted-foreground truncate">{suggestion.submitter_email}</span>
+                            </div>
                           </div>
                           <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-background/60 px-2.5 py-1 rounded-full">
                             <Clock className="h-3 w-3" />
