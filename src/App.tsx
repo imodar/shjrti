@@ -33,6 +33,7 @@ import FamilyBuilderNewWithContext from "./pages/FamilyBuilderNew/FamilyBuilderN
 
 import FamilyTreeView from "./pages/FamilyTreeView/FamilyTreeViewWithContext";
 import FamilyStatistics from "./pages/FamilyStatistics";
+import FamilySuggestions from "./pages/FamilySuggestions";
 import FamilyGallery from "./pages/FamilyGallery";
 import Profile from "./pages/Profile";
 import Payments from "./pages/Payments";
@@ -159,6 +160,11 @@ const App = () => {
                   <Route path="/family-statistics" element={
                     <ProtectedRoute>
                       <FamilyStatistics />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/family-suggestions" element={
+                    <ProtectedRoute>
+                      <FamilySuggestions />
                     </ProtectedRoute>
                   } />
                   <Route path="/family-gallery" element={

@@ -38,7 +38,7 @@ import { useNavigate } from "react-router-dom";
 import { ShareLinkModal } from "./ShareLinkModal";
 import { CustomDomainModal } from "./CustomDomainModal";
 import TreeDeleteModal from "@/components/TreeDeleteModal";
-import { SuggestedEditsPanel } from "./SuggestedEditsPanel";
+
 
 interface TreeSettingsViewProps {
   familyData: Family;
@@ -975,21 +975,6 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
           </CardContent>
         </Card>
 
-        {/* Suggested Edits Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              {t('tree_settings.edit_suggestions')}
-            </CardTitle>
-            <CardDescription>
-              {t('tree_settings.edit_suggestions_desc')}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <SuggestedEditsPanel familyId={familyData?.id || ''} />
-          </CardContent>
-        </Card>
 
         {/* Advanced Settings */}
         <Card>

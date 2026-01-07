@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { TreePine, Star, Settings, Users, Image } from "lucide-react";
+import { TreePine, Star, Settings, Users, Image, Lightbulb } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
 interface FamilyHeaderProps {
   familyData?: {
     name?: string;
@@ -27,12 +29,56 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useLanguage();
+  const [pendingSuggestionsCount, setPendingSuggestionsCount] = useState(0);
 
   // Determine which page is currently active
   const isTreeBuilderActive = location.pathname.includes('/family-builder-new');
   const isTreeViewActive = location.pathname.includes('/family-tree-view');
   const isGalleryActive = location.pathname.includes('/family-gallery');
   const isStatisticsActive = location.pathname.includes('/family-statistics');
+  const isSuggestionsActive = location.pathname.includes('/family-suggestions');
+
+  // Fetch pending suggestions count
+  useEffect(() => {
+    if (!familyId) return;
+
+    const fetchPendingCount = async () => {
+      const { count, error } = await supabase
+        .from('tree_edit_suggestions')
+        .select('*', { count: 'exact', head: true })
+        .eq('family_id', familyId)
+        .eq('status', 'pending')
+        .eq('is_email_verified', true);
+
+      if (!error && count !== null) {
+        setPendingSuggestionsCount(count);
+      }
+    };
+
+    fetchPendingCount();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel(`suggestions-count-${familyId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'tree_edit_suggestions',
+          filter: `family_id=eq.${familyId}`,
+        },
+        () => {
+          fetchPendingCount();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [familyId]);
+
   return <section className="py-2 relative">
       <div className="mb-2 relative">
         {/* Main Content Container - Horizontal Rectangle */}
@@ -101,6 +147,21 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
                       <span className={`hidden sm:inline ${isStatisticsActive ? 'relative z-10' : ''}`}>{t('family_header.statistics')}</span>
                       {isStatisticsActive && <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300"></div>}
                       {!isStatisticsActive && <div className="absolute inset-0 bg-gradient-to-r from-amber-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>}
+                    </button>
+                   
+                    {/* Suggestions Button */}
+                    <button onClick={() => navigate(`/family-suggestions?family=${familyId}`)} className={`group relative flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ${isSuggestionsActive ? "text-white bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 overflow-hidden" : "text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 backdrop-blur-sm"}`}>
+                      {isSuggestionsActive && <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>}
+                      <Lightbulb className={`h-3 w-3 sm:h-4 sm:w-4 ${isSuggestionsActive ? 'relative z-10' : 'text-orange-500 group-hover:text-orange-600 transition-colors duration-300'}`} />
+                      <span className={`hidden sm:inline ${isSuggestionsActive ? 'relative z-10' : ''}`}>{t('family_header.suggestions')}</span>
+                      {isSuggestionsActive && <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300"></div>}
+                      {!isSuggestionsActive && <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>}
+                      {/* Pending Badge */}
+                      {pendingSuggestionsCount > 0 && (
+                        <Badge className="absolute -top-2 -end-2 h-5 min-w-5 rounded-full p-0 flex items-center justify-center text-xs bg-red-500 text-white border-2 border-white dark:border-slate-800 z-20">
+                          {pendingSuggestionsCount > 99 ? '99+' : pendingSuggestionsCount}
+                        </Badge>
+                      )}
                     </button>
                    
                     <button onClick={onSettingsClick} className={`group relative flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ${isSettingsOpen ? "text-white bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 overflow-hidden" : "text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 backdrop-blur-sm"}`}>
