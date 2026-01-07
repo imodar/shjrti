@@ -28,8 +28,10 @@ import {
   Trash2,
   Eye,
   Calendar,
-  MessageSquare,
+  User,
+  ExternalLink,
   Clock,
+  MessageSquare,
   CheckCircle,
   XCircle,
   Loader2
@@ -472,71 +474,102 @@ const FamilySuggestions = () => {
                 </Card>
               ) : (
                 filteredSuggestions.map((suggestion) => (
-                  <Card key={suggestion.id} className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 shadow-xl">
-                    <CardContent className="pt-6">
-                      <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
-                        <div className="flex-1 space-y-3 w-full">
-                          {/* Status and Type Badges */}
+                <Card key={suggestion.id} className="group bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden">
+                    {/* Status Header Strip */}
+                    <div className={`h-1.5 ${
+                      suggestion.status === 'pending' ? 'bg-gradient-to-r from-amber-400 to-orange-400' :
+                      suggestion.status === 'accepted' ? 'bg-gradient-to-r from-emerald-400 to-teal-400' :
+                      'bg-gradient-to-r from-rose-400 to-pink-400'
+                    }`} />
+                    
+                    <CardContent className="p-5">
+                      <div className="space-y-4">
+                        {/* Top Row: Status, Type, Member */}
+                        <div className="flex flex-wrap items-center justify-between gap-3">
                           <div className="flex flex-wrap items-center gap-2">
                             {getStatusBadge(suggestion.status)}
-                            <Badge variant="outline">{suggestion.suggestion_type.replace("_", " ")}</Badge>
-                            {suggestion.family_tree_members && (
-                              <Badge variant="secondary">
-                                <Eye className="me-1 h-3 w-3" />
+                            <Badge variant="outline" className="text-xs font-medium bg-background/50">
+                              {suggestion.suggestion_type.replace("_", " ")}
+                            </Badge>
+                          </div>
+                          
+                          {/* Member Link */}
+                          {suggestion.family_tree_members && (
+                            <button
+                              onClick={() => navigate(`/family-builder-new?family=${familyId}&member=${suggestion.member_id}`)}
+                              className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary transition-colors group/member"
+                            >
+                              <User className="h-3.5 w-3.5" />
+                              <span className="text-sm font-medium group-hover/member:underline">
                                 {suggestion.family_tree_members.name}
-                              </Badge>
-                            )}
-                          </div>
-
-                          {/* Submitter Info */}
-                          <div>
-                            <div className="flex items-center gap-2 text-sm">
-                              <span className="font-medium">{suggestion.submitter_name}</span>
-                              <span className="text-muted-foreground">•</span>
-                              <span className="text-muted-foreground">{suggestion.submitter_email}</span>
-                            </div>
-                            <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-                              <Calendar className="h-3 w-3" />
-                              {formatDistanceToNow(new Date(suggestion.created_at), { 
-                                addSuffix: true,
-                                locale: currentLanguage === 'ar' ? ar : undefined 
-                              })}
-                            </div>
-                          </div>
-
-                          {/* Suggestion Text */}
-                          <p className="text-sm bg-muted p-3 rounded-md">{suggestion.suggestion_text}</p>
-
-                          {/* Admin Notes */}
-                          {suggestion.admin_notes && (
-                            <div className="text-sm">
-                              <span className="font-medium">{t('suggestions.notes')}</span>
-                              <span className="text-muted-foreground">{suggestion.admin_notes}</span>
-                            </div>
+                              </span>
+                              <ExternalLink className="h-3 w-3 opacity-0 group-hover/member:opacity-100 transition-opacity" />
+                            </button>
                           )}
                         </div>
 
+                        {/* Submitter Section */}
+                        <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/50">
+                          <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10 text-primary font-semibold text-sm">
+                            {suggestion.submitter_name.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm truncate">{suggestion.submitter_name}</p>
+                            <p className="text-xs text-muted-foreground truncate">{suggestion.submitter_email}</p>
+                          </div>
+                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-background/60 px-2.5 py-1 rounded-full">
+                            <Clock className="h-3 w-3" />
+                            {formatDistanceToNow(new Date(suggestion.created_at), { 
+                              addSuffix: true,
+                              locale: currentLanguage === 'ar' ? ar : undefined 
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Suggestion Content */}
+                        <div className="space-y-2">
+                          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                            <MessageSquare className="h-3.5 w-3.5" />
+                            {t('suggestions.suggestion_content') || 'محتوى الاقتراح'}
+                          </label>
+                          <div className="text-sm bg-gradient-to-br from-muted/80 to-muted/40 p-4 rounded-xl border border-muted-foreground/10 leading-relaxed">
+                            {suggestion.suggestion_text}
+                          </div>
+                        </div>
+
+                        {/* Admin Notes */}
+                        {suggestion.admin_notes && (
+                          <div className="space-y-2">
+                            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                              {t('suggestions.notes')}
+                            </label>
+                            <div className="text-sm text-muted-foreground bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg border border-amber-200/50 dark:border-amber-700/30">
+                              {suggestion.admin_notes}
+                            </div>
+                          </div>
+                        )}
+
                         {/* Actions */}
-                        <div className="flex flex-row sm:flex-col gap-2 w-full sm:w-auto">
+                        <div className="flex items-center gap-2 pt-2 border-t border-muted-foreground/10">
                           {suggestion.status === "pending" && (
                             <>
                               <Button
                                 size="sm"
-                                className="flex-1 sm:flex-none"
+                                className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-md"
                                 onClick={() => handleAction(suggestion, "accept")}
                                 disabled={actionLoading === suggestion.id}
                               >
-                                <Check className="h-4 w-4 me-1" />
+                                <Check className="h-4 w-4 me-1.5" />
                                 {t('suggestions.accept')}
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="flex-1 sm:flex-none"
+                                className="flex-1 border-rose-200 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-300 dark:border-rose-800 dark:hover:bg-rose-900/30"
                                 onClick={() => handleAction(suggestion, "reject")}
                                 disabled={actionLoading === suggestion.id}
                               >
-                                <X className="h-4 w-4 me-1" />
+                                <X className="h-4 w-4 me-1.5" />
                                 {t('suggestions.reject')}
                               </Button>
                             </>
@@ -544,7 +577,7 @@ const FamilySuggestions = () => {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="flex-1 sm:flex-none"
+                            className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                             onClick={() => handleDelete(suggestion.id)}
                             disabled={actionLoading === suggestion.id}
                           >
