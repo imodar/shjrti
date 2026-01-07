@@ -352,17 +352,17 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                       const fatherFirst = father.first_name || father.firstName || father.name?.split(' ')[0] || father.name;
                       if (grandfather) {
                         const grandFirst = grandfather.first_name || grandfather.firstName || grandfather.name?.split(' ')[0] || grandfather.name;
-                        return lastName ? `${firstName} بنت ${fatherFirst} بن ${grandFirst} (${lastName})` : `${firstName} بنت ${fatherFirst} بن ${grandFirst}`;
+                        return lastName ? `${firstName} بنت ${fatherFirst} بن ${grandFirst} ${lastName}` : `${firstName} بنت ${fatherFirst} بن ${grandFirst}`;
                       }
-                      return lastName ? `${firstName} بنت ${fatherFirst} (${lastName})` : `${firstName} بنت ${fatherFirst}`;
+                      return lastName ? `${firstName} بنت ${fatherFirst} ${lastName}` : `${firstName} بنت ${fatherFirst}`;
                     }
                     if (isInternal && member.gender === 'male' && father) {
                       const fatherFirst = father.first_name || father.firstName || father.name?.split(' ')[0] || father.name;
                       if (grandfather) {
                         const grandFirst = grandfather.first_name || grandfather.firstName || grandfather.name?.split(' ')[0] || grandfather.name;
-                        return lastName ? `${firstName} ابن ${fatherFirst} ابن ${grandFirst} (${lastName})` : `${firstName} ابن ${fatherFirst} ابن ${grandFirst}`;
+                        return lastName ? `${firstName} ابن ${fatherFirst} ابن ${grandFirst} ${lastName}` : `${firstName} ابن ${fatherFirst} ابن ${grandFirst}`;
                       }
-                      return lastName ? `${firstName} ابن ${fatherFirst} (${lastName})` : `${firstName} ابن ${fatherFirst}`;
+                      return lastName ? `${firstName} ابن ${fatherFirst} ${lastName}` : `${firstName} ابن ${fatherFirst}`;
                     }
                     
                     return lastName ? `${firstName} ${lastName}` : (member.name || firstName);
