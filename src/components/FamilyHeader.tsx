@@ -70,7 +70,7 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
               <div className="flex-1 px-2">
 
                  {/* Compact Actions */}
-                 <div className="flex items-center justify-center gap-1 sm:gap-2">
+                 <div className="flex items-center justify-start gap-1 sm:gap-2">
                    <button onClick={() => navigate(`/family-builder-new?family=${familyId}`)} className={`group relative flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ${isTreeBuilderActive ? "text-white bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 overflow-hidden" : "text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 backdrop-blur-sm"}`}>
                      {isTreeBuilderActive && <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>}
                      <Users className={`h-3 w-3 sm:h-4 sm:w-4 ${isTreeBuilderActive ? 'relative z-10' : 'text-emerald-500 group-hover:text-emerald-600 transition-colors duration-300'}`} />
