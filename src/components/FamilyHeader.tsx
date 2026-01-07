@@ -150,15 +150,15 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
                     </button>
                    
                     {/* Suggestions Button */}
-                    <button onClick={() => navigate(`/family-suggestions?family=${familyId}`)} className={`group relative flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ${isSuggestionsActive ? "text-white bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 overflow-hidden" : "text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 backdrop-blur-sm"}`}>
-                      {isSuggestionsActive && <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>}
+                    <button onClick={() => navigate(`/family-suggestions?family=${familyId}`)} className={`group relative flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-medium rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 ${isSuggestionsActive ? "text-white bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700" : "text-slate-700 dark:text-slate-300 bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50 hover:border-slate-300 dark:hover:border-slate-600 backdrop-blur-sm"}`}>
+                      {isSuggestionsActive && <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>}
                       <Lightbulb className={`h-3 w-3 sm:h-4 sm:w-4 ${isSuggestionsActive ? 'relative z-10' : 'text-orange-500 group-hover:text-orange-600 transition-colors duration-300'}`} />
                       <span className={`hidden sm:inline ${isSuggestionsActive ? 'relative z-10' : ''}`}>{t('family_header.suggestions')}</span>
                       {isSuggestionsActive && <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full opacity-0 group-hover:opacity-100 animate-ping transition-opacity duration-300"></div>}
                       {!isSuggestionsActive && <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>}
                       {/* Pending Badge */}
                       {pendingSuggestionsCount > 0 && (
-                        <Badge className="absolute -top-2 -end-2 h-5 min-w-5 rounded-full p-0 flex items-center justify-center text-xs bg-red-500 text-white border-2 border-white dark:border-slate-800 z-20">
+                        <Badge className="absolute -top-2 -end-2 h-5 min-w-5 rounded-full p-0 flex items-center justify-center text-xs bg-red-500 text-white border-2 border-white dark:border-slate-800 z-50 shadow-lg">
                           {pendingSuggestionsCount > 99 ? '99+' : pendingSuggestionsCount}
                         </Badge>
                       )}
