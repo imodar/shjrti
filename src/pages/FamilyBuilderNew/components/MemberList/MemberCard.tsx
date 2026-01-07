@@ -49,6 +49,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     const MAX_GENERATIONS = 3;
     const parts: string[] = [];
     let current: Member | undefined = startMember;
+    let previousMember: Member | undefined = undefined; // Track the child to get correct gender term
     let depth = 0;
     const maxDepth = 10; // Prevent infinite loops
     
@@ -58,9 +59,10 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         if (depth === 0) {
           parts.push(name);
         } else {
-          // Determine gender term for this ancestor
-          const currentGenderTerm = current.gender === 'female' ? 'بنت' : 'ابن';
-          parts.push(`${currentGenderTerm} ${name}`);
+          // Use the PREVIOUS member's gender to determine "ابن" or "ابنة"
+          // This means: "X is son/daughter of Y" - the term depends on X's gender, not Y's
+          const childGenderTerm = previousMember?.gender === 'female' ? 'ابنة' : 'ابن';
+          parts.push(`${childGenderTerm} ${name}`);
         }
       }
       
@@ -68,6 +70,9 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       if (current.is_founder || (current as any).isFounder || depth >= MAX_GENERATIONS) {
         break;
       }
+      
+      // Track previous member before moving to parent
+      previousMember = current;
       
       // Move to father
       const fatherId = current.father_id || (current as any).fatherId;
