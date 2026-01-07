@@ -673,6 +673,22 @@ const FamilyBuilderNew = () => {
     }
   }, [autoAdd, loading, familyData, formMode]);
 
+  // Auto-open member profile when member parameter is present in URL
+  useEffect(() => {
+    const memberId = searchParams.get('member');
+    if (memberId && !loading && familyMembers?.length > 0 && formMode === 'view') {
+      const member = familyMembers.find((m: any) => m.id === memberId);
+      if (member) {
+        setEditingMember(member);
+        setFormMode('profile');
+        // Remove member from URL to prevent reopening after close
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete('member');
+        navigate({ pathname: location.pathname, search: newParams.toString() }, { replace: true });
+      }
+    }
+  }, [searchParams, loading, familyMembers, formMode]);
+
   // Load spouses when data is updated and there's a member being edited
   useEffect(() => {
     if (editingMember?.id && familyMarriages?.length > 0 && familyMembers?.length > 0) {
