@@ -13,6 +13,7 @@ export const PROTECTED_ROUTES: string[] = [
   'family-tree-view',
   'family-statistics',
   'family-gallery',
+  'family-suggestions',
   'payments',
   'plan-selection',
   'payment-success',
