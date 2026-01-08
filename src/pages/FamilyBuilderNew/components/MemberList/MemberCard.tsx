@@ -46,41 +46,34 @@ export const MemberCard: React.FC<MemberCardProps> = ({
 
   // Helper: Build lineage chain - max 3 generations (father, grandfather, great-grandfather)
   const buildLineageChain = (startMember: Member): string => {
-    const MAX_GENERATIONS = 3;
+    const MAX_GENERATIONS = 3; // عدد الأسماء الأقصى (الشخص + أبوه + جده)
     const parts: string[] = [];
     let current: Member | undefined = startMember;
-    let previousMember: Member | undefined = undefined; // Track the child to get correct gender term
-    let depth = 0;
-    const maxDepth = 10; // Prevent infinite loops
+    let previousMember: Member | undefined = undefined;
+    const maxDepth = 10;
     
-    while (current && depth < maxDepth) {
+    while (current && parts.length < MAX_GENERATIONS) {
       const name = current.first_name || (current as any).name?.split(' ')[0] || (current as any).name;
       if (name) {
-        if (depth === 0) {
+        if (parts.length === 0) {
           parts.push(name);
         } else {
-          // Use the PREVIOUS member's gender to determine "ابن" or "ابنة"
-          // This means: "X is son/daughter of Y" - the term depends on X's gender, not Y's
           const childGenderTerm = previousMember?.gender === 'female' ? 'ابنة' : 'ابن';
           parts.push(`${childGenderTerm} ${name}`);
         }
       }
       
-      // Check if current is founder OR we reached max generations - stop here
-      if (current.is_founder || (current as any).isFounder || depth >= MAX_GENERATIONS) {
+      // توقف عند المؤسس
+      if (current.is_founder || (current as any).isFounder) {
         break;
       }
       
-      // Track previous member before moving to parent
       previousMember = current;
-      
-      // Move to father
       const fatherId = current.father_id || (current as any).fatherId;
       const father = fatherId ? familyMembers?.find(m => m?.id === fatherId) : undefined;
       
       if (father) {
         current = father;
-        depth++;
       } else {
         break;
       }
