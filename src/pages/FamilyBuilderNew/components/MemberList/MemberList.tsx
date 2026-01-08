@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Plus, Users, UserIcon, UserRoundIcon, Crown } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { MemberCard } from "./MemberCard";
+import { MemberCard } from "@/components/shared/MemberCard";
 
 interface MemberListProps {
   members: any[];

@@ -51,7 +51,7 @@ import FamilyBuilderNewSkeleton from "@/components/skeletons/FamilyBuilderNewSke
 import MemberProfileSkeleton from "@/components/skeletons/MemberProfileSkeleton";
 import { MemberProfileView } from "@/components/MemberProfileView";
 import { TreeSettingsButton } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsButton";
-import { MemberCard } from "@/pages/FamilyBuilderNew/components/MemberList/MemberCard";
+import { MemberCard } from "@/components/shared/MemberCard";
 import { MemberList } from "@/pages/FamilyBuilderNew/components/MemberList/MemberList";
 import { TreeSettingsView } from "@/pages/FamilyBuilderNew/components/TreeSettings/TreeSettingsView";
 import { CustomDomainCard } from "@/pages/FamilyBuilderNew/components/TreeSettings/CustomDomainCard";

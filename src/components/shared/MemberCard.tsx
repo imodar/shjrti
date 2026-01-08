@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { User, UserIcon, Crown, Skull, Edit2, Trash2, Calendar } from "lucide-react";
 import { DateDisplay } from "@/components/DateDisplay";
-import { Member, Marriage } from "../../types/family.types";
+import { Member, Marriage } from "@/types/family.types";
 import { useResolvedImageUrl } from "@/utils/useResolvedImageUrl";
 import { differenceInYears, parseISO } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
