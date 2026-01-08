@@ -158,7 +158,7 @@ export const FamilyHeader: React.FC<FamilyHeaderProps> = ({
                       {!isSuggestionsActive && <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 rounded-xl transition-opacity duration-300"></div>}
                       {/* Pending Badge */}
                       {pendingSuggestionsCount > 0 && (
-                        <Badge className="absolute -top-2 -end-2 h-4 min-w-4 lg:h-5 lg:min-w-5 rounded-full p-0 flex items-center justify-center text-[10px] lg:text-xs bg-red-500 text-white border-2 border-white dark:border-slate-800 z-50 shadow-lg">
+                        <Badge className="absolute -top-2 -end-2 h-4 min-w-4 lg:h-5 lg:min-w-5 rounded-full p-0 flex items-center justify-center text-[10px] lg:text-xs bg-red-500 text-white border-2 border-white dark:border-slate-800 z-[100] shadow-lg">
                           {pendingSuggestionsCount > 99 ? '99+' : pendingSuggestionsCount}
                         </Badge>
                       )}
