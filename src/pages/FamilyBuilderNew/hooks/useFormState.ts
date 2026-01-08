@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { Member } from "../types/family.types";
+import { Member } from "@/types/family.types";
 
 interface FormData {
   firstName: string;

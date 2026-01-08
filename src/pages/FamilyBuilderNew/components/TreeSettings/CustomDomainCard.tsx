@@ -9,7 +9,7 @@ import { Shield, AlertTriangle, CheckCircle, Globe, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { supabase } from "@/integrations/supabase/client";
-import { Family } from "../../types/family.types";
+import { Family } from "@/types/family.types";
 
 interface CustomDomainCardProps {
   familyData: Family;
