@@ -78,7 +78,7 @@ export const GlobalHeader = () => {
               </div>
 
               {/* Beta Badge */}
-              <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-red-500/50 border border-red-400/50 hover:scale-110 transition-transform duration-300">
+              <Badge className="hidden sm:flex bg-gradient-to-r from-red-500 to-red-600 text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full shadow-lg shadow-red-500/50 border border-red-400/50 hover:scale-110 transition-transform duration-300">
                 {t('badge.beta', 'إطلاق تجريبي')}
               </Badge>
             </Link>
