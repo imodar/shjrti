@@ -84,7 +84,7 @@ export const GlobalHeader = () => {
             </Link>
 
             {/* Desktop Navigation and Auth Section */}
-            <div className={`hidden md:flex items-center gap-8 ${direction === 'rtl' ? 'font-arabic' : ''}`}>
+            <div className={`hidden md:flex items-center gap-4 lg:gap-8 ${direction === 'rtl' ? 'font-arabic' : ''}`}>
               
               {user ? (
                 // Authenticated User Section
@@ -93,9 +93,9 @@ export const GlobalHeader = () => {
                   {isAdmin && (
                     <Link 
                       to="/admin" 
-                      className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-300 hover:text-amber-300 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300 border border-white/10 hover:border-amber-400/30 group"
+                      className="flex items-center gap-2 lg:gap-3 px-3 lg:px-6 py-2 lg:py-3 text-xs lg:text-sm font-medium text-gray-300 hover:text-amber-300 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300 border border-white/10 hover:border-amber-400/30 group whitespace-nowrap"
                     >
-                      <Shield className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                      <Shield className="h-3 w-3 lg:h-4 lg:w-4 group-hover:scale-110 transition-transform flex-shrink-0" />
                       <span>{t('nav.admin', 'لوحة الإدارة')}</span>
                     </Link>
                   )}
@@ -103,9 +103,9 @@ export const GlobalHeader = () => {
                   {/* Dashboard Link */}
                   <Link 
                     to="/dashboard" 
-                    className="flex items-center gap-3 px-6 py-3 text-sm font-medium text-gray-300 hover:text-emerald-300 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300 border border-white/10 hover:border-emerald-400/30 group"
+                    className="flex items-center gap-2 lg:gap-3 px-3 lg:px-6 py-2 lg:py-3 text-xs lg:text-sm font-medium text-gray-300 hover:text-emerald-300 rounded-xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300 border border-white/10 hover:border-emerald-400/30 group whitespace-nowrap"
                   >
-                    <Home className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                    <Home className="h-3 w-3 lg:h-4 lg:w-4 group-hover:scale-110 transition-transform flex-shrink-0" />
                     <span>{t('nav.my_account', 'حسابي')}</span>
                   </Link>
 
