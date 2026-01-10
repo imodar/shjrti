@@ -626,8 +626,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           const spouseLineage = buildSpouseLineageChain(spouse);
           const fullLineage = founderLastName ? `${spouseLineage} ${founderLastName}` : spouseLineage;
           
-          // Build the marriage lineage - استخدام "زوج/زوجة" بدل الترجمة للتوحيد مع MemberCard
-          const relationLabel = targetMember.gender === 'male' ? 'زوج' : 'زوجة';
+          // Build the marriage lineage
+          const relationLabel = targetMember.gender === 'male' ? t('profile.husband_of') : t('profile.wife_of');
           lineages.push(`${relationLabel} ${fullLineage}`);
         }
       }
