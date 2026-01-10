@@ -44,13 +44,24 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     return memberWithLastName?.last_name || '';
   };
 
-  // Helper: Build lineage chain - max 3 generations (father, grandfather, great-grandfather)
+  // Helper: Check if a member is from the family (has parent in tree or is founder)
+  const isMemberFromFamily = (m: Member | undefined): boolean => {
+    if (!m) return false;
+    if (m.is_founder || (m as any).isFounder) return true;
+    const fatherId = m.father_id || (m as any).fatherId;
+    const motherId = m.mother_id || (m as any).motherId;
+    return !!(
+      (fatherId && familyMembers?.find(fm => fm?.id === fatherId)) ||
+      (motherId && familyMembers?.find(fm => fm?.id === motherId))
+    );
+  };
+
+  // Helper: Build lineage chain - max 3 generations, follows family line (father or mother)
   const buildLineageChain = (startMember: Member): string => {
-    const MAX_GENERATIONS = 3; // عدد الأسماء الأقصى (الشخص + أبوه + جده)
+    const MAX_GENERATIONS = 3; // عدد الأسماء الأقصى (الشخص + أبوه/أمه + جده/جدته)
     const parts: string[] = [];
     let current: Member | undefined = startMember;
     let previousMember: Member | undefined = undefined;
-    const maxDepth = 10;
     
     while (current && parts.length < MAX_GENERATIONS) {
       const name = current.first_name || (current as any).name?.split(' ')[0] || (current as any).name;
@@ -69,12 +80,26 @@ export const MemberCard: React.FC<MemberCardProps> = ({
       }
       
       previousMember = current;
-      const fatherId = current.father_id || (current as any).fatherId;
-      const father = fatherId ? familyMembers?.find(m => m?.id === fatherId) : undefined;
       
-      if (father) {
+      // ابحث عن الوالد الموجود في العائلة (الأب أولاً، ثم الأم)
+      const fatherId = current.father_id || (current as any).fatherId;
+      const motherId = current.mother_id || (current as any).motherId;
+      const father = fatherId ? familyMembers?.find(m => m?.id === fatherId) : undefined;
+      const mother = motherId ? familyMembers?.find(m => m?.id === motherId) : undefined;
+      
+      // إذا الأب من العائلة، اتبعه
+      if (father && isMemberFromFamily(father)) {
         current = father;
-      } else {
+      } 
+      // إذا الأم من العائلة والأب ليس كذلك، اتبع الأم
+      else if (mother && isMemberFromFamily(mother)) {
+        current = mother;
+      }
+      // إذا الأب موجود (حتى لو من خارج العائلة)، اتبعه
+      else if (father) {
+        current = father;
+      }
+      else {
         break;
       }
     }
