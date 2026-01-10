@@ -555,40 +555,82 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
           familyMembers?.find(m => m.id === (targetMember.father_id || targetMember.fatherId));
         
         if (!memberHasFamilyFather && !targetMember.is_founder) {
-          const spouseFirstName = spouse.first_name || spouse.name.split(' ')[0];
-          
-          // Get spouse's lineage - include grandfather if available
-          let spouseLineage = '';
-          const spouseFatherId = spouse.father_id || spouse.fatherId;
-          if (spouseFatherId) {
-            const spouseFather = familyMembers?.find(f => f.id === spouseFatherId);
-            if (spouseFather) {
-              const spouseFatherFirstName = spouseFather.first_name || spouseFather.name.split(' ')[0];
+          // Helper: Check if a member is from the family
+          const isMemberFromFamily = (m: any): boolean => {
+            if (!m) return false;
+            if (m.is_founder || m.isFounder) return true;
+            const fId = m.father_id || m.fatherId;
+            const mId = m.mother_id || m.motherId;
+            return !!(
+              (fId && familyMembers?.find(fm => fm?.id === fId)) ||
+              (mId && familyMembers?.find(fm => fm?.id === mId))
+            );
+          };
 
-              // Use gender-aware term for child-of: female => "ابنة", male => "ابن"
-              const childOfTerm = spouse.gender === 'female' ? t('profile.daughter_of') : t('profile.son_of');
-              
-              // Check if grandfather exists for the spouse's father
-              const spouseGrandfatherId = spouseFather.father_id || spouseFather.fatherId;
-              if (spouseGrandfatherId) {
-                const spouseGrandfather = familyMembers?.find(f => f.id === spouseGrandfatherId);
-                if (spouseGrandfather) {
-                  const spouseGrandfatherFirstName = spouseGrandfather.first_name || spouseGrandfather.name.split(' ')[0];
-                  spouseLineage = ` ${childOfTerm} ${spouseFatherFirstName} ${t('profile.son_of_short')} ${spouseGrandfatherFirstName}`;
+          // Build lineage chain - max 3 generations, follows family line (father or mother)
+          const buildSpouseLineageChain = (startMember: any): string => {
+            const MAX_GENERATIONS = 3;
+            const parts: string[] = [];
+            let current: any = startMember;
+            let previousMember: any = undefined;
+            
+            while (current && parts.length < MAX_GENERATIONS) {
+              const name = current.first_name || current.name?.split(' ')[0] || current.name;
+              if (name) {
+                if (parts.length === 0) {
+                  parts.push(name);
                 } else {
-                  spouseLineage = ` ${childOfTerm} ${spouseFatherFirstName}`;
+                  // استخدام "بنت" بدل "ابنة" في نسب الزوج/الزوجة
+                  const femaleTerm = 'بنت';
+                  const childGenderTerm = previousMember?.gender === 'female' ? femaleTerm : 'ابن';
+                  parts.push(`${childGenderTerm} ${name}`);
                 }
-              } else {
-                spouseLineage = ` ${childOfTerm} ${spouseFatherFirstName}`;
+              }
+              
+              if (current.is_founder || current.isFounder) {
+                break;
+              }
+              
+              previousMember = current;
+              
+              const fatherId = current.father_id || current.fatherId;
+              const motherId = current.mother_id || current.motherId;
+              const father = fatherId ? familyMembers?.find(m => m?.id === fatherId) : undefined;
+              const mother = motherId ? familyMembers?.find(m => m?.id === motherId) : undefined;
+              
+              // إذا الأب من العائلة، اتبعه
+              if (father && isMemberFromFamily(father)) {
+                current = father;
+              } 
+              // إذا الأم من العائلة والأب ليس كذلك، اتبع الأم
+              else if (mother && isMemberFromFamily(mother)) {
+                current = mother;
+              }
+              // إذا الأب موجود (حتى لو من خارج العائلة)، اتبعه
+              else if (father) {
+                current = father;
+              }
+              else {
+                break;
               }
             }
-          }
+            
+            return parts.join(' ');
+          };
+
+          // Get founder's last_name
+          const founder = familyMembers?.find(m => m?.is_founder || (m as any)?.isFounder);
+          const founderLastName = founder?.last_name || familyMembers?.find(m => m?.last_name)?.last_name || '';
+          
+          // Build spouse lineage using the chain function
+          const spouseLineage = buildSpouseLineageChain(spouse);
+          const fullLineage = founderLastName ? `${spouseLineage} ${founderLastName}` : spouseLineage;
           
           // Build the marriage lineage
           if (targetMember.gender === 'male') {
-            lineages.push(`${t('profile.husband_of')} ${spouseFirstName}${spouseLineage}`);
+            lineages.push(`${t('profile.husband_of')} ${fullLineage}`);
           } else {
-            lineages.push(`${t('profile.wife_of')} ${spouseFirstName}${spouseLineage}`);
+            lineages.push(`${t('profile.wife_of')} ${fullLineage}`);
           }
         }
       }
