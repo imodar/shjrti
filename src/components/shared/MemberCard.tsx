@@ -57,7 +57,8 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   };
 
   // Helper: Build lineage chain - max 3 generations, follows family line (father or mother)
-  const buildLineageChain = (startMember: Member): string => {
+  // useBintForFemaleChild: إذا true استخدم "بنت" بدل "ابنة" (مطلوب في عرض نسب الزوج/الزوجة)
+  const buildLineageChain = (startMember: Member, useBintForFemaleChild: boolean = false): string => {
     const MAX_GENERATIONS = 3; // عدد الأسماء الأقصى (الشخص + أبوه/أمه + جده/جدته)
     const parts: string[] = [];
     let current: Member | undefined = startMember;
@@ -69,7 +70,8 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         if (parts.length === 0) {
           parts.push(name);
         } else {
-          const childGenderTerm = previousMember?.gender === 'female' ? 'ابنة' : 'ابن';
+          const femaleTerm = useBintForFemaleChild ? 'بنت' : 'ابنة';
+          const childGenderTerm = previousMember?.gender === 'female' ? femaleTerm : 'ابن';
           parts.push(`${childGenderTerm} ${name}`);
         }
       }
@@ -234,7 +236,8 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     
     if (spouseFather) {
       // استخدام buildLineageChain للحصول على سلسلة النسب كاملة (حتى 3 أجيال)
-      const spouseLineage = buildLineageChain(spouse);
+      // ونستخدم "بنت" بدل "ابنة" حسب المتطلب
+      const spouseLineage = buildLineageChain(spouse, true);
       const founderLastName = getFounderLastName();
       spouseInfo = `${spouseLineage} ${founderLastName}`;
     }
