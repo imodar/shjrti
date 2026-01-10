@@ -82,14 +82,6 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     return parts.join(' ');
   };
 
-  // Helper: Build short lineage (parent only) + founder's last_name for spouses from outside
-  const buildSpouseLineage = (parentMember: Member): string => {
-    const founderLastName = getFounderLastName();
-    const parentName = parentMember.first_name || (parentMember as any).name?.split(' ')[0] || (parentMember as any).name;
-    
-    // Just show parent's name + founder's last_name
-    return `${parentName} ${founderLastName}`;
-  };
 
   const generateMemberDisplayName = () => {
     // Check if this member is married into the family (actual spouse from outside)
@@ -216,8 +208,10 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     let spouseInfo = spouseName;
     
     if (spouseFather) {
-      const parentLineage = buildSpouseLineage(spouseFather);
-      spouseInfo += ` ${spouseGenderTerm} ${parentLineage}`;
+      // استخدام buildLineageChain للحصول على سلسلة النسب كاملة (حتى 3 أجيال)
+      const spouseLineage = buildLineageChain(spouse);
+      const founderLastName = getFounderLastName();
+      spouseInfo = `${spouseLineage} ${founderLastName}`;
     }
 
     const relationLabel = (member as any).gender === 'male' ? 'زوج' : 'زوجة';
