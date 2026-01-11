@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Add member mutation
 export const useAddMemberMutation = () => {
@@ -183,6 +184,60 @@ export const useUpdateMarriageMutation = () => {
       toast({
         title: 'خطأ',
         description: error.message || 'فشل في تحديث الزواج',
+        variant: 'destructive',
+      });
+    },
+  });
+};
+
+// Add founder parent mutation
+export const useAddFounderParentMutation = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async ({ 
+      familyId, 
+      parentData 
+    }: { 
+      familyId: string; 
+      parentData: {
+        parent_type: 'father' | 'mother';
+        first_name: string;
+        last_name?: string;
+        birth_date?: string;
+        death_date?: string;
+        is_alive: boolean;
+      };
+    }) => {
+      if (!user?.id) throw new Error('User not authenticated');
+      
+      const { data, error } = await supabase
+        .rpc('add_founder_parent', {
+          p_family_id: familyId,
+          p_parent_data: parentData,
+          p_user_id: user.id
+        });
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (newParentId, { familyId }) => {
+      // Invalidate and refetch all family data
+      queryClient.invalidateQueries({ queryKey: ['members', familyId] });
+      queryClient.invalidateQueries({ queryKey: ['family', familyId] });
+      queryClient.invalidateQueries({ queryKey: ['marriages', familyId] });
+      
+      toast({
+        title: 'تم بنجاح',
+        description: 'تمت إضافة المؤسس الجديد للشجرة',
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'خطأ',
+        description: error.message || 'فشل في إضافة الوالد',
         variant: 'destructive',
       });
     },

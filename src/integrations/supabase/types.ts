@@ -1669,6 +1669,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_founder_parent: {
+        Args: { p_family_id: string; p_parent_data: Json; p_user_id: string }
+        Returns: string
+      }
       admin_change_user_package: {
         Args: {
           change_type?: string
