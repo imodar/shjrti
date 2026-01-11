@@ -93,14 +93,23 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   // Add founder parent mutation
   const addFounderParentMutation = useAddFounderParentMutation();
   
-  // Check if member is founder - support both snake_case and camelCase
-  const isFounder = [member?.is_founder, (member as any)?.isFounder, (member as any)?.family_founder, (member as any)?.founder].some(v => v === true || v === 1 || v === 'true');
-  
-  // Get family_id - support both snake_case and camelCase
-  const memberFamilyId = member?.family_id || (member as any)?.familyId;
-  
-  // Get family name for confirmation
+  // Identify founder reliably (backend may send snake_case or camelCase)
   const founder = familyMembers?.find(m => m?.is_founder || (m as any)?.isFounder);
+
+  const isFounder =
+    [
+      member?.is_founder,
+      (member as any)?.isFounder,
+      (member as any)?.family_founder,
+      (member as any)?.founder,
+    ].some(v => v === true || v === 1 || v === 'true') ||
+    (founder?.id && founder.id === member?.id);
+
+  // Resolve family id reliably (member object may omit it in some flows)
+  const familyIdFromUrl = new URLSearchParams(location.search).get('family') || undefined;
+  const memberFamilyId = member?.family_id || (member as any)?.familyId || familyIdFromUrl;
+
+  // Get family name for confirmation
   const familyName = founder?.last_name || member?.last_name || '';
 
   // Resolve member image to signed URL
