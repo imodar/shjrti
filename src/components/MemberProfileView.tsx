@@ -93,8 +93,11 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   // Add founder parent mutation
   const addFounderParentMutation = useAddFounderParentMutation();
   
-  // Check if member is founder
+  // Check if member is founder - support both snake_case and camelCase
   const isFounder = [member?.is_founder, (member as any)?.isFounder, (member as any)?.family_founder, (member as any)?.founder].some(v => v === true || v === 1 || v === 'true');
+  
+  // Get family_id - support both snake_case and camelCase
+  const memberFamilyId = member?.family_id || (member as any)?.familyId;
   
   // Get family name for confirmation
   const founder = familyMembers?.find(m => m?.is_founder || (m as any)?.isFounder);
@@ -950,7 +953,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         )}
                         
                         {/* Add Parent to Founder Button - only show for founder and non-readOnly */}
-                        {!readOnly && isFounder && member?.family_id && (
+                        {!readOnly && isFounder && memberFamilyId && (
                           <Button 
                             onClick={() => setShowAddParentModal(true)}
                             variant="outline"
@@ -1806,9 +1809,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         currentFounder={member}
         familyName={familyName}
         onConfirm={async (parentData) => {
-          if (!user?.id) return;
+          if (!user?.id || !memberFamilyId) return;
           await addFounderParentMutation.mutateAsync({
-            familyId: member.family_id,
+            familyId: memberFamilyId,
             parentData,
             userId: user.id
           });
