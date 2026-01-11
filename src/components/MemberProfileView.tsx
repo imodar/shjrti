@@ -12,6 +12,7 @@ import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { uploadMemberImage } from '@/utils/imageUpload';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { ImageUploadModal } from '@/components/ImageUploadModal';
 import { SuggestEditDialog } from '@/components/SuggestEditDialog';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -87,6 +88,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const { toast } = useToast();
   const location = useLocation();
   const { t, direction } = useLanguage();
+  const { user } = useAuth();
   
   // Add founder parent mutation
   const addFounderParentMutation = useAddFounderParentMutation();
@@ -1804,9 +1806,11 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         currentFounder={member}
         familyName={familyName}
         onConfirm={async (parentData) => {
+          if (!user?.id) return;
           await addFounderParentMutation.mutateAsync({
             familyId: member.family_id,
-            parentData
+            parentData,
+            userId: user.id
           });
         }}
         isLoading={addFounderParentMutation.isPending}
