@@ -42,8 +42,11 @@ import {
   Clock,
   Eye,
   Sparkles,
-  X
+  X,
+  UserPlus
 } from 'lucide-react';
+import { AddFounderParentModal } from '@/components/AddFounderParentModal';
+import { useAddFounderParentMutation } from '@/hooks/mutations/useFamilyMutations';
 
 interface MemberProfileViewProps {
   member: any;
@@ -80,9 +83,20 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [showImageUploadModal, setShowImageUploadModal] = useState(false);
   const [showSuggestDialog, setShowSuggestDialog] = useState(false);
+  const [showAddParentModal, setShowAddParentModal] = useState(false);
   const { toast } = useToast();
   const location = useLocation();
   const { t, direction } = useLanguage();
+  
+  // Add founder parent mutation
+  const addFounderParentMutation = useAddFounderParentMutation();
+  
+  // Check if member is founder
+  const isFounder = [member?.is_founder, (member as any)?.isFounder, (member as any)?.family_founder, (member as any)?.founder].some(v => v === true || v === 1 || v === 'true');
+  
+  // Get family name for confirmation
+  const founder = familyMembers?.find(m => m?.is_founder || (m as any)?.isFounder);
+  const familyName = founder?.last_name || member?.last_name || '';
 
   // Resolve member image to signed URL
   const memberImageSrc = useResolvedImageUrl(member?.image_url || (member as any)?.image);
@@ -916,7 +930,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                      </div>
                      
                      {/* Action Buttons */}
-                     <div className="flex justify-center sm:justify-start gap-2 mt-4">
+                     <div className="flex flex-wrap justify-center sm:justify-start gap-2 mt-4">
                        {!readOnly && onEdit && (
                           <Button 
                             onClick={() => {
@@ -932,6 +946,19 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                             {t('profile.edit_info')}
                           </Button>
                         )}
+                        
+                        {/* Add Parent to Founder Button - only show for founder and non-readOnly */}
+                        {!readOnly && isFounder && member?.family_id && (
+                          <Button 
+                            onClick={() => setShowAddParentModal(true)}
+                            variant="outline"
+                            className="px-4 py-2 border-amber-500 text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-950/30"
+                          >
+                            <UserPlus className="h-4 w-4 ml-2" />
+                            {t('founder.add_parent', 'إضافة والد للمؤسس')}
+                          </Button>
+                        )}
+                        
                          {!location.pathname.includes('family-builder-new') && (
                            <Button 
                              onClick={() => setShowSuggestDialog(true)}
@@ -1768,6 +1795,21 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         familyId={member.family_id}
         memberId={member.id}
         memberName={member.name}
+      />
+      
+      {/* Add Founder Parent Modal */}
+      <AddFounderParentModal
+        isOpen={showAddParentModal}
+        onClose={() => setShowAddParentModal(false)}
+        currentFounder={member}
+        familyName={familyName}
+        onConfirm={async (parentData) => {
+          await addFounderParentMutation.mutateAsync({
+            familyId: member.family_id,
+            parentData
+          });
+        }}
+        isLoading={addFounderParentMutation.isPending}
       />
     </div>
   );
