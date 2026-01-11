@@ -951,19 +951,6 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                             {t('profile.edit_info')}
                           </Button>
                         )}
-                        
-                        {/* Add Parent to Founder Button - only show for founder and non-readOnly */}
-                        {!readOnly && isFounder && memberFamilyId && (
-                          <Button 
-                            onClick={() => setShowAddParentModal(true)}
-                            variant="outline"
-                            className="px-4 py-2 border-amber-500 text-amber-700 hover:bg-amber-50 dark:text-amber-400 dark:hover:bg-amber-950/30"
-                          >
-                            <UserPlus className="h-4 w-4 ml-2" />
-                            {t('founder.add_parent', 'إضافة والد للمؤسس')}
-                          </Button>
-                        )}
-                        
                          {!location.pathname.includes('family-builder-new') && (
                            <Button 
                              onClick={() => setShowSuggestDialog(true)}
@@ -1745,27 +1732,46 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
             </div>
 
             {/* Delete Action */}
-            {!readOnly && onDelete && (
+            {!readOnly && (onDelete || (isFounder && memberFamilyId)) && (
               <div className="bg-card rounded-xl border border-destructive/20 p-4">
                 <h4 className="font-bold text-sm mb-4 text-destructive">{t('profile.danger_zone')}</h4>
-                <Button 
-                  onClick={() => {
-                    if (isSpouse && onSpouseDeleteWarning) {
-                      onSpouseDeleteWarning();
-                    } else {
-                      onDelete();
-                    }
-                  }}
-                  variant="destructive" 
-                  className="w-full"
-                  size="sm"
-                >
-                  <Trash2 className="h-4 w-4 ml-2" />
-                  {t('profile.delete_member')}
-                </Button>
-                <p className="text-xs text-destructive/70 mt-2 text-center">
-                  {t('profile.cannot_undo')}
-                </p>
+
+                {/* Founder-only: Add parent to founder */}
+                {isFounder && memberFamilyId && (
+                  <Button
+                    onClick={() => setShowAddParentModal(true)}
+                    variant="outline"
+                    className="w-full border-destructive/40 text-destructive hover:bg-destructive/10"
+                    size="sm"
+                  >
+                    <UserPlus className="h-4 w-4 ml-2" />
+                    {t('founder.add_parent', 'إضافة والد للمؤسس')}
+                  </Button>
+                )}
+
+                {/* Delete member */}
+                {onDelete && (
+                  <>
+                    <Button 
+                      onClick={() => {
+                        if (isSpouse && onSpouseDeleteWarning) {
+                          onSpouseDeleteWarning();
+                        } else {
+                          onDelete();
+                        }
+                      }}
+                      variant="destructive" 
+                      className="w-full mt-3"
+                      size="sm"
+                    >
+                      <Trash2 className="h-4 w-4 ml-2" />
+                      {t('profile.delete_member')}
+                    </Button>
+                    <p className="text-xs text-destructive/70 mt-2 text-center">
+                      {t('profile.cannot_undo')}
+                    </p>
+                  </>
+                )}
               </div>
             )}
           </div>
