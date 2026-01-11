@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/contexts/AuthContext';
+
 
 // Add member mutation
 export const useAddMemberMutation = () => {
@@ -194,12 +194,12 @@ export const useUpdateMarriageMutation = () => {
 export const useAddFounderParentMutation = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async ({ 
       familyId, 
-      parentData 
+      parentData,
+      userId
     }: { 
       familyId: string; 
       parentData: {
@@ -210,14 +210,15 @@ export const useAddFounderParentMutation = () => {
         death_date?: string;
         is_alive: boolean;
       };
+      userId: string;
     }) => {
-      if (!user?.id) throw new Error('User not authenticated');
+      if (!userId) throw new Error('User not authenticated');
       
       const { data, error } = await supabase
         .rpc('add_founder_parent', {
           p_family_id: familyId,
           p_parent_data: parentData,
-          p_user_id: user.id
+          p_user_id: userId
         });
       
       if (error) throw error;
