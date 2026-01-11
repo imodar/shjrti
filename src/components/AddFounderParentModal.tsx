@@ -4,26 +4,29 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { AlertTriangle, Crown, ArrowDown, UserPlus, Check, ChevronRight, ChevronLeft, Loader2 } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { AlertTriangle, Crown, ArrowDown, Heart, Check, ChevronRight, ChevronLeft, Loader2, Users } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { EnhancedDatePicker } from '@/components/ui/enhanced-date-picker';
 import { cn } from '@/lib/utils';
 import { Member } from '@/types/family.types';
+
+interface ParentData {
+  first_name: string;
+  last_name?: string;
+  birth_date?: string;
+  death_date?: string;
+  is_alive: boolean;
+}
 
 interface AddFounderParentModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentFounder: Member | null;
   familyName: string;
-  onConfirm: (parentData: {
-    parent_type: 'father' | 'mother';
-    first_name: string;
-    last_name?: string;
-    birth_date?: string;
-    death_date?: string;
-    is_alive: boolean;
+  onConfirm: (data: {
+    father: ParentData;
+    mother: ParentData;
   }) => Promise<void>;
   isLoading?: boolean;
 }
@@ -41,13 +44,19 @@ export const AddFounderParentModal: React.FC<AddFounderParentModalProps> = ({
   const { t, direction } = useLanguage();
   const [currentStep, setCurrentStep] = useState<Step>('warning');
   
-  // Form data
-  const [parentType, setParentType] = useState<'father' | 'mother'>('father');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState(currentFounder?.last_name || '');
-  const [birthDate, setBirthDate] = useState<Date | undefined>();
-  const [deathDate, setDeathDate] = useState<Date | undefined>();
-  const [isAlive, setIsAlive] = useState(true);
+  // Father form data
+  const [fatherFirstName, setFatherFirstName] = useState('');
+  const [fatherLastName, setFatherLastName] = useState(currentFounder?.last_name || '');
+  const [fatherBirthDate, setFatherBirthDate] = useState<Date | undefined>();
+  const [fatherDeathDate, setFatherDeathDate] = useState<Date | undefined>();
+  const [fatherIsAlive, setFatherIsAlive] = useState(true);
+  
+  // Mother form data
+  const [motherFirstName, setMotherFirstName] = useState('');
+  const [motherLastName, setMotherLastName] = useState('');
+  const [motherBirthDate, setMotherBirthDate] = useState<Date | undefined>();
+  const [motherDeathDate, setMotherDeathDate] = useState<Date | undefined>();
+  const [motherIsAlive, setMotherIsAlive] = useState(true);
   
   // Confirmation
   const [understood, setUnderstood] = useState(false);
@@ -55,12 +64,16 @@ export const AddFounderParentModal: React.FC<AddFounderParentModalProps> = ({
 
   const resetForm = () => {
     setCurrentStep('warning');
-    setParentType('father');
-    setFirstName('');
-    setLastName(currentFounder?.last_name || '');
-    setBirthDate(undefined);
-    setDeathDate(undefined);
-    setIsAlive(true);
+    setFatherFirstName('');
+    setFatherLastName(currentFounder?.last_name || '');
+    setFatherBirthDate(undefined);
+    setFatherDeathDate(undefined);
+    setFatherIsAlive(true);
+    setMotherFirstName('');
+    setMotherLastName('');
+    setMotherBirthDate(undefined);
+    setMotherDeathDate(undefined);
+    setMotherIsAlive(true);
     setUnderstood(false);
     setConfirmationText('');
   };
@@ -72,22 +85,31 @@ export const AddFounderParentModal: React.FC<AddFounderParentModalProps> = ({
 
   const handleConfirm = async () => {
     await onConfirm({
-      parent_type: parentType,
-      first_name: firstName,
-      last_name: lastName || undefined,
-      birth_date: birthDate?.toISOString().split('T')[0],
-      death_date: deathDate?.toISOString().split('T')[0],
-      is_alive: isAlive,
+      father: {
+        first_name: fatherFirstName,
+        last_name: fatherLastName || undefined,
+        birth_date: fatherBirthDate?.toISOString().split('T')[0],
+        death_date: fatherDeathDate?.toISOString().split('T')[0],
+        is_alive: fatherIsAlive,
+      },
+      mother: {
+        first_name: motherFirstName,
+        last_name: motherLastName || undefined,
+        birth_date: motherBirthDate?.toISOString().split('T')[0],
+        death_date: motherDeathDate?.toISOString().split('T')[0],
+        is_alive: motherIsAlive,
+      },
     });
     handleClose();
   };
 
   const canProceedToData = true;
-  const canProceedToConfirmation = firstName.trim().length > 0;
+  const canProceedToConfirmation = fatherFirstName.trim().length > 0 && motherFirstName.trim().length > 0;
   const canConfirm = understood && confirmationText.trim().toLowerCase() === familyName.trim().toLowerCase();
 
   const currentFounderName = currentFounder?.first_name || currentFounder?.name || 'المؤسس الحالي';
-  const newFounderName = firstName || t('founder.new_parent_name', 'الوالد الجديد');
+  const newFatherName = fatherFirstName || t('founder.new_father_name', 'الأب الجديد');
+  const newMotherName = motherFirstName || t('founder.new_mother_name', 'الأم الجديدة');
   const childRelation = currentFounder?.gender === 'female' 
     ? t('founder.daughter_of_new_founder', 'ابنة المؤسس الجديد')
     : t('founder.son_of_new_founder', 'ابن المؤسس الجديد');
@@ -157,7 +179,7 @@ export const AddFounderParentModal: React.FC<AddFounderParentModalProps> = ({
           {t('founder.add_parent_warning_title', 'تغيير مؤسس شجرة العائلة')}
         </h3>
         <p className="text-amber-700 dark:text-amber-300">
-          {t('founder.add_parent_warning_description', 'أنت على وشك إضافة والد للمؤسس الحالي. هذا الإجراء سيغير هيكل الشجرة بالكامل.')}
+          {t('founder.add_parents_warning_description', 'أنت على وشك إضافة والدين (أب وأم) للمؤسس الحالي. هذا الإجراء سيغير هيكل الشجرة بالكامل.')}
         </p>
       </div>
 
@@ -170,7 +192,15 @@ export const AddFounderParentModal: React.FC<AddFounderParentModalProps> = ({
         <ul className="space-y-2 text-sm text-muted-foreground">
           <li className="flex items-start gap-2">
             <span className="text-amber-500 mt-1">•</span>
-            <span>{t('founder.new_founder_will_be', 'سيصبح الوالد الجديد هو المؤسس')}</span>
+            <span>{t('founder.new_father_founder', 'سيصبح الأب الجديد هو المؤسس')}</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-amber-500 mt-1">•</span>
+            <span>{t('founder.mother_as_wife', 'ستكون الأم زوجة المؤسس الجديد')}</span>
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="text-amber-500 mt-1">•</span>
+            <span>{t('founder.marriage_created', 'سيتم إنشاء علاقة زوجية بين الأب والأم')}</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-amber-500 mt-1">•</span>
@@ -212,147 +242,193 @@ export const AddFounderParentModal: React.FC<AddFounderParentModalProps> = ({
   );
 
   const renderDataStep = () => (
-    <div className="space-y-6">
-      {/* Parent Type Selection */}
-      <div className="space-y-3">
-        <Label className="text-base font-medium">{t('founder.parent_type', 'نوع الوالد')}</Label>
-        <RadioGroup
-          value={parentType}
-          onValueChange={(value) => setParentType(value as 'father' | 'mother')}
-          className="grid grid-cols-2 gap-4"
-        >
-          <Label
-            htmlFor="father"
-            className={cn(
-              'flex items-center justify-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all',
-              parentType === 'father'
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30'
-                : 'border-muted hover:border-blue-300'
-            )}
-          >
-            <RadioGroupItem value="father" id="father" className="sr-only" />
-            <UserPlus className={cn(
-              'h-5 w-5',
-              parentType === 'father' ? 'text-blue-600' : 'text-muted-foreground'
-            )} />
-            <span className={cn(
-              'font-medium',
-              parentType === 'father' ? 'text-blue-700 dark:text-blue-300' : 'text-muted-foreground'
-            )}>
-              {t('founder.add_father', 'إضافة أب')}
-            </span>
-          </Label>
-          <Label
-            htmlFor="mother"
-            className={cn(
-              'flex items-center justify-center gap-2 p-4 rounded-xl border-2 cursor-pointer transition-all',
-              parentType === 'mother'
-                ? 'border-pink-500 bg-pink-50 dark:bg-pink-950/30'
-                : 'border-muted hover:border-pink-300'
-            )}
-          >
-            <RadioGroupItem value="mother" id="mother" className="sr-only" />
-            <UserPlus className={cn(
-              'h-5 w-5',
-              parentType === 'mother' ? 'text-pink-600' : 'text-muted-foreground'
-            )} />
-            <span className={cn(
-              'font-medium',
-              parentType === 'mother' ? 'text-pink-700 dark:text-pink-300' : 'text-muted-foreground'
-            )}>
-              {t('founder.add_mother', 'إضافة أم')}
-            </span>
-          </Label>
-        </RadioGroup>
-      </div>
+    <div className="space-y-6 max-h-[70vh] overflow-y-auto">
+      {/* Father Section */}
+      <div className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+        <h4 className="font-semibold text-blue-800 dark:text-blue-200 mb-4 flex items-center gap-2">
+          <Crown className="h-4 w-4 text-yellow-500" />
+          {t('founder.father_info', 'بيانات الأب (المؤسس الجديد)')}
+        </h4>
+        
+        {/* Father Name Fields */}
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="space-y-2">
+            <Label htmlFor="fatherFirstName">{t('common.first_name', 'الاسم الأول')} *</Label>
+            <Input
+              id="fatherFirstName"
+              value={fatherFirstName}
+              onChange={(e) => setFatherFirstName(e.target.value)}
+              placeholder="مثال: أحمد"
+              className="text-base bg-white dark:bg-gray-900"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="fatherLastName">{t('common.last_name', 'اسم العائلة')}</Label>
+            <Input
+              id="fatherLastName"
+              value={fatherLastName}
+              onChange={(e) => setFatherLastName(e.target.value)}
+              placeholder={familyName}
+              className="text-base bg-white dark:bg-gray-900"
+            />
+          </div>
+        </div>
 
-      {/* Name Fields */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="firstName">{t('common.first_name', 'الاسم الأول')} *</Label>
-          <Input
-            id="firstName"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            placeholder={parentType === 'father' ? 'مثال: أحمد' : 'مثال: فاطمة'}
-            className="text-base"
-          />
+        {/* Father Date Fields */}
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="space-y-2">
+            <Label>{t('common.birth_date', 'تاريخ الميلاد')}</Label>
+            <EnhancedDatePicker
+              value={fatherBirthDate}
+              onChange={setFatherBirthDate}
+              placeholder={t('common.select_date', 'اختر التاريخ')}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>{t('common.death_date', 'تاريخ الوفاة')}</Label>
+            <EnhancedDatePicker
+              value={fatherDeathDate}
+              onChange={(date) => {
+                setFatherDeathDate(date);
+                if (date) setFatherIsAlive(false);
+              }}
+              placeholder={t('common.select_date', 'اختر التاريخ')}
+              disabled={fatherIsAlive}
+            />
+          </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="lastName">{t('common.last_name', 'اسم العائلة')}</Label>
-          <Input
-            id="lastName"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            placeholder={familyName}
-            className="text-base"
-          />
-        </div>
-      </div>
 
-      {/* Date Fields */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>{t('common.birth_date', 'تاريخ الميلاد')}</Label>
-          <EnhancedDatePicker
-            value={birthDate}
-            onChange={setBirthDate}
-            placeholder={t('common.select_date', 'اختر التاريخ')}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>{t('common.death_date', 'تاريخ الوفاة')}</Label>
-          <EnhancedDatePicker
-            value={deathDate}
-            onChange={(date) => {
-              setDeathDate(date);
-              if (date) setIsAlive(false);
+        {/* Father Is Alive Checkbox */}
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="fatherIsAlive"
+            checked={fatherIsAlive}
+            onCheckedChange={(checked) => {
+              setFatherIsAlive(!!checked);
+              if (checked) setFatherDeathDate(undefined);
             }}
-            placeholder={t('common.select_date', 'اختر التاريخ')}
-            disabled={isAlive}
           />
+          <Label htmlFor="fatherIsAlive" className="cursor-pointer">
+            {t('common.is_alive', 'على قيد الحياة')}
+          </Label>
         </div>
       </div>
 
-      {/* Is Alive Checkbox */}
-      <div className="flex items-center gap-2">
-        <Checkbox
-          id="isAlive"
-          checked={isAlive}
-          onCheckedChange={(checked) => {
-            setIsAlive(!!checked);
-            if (checked) setDeathDate(undefined);
-          }}
-        />
-        <Label htmlFor="isAlive" className="cursor-pointer">
-          {t('common.is_alive', 'على قيد الحياة')}
-        </Label>
+      {/* Marriage Link */}
+      <div className="flex items-center justify-center gap-2 text-pink-500">
+        <Heart className="h-5 w-5 fill-current" />
+        <span className="text-sm font-medium">{t('founder.marriage_link', 'علاقة زوجية')}</span>
+        <Heart className="h-5 w-5 fill-current" />
+      </div>
+
+      {/* Mother Section */}
+      <div className="bg-pink-50 dark:bg-pink-950/20 rounded-xl p-4 border border-pink-200 dark:border-pink-800">
+        <h4 className="font-semibold text-pink-800 dark:text-pink-200 mb-4 flex items-center gap-2">
+          <Users className="h-4 w-4" />
+          {t('founder.mother_info', 'بيانات الأم (زوجة المؤسس الجديد)')}
+        </h4>
+        
+        {/* Mother Name Fields */}
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="space-y-2">
+            <Label htmlFor="motherFirstName">{t('common.first_name', 'الاسم الأول')} *</Label>
+            <Input
+              id="motherFirstName"
+              value={motherFirstName}
+              onChange={(e) => setMotherFirstName(e.target.value)}
+              placeholder="مثال: فاطمة"
+              className="text-base bg-white dark:bg-gray-900"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="motherLastName">{t('common.last_name', 'اسم العائلة')}</Label>
+            <Input
+              id="motherLastName"
+              value={motherLastName}
+              onChange={(e) => setMotherLastName(e.target.value)}
+              placeholder={t('common.optional', 'اختياري')}
+              className="text-base bg-white dark:bg-gray-900"
+            />
+          </div>
+        </div>
+
+        {/* Mother Date Fields */}
+        <div className="grid grid-cols-2 gap-4 mb-4">
+          <div className="space-y-2">
+            <Label>{t('common.birth_date', 'تاريخ الميلاد')}</Label>
+            <EnhancedDatePicker
+              value={motherBirthDate}
+              onChange={setMotherBirthDate}
+              placeholder={t('common.select_date', 'اختر التاريخ')}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>{t('common.death_date', 'تاريخ الوفاة')}</Label>
+            <EnhancedDatePicker
+              value={motherDeathDate}
+              onChange={(date) => {
+                setMotherDeathDate(date);
+                if (date) setMotherIsAlive(false);
+              }}
+              placeholder={t('common.select_date', 'اختر التاريخ')}
+              disabled={motherIsAlive}
+            />
+          </div>
+        </div>
+
+        {/* Mother Is Alive Checkbox */}
+        <div className="flex items-center gap-2">
+          <Checkbox
+            id="motherIsAlive"
+            checked={motherIsAlive}
+            onCheckedChange={(checked) => {
+              setMotherIsAlive(!!checked);
+              if (checked) setMotherDeathDate(undefined);
+            }}
+          />
+          <Label htmlFor="motherIsAlive" className="cursor-pointer">
+            {t('common.is_alive', 'على قيد الحياة')}
+          </Label>
+        </div>
       </div>
 
       {/* Preview Card */}
       <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
         <h4 className="font-medium text-amber-800 dark:text-amber-200 mb-4 flex items-center gap-2">
           <Crown className="h-4 w-4" />
-          {t('founder.new_founder_preview', 'معاينة المؤسس الجديد')}
+          {t('founder.new_structure_preview', 'معاينة الهيكل الجديد')}
         </h4>
         <div className="flex flex-col items-center gap-3">
-          {/* New Founder */}
-          <div className="flex items-center gap-3 bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm w-full">
-            <Avatar className={cn(
-              'h-12 w-12 ring-2',
-              parentType === 'father' ? 'ring-blue-500' : 'ring-pink-500'
-            )}>
-              <AvatarFallback className={cn(
-                parentType === 'father' ? 'bg-blue-100 text-blue-700' : 'bg-pink-100 text-pink-700'
-              )}>
-                {firstName ? firstName.charAt(0) : '؟'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <p className="font-semibold text-foreground">{newFounderName}</p>
-              <div className="flex items-center gap-1 text-yellow-600">
-                <Crown className="h-3 w-3" />
-                <span className="text-xs">{t('member.founder', 'المؤسس الجديد')}</span>
+          {/* Parents Row */}
+          <div className="flex items-center gap-4 w-full justify-center">
+            {/* Father Card */}
+            <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm">
+              <Avatar className="h-10 w-10 ring-2 ring-blue-500">
+                <AvatarFallback className="bg-blue-100 text-blue-700">
+                  {fatherFirstName ? fatherFirstName.charAt(0) : '؟'}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="font-semibold text-foreground text-sm">{newFatherName}</p>
+                <div className="flex items-center gap-1 text-yellow-600">
+                  <Crown className="h-3 w-3" />
+                  <span className="text-xs">{t('member.founder', 'المؤسس')}</span>
+                </div>
+              </div>
+            </div>
+            
+            <Heart className="h-5 w-5 text-pink-500 fill-current" />
+            
+            {/* Mother Card */}
+            <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm">
+              <Avatar className="h-10 w-10 ring-2 ring-pink-500">
+                <AvatarFallback className="bg-pink-100 text-pink-700">
+                  {motherFirstName ? motherFirstName.charAt(0) : '؟'}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className="font-semibold text-foreground text-sm">{newMotherName}</p>
+                <span className="text-xs text-muted-foreground">{t('profile.wife', 'الزوجة')}</span>
               </div>
             </div>
           </div>
@@ -360,13 +436,13 @@ export const AddFounderParentModal: React.FC<AddFounderParentModalProps> = ({
           <ArrowDown className="h-5 w-5 text-amber-500" />
           
           {/* Current Founder (becomes child) */}
-          <div className="flex items-center gap-3 bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm w-full opacity-75">
+          <div className="flex items-center gap-3 bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm opacity-75">
             <Avatar className="h-10 w-10">
               <AvatarFallback className="bg-muted">
                 {currentFounderName.charAt(0)}
               </AvatarFallback>
             </Avatar>
-            <div className="flex-1">
+            <div>
               <p className="font-medium text-foreground">{currentFounderName}</p>
               <p className="text-xs text-muted-foreground">{childRelation}</p>
             </div>
@@ -375,7 +451,7 @@ export const AddFounderParentModal: React.FC<AddFounderParentModalProps> = ({
       </div>
 
       {/* Actions */}
-      <div className="flex gap-3 pt-2">
+      <div className="flex gap-3 pt-2 sticky bottom-0 bg-background">
         <Button
           variant="outline"
           onClick={() => setCurrentStep('warning')}
@@ -416,13 +492,18 @@ export const AddFounderParentModal: React.FC<AddFounderParentModalProps> = ({
             <span className="font-medium">{currentFounderName}</span>
           </div>
           <div className="flex justify-between items-center py-1 border-b border-muted">
-            <span className="text-muted-foreground">{t('founder.new_founder_will_be', 'المؤسس الجديد')}</span>
-            <span className="font-medium">{newFounderName}</span>
+            <span className="text-muted-foreground">{t('founder.new_father_founder', 'المؤسس الجديد (الأب)')}</span>
+            <span className="font-medium text-blue-600">{newFatherName}</span>
+          </div>
+          <div className="flex justify-between items-center py-1 border-b border-muted">
+            <span className="text-muted-foreground">{t('founder.new_mother_wife', 'الأم (زوجة المؤسس)')}</span>
+            <span className="font-medium text-pink-600">{newMotherName}</span>
           </div>
           <div className="flex justify-between items-center py-1">
-            <span className="text-muted-foreground">{t('founder.parent_type', 'نوع الوالد')}</span>
-            <span className="font-medium">
-              {parentType === 'father' ? t('founder.add_father', 'أب') : t('founder.add_mother', 'أم')}
+            <span className="text-muted-foreground">{t('founder.marriage_status', 'العلاقة الزوجية')}</span>
+            <span className="font-medium flex items-center gap-1">
+              <Heart className="h-3 w-3 text-pink-500 fill-current" />
+              {t('member.married', 'متزوجان')}
             </span>
           </div>
         </div>
@@ -435,25 +516,23 @@ export const AddFounderParentModal: React.FC<AddFounderParentModalProps> = ({
             onCheckedChange={(checked) => setUnderstood(!!checked)}
             className="mt-1"
           />
-          <Label htmlFor="understood" className="text-red-700 dark:text-red-300 cursor-pointer">
-            {t('founder.confirm_understanding', 'أفهم أن هذا الإجراء لا يمكن التراجع عنه')}
+          <Label htmlFor="understood" className="cursor-pointer text-red-700 dark:text-red-300">
+            {t('founder.confirm_understanding', 'أفهم أن هذه العملية لا يمكن التراجع عنها وستؤدي إلى تغيير هيكل الشجرة بالكامل.')}
           </Label>
         </div>
 
-        {/* Type Family Name */}
+        {/* Confirmation Text Input */}
         <div className="space-y-2">
-          <Label className="text-red-700 dark:text-red-300">
-            {t('founder.type_family_name_confirm', 'اكتب اسم العائلة للتأكيد')}
+          <Label htmlFor="confirmationText" className="text-red-700 dark:text-red-300">
+            {t('founder.type_family_name', 'اكتب اسم العائلة للتأكيد')}: <strong>"{familyName}"</strong>
           </Label>
           <Input
+            id="confirmationText"
             value={confirmationText}
             onChange={(e) => setConfirmationText(e.target.value)}
             placeholder={familyName}
-            className="border-red-300 dark:border-red-700 focus:ring-red-500"
+            className="border-red-300 dark:border-red-700 focus:border-red-500"
           />
-          <p className="text-xs text-red-600 dark:text-red-400">
-            {t('common.type', 'اكتب')} "{familyName}" {t('common.to_confirm', 'للتأكيد')}
-          </p>
         </div>
       </div>
 
@@ -481,7 +560,7 @@ export const AddFounderParentModal: React.FC<AddFounderParentModalProps> = ({
           ) : (
             <>
               <Check className="h-4 w-4 me-2" />
-              {t('founder.confirm_change', 'تأكيد التغيير')}
+              {t('founder.confirm_add_parents', 'تأكيد إضافة الوالدين')}
             </>
           )}
         </Button>
@@ -491,16 +570,15 @@ export const AddFounderParentModal: React.FC<AddFounderParentModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-lg max-h-[90vh] overflow-hidden">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-lg">
-            <UserPlus className="h-5 w-5 text-primary" />
-            {t('founder.add_parent', 'إضافة والد للمؤسس')}
+          <DialogTitle className="text-center text-xl">
+            {t('founder.add_parents_to_founder', 'إضافة والدين للمؤسس')}
           </DialogTitle>
         </DialogHeader>
-
+        
         {renderProgressBar()}
-
+        
         {currentStep === 'warning' && renderWarningStep()}
         {currentStep === 'data' && renderDataStep()}
         {currentStep === 'confirmation' && renderConfirmationStep()}

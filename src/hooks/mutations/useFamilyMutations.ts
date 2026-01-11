@@ -190,7 +190,7 @@ export const useUpdateMarriageMutation = () => {
   });
 };
 
-// Add founder parent mutation
+// Add founder parent mutation (adds both father and mother with marriage)
 export const useAddFounderParentMutation = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -203,12 +203,20 @@ export const useAddFounderParentMutation = () => {
     }: { 
       familyId: string; 
       parentData: {
-        parent_type: 'father' | 'mother';
-        first_name: string;
-        last_name?: string;
-        birth_date?: string;
-        death_date?: string;
-        is_alive: boolean;
+        father: {
+          first_name: string;
+          last_name?: string;
+          birth_date?: string;
+          death_date?: string;
+          is_alive: boolean;
+        };
+        mother: {
+          first_name: string;
+          last_name?: string;
+          birth_date?: string;
+          death_date?: string;
+          is_alive: boolean;
+        };
       };
       userId: string;
     }) => {
@@ -232,13 +240,13 @@ export const useAddFounderParentMutation = () => {
       
       toast({
         title: 'تم بنجاح',
-        description: 'تمت إضافة المؤسس الجديد للشجرة',
+        description: 'تمت إضافة الوالدين (الأب والأم) وعلاقة الزواج للشجرة',
       });
     },
     onError: (error: any) => {
       toast({
         title: 'خطأ',
-        description: error.message || 'فشل في إضافة الوالد',
+        description: error.message || 'فشل في إضافة الوالدين',
         variant: 'destructive',
       });
     },
