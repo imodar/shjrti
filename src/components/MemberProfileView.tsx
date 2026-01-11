@@ -1747,15 +1747,30 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
                 {/* Founder-only: Add parent to founder */}
                 {isFounder && memberFamilyId && (
-                  <Button
-                    onClick={() => setShowAddParentModal(true)}
-                    variant="outline"
-                    className="w-full border-destructive/40 text-destructive hover:bg-destructive/10"
-                    size="sm"
-                  >
-                    <UserPlus className="h-4 w-4 ml-2" />
-                    {t('founder.add_parent', 'إضافة والد للمؤسس')}
-                  </Button>
+                  <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 rounded-lg p-3 border border-amber-200 dark:border-amber-800 mb-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center">
+                        <Crown className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+                          {t('founder.add_parents_title', 'إضافة والدين للمؤسس')}
+                        </p>
+                        <p className="text-xs text-amber-600 dark:text-amber-400">
+                          {t('founder.add_parents_desc', 'إنشاء جيل جديد أعلى الشجرة')}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => setShowAddParentModal(true)}
+                      variant="outline"
+                      className="w-full bg-amber-600 hover:bg-amber-700 text-white border-amber-600 hover:border-amber-700"
+                      size="sm"
+                    >
+                      <UserPlus className="h-4 w-4 me-2" />
+                      {t('founder.add_parent', 'إضافة والدين')}
+                    </Button>
+                  </div>
                 )}
 
                 {/* Delete member */}
