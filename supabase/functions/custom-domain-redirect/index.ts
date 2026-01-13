@@ -246,13 +246,48 @@ Deno.serve(async (req) => {
 
     console.log(`[custom-domain-redirect] Successfully fetched data - Members: ${members?.length || 0}, Marriages: ${marriages?.length || 0}`);
 
+    // Step 4: Apply female privacy settings before returning data
+    const femaleNamePrivacy = family.female_name_privacy || 'full';
+    const femalePhotoHidden = family.female_photo_hidden || false;
+    
+    let processedMembers = members || [];
+    
+    // Apply privacy settings for female members
+    if (femaleNamePrivacy !== 'full' || femalePhotoHidden) {
+      processedMembers = processedMembers.map((member: any) => {
+        if (member.gender === 'female') {
+          const processedMember = { ...member };
+          
+          // Apply name privacy
+          if (femaleNamePrivacy === 'hidden') {
+            processedMember.first_name = null;
+            processedMember.name = null;
+            processedMember.name_hidden = true;
+          } else if (femaleNamePrivacy === 'family_only') {
+            processedMember.first_name = null;
+            processedMember.name_hidden = true;
+            // Keep last_name and parentage info intact for lineage display
+          }
+          
+          // Apply photo privacy
+          if (femalePhotoHidden) {
+            processedMember.image_url = null;
+            processedMember.image_hidden = true;
+          }
+          
+          return processedMember;
+        }
+        return member;
+      });
+    }
+
     // Return all family data (same structure as get-shared-family)
     return new Response(
       JSON.stringify({
         success: true,
         data: {
           family,
-          members: members || [],
+          members: processedMembers,
           marriages: marriages || [],
         },
       }),

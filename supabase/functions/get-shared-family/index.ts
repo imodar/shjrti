@@ -214,13 +214,48 @@ Deno.serve(async (req) => {
     console.log(`[get-shared-family] Successfully fetched data for family: ${family.id}`);
     console.log(`[get-shared-family] Members: ${membersResult.data?.length || 0}, Marriages: ${marriagesResult.data?.length || 0}`);
 
-    // Step 4: Return data to frontend
+    // Step 4: Apply female privacy settings before returning data
+    const femaleNamePrivacy = family.female_name_privacy || 'full';
+    const femalePhotoHidden = family.female_photo_hidden || false;
+    
+    let processedMembers = membersResult.data || [];
+    
+    // Apply privacy settings for female members
+    if (femaleNamePrivacy !== 'full' || femalePhotoHidden) {
+      processedMembers = processedMembers.map((member: any) => {
+        if (member.gender === 'female') {
+          const processedMember = { ...member };
+          
+          // Apply name privacy
+          if (femaleNamePrivacy === 'hidden') {
+            processedMember.first_name = null;
+            processedMember.name = null;
+            processedMember.name_hidden = true;
+          } else if (femaleNamePrivacy === 'family_only') {
+            processedMember.first_name = null;
+            processedMember.name_hidden = true;
+            // Keep last_name and parentage info intact for lineage display
+          }
+          
+          // Apply photo privacy
+          if (femalePhotoHidden) {
+            processedMember.image_url = null;
+            processedMember.image_hidden = true;
+          }
+          
+          return processedMember;
+        }
+        return member;
+      });
+    }
+
+    // Step 5: Return data to frontend
     return new Response(
       JSON.stringify({
         success: true,
         data: {
           family,
-          members: membersResult.data || [],
+          members: processedMembers,
           marriages: marriagesResult.data || [],
         },
       }),

@@ -10,6 +10,8 @@ export interface Family {
   creator_id: string;
   is_archived?: boolean;
   archived_at?: string;
+  female_name_privacy?: 'full' | 'family_only' | 'hidden';
+  female_photo_hidden?: boolean;
   created_at: string;
   updated_at: string;
 }

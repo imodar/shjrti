@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { User, UserIcon, Crown, Skull, Edit2, Trash2, Calendar } from "lucide-react";
+import { User, UserIcon, Crown, Skull, Edit2, Trash2, Calendar, Lock } from "lucide-react";
 import { DateDisplay } from "@/components/DateDisplay";
 import { Member, Marriage } from "@/types/family.types";
 import { useResolvedImageUrl } from "@/utils/useResolvedImageUrl";
@@ -109,8 +109,22 @@ export const MemberCard: React.FC<MemberCardProps> = ({
     return parts.join(' ');
   };
 
+  // Check if member has hidden name or image (from privacy settings)
+  const isNameHidden = (member as any).name_hidden === true;
+  const isImageHidden = (member as any).image_hidden === true;
 
   const generateMemberDisplayName = () => {
+    // If name is hidden due to privacy settings
+    if (isNameHidden) {
+      // For family_only mode: show lineage without first name
+      const memberHasFamilyFather = (member.father_id || (member as any).fatherId) && familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
+      if (memberHasFamilyFather) {
+        // Return parentage-only display
+        return null; // Will be handled by renderParentage with lock icon
+      }
+      return null; // Fully hidden
+    }
+    
     // Check if this member is married into the family (actual spouse from outside)
     const marriage = marriages?.find(m => m.husband_id === member.id || m.wife_id === member.id);
     const memberHasFamilyFather = (member.father_id || (member as any).fatherId) && familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
@@ -337,15 +351,36 @@ export const MemberCard: React.FC<MemberCardProps> = ({
         <div className="flex items-center justify-between gap-3 min-h-[80px]">
           <div className="flex items-start gap-3 flex-1">
             <Avatar className="h-12 w-12 flex-shrink-0">
-              {memberImageSrc && <AvatarImage src={memberImageSrc} alt={member.name} />}
+              {!isImageHidden && memberImageSrc && <AvatarImage src={memberImageSrc} alt={member.name} />}
               <AvatarFallback className={getGenderColor(member.gender)}>
-                {((member as any).name || member.first_name || "؟").charAt(0)}
+                {isImageHidden ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Lock className="h-5 w-5 text-muted-foreground" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{t('member.image_hidden', 'تم إخفاء الصورة من قبل مدير الشجرة')}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  ((member as any).name || member.first_name || "؟").charAt(0)
+                )}
               </AvatarFallback>
             </Avatar>
             
             <div className="flex-1 min-w-0 space-y-1">
               {/* Individual Name with relationship inline */}
-              <h3 className="font-semibold text-base font-arabic leading-tight">
+              <h3 className="font-semibold text-base font-arabic leading-tight flex items-center gap-2">
+                {isNameHidden && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{t('member.name_hidden', 'تم إخفاء الاسم من قبل مدير الشجرة')}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
                 {generateMemberDisplayName()}
               </h3>
               
