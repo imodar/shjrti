@@ -120,36 +120,6 @@
   100% { background-position: 200% 0; }
 }
 
-@keyframes fade-in-wave {
-  0% { 
-    opacity: 0; 
-    transform: translateY(8px);
-  }
-  100% { 
-    opacity: 1; 
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in-wave {
-  animation: fade-in-wave 0.4s ease-out forwards;
-  opacity: 0;
-}
-
-/* Skeleton shimmer effect */
-.skeleton-shimmer {
-  background: linear-gradient(
-    90deg,
-    hsl(var(--muted)) 0%,
-    hsl(var(--muted-foreground) / 0.1) 20%,
-    hsl(var(--muted-foreground) / 0.15) 40%,
-    hsl(var(--muted-foreground) / 0.1) 60%,
-    hsl(var(--muted)) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmer-professional 1.5s ease-in-out infinite;
-}
-
 /* Professional Focus States */
 .focus-visible-professional:focus-visible {
   @apply outline-none ring-2 ring-ring ring-offset-2;

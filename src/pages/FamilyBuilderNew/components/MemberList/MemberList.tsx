@@ -3,10 +3,11 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Search, Plus, Users } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Search, Plus, Users, UserIcon, UserRoundIcon, Crown } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { MemberCard } from "@/components/shared/MemberCard";
-import { MemberCardSkeleton } from "@/components/skeletons/MemberCardSkeleton";
+
 interface MemberListProps {
   members: any[];
   onEditMember: (member: any) => void;
@@ -168,9 +169,25 @@ export const MemberList: React.FC<MemberListProps> = ({
       {/* Member List */}
       <div className="space-y-3 flex-1 min-h-0 overflow-y-auto scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent hover:scrollbar-thumb-primary/40">
         {memberListLoading ? (
-          // Loading skeletons with shimmer and wave effect
-          Array.from({ length: 8 }).map((_, index) => (
-            <MemberCardSkeleton key={index} index={index} />
+          // Loading skeletons - عرض 10 عناصر لملء المساحة المرئية وتقليل القفزة في الارتفاع
+          Array.from({ length: 10 }).map((_, index) => (
+            <div 
+              key={index} 
+              className="p-4 rounded-3xl border-2 border-dashed border-emerald-300/50 dark:border-emerald-600/50 bg-white/50 dark:bg-gray-800/50"
+            >
+              <div className="flex items-start gap-3">
+                <Skeleton className="h-12 w-12 rounded-full flex-shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+                <div className="flex gap-2">
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                  <Skeleton className="h-8 w-8 rounded-full" />
+                </div>
+              </div>
+            </div>
           ))
         ) : members.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
