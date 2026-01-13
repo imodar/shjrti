@@ -44,7 +44,8 @@ import {
   Eye,
   Sparkles,
   X,
-  UserPlus
+  UserPlus,
+  Lock
 } from 'lucide-react';
 import { AddFounderParentModal } from '@/components/AddFounderParentModal';
 import { useAddFounderParentMutation } from '@/hooks/mutations/useFamilyMutations';
@@ -112,8 +113,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
   // Get family name for confirmation
   const familyName = founder?.last_name || member?.last_name || '';
 
+  // Check if member has hidden name or image (from privacy settings)
+  const isNameHidden = (member as any).name_hidden === true;
+  const isImageHidden = (member as any).image_hidden === true;
+
   // Resolve member image to signed URL
-  const memberImageSrc = useResolvedImageUrl(member?.image_url || (member as any)?.image);
+  const memberImageSrc = useResolvedImageUrl(!isImageHidden ? (member?.image_url || (member as any)?.image) : null);
 
   useEffect(() => {
     setIsVisible(true);
@@ -844,12 +849,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 lg:gap-6 flex-1 min-w-0">
                   {/* Profile Avatar - Now first in DOM */}
                   <div className="relative mx-auto sm:mx-0 flex-shrink-0 group">
-                    {/* Show gradient background only when there's no profile picture */}
-                    {!member.image_url && !member.image && (
+                    {/* Show gradient background only when there's no profile picture and image not hidden */}
+                    {!isImageHidden && !member.image_url && !member.image && (
                       <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-full blur-lg opacity-30 scale-110"></div>
                     )}
                     <Avatar className="relative h-32 w-32 sm:h-36 sm:w-36 lg:h-40 lg:w-40 border-4 border-white shadow-2xl flex-shrink-0">
-                      {memberImageSrc ? (
+                      {!isImageHidden && memberImageSrc ? (
                         <AvatarImage 
                           src={memberImageSrc} 
                           alt={member.name} 
@@ -857,13 +862,26 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         />
                       ) : (
                         <AvatarFallback className={`text-5xl font-bold text-white ${getGenderColor(member.gender)}`}>
-                          {member.name.charAt(0)}
+                          {isImageHidden ? (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Lock className="h-12 w-12 text-muted-foreground" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>{t('member.image_hidden', 'تم إخفاء الصورة من قبل مدير الشجرة')}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          ) : (
+                            (member.name || '?').charAt(0)
+                          )}
                         </AvatarFallback>
                       )}
                     </Avatar>
                     
-                    {/* Camera Icon for Quick Image Upload */}
-                    {!readOnly && (
+                    {/* Camera Icon for Quick Image Upload - only show if not read only */}
+                    {!readOnly && !isImageHidden && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -885,10 +903,28 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   {/* Basic Info - Name and Stats after picture */}
                   <div className="space-y-1 text-center flex-[3]">
                     <div>
-                      {/* Member Name */}
-                      <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2 w-full max-w-none text-start">
-                        {member.name}
-                      </h1>
+                      {/* Member Name - Show lock icon if hidden */}
+                      {isNameHidden ? (
+                        <div className="flex items-center gap-2 mb-2 text-start">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="flex items-center gap-2 text-muted-foreground">
+                                  <Lock className="h-6 w-6" />
+                                  <span className="text-xl font-medium">{t('member.name_hidden', 'تم إخفاء الاسم من قبل مدير الشجرة')}</span>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>{t('member.name_hidden', 'تم إخفاء الاسم من قبل مدير الشجرة')}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      ) : (
+                        <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2 w-full max-w-none text-start">
+                          {member.name}
+                        </h1>
+                      )}
                       
                       {/* Lineage Display or Founder Badge */}
                       {[member.is_founder, (member as any).isFounder, (member as any).family_founder, (member as any).founder].some(v => v === true || v === 1 || v === 'true') ? (
