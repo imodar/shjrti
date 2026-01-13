@@ -1814,7 +1814,9 @@ const FamilyBuilderNew = () => {
     console.log('🚨 SPOUSE DELETE COMPLETED');
   };
   const filteredMembers = familyMembers.filter(member => {
-    const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = (member.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (member.first_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (member.last_name || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = selectedFilter === "all" || selectedFilter === "alive" && member.isAlive || selectedFilter === "deceased" && !member.isAlive || selectedFilter === "male" && member.gender === "male" || selectedFilter === "female" && member.gender === "female" || selectedFilter === "founders" && member.isFounder;
     return matchesSearch && matchesFilter;
   });
