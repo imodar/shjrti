@@ -7,6 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import ReactQuill from 'react-quill';
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { 
   ArrowLeft, 
   ArrowRight,
@@ -26,7 +28,8 @@ import {
   CheckCircle,
   Pencil,
   Images,
-  RefreshCw
+  RefreshCw,
+  UserX
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSubscription } from "@/contexts/SubscriptionContext";
@@ -86,6 +89,13 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
   // Share Gallery state
   const [shareGallery, setShareGallery] = useState(familyData?.share_gallery || false);
   const [isUpdatingGallery, setIsUpdatingGallery] = useState(false);
+  
+  // Female Privacy Settings state
+  const [femaleNamePrivacy, setFemaleNamePrivacy] = useState<'full' | 'family_only' | 'hidden'>(
+    (familyData?.female_name_privacy as 'full' | 'family_only' | 'hidden') || 'full'
+  );
+  const [femalePhotoHidden, setFemalePhotoHidden] = useState(familyData?.female_photo_hidden || false);
+  const [isUpdatingPrivacy, setIsUpdatingPrivacy] = useState(false);
   
   // Share Token state
   const [shareToken, setShareToken] = useState<string | null>(null);
@@ -842,7 +852,150 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
 
             <Separator />
 
-            {/* 4. حماية بكلمة المرور */}
+            {/* 4. إعدادات خصوصية الإناث */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <UserX className="h-5 w-5" />
+                <Label className="text-base font-semibold">{t('tree_settings.female_privacy_title', 'خصوصية الإناث')}</Label>
+              </div>
+              
+              <Alert className="bg-blue-50 dark:bg-blue-900/20 border-blue-200">
+                <AlertTriangle className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-xs text-blue-700 dark:text-blue-300">
+                  {t('tree_settings.female_privacy_notice', 'هذه الإعدادات تؤثر على الزوار فقط. أنت كمالك الشجرة ستتمكن دائماً من رؤية جميع البيانات.')}
+                </AlertDescription>
+              </Alert>
+              
+              <div className="p-4 bg-muted/50 rounded-lg border space-y-4">
+                {/* Name Privacy Setting */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">
+                    {t('tree_settings.female_name_display', 'عرض أسماء الإناث')}
+                  </Label>
+                  <Select
+                    value={femaleNamePrivacy}
+                    onValueChange={async (value: 'full' | 'family_only' | 'hidden') => {
+                      setIsUpdatingPrivacy(true);
+                      try {
+                        const { error } = await supabase
+                          .from('families')
+                          .update({ 
+                            female_name_privacy: value,
+                            updated_at: new Date().toISOString()
+                          })
+                          .eq('id', familyData?.id);
+
+                        if (error) throw error;
+
+                        setFemaleNamePrivacy(value);
+                        if (familyData) {
+                          (familyData as any).female_name_privacy = value;
+                        }
+
+                        toast({
+                          title: t('tree_settings.toast.saved', 'تم الحفظ'),
+                          description: t('tree_settings.female_privacy_updated', 'تم تحديث إعدادات الخصوصية')
+                        });
+                      } catch (error) {
+                        console.error('Error updating female name privacy:', error);
+                        toast({
+                          title: t('common.error', 'خطأ'),
+                          description: t('tree_settings.privacy_update_error', 'فشل تحديث إعدادات الخصوصية'),
+                          variant: "destructive"
+                        });
+                      } finally {
+                        setIsUpdatingPrivacy(false);
+                      }
+                    }}
+                    disabled={isUpdatingPrivacy}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="full">
+                        <div className="flex items-center gap-2">
+                          <Eye className="h-4 w-4 text-green-600" />
+                          <span>{t('tree_settings.name_full', 'الاسم الكامل')}</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="family_only">
+                        <div className="flex items-center gap-2">
+                          <Lock className="h-4 w-4 text-amber-600" />
+                          <span>{t('tree_settings.name_family_only', 'إخفاء الاسم الأول (إظهار النسب فقط)')}</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="hidden">
+                        <div className="flex items-center gap-2">
+                          <Lock className="h-4 w-4 text-red-600" />
+                          <span>{t('tree_settings.name_hidden', 'إخفاء الاسم بالكامل')}</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    {femaleNamePrivacy === 'full' && t('tree_settings.name_full_desc', 'سيتم عرض الاسم الكامل للإناث (مثل: فاطمة محمد الشيخ سعيد)')}
+                    {femaleNamePrivacy === 'family_only' && t('tree_settings.name_family_only_desc', 'سيتم إخفاء الاسم الأول وعرض النسب فقط (مثل: 🔒 ابنة محمد الشيخ سعيد)')}
+                    {femaleNamePrivacy === 'hidden' && t('tree_settings.name_hidden_desc', 'سيتم إخفاء الاسم بالكامل (مثل: 🔒)')}
+                  </p>
+                </div>
+
+                {/* Photo Privacy Setting */}
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium">
+                      {t('tree_settings.female_photo_hidden', 'إخفاء صور الإناث')}
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      {t('tree_settings.female_photo_hidden_desc', 'إخفاء صور الإناث في الروابط العامة')}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={femalePhotoHidden}
+                    onCheckedChange={async (checked) => {
+                      setIsUpdatingPrivacy(true);
+                      try {
+                        const { error } = await supabase
+                          .from('families')
+                          .update({ 
+                            female_photo_hidden: checked,
+                            updated_at: new Date().toISOString()
+                          })
+                          .eq('id', familyData?.id);
+
+                        if (error) throw error;
+
+                        setFemalePhotoHidden(checked);
+                        if (familyData) {
+                          (familyData as any).female_photo_hidden = checked;
+                        }
+
+                        toast({
+                          title: t('tree_settings.toast.saved', 'تم الحفظ'),
+                          description: checked 
+                            ? t('tree_settings.photo_now_hidden', 'سيتم إخفاء صور الإناث في الروابط العامة')
+                            : t('tree_settings.photo_now_visible', 'سيتم عرض صور الإناث في الروابط العامة')
+                        });
+                      } catch (error) {
+                        console.error('Error updating female photo privacy:', error);
+                        toast({
+                          title: t('common.error', 'خطأ'),
+                          description: t('tree_settings.privacy_update_error', 'فشل تحديث إعدادات الخصوصية'),
+                          variant: "destructive"
+                        });
+                      } finally {
+                        setIsUpdatingPrivacy(false);
+                      }
+                    }}
+                    disabled={isUpdatingPrivacy}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* 5. حماية بكلمة المرور */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Lock className="h-5 w-5" />
