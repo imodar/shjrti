@@ -233,6 +233,7 @@ Deno.serve(async (req) => {
             processedMember.name_hidden = true;
           } else if (femaleNamePrivacy === 'family_only') {
             processedMember.first_name = null;
+            processedMember.name = null; // Hide full name too, frontend will show lineage only
             processedMember.name_hidden = true;
             // Keep last_name and parentage info intact for lineage display
           }
