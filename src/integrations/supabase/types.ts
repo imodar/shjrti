@@ -300,6 +300,8 @@ export type Database = {
           creator_id: string
           custom_domain: string | null
           description: string | null
+          female_name_privacy: string | null
+          female_photo_hidden: boolean | null
           id: string
           is_archived: boolean | null
           name: string
@@ -315,6 +317,8 @@ export type Database = {
           creator_id: string
           custom_domain?: string | null
           description?: string | null
+          female_name_privacy?: string | null
+          female_photo_hidden?: boolean | null
           id?: string
           is_archived?: boolean | null
           name: string
@@ -330,6 +334,8 @@ export type Database = {
           creator_id?: string
           custom_domain?: string | null
           description?: string | null
+          female_name_privacy?: string | null
+          female_photo_hidden?: boolean | null
           id?: string
           is_archived?: boolean | null
           name?: string
