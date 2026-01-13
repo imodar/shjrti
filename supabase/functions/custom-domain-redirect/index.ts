@@ -248,24 +248,32 @@ Deno.serve(async (req) => {
 
     // Step 4: Apply female privacy settings before returning data
     const femaleNamePrivacy = family.female_name_privacy || 'full';
-    const femalePhotoHidden = family.female_photo_hidden || false;
+    const femalePhotoHidden = family.female_photo_hidden === true;
+    
+    console.log(`[custom-domain-redirect] Privacy settings - Name: ${femaleNamePrivacy}, Photo Hidden: ${femalePhotoHidden}`);
     
     let processedMembers = members || [];
+    let femaleCount = 0;
+    let processedCount = 0;
     
     // Apply privacy settings for female members
     if (femaleNamePrivacy !== 'full' || femalePhotoHidden) {
       processedMembers = processedMembers.map((member: any) => {
         if (member.gender === 'female') {
+          femaleCount++;
           const processedMember = { ...member };
+          let wasProcessed = false;
           
           // Apply name privacy
           if (femaleNamePrivacy === 'hidden') {
             processedMember.first_name = null;
             processedMember.name = null;
             processedMember.name_hidden = true;
+            wasProcessed = true;
           } else if (femaleNamePrivacy === 'family_only') {
             processedMember.first_name = null;
             processedMember.name_hidden = true;
+            wasProcessed = true;
             // Keep last_name and parentage info intact for lineage display
           }
           
@@ -273,12 +281,16 @@ Deno.serve(async (req) => {
           if (femalePhotoHidden) {
             processedMember.image_url = null;
             processedMember.image_hidden = true;
+            wasProcessed = true;
           }
           
+          if (wasProcessed) processedCount++;
           return processedMember;
         }
         return member;
       });
+      
+      console.log(`[custom-domain-redirect] Privacy applied - Total females: ${femaleCount}, Processed: ${processedCount}`);
     }
 
     // Return all family data (same structure as get-shared-family)
