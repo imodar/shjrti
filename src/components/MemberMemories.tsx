@@ -19,6 +19,7 @@ import {
   Calendar,
   User
 } from "lucide-react";
+import { useCreateMemberMemoryMutation, useDeleteMemberMemoryMutation } from "@/hooks/mutations/useMemoriesMutations";
 
 interface Memory {
   id: string;
@@ -52,6 +53,10 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
   const { toast } = useToast();
   const { isImageUploadEnabled, loading: permissionLoading } = useImageUploadPermission();
   const navigate = useNavigate();
+  
+  // API Mutations
+  const createMemoryMutation = useCreateMemberMemoryMutation();
+  const deleteMemoryMutation = useDeleteMemberMemoryMutation();
 
   // Load memories for this member
   const loadMemories = useCallback(async () => {
@@ -99,7 +104,7 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
     loadMemories();
   }, [loadMemories]);
 
-  // Handle file drop
+  // Handle file drop - Using API
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (!isImageUploadEnabled) {
       toast({
@@ -138,20 +143,14 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
           throw uploadError;
         }
 
-        // Save memory metadata
-        const { error: metadataError } = await supabase
-          .from('member_memories')
-          .insert({
-            member_id: memberId,
-            file_path: filePath,
-            original_filename: file.name,
-            file_size: file.size,
-            content_type: file.type
-          });
-
-        if (metadataError) {
-          throw metadataError;
-        }
+        // Save memory metadata via API
+        await createMemoryMutation.mutateAsync({
+          member_id: memberId,
+          file_path: filePath,
+          original_filename: file.name,
+          file_size: file.size,
+          content_type: file.type
+        });
       }
 
       toast({
@@ -171,43 +170,20 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
     } finally {
       setUploading(false);
     }
-  }, [memberId, isImageUploadEnabled, toast, loadMemories]);
+  }, [memberId, isImageUploadEnabled, toast, loadMemories, createMemoryMutation]);
 
-  // Delete memory
+  // Delete memory - Using API
   const deleteMemory = async (memory: Memory) => {
     try {
-      // Delete from storage
-      const { error: storageError } = await supabase.storage
-        .from('member-memories')
-        .remove([memory.file_path]);
-
-      if (storageError) {
-        throw storageError;
-      }
-
-      // Delete metadata
-      const { error: dbError } = await supabase
-        .from('member_memories')
-        .delete()
-        .eq('id', memory.id);
-
-      if (dbError) {
-        throw dbError;
-      }
-
-      toast({
-        title: "تم حذف الصورة",
-        description: "تم حذف الصورة بنجاح"
+      // Delete via API (handles both storage and DB)
+      await deleteMemoryMutation.mutateAsync({ 
+        id: memory.id, 
+        memberId 
       });
 
       loadMemories();
     } catch (error) {
       console.error('Delete error:', error);
-      toast({
-        title: "خطأ في الحذف",
-        description: "حدث خطأ أثناء حذف الصورة",
-        variant: "destructive"
-      });
     }
   };
 
