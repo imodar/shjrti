@@ -93,6 +93,31 @@ export const membersApi = {
       mother_id: motherId,
     });
   },
+
+  /**
+   * Clear parent reference for children (set father_id or mother_id to null)
+   */
+  clearParentReference: async (
+    parentId: string, 
+    parentType: 'father' | 'mother'
+  ): Promise<{ updated: number }> => {
+    return apiClient.put<{ updated: number }>(FUNCTION_NAME, { 
+      action: 'clearParentReference', 
+      parent_id: parentId,
+      parent_type: parentType,
+    });
+  },
+
+  /**
+   * Update member's marital status
+   */
+  updateMaritalStatus: async (id: string, maritalStatus: string): Promise<Member> => {
+    return apiClient.put<Member>(FUNCTION_NAME, { 
+      action: 'update', 
+      id, 
+      marital_status: maritalStatus 
+    });
+  },
 };
 
 export default membersApi;
