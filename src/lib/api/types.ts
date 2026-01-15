@@ -82,6 +82,8 @@ export interface MemberCreateInput {
   is_twin?: boolean;
   twin_group_id?: string;
   marital_status?: string;
+  related_person_id?: string;
+  created_by?: string;
 }
 
 export interface MemberUpdateInput {
@@ -92,7 +94,7 @@ export interface MemberUpdateInput {
   birth_date?: string | null;
   death_date?: string | null;
   is_alive?: boolean;
-  biography?: string;
+  biography?: string | null;
   image_url?: string | null;
   father_id?: string | null;
   mother_id?: string | null;
@@ -101,6 +103,7 @@ export interface MemberUpdateInput {
   is_twin?: boolean;
   twin_group_id?: string | null;
   marital_status?: string;
+  related_person_id?: string | null;
 }
 
 // ============= Marriage Types =============

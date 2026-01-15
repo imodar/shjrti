@@ -46,6 +46,13 @@ export const marriagesApi = {
   },
 
   /**
+   * Batch delete marriages
+   */
+  batchDelete: async (ids: string[]): Promise<DeleteResponse> => {
+    return apiClient.delete<DeleteResponse>(FUNCTION_NAME, { action: 'batchDelete', ids });
+  },
+
+  /**
    * Deactivate a marriage (soft delete)
    */
   deactivate: async (id: string): Promise<Marriage> => {

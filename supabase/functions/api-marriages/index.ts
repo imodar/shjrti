@@ -262,6 +262,36 @@ async function handleDelete(userId: string, marriageId: string) {
   return successResponse({ deleted: true, id: marriageId });
 }
 
+// Batch delete marriages
+async function handleBatchDelete(userId: string, ids: string[]): Promise<Response> {
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return errorResponse('VALIDATION_ERROR', 'Marriage IDs array is required', 400);
+  }
+
+  // Check ownership for all marriages
+  for (const id of ids) {
+    const familyId = await getMarriageFamilyId(id);
+    if (!familyId) continue; // Marriage might already be deleted
+    
+    const hasAccess = await checkFamilyOwnership(userId, familyId);
+    if (!hasAccess) {
+      return errorResponse('FORBIDDEN', `Access denied for marriage ${id}`, 403);
+    }
+  }
+  
+  const { error } = await supabase
+    .from('marriages')
+    .delete()
+    .in('id', ids);
+  
+  if (error) {
+    console.error('[API] Batch delete error:', error);
+    return errorResponse('DATABASE_ERROR', error.message, 500);
+  }
+  
+  return successResponse({ deleted: true, count: ids.length });
+}
+
 // Main handler
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -277,7 +307,7 @@ Deno.serve(async (req) => {
     
     // Parse request
     const body = await req.json().catch(() => ({}));
-    const { action, id, ...payload } = body;
+    const { action, id, ids, ...payload } = body;
     
     console.log(`[API] Action: ${action}, Method: ${req.method}`);
     
@@ -297,6 +327,9 @@ Deno.serve(async (req) => {
       case 'delete':
         if (!id) return errorResponse('VALIDATION_ERROR', 'Marriage ID is required', 400);
         return await handleDelete(user!.id, id);
+        
+      case 'batchDelete':
+        return await handleBatchDelete(user!.id, ids);
         
       default:
         return errorResponse('BAD_REQUEST', `Unknown action: ${action}`, 400);

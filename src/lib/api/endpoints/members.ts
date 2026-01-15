@@ -61,6 +61,13 @@ export const membersApi = {
   },
 
   /**
+   * Batch delete members
+   */
+  batchDelete: async (ids: string[]): Promise<DeleteResponse> => {
+    return apiClient.delete<DeleteResponse>(FUNCTION_NAME, { action: 'batchDelete', ids });
+  },
+
+  /**
    * Update member's image
    */
   updateImage: async (id: string, imageUrl: string | null): Promise<Member> => {
