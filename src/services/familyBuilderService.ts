@@ -4,7 +4,7 @@
  */
 
 import { membersApi, marriagesApi } from '@/lib/api';
-import type { MemberCreateInput, MemberUpdateInput } from '@/lib/api/types';
+import type { MemberCreateInput, MemberUpdateInput, MarriageCreateInput } from '@/lib/api/types';
 import { uploadMemberImage, deleteMemberImage } from '@/utils/imageUpload';
 import { formatDateForDatabase } from '@/lib/dateUtils';
 
@@ -256,4 +256,126 @@ export async function deleteMarriage(
   if (externalSpouseId) {
     await membersApi.delete(externalSpouseId);
   }
+}
+
+/**
+ * Delete spouse with marriage cleanup
+ */
+export async function deleteSpouseWithMarriage(
+  spouseId: string,
+  memberId: string,
+  isFamilyMember: boolean,
+  spouseGender: 'male' | 'female'
+): Promise<void> {
+  // Build the marriage query based on gender
+  const marriageFilter = spouseGender === 'male' 
+    ? { husband_id: spouseId, wife_id: memberId }
+    : { husband_id: memberId, wife_id: spouseId };
+
+  // Delete the marriage first - need to find marriage ID first
+  // The API doesn't support querying by husband/wife IDs directly,
+  // so we'll need to delete the member which triggers cascade
+  
+  if (isFamilyMember) {
+    // Just update their marital status to single
+    await membersApi.update(spouseId, { marital_status: 'single' });
+  } else {
+    // Delete the external spouse entirely (marriage will be cascade deleted)
+    await membersApi.delete(spouseId);
+  }
+}
+
+/**
+ * Create or update spouse member (for external spouses)
+ */
+export async function createOrUpdateSpouse(
+  spouseData: {
+    id?: string;
+    firstName: string;
+    lastName: string;
+    gender: 'male' | 'female';
+    birthDate?: Date | null;
+    isAlive: boolean;
+    deathDate?: Date | null;
+    maritalStatus?: string;
+    biography?: string;
+    croppedImage?: string | null;
+  },
+  familyId: string,
+  creatorId: string
+): Promise<any> {
+  const fullName = spouseData.firstName && spouseData.lastName 
+    ? `${spouseData.firstName} ${spouseData.lastName}` 
+    : spouseData.firstName || spouseData.lastName || '';
+
+  // Check if we're updating an existing spouse or creating new
+  if (spouseData.id && !spouseData.id.startsWith('temp_')) {
+    // Update existing spouse
+    return await membersApi.update(spouseData.id, {
+      name: fullName,
+      first_name: spouseData.firstName,
+      last_name: spouseData.lastName,
+      birth_date: spouseData.birthDate ? formatDateForDatabase(spouseData.birthDate) : undefined,
+      is_alive: spouseData.isAlive,
+      death_date: !spouseData.isAlive && spouseData.deathDate 
+        ? formatDateForDatabase(spouseData.deathDate) 
+        : null,
+      marital_status: spouseData.maritalStatus || 'married',
+      biography: spouseData.biography || null,
+      image_url: spouseData.croppedImage || undefined,
+    });
+  } else {
+    // Create new spouse
+    return await membersApi.create({
+      name: fullName,
+      first_name: spouseData.firstName,
+      last_name: spouseData.lastName,
+      gender: spouseData.gender,
+      birth_date: spouseData.birthDate ? formatDateForDatabase(spouseData.birthDate) : undefined,
+      is_alive: spouseData.isAlive ?? true,
+      death_date: !spouseData.isAlive && spouseData.deathDate 
+        ? formatDateForDatabase(spouseData.deathDate) 
+        : undefined,
+      family_id: familyId,
+      created_by: creatorId,
+      is_founder: false,
+      marital_status: spouseData.maritalStatus || 'married',
+      biography: spouseData.biography || undefined,
+      image_url: spouseData.croppedImage || undefined,
+    });
+  }
+}
+
+/**
+ * Update member's twin group
+ */
+export async function updateTwinGroup(
+  memberId: string,
+  isTwin: boolean,
+  twinGroupId: string | null,
+  selectedTwins: string[]
+): Promise<void> {
+  // Update the main member
+  await membersApi.update(memberId, {
+    is_twin: isTwin,
+    twin_group_id: twinGroupId,
+  });
+
+  // Update all selected twin siblings
+  for (const siblingId of selectedTwins) {
+    await membersApi.update(siblingId, {
+      is_twin: true,
+      twin_group_id: twinGroupId,
+    });
+  }
+}
+
+/**
+ * Remove member from twin group
+ */
+export async function removeFromTwinGroup(memberId: string): Promise<void> {
+  await membersApi.update(memberId, {
+    is_twin: false,
+    twin_group_id: null,
+  });
 }

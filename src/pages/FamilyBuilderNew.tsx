@@ -42,6 +42,17 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { SubscriptionGuard } from "@/components/SubscriptionGuard";
 import { supabase } from "@/integrations/supabase/client";
+import { 
+  cascadingDeleteMember, 
+  createMember as createMemberApi, 
+  updateMember as updateMemberApi,
+  createOrUpdateMarriage as createOrUpdateMarriageApi,
+  createOrUpdateSpouse,
+  deleteSpouseWithMarriage,
+  updateTwinGroup,
+  removeFromTwinGroup
+} from "@/services/familyBuilderService";
+import { membersApi, marriagesApi } from '@/lib/api';
 import { uploadMemberImage, getMemberImageUrl, deleteMemberImage } from "@/utils/imageUpload";
 import Cropper from "react-easy-crop";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -1431,86 +1442,54 @@ const FamilyBuilderNew = () => {
     return familyMarriages.filter((marriage: any) => marriage.husband?.id === memberId || marriage.wife?.id === memberId).length;
   };
   const performCascadingDelete = async (member: any) => {
-    const membersToDelete = new Set<string>();
-    const marriagesToDelete = new Set<string>();
+    try {
+      // Use the centralized cascading delete service
+      const result = await cascadingDeleteMember(
+        member.id,
+        familyId!,
+        familyMembers,
+        familyMarriages
+      );
 
-    // Add the main member to be deleted
-    membersToDelete.add(member.id);
-
-    // Find all marriages involving this member
-    const memberMarriages = familyMarriages.filter((marriage: any) => marriage.husband?.id === member.id || marriage.wife?.id === member.id);
-
-    // Process each marriage
-    memberMarriages.forEach((marriage: any) => {
-      marriagesToDelete.add(marriage.id);
-
-      // If deleting a blood family member (not a spouse), also delete their spouse if the spouse is not a blood family member
-      if (!checkIfMemberIsSpouse(member)) {
-        const spouseId = marriage.husband?.id === member.id ? marriage.wife?.id : marriage.husband?.id;
-        if (spouseId) {
+      // Update local state
+      const membersToDelete = new Set<string>();
+      const marriagesToDelete = new Set<string>();
+      
+      // Recalculate which members/marriages were deleted for local state update
+      membersToDelete.add(member.id);
+      familyMarriages.forEach((marriage: any) => {
+        if (marriage.husband?.id === member.id || marriage.wife?.id === member.id) {
+          marriagesToDelete.add(marriage.id);
+          const spouseId = marriage.husband?.id === member.id ? marriage.wife?.id : marriage.husband?.id;
           const spouse = familyMembers.find(m => m.id === spouseId);
-          // Delete spouse only if they are not a blood family member (i.e., they are a spouse brought in by marriage)
           if (spouse && checkIfMemberIsSpouse(spouse)) {
             membersToDelete.add(spouseId);
           }
         }
-      }
-    });
-
-    // Recursive function to find and delete all descendants
-    const findDescendants = (parentId: string) => {
-      const children = familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId);
-      children.forEach(child => {
-        membersToDelete.add(child.id);
-
-        // Find and delete marriages of this child
-        const childMarriages = familyMarriages.filter((marriage: any) => marriage.husband?.id === child.id || marriage.wife?.id === child.id);
-        childMarriages.forEach((marriage: any) => {
-          marriagesToDelete.add(marriage.id);
-
-          // If child's spouse is not a blood family member, delete them too
-          const spouseId = marriage.husband?.id === child.id ? marriage.wife?.id : marriage.husband?.id;
-          if (spouseId) {
-            const spouse = familyMembers.find(m => m.id === spouseId);
-            if (spouse && checkIfMemberIsSpouse(spouse)) {
-              membersToDelete.add(spouseId);
-            }
-          }
-        });
-
-        // Recursively find descendants of this child
-        findDescendants(child.id);
       });
-    };
+      
+      const findDescendants = (parentId: string) => {
+        familyMembers.filter(m => m.fatherId === parentId || m.motherId === parentId).forEach(child => {
+          membersToDelete.add(child.id);
+          familyMarriages.filter((m: any) => m.husband?.id === child.id || m.wife?.id === child.id).forEach((m: any) => {
+            marriagesToDelete.add(m.id);
+            const spouseId = m.husband?.id === child.id ? m.wife?.id : m.husband?.id;
+            const spouse = familyMembers.find(mem => mem.id === spouseId);
+            if (spouse && checkIfMemberIsSpouse(spouse)) membersToDelete.add(spouseId);
+          });
+          findDescendants(child.id);
+        });
+      };
+      findDescendants(member.id);
 
-    // Start the recursive descent from the member being deleted
-    findDescendants(member.id);
-    try {
-      // Delete marriages first (to avoid foreign key constraints)
-      if (marriagesToDelete.size > 0) {
-        const {
-          error: marriageError
-        } = await supabase.from('marriages').delete().in('id', Array.from(marriagesToDelete));
-        if (marriageError) throw marriageError;
-      }
-
-      // Then delete family members
-      if (membersToDelete.size > 0) {
-        const {
-          error: memberError
-        } = await supabase.from('family_tree_members').delete().in('id', Array.from(membersToDelete));
-        if (memberError) throw memberError;
-      }
-
-      // Update local state
       setFamilyMembers(familyMembers.filter(m => !membersToDelete.has(m.id)));
       setFamilyMarriages(familyMarriages.filter((marriage: any) => !marriagesToDelete.has(marriage.id)));
+      
       toast({
         title: t('family_builder.deleted', 'تم الحذف بنجاح'),
-        description: `تم حذف ${membersToDelete.size} عضو و ${marriagesToDelete.size} علاقة زواج من شجرة العائلة`
+        description: `تم حذف ${result.membersDeleted} عضو و ${result.marriagesDeleted} علاقة زواج من شجرة العائلة`
       });
 
-      // Refresh family data to reflect changes in the member list
       await refetchFamilyData();
     } catch (error) {
       console.error('Error in cascading delete:', error);
@@ -1653,7 +1632,7 @@ const FamilyBuilderNew = () => {
     console.log('🚨 DELETE MODAL SHOULD BE SHOWN NOW');
   };
 
-  // Confirm spouse deletion (immediate database deletion)
+  // Confirm spouse deletion (immediate database deletion) - using API
   const confirmSpouseDelete = async () => {
     console.log('🚨 CONFIRM SPOUSE DELETE CALLED');
     if (!spouseToDelete) {
@@ -1665,41 +1644,33 @@ const FamilyBuilderNew = () => {
     console.log('🚨 DELETING SPOUSE:', { wife: wife?.name, index });
     
     try {
-      if (index === -1 || index >= 0) {
-        // This is a husband deletion
-        console.log('🚨 DELETING HUSBAND AT INDEX:', index);
+      if (index >= 0) {
+        // Determine if this is a husband or wife based on the context
+        const isHusbandDeletion = wife?.gender === 'male' || husbands.some(h => h.id === wife?.id);
         
-        const husbandToDelete = index >= 0 ? husbands[index] : null;
-        
-        if (husbandToDelete && husbandToDelete.isSaved && editingMember) {
-          const husbandId = husbandToDelete.id || husbandToDelete.existingFamilyMemberId;
+        if (isHusbandDeletion) {
+          const husbandToDelete = husbands[index];
           
-          // Delete marriage record
-          const { error: marriageDeleteError } = await supabase
-            .from('marriages')
-            .delete()
-            .eq('wife_id', editingMember.id)
-            .eq('husband_id', husbandId);
+          if (husbandToDelete && husbandToDelete.isSaved && editingMember) {
+            const husbandId = husbandToDelete.id || husbandToDelete.existingFamilyMemberId;
             
-          if (marriageDeleteError) {
-            console.error('Error deleting marriage:', marriageDeleteError);
-            toast({
-              title: "خطأ في الحذف",
-              description: "فشل في حذف علاقة الزواج",
-              variant: "destructive"
-            });
-            return;
-          }
-          
-          // If husband is not a family member, delete his record
-          if (!husbandToDelete.isFamilyMember) {
-            const { error: husbandDeleteError } = await supabase
-              .from('family_tree_members')
-              .delete()
-              .eq('id', husbandId);
-              
-            if (husbandDeleteError) {
-              console.error('Error deleting husband member:', husbandDeleteError);
+            try {
+              // Use API to delete - the member delete will cascade to marriages
+              if (!husbandToDelete.isFamilyMember) {
+                await membersApi.delete(husbandId);
+              } else {
+                // Update family member husband to single
+                await membersApi.update(husbandId, { marital_status: 'single' });
+                // Find and delete the marriage
+                const marriageToDelete = familyMarriages.find(
+                  (m: any) => m.wife_id === editingMember.id && m.husband_id === husbandId
+                );
+                if (marriageToDelete) {
+                  await marriagesApi.delete(marriageToDelete.id);
+                }
+              }
+            } catch (error) {
+              console.error('Error deleting husband:', error);
               toast({
                 title: "خطأ في الحذف",
                 description: "فشل في حذف بيانات الزوج",
@@ -1707,56 +1678,36 @@ const FamilyBuilderNew = () => {
               });
               return;
             }
-          } else {
-            // Update family member husband to single
-            await supabase
-              .from('family_tree_members')
-              .update({ marital_status: 'single' })
-              .eq('id', husbandId);
           }
-        }
-        
-        const updatedHusbands = husbands.filter((_, i) => i !== index);
-        setHusbands(updatedHusbands);
-        toast({
-          title: "تم الحذف بنجاح",
-          description: "تم حذف الزوج نهائياً",
-          variant: "default"
-        });
-      } else {
-        // This is a wife deletion
-        console.log('🚨 DELETING WIFE AT INDEX:', index);
-        
-        const wifeToDelete = wives[index];
-        if (wifeToDelete && wifeToDelete.isSaved && editingMember) {
-          const wifeId = wifeToDelete.id || wifeToDelete.existingFamilyMemberId;
           
-          // Delete marriage record
-          const { error: marriageDeleteError } = await supabase
-            .from('marriages')
-            .delete()
-            .eq('husband_id', editingMember.id)
-            .eq('wife_id', wifeId);
+          const updatedHusbands = husbands.filter((_, i) => i !== index);
+          setHusbands(updatedHusbands);
+          toast({
+            title: "تم الحذف بنجاح",
+            description: "تم حذف الزوج نهائياً",
+            variant: "default"
+          });
+        } else {
+          // Wife deletion
+          const wifeToDelete = wives[index];
+          
+          if (wifeToDelete && wifeToDelete.isSaved && editingMember) {
+            const wifeId = wifeToDelete.id || wifeToDelete.existingFamilyMemberId;
             
-          if (marriageDeleteError) {
-            console.error('Error deleting marriage:', marriageDeleteError);
-            toast({
-              title: "خطأ في الحذف",
-              description: "فشل في حذف علاقة الزواج",
-              variant: "destructive"
-            });
-            return;
-          }
-          
-          // If wife is not a family member, delete her record
-          if (!wifeToDelete.isFamilyMember) {
-            const { error: wifeDeleteError } = await supabase
-              .from('family_tree_members')
-              .delete()
-              .eq('id', wifeId);
-              
-            if (wifeDeleteError) {
-              console.error('Error deleting wife member:', wifeDeleteError);
+            try {
+              if (!wifeToDelete.isFamilyMember) {
+                await membersApi.delete(wifeId);
+              } else {
+                await membersApi.update(wifeId, { marital_status: 'single' });
+                const marriageToDelete = familyMarriages.find(
+                  (m: any) => m.husband_id === editingMember.id && m.wife_id === wifeId
+                );
+                if (marriageToDelete) {
+                  await marriagesApi.delete(marriageToDelete.id);
+                }
+              }
+            } catch (error) {
+              console.error('Error deleting wife:', error);
               toast({
                 title: "خطأ في الحذف",
                 description: "فشل في حذف بيانات الزوجة",
@@ -1764,37 +1715,31 @@ const FamilyBuilderNew = () => {
               });
               return;
             }
-          } else {
-            // Update family member wife to single
-            await supabase
-              .from('family_tree_members')
-              .update({ marital_status: 'single' })
-              .eq('id', wifeId);
           }
-        }
-        
-        const newWives = wives.filter((_, i) => i !== index);
-        setWives(newWives);
+          
+          const newWives = wives.filter((_, i) => i !== index);
+          setWives(newWives);
 
-        // Update family status object
-        const newStatus = { ...wiveFamilyStatus };
-        delete newStatus[index];
-        const reindexedStatus: { [key: number]: 'yes' | 'no' | null; } = {};
-        Object.keys(newStatus).forEach((key, newIndex) => {
-          const oldIndex = parseInt(key);
-          if (oldIndex > index) {
-            reindexedStatus[newIndex] = newStatus[oldIndex];
-          } else if (oldIndex < index) {
-            reindexedStatus[oldIndex] = newStatus[oldIndex];
-          }
-        });
-        setWiveFamilyStatus(reindexedStatus);
-        
-        toast({
-          title: "تم الحذف بنجاح",
-          description: "تم حذف الزوجة نهائياً",
-          variant: "default"
-        });
+          // Update family status object
+          const newStatus = { ...wiveFamilyStatus };
+          delete newStatus[index];
+          const reindexedStatus: { [key: number]: 'yes' | 'no' | null; } = {};
+          Object.keys(newStatus).forEach((key, newIndex) => {
+            const oldIndex = parseInt(key);
+            if (oldIndex > index) {
+              reindexedStatus[newIndex] = newStatus[oldIndex];
+            } else if (oldIndex < index) {
+              reindexedStatus[oldIndex] = newStatus[oldIndex];
+            }
+          });
+          setWiveFamilyStatus(reindexedStatus);
+          
+          toast({
+            title: "تم الحذف بنجاح",
+            description: "تم حذف الزوجة نهائياً",
+            variant: "default"
+          });
+        }
       }
       
       // Refresh family data to reflect changes
@@ -2256,22 +2201,18 @@ const FamilyBuilderNew = () => {
     const existingId = spouse.existingFamilyMemberId || spouse.id;
     if (existingId && !existingId.startsWith('temp_')) {
       // Get current image to handle image state properly
-      const {
-        data: currentSpouse
-      } = await supabase.from('family_tree_members').select('image_url').eq('id', existingId).maybeSingle();
+      const currentMember = await membersApi.get(existingId).catch(() => null);
 
       // Handle image state properly
       let imageUrl;
       if (spouse.croppedImage !== undefined) {
         imageUrl = spouse.croppedImage || null;
       } else {
-        imageUrl = currentSpouse?.image_url || null;
+        imageUrl = currentMember?.image_url || null;
       }
       const spouseName = spouse.name || (spouse.firstName && spouse.lastName ? `${spouse.firstName} ${spouse.lastName}` : spouse.firstName || spouse.lastName || '');
-      const {
-        data: updatedSpouse,
-        error: spouseUpdateError
-      } = await supabase.from('family_tree_members').update({
+      
+      const updatedSpouse = await membersApi.update(existingId, {
         name: spouseName,
         first_name: spouse.firstName || null,
         last_name: spouse.lastName || familyData?.name || null,
@@ -2281,57 +2222,49 @@ const FamilyBuilderNew = () => {
         marital_status: spouse.maritalStatus || 'married',
         image_url: imageUrl,
         biography: spouse.biography || null,
-        updated_at: new Date().toISOString()
-      }).eq('id', existingId).select().single();
-      if (spouseUpdateError) {
-        console.error(`Error updating ${spouseType} member:`, spouse.name, spouseUpdateError);
-        throw spouseUpdateError;
-      }
+      });
       return updatedSpouse.id;
     } else {
-      // Create new spouse member
+      // Create new spouse member using API
       const firstName = spouse.firstName || '';
       const lastName = spouse.lastName || familyData?.name || '';
       const spouseName = firstName && lastName ? `${firstName} ${lastName}` : spouse.name || firstName || lastName || '';
-      const {
-        data: newSpouseMember,
-        error: spouseError
-      } = await supabase.from('family_tree_members').insert({
+      
+      const newSpouseMember = await membersApi.create({
         name: spouseName,
         first_name: firstName,
         last_name: lastName,
         gender: isWife ? 'female' : 'male',
         birth_date: formatDateForDatabase(spouse.birthDate),
         is_alive: spouse.isAlive ?? true,
-        death_date: !spouse.isAlive ? formatDateForDatabase(spouse.deathDate) : null,
+        death_date: !spouse.isAlive ? formatDateForDatabase(spouse.deathDate) : undefined,
         family_id: familyId,
         created_by: familyData?.creator_id,
         is_founder: false,
         marital_status: spouse.maritalStatus || 'married',
-        image_url: spouse.croppedImage || null,
-        biography: spouse.biography || null
-      }).select().single();
-      if (spouseError) {
-        console.error(`Error creating ${spouseType} member:`, spouse.name, spouseError);
-        throw spouseError;
-      }
+        image_url: spouse.croppedImage || undefined,
+        biography: spouse.biography || undefined,
+      });
       return newSpouseMember.id;
     }
   };
   const updateSpouseMemberStatus = async (spouse, spouseType) => {
     // Get current data to handle image state properly
-    const {
-      data: currentSpouse
-    } = await supabase.from('family_tree_members').select('image_url').eq('id', spouse.existingFamilyMemberId).maybeSingle();
+    let currentMember;
+    try {
+      currentMember = await membersApi.get(spouse.existingFamilyMemberId);
+    } catch {
+      currentMember = null;
+    }
 
     // Handle image state properly - upload to storage if new image provided
     let imageUrl;
-    if (spouse.croppedImage && spouse.croppedImage !== currentSpouse?.image_url) {
+    if (spouse.croppedImage && spouse.croppedImage !== currentMember?.image_url) {
       // Check if this is a blob URL (new image)
       if (spouse.croppedImage.startsWith('blob:')) {
         // Delete old image from storage if exists
-        if (currentSpouse?.image_url && !currentSpouse.image_url.startsWith('data:image/')) {
-          await deleteMemberImage(currentSpouse.image_url);
+        if (currentMember?.image_url && !currentMember.image_url.startsWith('data:image/')) {
+          await deleteMemberImage(currentMember.image_url);
         }
         
         // Upload new image to storage
@@ -2340,7 +2273,7 @@ const FamilyBuilderNew = () => {
           imageUrl = await uploadMemberImage(croppedBlob, spouse.existingFamilyMemberId);
           console.log('✅ Spouse image uploaded to storage:', imageUrl);
         } else {
-          imageUrl = currentSpouse?.image_url || null;
+          imageUrl = currentMember?.image_url || null;
         }
       } else {
         // New Base64 image provided (legacy)
@@ -2348,37 +2281,44 @@ const FamilyBuilderNew = () => {
       }
     } else {
       // No new image, preserve existing
-      imageUrl = currentSpouse?.image_url || null;
+      imageUrl = currentMember?.image_url || null;
     }
-    const {
-      error: updateSpouseError
-    } = await supabase.from('family_tree_members').update({
-      marital_status: spouse.maritalStatus,
-      image_url: imageUrl,
-      biography: spouse.biography || null
-    }).eq('id', spouse.existingFamilyMemberId);
-    if (updateSpouseError) {
-      console.error(`Error updating ${spouseType} marital status:`, updateSpouseError);
-    } else {
+    
+    // Update spouse member using API
+    try {
+      await membersApi.update(spouse.existingFamilyMemberId, {
+        marital_status: spouse.maritalStatus,
+        image_url: imageUrl,
+        biography: spouse.biography || null
+      });
       console.log(`Successfully updated ${spouseType} marital status to:`, spouse.maritalStatus);
+    } catch (error) {
+      console.error(`Error updating ${spouseType} marital status:`, error);
     }
 
-    // Update marriage table marital status
-    const spouseColumn = spouseType === 'wife' ? 'wife_id' : 'husband_id';
-    const {
-      data: marriage
-    } = await supabase.from('marriages').update({
-      marital_status: spouse.maritalStatus
-    }).eq(spouseColumn, spouse.existingFamilyMemberId).select('husband_id, wife_id').single();
+    // Update marriage table marital status - find the marriage first
+    const memberMarriage = familyMarriages.find((m: any) => 
+      spouseType === 'wife' 
+        ? m.wife_id === spouse.existingFamilyMemberId 
+        : m.husband_id === spouse.existingFamilyMemberId
+    );
 
-    // Update the other spouse's marital status in family_tree_members
-    if (marriage) {
-      const otherSpouseId = spouseType === 'wife' ? marriage.husband_id : marriage.wife_id;
-      if (otherSpouseId && otherSpouseId !== spouse.existingFamilyMemberId) {
-        await supabase.from('family_tree_members').update({
+    if (memberMarriage) {
+      try {
+        await marriagesApi.update(memberMarriage.id, {
           marital_status: spouse.maritalStatus
-        }).eq('id', otherSpouseId);
-        console.log(`Also updated other spouse's marital status to:`, spouse.maritalStatus);
+        });
+        
+        // Update the other spouse's marital status
+        const otherSpouseId = spouseType === 'wife' ? memberMarriage.husband_id : memberMarriage.wife_id;
+        if (otherSpouseId && otherSpouseId !== spouse.existingFamilyMemberId) {
+          await membersApi.update(otherSpouseId, {
+            marital_status: spouse.maritalStatus
+          });
+          console.log(`Also updated other spouse's marital status to:`, spouse.maritalStatus);
+        }
+      } catch (error) {
+        console.error('Error updating marriage status:', error);
       }
     }
   };
@@ -2398,22 +2338,13 @@ const FamilyBuilderNew = () => {
 
     console.log('🔍 Creating marriage between:', { husbandId, wifeId, spouseName: spouse.name });
 
-    // Check if either person is already married to someone else
-    const { data: existingHusbandMarriage } = await supabase
-      .from('marriages')
-      .select('id, wife_id')
-      .eq('husband_id', husbandId)
-      .eq('is_active', true)
-      .neq('wife_id', wifeId)
-      .maybeSingle();
-
-    const { data: existingWifeMarriage } = await supabase
-      .from('marriages')
-      .select('id, husband_id')
-      .eq('wife_id', wifeId)
-      .eq('is_active', true)
-      .neq('husband_id', husbandId)
-      .maybeSingle();
+    // Check if either person is already married to someone else (still using Supabase for query)
+    const existingHusbandMarriage = familyMarriages.find((m: any) => 
+      m.husband_id === husbandId && m.is_active && m.wife_id !== wifeId
+    );
+    const existingWifeMarriage = familyMarriages.find((m: any) => 
+      m.wife_id === wifeId && m.is_active && m.husband_id !== husbandId
+    );
 
     if (existingHusbandMarriage || existingWifeMarriage) {
       console.error('❌ Cannot create marriage - one of the parties is already married:', {
@@ -2426,48 +2357,37 @@ const FamilyBuilderNew = () => {
     }
 
     // Check if marriage already exists between these two people
-    const {
-      data: existingMarriage
-    } = await supabase.from('marriages').select('id').eq('husband_id', husbandId).eq('wife_id', wifeId).maybeSingle();
-    let marriageError;
+    const existingMarriage = familyMarriages.find((m: any) => 
+      m.husband_id === husbandId && m.wife_id === wifeId
+    );
     
-    if (existingMarriage) {
-      // Update existing marriage to ensure it's active
-      const {
-        error
-      } = await supabase.from('marriages').update({
-        is_active: true,
-        marital_status: spouse.maritalStatus || 'married'
-      }).eq('id', existingMarriage.id);
-      marriageError = error;
-      activeMarriageIds.push(existingMarriage.id);
-      console.log('✅ Updated existing marriage:', existingMarriage.id);
-    } else {
-      // Create new marriage record
-      const {
-        data: newMarriage,
-        error
-      } = await supabase.from('marriages').insert({
-        family_id: familyId,
-        husband_id: husbandId,
-        wife_id: wifeId,
-        is_active: true,
-        marital_status: spouse.maritalStatus || 'married'
-      }).select('id').single();
-      marriageError = error;
-      if (newMarriage) {
+    try {
+      if (existingMarriage) {
+        // Update existing marriage to ensure it's active
+        await marriagesApi.update(existingMarriage.id, {
+          is_active: true,
+          marital_status: spouse.maritalStatus || 'married'
+        });
+        activeMarriageIds.push(existingMarriage.id);
+        console.log('✅ Updated existing marriage:', existingMarriage.id);
+      } else {
+        // Create new marriage record using API
+        const newMarriage = await marriagesApi.create({
+          family_id: familyId,
+          husband_id: husbandId,
+          wife_id: wifeId,
+          is_active: true,
+          marital_status: spouse.maritalStatus || 'married'
+        });
         activeMarriageIds.push(newMarriage.id);
         console.log('✅ Created new marriage:', newMarriage.id);
       }
-    }
-    
-    if (marriageError) {
-      console.error('Error creating/updating marriage:', marriageError);
-      marriageResults.failed++;
-      marriageResults.details.push(`خطأ في ربط الزواج مع ${spouse.name}`);
-    } else {
       marriageResults.successful++;
       console.log(`Successfully processed marriage with ${spouse.name}`);
+    } catch (error) {
+      console.error('Error creating/updating marriage:', error);
+      marriageResults.failed++;
+      marriageResults.details.push(`خطأ في ربط الزواج مع ${spouse.name}`);
     }
   };
   const handleFormSubmit = useCallback(async (submissionData: any) => {
