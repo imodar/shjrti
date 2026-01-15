@@ -30,4 +30,5 @@ export const PROTECTED_ROUTES: string[] = [
   'share',
   'terms',
   '404',
+  'api-docs',
 ];
