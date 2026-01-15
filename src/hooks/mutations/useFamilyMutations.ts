@@ -104,6 +104,36 @@ export const useDeleteMemberMutation = () => {
   });
 };
 
+// Batch delete members mutation - NEW
+export const useBatchDeleteMembersMutation = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({ ids, familyId }: { ids: string[]; familyId: string }) => {
+      await membersApi.batchDelete(ids);
+      return { ids, familyId };
+    },
+    onSuccess: ({ ids, familyId }) => {
+      // Remove all from cache
+      queryClient.setQueryData(
+        ['members', familyId],
+        (old: any[] = []) => old.filter(m => !ids.includes(m.id))
+      );
+      
+      // Remove each member's single query
+      ids.forEach(id => queryClient.removeQueries({ queryKey: ['member', id] }));
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'خطأ',
+        description: error.message || 'فشل في حذف الأعضاء',
+        variant: 'destructive',
+      });
+    },
+  });
+};
+
 // Add marriage mutation - NOW USING API
 export const useAddMarriageMutation = () => {
   const queryClient = useQueryClient();
@@ -156,6 +186,60 @@ export const useUpdateMarriageMutation = () => {
       toast({
         title: 'خطأ',
         description: error.message || 'فشل في تحديث الزواج',
+        variant: 'destructive',
+      });
+    },
+  });
+};
+
+// Delete marriage mutation - NEW
+export const useDeleteMarriageMutation = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({ id, familyId }: { id: string; familyId: string }) => {
+      await marriagesApi.delete(id);
+      return { id, familyId };
+    },
+    onSuccess: ({ id, familyId }) => {
+      // Remove from cache
+      queryClient.setQueryData(
+        ['marriages', familyId],
+        (old: any[] = []) => old.filter(m => m.id !== id)
+      );
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'خطأ',
+        description: error.message || 'فشل في حذف الزواج',
+        variant: 'destructive',
+      });
+    },
+  });
+};
+
+// Batch delete marriages mutation - NEW
+export const useBatchDeleteMarriagesMutation = () => {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async ({ ids, familyId }: { ids: string[]; familyId: string }) => {
+      await marriagesApi.batchDelete(ids);
+      return { ids, familyId };
+    },
+    onSuccess: ({ ids, familyId }) => {
+      // Remove all from cache
+      queryClient.setQueryData(
+        ['marriages', familyId],
+        (old: any[] = []) => old.filter(m => !ids.includes(m.id))
+      );
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'خطأ',
+        description: error.message || 'فشل في حذف علاقات الزواج',
         variant: 'destructive',
       });
     },
@@ -224,4 +308,19 @@ export const useAddFounderParentMutation = () => {
       });
     },
   });
+};
+
+// Combined hook for all family mutations
+export const useFamilyMutations = () => {
+  return {
+    addMember: useAddMemberMutation(),
+    updateMember: useUpdateMemberMutation(),
+    deleteMember: useDeleteMemberMutation(),
+    batchDeleteMembers: useBatchDeleteMembersMutation(),
+    addMarriage: useAddMarriageMutation(),
+    updateMarriage: useUpdateMarriageMutation(),
+    deleteMarriage: useDeleteMarriageMutation(),
+    batchDeleteMarriages: useBatchDeleteMarriagesMutation(),
+    addFounderParent: useAddFounderParentMutation(),
+  };
 };

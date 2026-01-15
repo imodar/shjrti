@@ -146,8 +146,9 @@ export const apiClient = {
    */
   delete: <T>(
     functionName: string,
+    body?: unknown,
     params?: Record<string, string | number | boolean | undefined>
-  ) => request<T>(functionName, 'DELETE', { params }),
+  ) => request<T>(functionName, 'DELETE', { body, params }),
 };
 
 export default apiClient;
