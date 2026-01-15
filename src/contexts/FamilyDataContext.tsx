@@ -1,56 +1,10 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { familiesApi } from '@/lib/api';
+import type { Family, Member, Marriage } from '@/lib/api/types';
 
-interface Family {
-  id: string;
-  name: string;
-  description?: string;
-  creator_id: string;
-  custom_domain?: string;
-  share_password?: string;
-  share_gallery?: boolean;
-  share_token?: string;
-  share_token_expires_at?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface Member {
-  id: string;
-  family_id: string;
-  name: string;
-  first_name?: string;
-  last_name?: string;
-  gender: string;
-  father_id?: string;
-  mother_id?: string;
-  spouse_id?: string;
-  related_person_id?: string;
-  birth_date?: string;
-  death_date?: string;
-  is_alive: boolean;
-  is_founder: boolean;
-  is_twin?: boolean;
-  twin_group_id?: string;
-  marital_status: string;
-  image_url?: string;
-  biography?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-interface Marriage {
-  id: string;
-  family_id: string;
-  husband_id: string;
-  wife_id: string;
-  is_active: boolean;
-  marital_status: string;
-  created_at: string;
-  updated_at: string;
-}
+// Re-export types for consumers
+export type { Family, Member, Marriage } from '@/lib/api/types';
 
 interface FamilyDataContextType {
   familyData: Family | null;
@@ -80,43 +34,30 @@ interface FamilyDataProviderProps {
 }
 
 export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children, familyId, initialData }) => {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   // If initialData is provided, skip queries entirely
   const shouldFetch = !!familyId && !initialData;
 
-  // Query for family data
+  // Query for family data - NOW USING API
   const { data: familyData = initialData?.family ?? null, isLoading: familyLoading, error: familyError } = useQuery({
     queryKey: ['family', familyId],
     queryFn: async () => {
       if (!familyId) return null;
-      const { data, error } = await supabase
-        .from('families')
-        .select('*')
-        .eq('id', familyId)
-        .single();
-      if (error) throw error;
-      return data as Family;
+      return await familiesApi.get(familyId);
     },
     enabled: shouldFetch,
     initialData: initialData?.family,
     staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes (previously cacheTime)
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
-  // Query for family members
+  // Query for family members - NOW USING API
   const { data: familyMembers = initialData?.members ?? [], isLoading: membersLoading, error: membersError } = useQuery({
     queryKey: ['members', familyId],
     queryFn: async () => {
       if (!familyId) return [];
-      const { data, error } = await supabase
-        .from('family_tree_members')
-        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, related_person_id, gender, birth_date, death_date, is_alive, is_founder, is_twin, twin_group_id, image_url, marital_status, biography, family_id, created_at, updated_at')
-        .eq('family_id', familyId)
-        .order('created_at', { ascending: true });
-      if (error) throw error;
-      return data as Member[];
+      return await familiesApi.getMembers(familyId);
     },
     enabled: shouldFetch,
     initialData: initialData?.members,
@@ -124,17 +65,12 @@ export const FamilyDataProvider: React.FC<FamilyDataProviderProps> = ({ children
     gcTime: 10 * 60 * 1000,
   });
 
-  // Query for marriages
+  // Query for marriages - NOW USING API
   const { data: marriages = initialData?.marriages ?? [], isLoading: marriagesLoading, error: marriagesError } = useQuery({
     queryKey: ['marriages', familyId],
     queryFn: async () => {
       if (!familyId) return [];
-      const { data, error } = await supabase
-        .from('marriages')
-        .select('*')
-        .eq('family_id', familyId);
-      if (error) throw error;
-      return data as Marriage[];
+      return await familiesApi.getMarriages(familyId);
     },
     enabled: shouldFetch,
     initialData: initialData?.marriages,
