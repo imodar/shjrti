@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { DateDisplay, LifespanDisplay } from '@/components/DateDisplay';
 import { Button } from '@/components/ui/button';
@@ -119,6 +119,40 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
 
   // Resolve member image to signed URL
   const memberImageSrc = useResolvedImageUrl(!isImageHidden ? (member?.image_url || (member as any)?.image) : null);
+
+  // Memoized indices/derived relations to avoid O(N) scans on every re-render
+  const memberById = useMemo(() => {
+    return new Map((familyMembers || []).map((m: any) => [m.id, m]));
+  }, [familyMembers]);
+
+  const spouses = useMemo(() => getSpouses(), [
+    marriages,
+    familyMembers,
+    member?.id,
+    member?.gender,
+    member?.related_person_id,
+    (member as any)?.relatedPersonId,
+    member?.spouse_id,
+    (member as any)?.spouseId,
+  ]);
+
+  const children = useMemo(() => getChildren(), [familyMembers, member?.id]);
+
+  const grandchildren = useMemo(() => {
+    const result: any[] = [];
+    children.forEach((child: any) => {
+      const childGrandchildren = (familyMembers || []).filter((m: any) =>
+        (m.fatherId === child.id || m.father_id === child.id) ||
+        (m.motherId === child.id || m.mother_id === child.id)
+      );
+      result.push(...childGrandchildren);
+    });
+    return result;
+  }, [familyMembers, children]);
+
+  const grandchildrenGroups = useMemo(() => getGrandchildrenGroupedByParents(), [familyMembers, member?.id]);
+
+  const timelineEvents = useMemo(() => generateTimelineEvents(), [member, marriages, familyMembers, t]);
 
   useEffect(() => {
     setIsVisible(true);
@@ -763,19 +797,17 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     return generationMap.get(member.id) || 1;
   };
 
-  const father = getFather();
-  const mother = getMother();
-  const spouses = getSpouses();
-  const children = getChildren();
-  const grandchildren = getGrandchildren();
-  
-  // Debugging logs
-  console.log('🔍 Debug - spouses:', spouses);
-  console.log('🔍 Debug - spouses.length:', spouses?.length);
-  console.log('🔍 Debug - children:', children);
-  console.log('🔍 Debug - children.length:', children?.length);
-  console.log('🔍 Debug - grandchildren:', grandchildren);
-  console.log('🔍 Debug - grandchildren.length:', grandchildren?.length);
+  const father = useMemo(() => {
+    const fatherId = member?.father_id || (member as any)?.fatherId;
+    return fatherId ? memberById.get(fatherId) : undefined;
+  }, [memberById, member?.father_id, (member as any)?.fatherId]);
+
+  const mother = useMemo(() => {
+    const motherId = member?.mother_id || (member as any)?.motherId;
+    return motherId ? memberById.get(motherId) : undefined;
+  }, [memberById, member?.mother_id, (member as any)?.motherId]);
+
+  // spouses/children/grandchildren are memoized above
   const memberGeneration = calculateMemberGeneration();
 
   const tabItems = [
@@ -1479,181 +1511,170 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                 })()}
 
                 {/* Grandchildren Section - Grouped by Parents */}
-                {(() => {
-                  const grandchildrenGroups = getGrandchildrenGroupedByParents();
-                  const allGrandchildren = getGrandchildren();
-                  
-                  if (allGrandchildren.length > 0) {
-                    return (
-                      <div className="bg-card rounded-xl border border-border p-6">
-                        <h3 className="font-bold text-lg mb-4 text-primary">{t('profile.grandchildren')}</h3>
-                        
-                        <div className="flex items-center gap-3 mb-6">
-                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                            <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                            <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                              {t('profile.males')} ({allGrandchildren.filter(g => g.gender === 'male').length})
+                {grandchildren.length > 0 ? (
+                  <div className="bg-card rounded-xl border border-border p-6">
+                    <h3 className="font-bold text-lg mb-4 text-primary">{t('profile.grandchildren')}</h3>
+
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                        <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                          {t('profile.males')} ({grandchildren.filter((g: any) => g.gender === 'male').length})
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800">
+                        <User className="w-4 h-4 text-pink-600 dark:text-pink-400" />
+                        <span className="text-sm font-medium text-pink-700 dark:text-pink-300">
+                          {t('profile.females')} ({grandchildren.filter((g: any) => g.gender === 'female').length})
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      {grandchildrenGroups.map((mainGroup: any, mainIndex: number) => (
+                        <div
+                          key={`main-${mainIndex}`}
+                          className="bg-gradient-to-br from-muted/30 to-muted/50 rounded-lg p-4 border border-border/50"
+                        >
+                          {/* Main Parent Header (The Child - e.g., صفوح) */}
+                          <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-primary/20">
+                            <User className="w-5 h-5 text-primary" />
+                            <span className="font-bold text-foreground text-lg">
+                              {mainGroup.child.first_name
+                                ? `${mainGroup.child.first_name}${mainGroup.child.last_name ? ' ' + mainGroup.child.last_name : ''}`
+                                : mainGroup.child.name || t('common.unknown')}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800">
-                            <User className="w-4 h-4 text-pink-600 dark:text-pink-400" />
-                            <span className="text-sm font-medium text-pink-700 dark:text-pink-300">
-                              {t('profile.females')} ({allGrandchildren.filter(g => g.gender === 'female').length})
-                            </span>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-4">
-                          {grandchildrenGroups.map((mainGroup, mainIndex) => (
-                            <div 
-                              key={`main-${mainIndex}`}
-                              className="bg-gradient-to-br from-muted/30 to-muted/50 rounded-lg p-4 border border-border/50"
-                            >
-                              {/* Main Parent Header (The Child - e.g., صفوح) */}
-                              <div className="flex items-center gap-2 mb-4 pb-3 border-b-2 border-primary/20">
-                                <User className="w-5 h-5 text-primary" />
-                                <span className="font-bold text-foreground text-lg">
-                                  {mainGroup.child.first_name 
-                                    ? `${mainGroup.child.first_name}${mainGroup.child.last_name ? ' ' + mainGroup.child.last_name : ''}`
-                                    : mainGroup.child.name || t('common.unknown')
-                                  }
+
+                          {/* Spouse Groups */}
+                          {mainGroup.spouseGroups.map((spouseGroup: any, spouseIndex: number) => (
+                            <div key={`spouse-${spouseIndex}`}>
+                              {spouseIndex > 0 && (
+                                <div className="my-4 border-t border-muted-foreground/20" />
+                              )}
+
+                              {/* Spouse Header */}
+                              <div className="flex items-center gap-2 mb-3">
+                                <Users className="w-4 h-4 text-muted-foreground" />
+                                <span className="font-medium text-muted-foreground text-sm">
+                                  {mainGroup.child.gender === 'male' ? t('common.with_his_wife') : t('common.with_her_husband')}{' '}
+                                  {spouseGroup.spouse?.first_name
+                                    ? `${spouseGroup.spouse.first_name}${spouseGroup.spouse.last_name ? ' ' + spouseGroup.spouse.last_name : ''}`
+                                    : spouseGroup.spouse?.name || t('common.unknown')}
                                 </span>
                               </div>
-                              
-                              {/* Spouse Groups */}
-                              {mainGroup.spouseGroups.map((spouseGroup, spouseIndex) => (
-                                <div key={`spouse-${spouseIndex}`}>
-                                  {spouseIndex > 0 && (
-                                    <div className="my-4 border-t border-muted-foreground/20" />
-                                  )}
-                                  
-                                  {/* Spouse Header */}
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <Users className="w-4 h-4 text-muted-foreground" />
-                                    <span className="font-medium text-muted-foreground text-sm">
-                                      {mainGroup.child.gender === 'male' 
-                                        ? t('common.with_his_wife')
-                                        : t('common.with_her_husband')
-                                      }{' '}
-                                      {spouseGroup.spouse?.first_name 
-                                        ? `${spouseGroup.spouse.first_name}${spouseGroup.spouse.last_name ? ' ' + spouseGroup.spouse.last_name : ''}`
-                                        : spouseGroup.spouse?.name || t('common.unknown')
+
+                              {/* Grandchildren Grid */}
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {(() => {
+                                  // Group grandchildren by twin_group_id
+                                  const twinGroups = new Map<string, typeof spouseGroup.grandchildren>();
+                                  const nonTwins: typeof spouseGroup.grandchildren = [];
+
+                                  spouseGroup.grandchildren.forEach((grandchild: any) => {
+                                    if (grandchild.is_twin && grandchild.twin_group_id) {
+                                      if (!twinGroups.has(grandchild.twin_group_id)) {
+                                        twinGroups.set(grandchild.twin_group_id, []);
                                       }
-                                    </span>
-                                  </div>
-                                  
-                                  {/* Grandchildren Grid */}
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    {(() => {
-                                      // Group grandchildren by twin_group_id
-                                      const twinGroups = new Map<string, typeof spouseGroup.grandchildren>();
-                                      const nonTwins: typeof spouseGroup.grandchildren = [];
-                                      
-                                      spouseGroup.grandchildren.forEach((grandchild) => {
-                                        if (grandchild.is_twin && grandchild.twin_group_id) {
-                                          if (!twinGroups.has(grandchild.twin_group_id)) {
-                                            twinGroups.set(grandchild.twin_group_id, []);
-                                          }
-                                          twinGroups.get(grandchild.twin_group_id)!.push(grandchild);
-                                        } else {
-                                          nonTwins.push(grandchild);
-                                        }
-                                      });
+                                      twinGroups.get(grandchild.twin_group_id)!.push(grandchild);
+                                    } else {
+                                      nonTwins.push(grandchild);
+                                    }
+                                  });
 
-                                      return (
-                                        <>
-                                          {/* Render twin groups */}
-                                          {Array.from(twinGroups.entries()).map(([twinGroupId, twins]) => (
-                                            <div key={`twin-group-${twinGroupId}`} className="sm:col-span-2">
-                                              <div className="bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-3">
-                                                <div className="flex items-center gap-2 mb-2">
-                                                  <span className="text-xs font-semibold text-yellow-700 dark:text-yellow-300 bg-yellow-200 dark:bg-yellow-800 px-2 py-1 rounded">
-                                                    {t('profile.twins')}
-                                                  </span>
-                                                </div>
-                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                                   {twins.map((twin) => {
-                                                     // Check if twin is from outside the family (different last name)
-                                                     const isOutsideFamily = twin.last_name && member.last_name && twin.last_name !== member.last_name;
-                                                     
-                                                     return (
-                                                       <div 
-                                                         key={twin.id} 
-                                                         className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 border border-dashed border-border/30 hover:border-border/50"
-                                                         onClick={() => onMemberClick?.(twin)}
-                                                       >
-                                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
-                                                           twin.gender === 'female' 
-                                                             ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
-                                                             : 'bg-gradient-to-br from-blue-400 to-blue-500'
-                                                         }`}>
-                                                           {twin.gender === 'female' ? '♀' : '♂'}
-                                                         </div>
-                                                         <div className="flex-1 min-w-0 ps-3">
-                                                           <p className="font-medium text-sm text-foreground truncate">
-                                                             {twin.first_name || twin.name}
-                                                             {isOutsideFamily && ` ${twin.last_name}`}
-                                                           </p>
-                                                           {twin.birth_date && (
-                                                             <p className="text-xs text-muted-foreground">
-                                                               {new Date().getFullYear() - new Date(twin.birth_date).getFullYear()} {t('profile.years')}
-                                                             </p>
-                                                           )}
-                                                         </div>
-                                                       </div>
-                                                     );
-                                                   })}
-                                                 </div>
-                                              </div>
+                                  return (
+                                    <>
+                                      {/* Render twin groups */}
+                                      {Array.from(twinGroups.entries()).map(([twinGroupId, twins]) => (
+                                        <div key={`twin-group-${twinGroupId}`} className="sm:col-span-2">
+                                          <div className="bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-3">
+                                            <div className="flex items-center gap-2 mb-2">
+                                              <span className="text-xs font-semibold text-yellow-700 dark:text-yellow-300 bg-yellow-200 dark:bg-yellow-800 px-2 py-1 rounded">
+                                                {t('profile.twins')}
+                                              </span>
                                             </div>
-                                          ))}
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                              {twins.map((twin: any) => {
+                                                const isOutsideFamily = twin.last_name && member.last_name && twin.last_name !== member.last_name;
 
-                                          {/* Render non-twins */}
-                                          {nonTwins.map((grandchild) => {
-                                            // Check if grandchild is from outside the family (different last name)
-                                            const isOutsideFamily = grandchild.last_name && member.last_name && grandchild.last_name !== member.last_name;
-                                            
-                                            return (
-                                              <div 
-                                                key={grandchild.id} 
-                                                className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/50 cursor-pointer hover:bg-background/80 transition-colors duration-200 border border-dashed border-border/30 hover:border-border/50"
-                                                onClick={() => onMemberClick?.(grandchild)}
-                                              >
-                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
-                                                  grandchild.gender === 'female' 
-                                                    ? 'bg-gradient-to-br from-pink-400 to-pink-500' 
-                                                    : 'bg-gradient-to-br from-blue-400 to-blue-500'
-                                                }`}>
-                                                  {grandchild.gender === 'female' ? '♀' : '♂'}
-                                                </div>
-                                                <div className="flex-1 min-w-0 ps-3">
-                                                  <p className="font-medium text-sm text-foreground truncate">
-                                                    {grandchild.first_name || grandchild.name}
-                                                    {isOutsideFamily && ` ${grandchild.last_name}`}
-                                                  </p>
-                                                  {grandchild.birth_date && (
-                                                    <p className="text-xs text-muted-foreground">
-                                                      {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} {t('profile.years')}
-                                                    </p>
-                                                  )}
-                                                </div>
-                                              </div>
-                                            );
-                                          })}
-                                        </>
-                                      );
-                                    })()}
-                                  </div>
-                                </div>
-                              ))}
+                                                return (
+                                                  <div
+                                                    key={twin.id}
+                                                    className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-white dark:bg-gray-800 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 border border-dashed border-border/30 hover:border-border/50"
+                                                    onClick={() => onMemberClick?.(twin)}
+                                                  >
+                                                    <div
+                                                      className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
+                                                        twin.gender === 'female'
+                                                          ? 'bg-gradient-to-br from-pink-400 to-pink-500'
+                                                          : 'bg-gradient-to-br from-blue-400 to-blue-500'
+                                                      }`}
+                                                    >
+                                                      {twin.gender === 'female' ? '♀' : '♂'}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0 ps-3">
+                                                      <p className="font-medium text-sm text-foreground truncate">
+                                                        {twin.first_name || twin.name}
+                                                        {isOutsideFamily && ` ${twin.last_name}`}
+                                                      </p>
+                                                      {twin.birth_date && (
+                                                        <p className="text-xs text-muted-foreground">
+                                                          {new Date().getFullYear() - new Date(twin.birth_date).getFullYear()} {t('profile.years')}
+                                                        </p>
+                                                      )}
+                                                    </div>
+                                                  </div>
+                                                );
+                                              })}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ))}
+
+                                      {/* Render non-twins */}
+                                      {nonTwins.map((grandchild: any) => {
+                                        const isOutsideFamily = grandchild.last_name && member.last_name && grandchild.last_name !== member.last_name;
+
+                                        return (
+                                          <div
+                                            key={grandchild.id}
+                                            className="flex items-center space-x-2 space-x-reverse p-2 rounded-md bg-background/50 cursor-pointer hover:bg-background/80 transition-colors duration-200 border border-dashed border-border/30 hover:border-border/50"
+                                            onClick={() => onMemberClick?.(grandchild)}
+                                          >
+                                            <div
+                                              className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs ${
+                                                grandchild.gender === 'female'
+                                                  ? 'bg-gradient-to-br from-pink-400 to-pink-500'
+                                                  : 'bg-gradient-to-br from-blue-400 to-blue-500'
+                                              }`}
+                                            >
+                                              {grandchild.gender === 'female' ? '♀' : '♂'}
+                                            </div>
+                                            <div className="flex-1 min-w-0 ps-3">
+                                              <p className="font-medium text-sm text-foreground truncate">
+                                                {grandchild.first_name || grandchild.name}
+                                                {isOutsideFamily && ` ${grandchild.last_name}`}
+                                              </p>
+                                              {grandchild.birth_date && (
+                                                <p className="text-xs text-muted-foreground">
+                                                  {new Date().getFullYear() - new Date(grandchild.birth_date).getFullYear()} {t('profile.years')}
+                                                </p>
+                                              )}
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </>
+                                  );
+                                })()}
+                              </div>
                             </div>
                           ))}
                         </div>
-                      </div>
-                    );
-                  }
-                  return null;
-                })()}
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
               </div>
             )}
 
@@ -1676,7 +1697,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                     <div className="absolute right-6 top-0 bottom-0 w-0.5 bg-border"></div>
                     
                     <div className="space-y-6">
-                      {generateTimelineEvents().map((event, index) => {
+                      {timelineEvents.map((event: any, index: number) => {
                         const IconComponent = getEventIcon(event.icon);
                         return (
                           <div key={index} className="relative flex items-start gap-6">
@@ -1684,28 +1705,24 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                             <div className={`relative z-10 w-12 h-12 rounded-full ${event.bgColor} flex items-center justify-center border-4 border-background shadow-sm`}>
                               <IconComponent className={`w-5 h-5 ${event.color}`} />
                             </div>
-                            
+
                             {/* Event Content */}
                             <div className="flex-1 pb-6">
                               <div className={`bg-card border border-border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow`}>
                                 <div className="flex items-start justify-between gap-4">
                                   <div className="flex-1">
-                                     <h4 className="font-semibold text-foreground mb-1">
-                                      {event.title}
-                                    </h4>
-                                     {event.date && event.type !== 'marriage' && (event.type !== 'divorce' || event.date) && (
-                                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                         <Calendar className="w-4 h-4" />
-                                         <DateDisplay date={event.date} className="inline" />
-                                       </div>
-                                     )}
-                                     {event.description && event.type !== 'marriage' && event.type !== 'divorce' && (
-                                       <p className="text-sm text-muted-foreground mt-2">
-                                         {event.description}
-                                       </p>
-                                     )}
+                                    <h4 className="font-semibold text-foreground mb-1">{event.title}</h4>
+                                    {event.date && event.type !== 'marriage' && (event.type !== 'divorce' || event.date) && (
+                                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        <Calendar className="w-4 h-4" />
+                                        <DateDisplay date={event.date} className="inline" />
+                                      </div>
+                                    )}
+                                    {event.description && event.type !== 'marriage' && event.type !== 'divorce' && (
+                                      <p className="text-sm text-muted-foreground mt-2">{event.description}</p>
+                                    )}
                                   </div>
-                                  
+
                                   {/* Event Type Badge */}
                                   <div className={`px-2 py-1 rounded-full text-xs font-medium ${event.bgColor} ${event.color}`}>
                                     {event.type === 'birth' && t('profile.event_birth')}
@@ -1720,14 +1737,12 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           </div>
                         );
                       })}
-                      
-                      {generateTimelineEvents().length === 0 && (
+
+                      {timelineEvents.length === 0 && (
                         <div className="text-center py-12">
                           <Clock className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
                           <p className="text-muted-foreground">{t('profile.no_events')}</p>
-                          <p className="text-sm text-muted-foreground/70 mt-1">
-                            {t('profile.events_will_appear')}
-                          </p>
+                          <p className="text-sm text-muted-foreground/70 mt-1">{t('profile.events_will_appear')}</p>
                         </div>
                       )}
                     </div>
