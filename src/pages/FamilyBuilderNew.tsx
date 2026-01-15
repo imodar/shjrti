@@ -41,7 +41,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { SubscriptionGuard } from "@/components/SubscriptionGuard";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { 
   cascadingDeleteMember, 
   createMember as createMemberApi, 
@@ -77,6 +77,9 @@ const FamilyBuilderNew = () => {
     hasAIFeatures
   } = useSubscription();
   const isMobile = useIsMobile();
+  
+  // ✅ Use useAuth() for user data (no extra network call!)
+  const { user: authUser } = useAuth();
   
   // ✅ Use FamilyDataContext for shared data (no duplicate queries!)
   const { 
@@ -473,12 +476,9 @@ const FamilyBuilderNew = () => {
     
     try {
       setLoading(true);
-      const {
-        data: {
-          user
-        }
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+      
+      // Use authUser from useAuth() hook (no extra network call!)
+      if (!authUser) throw new Error('User not authenticated');
       // Subscription check is now handled by SubscriptionGuard wrapper
       if (!familyId) {
         throw new Error('No family ID provided');
@@ -490,7 +490,7 @@ const FamilyBuilderNew = () => {
         throw new Error('Family not found or access denied');
       }
       // Verify ownership
-      if (family.creator_id !== user.id) {
+      if (family.creator_id !== authUser.id) {
         throw new Error('Family not found or access denied');
       }
       const familyToUse = family;
