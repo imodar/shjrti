@@ -125,19 +125,47 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     return new Map((familyMembers || []).map((m: any) => [m.id, m]));
   }, [familyMembers]);
 
-  const spouses = useMemo(() => getSpouses(), [
-    marriages,
-    familyMembers,
-    member?.id,
-    member?.gender,
-    member?.related_person_id,
-    (member as any)?.relatedPersonId,
-    member?.spouse_id,
-    (member as any)?.spouseId,
-  ]);
+  // Memoized spouses - inline logic to avoid hoisting issues
+  const spouses = useMemo(() => {
+    const memberMarriages = marriages.filter(m => 
+      (member?.gender === 'male' && m.husband_id === member?.id) || 
+      (member?.gender === 'female' && m.wife_id === member?.id)
+    );
+    
+    if (memberMarriages.length > 0) {
+      return memberMarriages.map(marriage => {
+        const spouseId = member?.gender === 'male' ? marriage.wife_id : marriage.husband_id;
+        const spouse = (familyMembers || []).find(m => m.id === spouseId);
+        return spouse ? {
+          ...spouse,
+          marital_status: marriage.marital_status || 'married',
+          marriage_date: marriage.created_at
+        } : null;
+      }).filter(Boolean);
+    }
 
-  const children = useMemo(() => getChildren(), [familyMembers, member?.id]);
+    if (member?.related_person_id || (member as any)?.relatedPersonId) {
+      const relatedPerson = (familyMembers || []).find(m => m.id === (member?.related_person_id || (member as any)?.relatedPersonId));
+      if (relatedPerson) {
+        return [relatedPerson];
+      }
+    }
 
+    return (familyMembers || []).filter(m => 
+      (member?.spouse_id || (member as any)?.spouseId) === m.id || 
+      (m.spouse_id || m.spouseId) === member?.id
+    );
+  }, [marriages, familyMembers, member?.id, member?.gender, member?.related_person_id, member?.spouse_id]);
+
+  // Memoized children - inline logic
+  const children = useMemo(() => {
+    return (familyMembers || []).filter(m => 
+      (m.fatherId === member?.id || m.father_id === member?.id) || 
+      (m.motherId === member?.id || m.mother_id === member?.id)
+    );
+  }, [familyMembers, member?.id]);
+
+  // Memoized grandchildren
   const grandchildren = useMemo(() => {
     const result: any[] = [];
     children.forEach((child: any) => {
@@ -150,9 +178,42 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     return result;
   }, [familyMembers, children]);
 
-  const grandchildrenGroups = useMemo(() => getGrandchildrenGroupedByParents(), [familyMembers, member?.id]);
-
-  const timelineEvents = useMemo(() => generateTimelineEvents(), [member, marriages, familyMembers, t]);
+  // Memoized grandchildren groups - inline logic
+  const grandchildrenGroups = useMemo(() => {
+    const mainGroups: any[] = [];
+    
+    children.forEach(child => {
+      const childGrandchildren = (familyMembers || []).filter(m => 
+        (m.fatherId === child.id || m.father_id === child.id) || 
+        (m.motherId === child.id || m.mother_id === child.id)
+      );
+      
+      if (childGrandchildren.length > 0) {
+        const spouseGroups = new Map<string, { spouse: any, grandchildren: any[] }>();
+        
+        childGrandchildren.forEach(grandchild => {
+          const fatherId = grandchild.father_id || grandchild.fatherId;
+          const motherId = grandchild.mother_id || grandchild.motherId;
+          const spouseId = child.gender === 'male' ? motherId : fatherId;
+          const spouseKey = spouseId || 'no-spouse';
+          
+          if (!spouseGroups.has(spouseKey)) {
+            const spouse = spouseId ? (familyMembers || []).find(m => m.id === spouseId) : null;
+            spouseGroups.set(spouseKey, { spouse, grandchildren: [] });
+          }
+          
+          spouseGroups.get(spouseKey)!.grandchildren.push(grandchild);
+        });
+        
+        mainGroups.push({
+          child: child,
+          spouseGroups: Array.from(spouseGroups.values())
+        });
+      }
+    });
+    
+    return mainGroups;
+  }, [familyMembers, children]);
 
   useEffect(() => {
     setIsVisible(true);
@@ -524,6 +585,9 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
       m.id === member.mother_id || m.id === member.motherId
     );
   };
+
+  // Memoized timeline events - must be after helper functions are defined
+  const timelineEvents = useMemo(() => generateTimelineEvents(), [member, marriages, familyMembers, t, spouses, children]);
 
   // Helper function to get lineage display for any member
   const getLineageDisplayForMember = (targetMember: any) => {
