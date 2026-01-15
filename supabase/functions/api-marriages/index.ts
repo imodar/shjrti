@@ -268,6 +268,8 @@ async function handleBatchDelete(userId: string, ids: string[]): Promise<Respons
     return errorResponse('VALIDATION_ERROR', 'Marriage IDs array is required', 400);
   }
 
+  const supabase = createServiceClient();
+
   // Check ownership for all marriages
   for (const id of ids) {
     const familyId = await getMarriageFamilyId(id);
@@ -290,6 +292,126 @@ async function handleBatchDelete(userId: string, ids: string[]): Promise<Respons
   }
   
   return successResponse({ deleted: true, count: ids.length });
+}
+
+// Delete marriage by husband and wife IDs
+async function handleDeleteBySpouses(userId: string, husbandId: string, wifeId: string): Promise<Response> {
+  console.log(`[API] Deleting marriage by spouses - husband: ${husbandId}, wife: ${wifeId}`);
+  
+  const supabase = createServiceClient();
+  
+  // Find the marriage
+  const { data: marriage } = await supabase
+    .from('marriages')
+    .select('id, family_id')
+    .eq('husband_id', husbandId)
+    .eq('wife_id', wifeId)
+    .maybeSingle();
+  
+  if (!marriage) {
+    return errorResponse('NOT_FOUND', 'Marriage not found', 404);
+  }
+  
+  if (!await checkFamilyOwnership(userId, marriage.family_id)) {
+    return errorResponse('FORBIDDEN', 'You do not have access to this marriage', 403);
+  }
+  
+  const { error } = await supabase
+    .from('marriages')
+    .delete()
+    .eq('id', marriage.id);
+  
+  if (error) {
+    console.error('[API] Delete by spouses error:', error);
+    return errorResponse('DATABASE_ERROR', error.message, 500);
+  }
+  
+  return successResponse({ deleted: true, id: marriage.id });
+}
+
+// Update marriages by spouse ID
+async function handleUpdateBySpouseId(
+  userId: string, 
+  spouseId: string, 
+  isWife: boolean, 
+  payload: Record<string, unknown>
+): Promise<Response> {
+  console.log(`[API] Updating marriages by spouse: ${spouseId}, isWife: ${isWife}`);
+  
+  const supabase = createServiceClient();
+  const column = isWife ? 'wife_id' : 'husband_id';
+  
+  // Get marriages for this spouse
+  const { data: marriages } = await supabase
+    .from('marriages')
+    .select('id, family_id')
+    .eq(column, spouseId);
+  
+  if (!marriages || marriages.length === 0) {
+    return errorResponse('NOT_FOUND', 'No marriages found for this spouse', 404);
+  }
+  
+  // Verify ownership
+  for (const marriage of marriages) {
+    if (!await checkFamilyOwnership(userId, marriage.family_id)) {
+      return errorResponse('FORBIDDEN', 'You do not have access to one or more marriages', 403);
+    }
+  }
+  
+  // Remove non-updatable fields
+  const { action, id, spouse_id, is_wife, family_id, husband_id, wife_id, created_at, ...updateData } = payload;
+  
+  const { data, error } = await supabase
+    .from('marriages')
+    .update({ ...updateData, updated_at: new Date().toISOString() })
+    .eq(column, spouseId)
+    .select();
+  
+  if (error) {
+    console.error('[API] Update by spouse error:', error);
+    return errorResponse('DATABASE_ERROR', error.message, 500);
+  }
+  
+  return successResponse(data);
+}
+
+// Upsert marriage (create or update based on husband/wife combo)
+async function handleUpsert(userId: string, payload: Record<string, unknown>): Promise<Response> {
+  console.log(`[API] Upserting marriage`);
+  
+  const { family_id, husband_id, wife_id } = payload;
+  
+  if (!family_id || !husband_id || !wife_id) {
+    return errorResponse('VALIDATION_ERROR', 'family_id, husband_id, and wife_id are required', 400);
+  }
+  
+  if (!await checkFamilyOwnership(userId, family_id as string)) {
+    return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
+  }
+  
+  const supabase = createServiceClient();
+  
+  const { data, error } = await supabase
+    .from('marriages')
+    .upsert(
+      {
+        family_id,
+        husband_id,
+        wife_id,
+        marital_status: payload.marital_status || 'married',
+        is_active: payload.is_active !== false,
+      },
+      { onConflict: 'husband_id,wife_id' }
+    )
+    .select()
+    .single();
+  
+  if (error) {
+    console.error('[API] Upsert error:', error);
+    return errorResponse('DATABASE_ERROR', error.message, 500);
+  }
+  
+  return successResponse(data);
 }
 
 // Main handler
@@ -330,6 +452,21 @@ Deno.serve(async (req) => {
         
       case 'batchDelete':
         return await handleBatchDelete(user!.id, ids);
+        
+      case 'deleteBySpouses':
+        if (!payload.husband_id || !payload.wife_id) {
+          return errorResponse('VALIDATION_ERROR', 'husband_id and wife_id are required', 400);
+        }
+        return await handleDeleteBySpouses(user!.id, payload.husband_id as string, payload.wife_id as string);
+        
+      case 'updateBySpouseId':
+        if (!payload.spouse_id) {
+          return errorResponse('VALIDATION_ERROR', 'spouse_id is required', 400);
+        }
+        return await handleUpdateBySpouseId(user!.id, payload.spouse_id as string, payload.is_wife as boolean, payload);
+        
+      case 'upsert':
+        return await handleUpsert(user!.id, payload);
         
       default:
         return errorResponse('BAD_REQUEST', `Unknown action: ${action}`, 400);

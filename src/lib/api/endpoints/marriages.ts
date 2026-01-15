@@ -53,6 +53,33 @@ export const marriagesApi = {
   },
 
   /**
+   * Delete marriage by husband and wife IDs
+   */
+  deleteBySpouses: async (husbandId: string, wifeId: string): Promise<DeleteResponse> => {
+    return apiClient.delete<DeleteResponse>(FUNCTION_NAME, { 
+      action: 'deleteBySpouses', 
+      husband_id: husbandId, 
+      wife_id: wifeId 
+    });
+  },
+
+  /**
+   * Update marriages by spouse ID
+   */
+  updateBySpouseId: async (
+    spouseId: string, 
+    isWife: boolean, 
+    input: MarriageUpdateInput
+  ): Promise<Marriage> => {
+    return apiClient.put<Marriage>(FUNCTION_NAME, { 
+      action: 'updateBySpouseId', 
+      spouse_id: spouseId,
+      is_wife: isWife,
+      ...input 
+    });
+  },
+
+  /**
    * Deactivate a marriage (soft delete)
    */
   deactivate: async (id: string): Promise<Marriage> => {
@@ -72,6 +99,13 @@ export const marriagesApi = {
       id, 
       is_active: true 
     });
+  },
+
+  /**
+   * Upsert a marriage (create or update based on husband/wife combination)
+   */
+  upsert: async (input: MarriageCreateInput): Promise<Marriage> => {
+    return apiClient.post<Marriage>(FUNCTION_NAME, { action: 'upsert', ...input });
   },
 };
 

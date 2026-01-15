@@ -52,7 +52,7 @@ import {
   updateTwinGroup,
   removeFromTwinGroup
 } from "@/services/familyBuilderService";
-import { membersApi, marriagesApi } from '@/lib/api';
+import { membersApi, marriagesApi, familiesApi } from '@/lib/api';
 import { uploadMemberImage, getMemberImageUrl, deleteMemberImage } from "@/utils/imageUpload";
 import Cropper from "react-easy-crop";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -175,12 +175,12 @@ const FamilyBuilderNew = () => {
       // 1) Determine current image path
       let currentPath: string | null = editingMember?.image || null;
       if (!currentPath && editingMember?.id) {
-        const { data } = await supabase
-          .from('family_tree_members')
-          .select('image_url')
-          .eq('id', editingMember.id)
-          .maybeSingle();
-        currentPath = data?.image_url ?? null;
+        try {
+          const memberData = await membersApi.get(editingMember.id);
+          currentPath = memberData?.image_url ?? null;
+        } catch (error) {
+          console.error('Error fetching member image:', error);
+        }
       }
 
       // 2) Delete preview URL if exists
@@ -195,10 +195,7 @@ const FamilyBuilderNew = () => {
 
       // 4) Update DB to null image_url if editing an existing member
       if (editingMember?.id) {
-        await supabase
-          .from('family_tree_members')
-          .update({ image_url: null, updated_at: new Date().toISOString() })
-          .eq('id', editingMember.id);
+        await membersApi.updateImage(editingMember.id, null);
       }
 
       // 5) Update local state to reflect deletion immediately
@@ -486,30 +483,25 @@ const FamilyBuilderNew = () => {
       if (!familyId) {
         throw new Error('No family ID provided');
       }
-      const {
-        data: family,
-        error: familyError
-      } = await supabase.from('families').select('*').eq('id', familyId).eq('creator_id', user.id).single();
-      if (familyError) {
-        console.error('Error fetching family:', familyError);
-        throw familyError;
-      }
+      
+      // Use API to fetch family data
+      const family = await familiesApi.get(familyId);
       if (!family) {
+        throw new Error('Family not found or access denied');
+      }
+      // Verify ownership
+      if (family.creator_id !== user.id) {
         throw new Error('Family not found or access denied');
       }
       const familyToUse = family;
       setFamilyData(familyToUse);
-      const {
-        data: members,
-        error: membersError
-      } = await supabase.from('family_tree_members')
-        .select('id, name, first_name, last_name, father_id, mother_id, spouse_id, related_person_id, is_founder, gender, birth_date, is_alive, death_date, marital_status, image_url, is_twin, twin_group_id')
-        .eq('family_id', familyToUse.id);
-      if (membersError) throw membersError;
+      
+      // Use API to fetch members
+      const members = await familiesApi.getMembers(familyToUse.id);
       
       // Transform members data (declare at function scope for use in marriages)
       let transformedMembers = [];
-      if (members) {
+      if (members && members.length > 0) {
         transformedMembers = members.map(member => ({
           id: member.id,
           name: member.name,
@@ -2514,32 +2506,29 @@ const FamilyBuilderNew = () => {
 
         // Ensure name field is properly constructed
         const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName;
-        const {
-          data: updatedMember,
-          error: updateError
-        } = await supabase.from('family_tree_members').update({
-          name: fullName,
-          first_name: firstName,
-          last_name: lastName,
-          gender: submissionData.gender,
-          birth_date: formatDateForDatabase(submissionData.birthDate),
-          is_alive: submissionData.isAlive,
-          death_date: !submissionData.isAlive ? formatDateForDatabase(submissionData.deathDate) : null,
-          biography: submissionData.bio || null,
-          image_url: finalImageUrl,
-          father_id: fatherId,
-          mother_id: motherId,
-          related_person_id: relatedPersonId,
-          marital_status: finalData.maritalStatus || 'single',
-          is_twin: submissionData.is_twin || false,
-          twin_group_id: submissionData.twin_group_id || null,
-          updated_at: new Date().toISOString()
-        }).eq('id', editingMember.id).select().single();
-        if (updateError) {
+        try {
+          const updatedMember = await membersApi.update(editingMember.id, {
+            name: fullName,
+            first_name: firstName,
+            last_name: lastName,
+            gender: submissionData.gender,
+            birth_date: formatDateForDatabase(submissionData.birthDate) || null,
+            is_alive: submissionData.isAlive,
+            death_date: !submissionData.isAlive ? formatDateForDatabase(submissionData.deathDate) : null,
+            biography: submissionData.bio || null,
+            image_url: finalImageUrl,
+            father_id: fatherId,
+            mother_id: motherId,
+            related_person_id: relatedPersonId,
+            marital_status: finalData.maritalStatus || 'single',
+            is_twin: submissionData.is_twin || false,
+            twin_group_id: submissionData.twin_group_id || null
+          });
+          memberData = updatedMember;
+        } catch (updateError) {
           console.error('Error updating family member:', updateError);
           throw updateError;
         }
-        memberData = updatedMember;
       } else {
         // Insert new family member into database
         // Use first_name from formData directly
@@ -2558,37 +2547,33 @@ const FamilyBuilderNew = () => {
         // Ensure name field is properly constructed
         const fullName = firstName && lastName ? `${firstName} ${lastName}` : firstName;
         
-        // Insert member first WITHOUT image
-        const {
-          data: newMember,
-          error: memberError
-        } = await supabase.from('family_tree_members').insert({
-          name: fullName,
-          first_name: firstName,
-          last_name: lastName,
-          gender: submissionData.gender,
-          birth_date: formatDateForDatabase(submissionData.birthDate),
-          is_alive: submissionData.isAlive,
-          death_date: !submissionData.isAlive ? formatDateForDatabase(submissionData.deathDate) : null,
-          biography: submissionData.bio || null,
-          image_url: null, // Will be updated below if image exists
-          father_id: fatherId,
-          mother_id: motherId,
-          related_person_id: relatedPersonId,
-          family_id: familyId,
-          created_by: familyData?.creator_id,
-          is_founder: submissionData.isFounder || false,
-          marital_status: finalData.maritalStatus || 'single',
-          is_twin: submissionData.is_twin || false,
-          twin_group_id: submissionData.twin_group_id || null
-        }).select().single();
-        
-        if (memberError) {
+        // Insert member first WITHOUT image using API
+        try {
+          const newMember = await membersApi.create({
+            name: fullName,
+            first_name: firstName,
+            last_name: lastName,
+            gender: submissionData.gender,
+            birth_date: formatDateForDatabase(submissionData.birthDate) || undefined,
+            is_alive: submissionData.isAlive,
+            death_date: !submissionData.isAlive ? formatDateForDatabase(submissionData.deathDate) : undefined,
+            biography: submissionData.bio || undefined,
+            image_url: undefined, // Will be updated below if image exists
+            father_id: fatherId || undefined,
+            mother_id: motherId || undefined,
+            related_person_id: relatedPersonId || undefined,
+            family_id: familyId,
+            created_by: familyData?.creator_id || undefined,
+            is_founder: submissionData.isFounder || false,
+            marital_status: finalData.maritalStatus || 'single',
+            is_twin: submissionData.is_twin || false,
+            twin_group_id: submissionData.twin_group_id || undefined
+          });
+          memberData = newMember;
+        } catch (memberError) {
           console.error('Error adding family member:', memberError);
           throw memberError;
         }
-        
-        memberData = newMember;
         
         // Now upload image using the real member ID
         const croppedBlob = (window as any).__croppedImageBlob;
@@ -2599,17 +2584,14 @@ const FamilyBuilderNew = () => {
             
             if (imageStoragePath) {
               // Update member with image path
-              const { error: imageUpdateError } = await supabase
-                .from('family_tree_members')
-                .update({ image_url: imageStoragePath })
-                .eq('id', memberData.id);
-                
-              if (imageUpdateError) {
-                console.error('Error updating member with image:', imageUpdateError);
-              } else {
+              // Update member with image path using API
+              try {
+                await membersApi.updateImage(memberData.id, imageStoragePath);
                 // Update memberData with the image path
                 memberData.image_url = imageStoragePath;
                 finalImageUrl = imageStoragePath;
+              } catch (imageUpdateError) {
+                console.error('Error updating member with image:', imageUpdateError);
               }
             }
           } catch (error) {
@@ -2633,13 +2615,10 @@ const FamilyBuilderNew = () => {
         }
         
         // تحديث العضو الحالي بـ twin_group_id
-        await supabase
-          .from('family_tree_members')
-          .update({ 
-            is_twin: true, 
-            twin_group_id: twinGroupId 
-          })
-          .eq('id', memberData.id);
+        await membersApi.update(memberData.id, { 
+          is_twin: true, 
+          twin_group_id: twinGroupId 
+        });
         
         // Get original twin siblings to detect removals
         const originalTwinSiblings = formMode === 'edit' && editingMember?.twin_group_id
@@ -2657,13 +2636,10 @@ const FamilyBuilderNew = () => {
         // Remove deselected siblings from twin group
         if (removedSiblings.length > 0) {
           const removeUpdates = removedSiblings.map(async (siblingId: string) => {
-            return supabase
-              .from('family_tree_members')
-              .update({ 
-                is_twin: false, 
-                twin_group_id: null 
-              })
-              .eq('id', siblingId);
+            return membersApi.update(siblingId, { 
+              is_twin: false, 
+              twin_group_id: null 
+            });
           });
           
           await Promise.all(removeUpdates);
@@ -2672,13 +2648,10 @@ const FamilyBuilderNew = () => {
         
         // تحديث جميع الإخوة المختارين بنفس twin_group_id
         const twinUpdates = submissionData.selected_twins.map(async (siblingId: string) => {
-          return supabase
-            .from('family_tree_members')
-            .update({ 
-              is_twin: true, 
-              twin_group_id: twinGroupId 
-            })
-            .eq('id', siblingId);
+          return membersApi.update(siblingId, { 
+            is_twin: true, 
+            twin_group_id: twinGroupId 
+          });
         });
         
         await Promise.all(twinUpdates);
@@ -2688,13 +2661,10 @@ const FamilyBuilderNew = () => {
 
       // إزالة من مجموعة التوائم إذا تم إلغاء الاختيار للعضو الحالي
       if (!submissionData.is_twin && memberData.twin_group_id) {
-        await supabase
-          .from('family_tree_members')
-          .update({ 
-            is_twin: false, 
-            twin_group_id: null 
-          })
-          .eq('id', memberData.id);
+        await membersApi.update(memberData.id, { 
+          is_twin: false, 
+          twin_group_id: null 
+        });
         
         console.log(`✅ Removed member from twin group`);
       }
