@@ -52,29 +52,25 @@ async function request<T>(
 ): Promise<T> {
   const { body, params } = options;
 
-  // Build query string for GET requests
-  let queryString = '';
+  // Build request body - merge params directly into body
+  // Edge functions expect action and other params directly in JSON body
+  const requestBody: Record<string, unknown> = {};
+  
+  // Add params directly to body (action, id, familyId, etc.)
   if (params) {
-    const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
-        searchParams.append(key, String(value));
+        requestBody[key] = value;
       }
     });
-    queryString = searchParams.toString();
   }
 
-  // Prepare request body
-  const requestBody: Record<string, unknown> = {
-    method,
-    ...(queryString && { query: queryString }),
-  };
-
-  if (body && method !== 'GET') {
-    requestBody.payload = body;
+  // Merge body for POST/PUT/PATCH/DELETE
+  if (body && typeof body === 'object') {
+    Object.assign(requestBody, body);
   }
 
-  console.log(`[API] ${method} ${functionName}`, { params, body });
+  console.log(`[API] ${method} ${functionName}`, requestBody);
 
   const { data, error } = await supabase.functions.invoke(functionName, {
     body: requestBody,
