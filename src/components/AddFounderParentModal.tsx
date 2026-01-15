@@ -132,7 +132,7 @@ export const AddFounderParentModal: React.FC<AddFounderParentModalProps> = ({
           const isPast = steps.indexOf(currentStep) > index;
           
           return (
-            <React.Fragment key={step}>
+            <div key={step} className="flex items-center gap-2">
               <div className="flex flex-col items-center gap-1">
                 <div
                   className={cn(
@@ -159,7 +159,7 @@ export const AddFounderParentModal: React.FC<AddFounderParentModalProps> = ({
                   isPast ? 'bg-green-500' : 'bg-muted'
                 )} />
               )}
-            </React.Fragment>
+            </div>
           );
         })}
       </div>
