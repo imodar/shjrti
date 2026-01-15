@@ -1814,85 +1814,67 @@ const FamilyBuilderNew = () => {
     try {
       setProfileLoading(true);
 
-      // Fetch complete member details using API
-      const memberData = await membersApi.get(memberId);
+      const getMemberFromLocalCache = (id: string) => {
+        return (familyMembers || []).find((m: any) => m?.id === id) ?? null;
+      };
+
+      // Prefer already-loaded member data (fast). Only hit API if we truly don't have it.
+      const cachedMember = getMemberFromLocalCache(memberId);
+      const memberData = cachedMember ?? (await membersApi.get(memberId));
       if (!memberData) throw new Error('Member not found');
 
-      // Fetch member's marriages with spouse details
-      
-      // ✅ Use marriages from Context (NO extra query!)
-      let memberMarriages = [];
-      if (contextMarriages) {
-        const memberMarriagesData = contextMarriages.filter(
-          m => m.husband_id === memberId || m.wife_id === memberId
-        );
-        
-        // Get detailed marriage data with member info from Context
-        memberMarriages = await Promise.all(memberMarriagesData.map(async marriage => {
-          // Use membersApi instead of direct Supabase query
-          const [husband, wife] = await Promise.all([
-            membersApi.get(marriage.husband_id).catch(() => null),
-            membersApi.get(marriage.wife_id).catch(() => null)
-          ]);
-          return {
-            ...marriage,
-            husband,
-            wife
-          };
-        }));
-      }
+      // Build marriages using already-loaded members (avoid N+1 calls to api-members)
+      const sourceMarriages = contextMarriages ?? familyMarriages ?? [];
+      const memberMarriagesData = sourceMarriages.filter(
+        (m: any) => m?.husband_id === memberId || m?.wife_id === memberId
+      );
 
-      // Transform member data
+      const memberMarriages = memberMarriagesData.map((marriage: any) => {
+        const husband = marriage?.husband ?? getMemberFromLocalCache(marriage.husband_id);
+        const wife = marriage?.wife ?? getMemberFromLocalCache(marriage.wife_id);
+        return { ...marriage, husband, wife };
+      });
+
+      // Transform member data (support both snake_case from API and camelCase from local state)
       const transformedMember = {
         id: memberData.id,
         name: memberData.name,
-        first_name: memberData.first_name,
-        last_name: memberData.last_name,
-        fatherId: memberData.father_id,
-        motherId: memberData.mother_id,
-        spouseId: memberData.spouse_id,
-        relatedPersonId: memberData.related_person_id,
-        isFounder: memberData.is_founder,
-        gender: memberData.gender,
-        birthDate: memberData.birth_date || "",
-        isAlive: memberData.is_alive,
-        deathDate: memberData.death_date || null,
-        image: memberData.image_url || null,
-        bio: memberData.biography || "",
-        marital_status: memberData.marital_status || 'single',
+        first_name: (memberData as any).first_name ?? (memberData as any).firstName ?? null,
+        last_name: (memberData as any).last_name ?? (memberData as any).lastName ?? null,
+        fatherId: (memberData as any).father_id ?? (memberData as any).fatherId ?? null,
+        motherId: (memberData as any).mother_id ?? (memberData as any).motherId ?? null,
+        spouseId: (memberData as any).spouse_id ?? (memberData as any).spouseId ?? null,
+        relatedPersonId: (memberData as any).related_person_id ?? (memberData as any).relatedPersonId ?? null,
+        isFounder: (memberData as any).is_founder ?? (memberData as any).isFounder ?? false,
+        gender: (memberData as any).gender ?? null,
+        birthDate: (memberData as any).birth_date ?? (memberData as any).birthDate ?? "",
+        isAlive: (memberData as any).is_alive ?? (memberData as any).isAlive ?? null,
+        deathDate: (memberData as any).death_date ?? (memberData as any).deathDate ?? null,
+        image: (memberData as any).image_url ?? (memberData as any).image ?? null,
+        bio: (memberData as any).biography ?? (memberData as any).bio ?? "",
+        marital_status: (memberData as any).marital_status ?? (memberData as any).maritalStatus ?? 'single',
         relation: "",
-        is_twin: memberData.is_twin || false,
-        twin_group_id: memberData.twin_group_id || null
+        is_twin: (memberData as any).is_twin ?? (memberData as any).isTwin ?? false,
+        twin_group_id: (memberData as any).twin_group_id ?? (memberData as any).twinGroupId ?? null,
       };
 
-      // Update local state with fresh data
+      // Update local state for the profile panel only (avoid re-mapping the entire members list on every click)
       setMemberProfileData(transformedMember);
       setEditingMember(transformedMember);
 
-      // Update the member in familyMembers array
-      setFamilyMembers(prev => prev.map(m => m.id === memberId ? transformedMember : m));
-
-      // Update marriages if this member's marriages changed
-      if (memberMarriages.length > 0) {
-        setFamilyMarriages(prev => {
-          const updatedMarriages = [...prev];
-          memberMarriages.forEach(newMarriage => {
-            const existingIndex = updatedMarriages.findIndex(m => m.id === newMarriage.id);
-            if (existingIndex >= 0) {
-              updatedMarriages[existingIndex] = newMarriage;
-            } else {
-              updatedMarriages.push(newMarriage);
-            }
-          });
-          return updatedMarriages;
-        });
-      }
+      // Keep marriages data available for the profile view without mutating the global list
+      setFamilyMarriages((prev: any[]) => {
+        if (!memberMarriages.length) return prev;
+        const byId = new Map(prev.map((m: any) => [m.id, m]));
+        memberMarriages.forEach((m: any) => byId.set(m.id, m));
+        return Array.from(byId.values());
+      });
     } catch (error) {
       console.error('Error fetching member profile:', error);
       toast({
         title: "خطأ",
         description: "حدث خطأ في تحميل بيانات العضو",
-        variant: "destructive"
+        variant: "destructive",
       });
     } finally {
       setProfileLoading(false);
