@@ -1,0 +1,766 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Shejrati Family Tree API",
+    "description": "API-First Architecture for managing family trees, members, marriages, and memories. All endpoints require JWT authentication via Supabase.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Shejrati Support",
+      "url": "https://shjrti.com"
+    },
+    "license": {
+      "name": "Proprietary"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://xzakoccnfswabrdwvukp.supabase.co/functions/v1",
+      "description": "Production Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Families",
+      "description": "Family tree management operations"
+    },
+    {
+      "name": "Members",
+      "description": "Family member management operations"
+    },
+    {
+      "name": "Marriages",
+      "description": "Marriage relationship management"
+    },
+    {
+      "name": "Memories",
+      "description": "Photo and memory management"
+    }
+  ],
+  "paths": {
+    "/api-families": {
+      "post": {
+        "tags": ["Families"],
+        "summary": "Family Operations",
+        "description": "Perform CRUD operations on families. The `action` field determines the operation.",
+        "operationId": "familyOperations",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/FamilyListRequest" },
+                  { "$ref": "#/components/schemas/FamilyGetRequest" },
+                  { "$ref": "#/components/schemas/FamilyCreateRequest" },
+                  { "$ref": "#/components/schemas/FamilyUpdateRequest" },
+                  { "$ref": "#/components/schemas/FamilyDeleteRequest" },
+                  { "$ref": "#/components/schemas/FamilyGetMembersRequest" },
+                  { "$ref": "#/components/schemas/FamilyGetMarriagesRequest" },
+                  { "$ref": "#/components/schemas/FamilyRegenerateTokenRequest" }
+                ]
+              },
+              "examples": {
+                "list": {
+                  "summary": "List all families",
+                  "value": { "action": "list" }
+                },
+                "get": {
+                  "summary": "Get a specific family",
+                  "value": { "action": "get", "id": "uuid-here" }
+                },
+                "create": {
+                  "summary": "Create a new family",
+                  "value": {
+                    "action": "create",
+                    "name": "عائلة الشيخ سعيد",
+                    "description": "شجرة عائلة الشيخ سعيد"
+                  }
+                },
+                "update": {
+                  "summary": "Update a family",
+                  "value": {
+                    "action": "update",
+                    "id": "uuid-here",
+                    "name": "اسم جديد"
+                  }
+                },
+                "delete": {
+                  "summary": "Delete a family",
+                  "value": { "action": "delete", "id": "uuid-here" }
+                },
+                "getMembers": {
+                  "summary": "Get family members",
+                  "value": { "action": "getMembers", "familyId": "uuid-here" }
+                },
+                "getMarriages": {
+                  "summary": "Get family marriages",
+                  "value": { "action": "getMarriages", "familyId": "uuid-here" }
+                },
+                "regenerateToken": {
+                  "summary": "Regenerate share token",
+                  "value": {
+                    "action": "regenerateShareToken",
+                    "familyId": "uuid-here",
+                    "expiresInHours": 48
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden - Not owner",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api-members": {
+      "post": {
+        "tags": ["Members"],
+        "summary": "Member Operations",
+        "description": "Perform CRUD operations on family members. The `action` field determines the operation.",
+        "operationId": "memberOperations",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/MemberGetRequest" },
+                  { "$ref": "#/components/schemas/MemberCreateRequest" },
+                  { "$ref": "#/components/schemas/MemberUpdateRequest" },
+                  { "$ref": "#/components/schemas/MemberDeleteRequest" },
+                  { "$ref": "#/components/schemas/MemberGetMemoriesRequest" },
+                  { "$ref": "#/components/schemas/MemberBatchCreateRequest" }
+                ]
+              },
+              "examples": {
+                "get": {
+                  "summary": "Get a specific member",
+                  "value": { "action": "get", "id": "uuid-here" }
+                },
+                "create": {
+                  "summary": "Create a new member",
+                  "value": {
+                    "action": "create",
+                    "family_id": "uuid-here",
+                    "name": "محمد",
+                    "gender": "male",
+                    "birth_date": "1990-01-15",
+                    "is_founder": false
+                  }
+                },
+                "update": {
+                  "summary": "Update a member",
+                  "value": {
+                    "action": "update",
+                    "id": "uuid-here",
+                    "name": "محمد أحمد",
+                    "biography": "سيرة ذاتية"
+                  }
+                },
+                "delete": {
+                  "summary": "Delete a member",
+                  "value": { "action": "delete", "id": "uuid-here" }
+                },
+                "getMemories": {
+                  "summary": "Get member memories",
+                  "value": { "action": "getMemories", "memberId": "uuid-here" }
+                },
+                "batchCreate": {
+                  "summary": "Create multiple members",
+                  "value": {
+                    "action": "batchCreate",
+                    "members": [
+                      { "family_id": "uuid", "name": "أحمد", "gender": "male" },
+                      { "family_id": "uuid", "name": "فاطمة", "gender": "female" }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api-marriages": {
+      "post": {
+        "tags": ["Marriages"],
+        "summary": "Marriage Operations",
+        "description": "Perform CRUD operations on marriage relationships. The `action` field determines the operation.",
+        "operationId": "marriageOperations",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/MarriageGetRequest" },
+                  { "$ref": "#/components/schemas/MarriageCreateRequest" },
+                  { "$ref": "#/components/schemas/MarriageUpdateRequest" },
+                  { "$ref": "#/components/schemas/MarriageDeleteRequest" }
+                ]
+              },
+              "examples": {
+                "get": {
+                  "summary": "Get a specific marriage",
+                  "value": { "action": "get", "id": "uuid-here" }
+                },
+                "create": {
+                  "summary": "Create a new marriage",
+                  "value": {
+                    "action": "create",
+                    "family_id": "uuid-here",
+                    "husband_id": "uuid-here",
+                    "wife_id": "uuid-here",
+                    "marital_status": "married"
+                  }
+                },
+                "update": {
+                  "summary": "Update a marriage",
+                  "value": {
+                    "action": "update",
+                    "id": "uuid-here",
+                    "marital_status": "divorced"
+                  }
+                },
+                "delete": {
+                  "summary": "Delete a marriage",
+                  "value": { "action": "delete", "id": "uuid-here" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api-memories": {
+      "post": {
+        "tags": ["Memories"],
+        "summary": "Memory Operations",
+        "description": "Perform CRUD operations on member and family memories/photos. The `action` field determines the operation.",
+        "operationId": "memoryOperations",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "oneOf": [
+                  { "$ref": "#/components/schemas/MemoryGetMemberRequest" },
+                  { "$ref": "#/components/schemas/MemoryCreateMemberRequest" },
+                  { "$ref": "#/components/schemas/MemoryGetFamilyRequest" },
+                  { "$ref": "#/components/schemas/MemoryCreateFamilyRequest" }
+                ]
+              },
+              "examples": {
+                "getMemberMemories": {
+                  "summary": "Get member memories",
+                  "value": { "action": "getMemberMemories", "memberId": "uuid-here" }
+                },
+                "createMemberMemory": {
+                  "summary": "Create member memory",
+                  "value": {
+                    "action": "createMemberMemory",
+                    "member_id": "uuid-here",
+                    "file_path": "member-memories/uuid/photo.jpg",
+                    "original_filename": "photo.jpg",
+                    "content_type": "image/jpeg",
+                    "file_size": 1024000,
+                    "caption": "ذكرى جميلة"
+                  }
+                },
+                "getFamilyMemories": {
+                  "summary": "Get family memories",
+                  "value": { "action": "getFamilyMemories", "familyId": "uuid-here" }
+                },
+                "createFamilyMemory": {
+                  "summary": "Create family memory",
+                  "value": {
+                    "action": "createFamilyMemory",
+                    "family_id": "uuid-here",
+                    "file_path": "family-memories/uuid/reunion.jpg",
+                    "original_filename": "reunion.jpg",
+                    "content_type": "image/jpeg",
+                    "file_size": 2048000,
+                    "caption": "لقاء العائلة 2024"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Supabase JWT token from authentication"
+      }
+    },
+    "schemas": {
+      "Family": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "example": "عائلة الشيخ سعيد" },
+          "description": { "type": "string", "nullable": true },
+          "creator_id": { "type": "string", "format": "uuid" },
+          "share_token": { "type": "string", "nullable": true },
+          "share_token_expires_at": { "type": "string", "format": "date-time", "nullable": true },
+          "share_password": { "type": "string", "nullable": true },
+          "share_gallery": { "type": "boolean", "default": false },
+          "custom_domain": { "type": "string", "nullable": true },
+          "female_name_privacy": { "type": "string", "enum": ["full", "first_only", "hidden"], "nullable": true },
+          "female_photo_hidden": { "type": "boolean", "default": false },
+          "is_archived": { "type": "boolean", "default": false },
+          "archived_at": { "type": "string", "format": "date-time", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "name", "creator_id", "created_at", "updated_at"]
+      },
+      "Member": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "family_id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "example": "محمد أحمد" },
+          "first_name": { "type": "string", "nullable": true },
+          "last_name": { "type": "string", "nullable": true },
+          "gender": { "type": "string", "enum": ["male", "female"], "nullable": true },
+          "birth_date": { "type": "string", "format": "date", "nullable": true },
+          "death_date": { "type": "string", "format": "date", "nullable": true },
+          "is_alive": { "type": "boolean", "default": true },
+          "biography": { "type": "string", "nullable": true },
+          "image_url": { "type": "string", "nullable": true },
+          "father_id": { "type": "string", "format": "uuid", "nullable": true },
+          "mother_id": { "type": "string", "format": "uuid", "nullable": true },
+          "spouse_id": { "type": "string", "format": "uuid", "nullable": true },
+          "is_founder": { "type": "boolean", "default": false },
+          "is_twin": { "type": "boolean", "default": false },
+          "twin_group_id": { "type": "string", "nullable": true },
+          "marital_status": { "type": "string", "enum": ["single", "married", "divorced", "widowed"], "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "family_id", "name", "created_at", "updated_at"]
+      },
+      "Marriage": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "family_id": { "type": "string", "format": "uuid" },
+          "husband_id": { "type": "string", "format": "uuid" },
+          "wife_id": { "type": "string", "format": "uuid" },
+          "marital_status": { "type": "string", "enum": ["married", "divorced", "widowed"], "nullable": true },
+          "is_active": { "type": "boolean", "default": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "family_id", "husband_id", "wife_id", "created_at", "updated_at"]
+      },
+      "MemberMemory": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "member_id": { "type": "string", "format": "uuid" },
+          "file_path": { "type": "string" },
+          "original_filename": { "type": "string" },
+          "content_type": { "type": "string", "example": "image/jpeg" },
+          "file_size": { "type": "integer" },
+          "caption": { "type": "string", "nullable": true },
+          "uploaded_by": { "type": "string", "format": "uuid" },
+          "uploaded_at": { "type": "string", "format": "date-time" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "member_id", "file_path", "original_filename", "content_type", "file_size", "uploaded_by"]
+      },
+      "FamilyMemory": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "family_id": { "type": "string", "format": "uuid" },
+          "file_path": { "type": "string" },
+          "original_filename": { "type": "string" },
+          "content_type": { "type": "string" },
+          "file_size": { "type": "integer" },
+          "caption": { "type": "string", "nullable": true },
+          "photo_date": { "type": "string", "format": "date", "nullable": true },
+          "tags": { "type": "array", "items": { "type": "string" }, "nullable": true },
+          "linked_member_id": { "type": "string", "format": "uuid", "nullable": true },
+          "uploaded_by": { "type": "string", "format": "uuid" },
+          "uploaded_at": { "type": "string", "format": "date-time" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "family_id", "file_path", "original_filename", "content_type", "file_size", "uploaded_by"]
+      },
+      "FamilyListRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["list"] }
+        },
+        "required": ["action"]
+      },
+      "FamilyGetRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["get"] },
+          "id": { "type": "string", "format": "uuid" }
+        },
+        "required": ["action", "id"]
+      },
+      "FamilyCreateRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["create"] },
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        },
+        "required": ["action", "name"]
+      },
+      "FamilyUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["update"] },
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "description": { "type": "string" }
+        },
+        "required": ["action", "id"]
+      },
+      "FamilyDeleteRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["delete"] },
+          "id": { "type": "string", "format": "uuid" }
+        },
+        "required": ["action", "id"]
+      },
+      "FamilyGetMembersRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["getMembers"] },
+          "familyId": { "type": "string", "format": "uuid" }
+        },
+        "required": ["action", "familyId"]
+      },
+      "FamilyGetMarriagesRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["getMarriages"] },
+          "familyId": { "type": "string", "format": "uuid" }
+        },
+        "required": ["action", "familyId"]
+      },
+      "FamilyRegenerateTokenRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["regenerateShareToken"] },
+          "familyId": { "type": "string", "format": "uuid" },
+          "expiresInHours": { "type": "integer", "default": 2 }
+        },
+        "required": ["action", "familyId"]
+      },
+      "MemberGetRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["get"] },
+          "id": { "type": "string", "format": "uuid" }
+        },
+        "required": ["action", "id"]
+      },
+      "MemberCreateRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["create"] },
+          "family_id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "gender": { "type": "string", "enum": ["male", "female"] },
+          "birth_date": { "type": "string", "format": "date" },
+          "is_founder": { "type": "boolean" },
+          "father_id": { "type": "string", "format": "uuid" },
+          "mother_id": { "type": "string", "format": "uuid" }
+        },
+        "required": ["action", "family_id", "name"]
+      },
+      "MemberUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["update"] },
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "gender": { "type": "string" },
+          "birth_date": { "type": "string" },
+          "death_date": { "type": "string" },
+          "biography": { "type": "string" },
+          "image_url": { "type": "string" }
+        },
+        "required": ["action", "id"]
+      },
+      "MemberDeleteRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["delete"] },
+          "id": { "type": "string", "format": "uuid" }
+        },
+        "required": ["action", "id"]
+      },
+      "MemberGetMemoriesRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["getMemories"] },
+          "memberId": { "type": "string", "format": "uuid" }
+        },
+        "required": ["action", "memberId"]
+      },
+      "MemberBatchCreateRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["batchCreate"] },
+          "members": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "family_id": { "type": "string", "format": "uuid" },
+                "name": { "type": "string" },
+                "gender": { "type": "string" }
+              },
+              "required": ["family_id", "name"]
+            }
+          }
+        },
+        "required": ["action", "members"]
+      },
+      "MarriageGetRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["get"] },
+          "id": { "type": "string", "format": "uuid" }
+        },
+        "required": ["action", "id"]
+      },
+      "MarriageCreateRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["create"] },
+          "family_id": { "type": "string", "format": "uuid" },
+          "husband_id": { "type": "string", "format": "uuid" },
+          "wife_id": { "type": "string", "format": "uuid" },
+          "marital_status": { "type": "string", "enum": ["married", "divorced", "widowed"] }
+        },
+        "required": ["action", "family_id", "husband_id", "wife_id"]
+      },
+      "MarriageUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["update"] },
+          "id": { "type": "string", "format": "uuid" },
+          "marital_status": { "type": "string" },
+          "is_active": { "type": "boolean" }
+        },
+        "required": ["action", "id"]
+      },
+      "MarriageDeleteRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["delete"] },
+          "id": { "type": "string", "format": "uuid" }
+        },
+        "required": ["action", "id"]
+      },
+      "MemoryGetMemberRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["getMemberMemories"] },
+          "memberId": { "type": "string", "format": "uuid" }
+        },
+        "required": ["action", "memberId"]
+      },
+      "MemoryCreateMemberRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["createMemberMemory"] },
+          "member_id": { "type": "string", "format": "uuid" },
+          "file_path": { "type": "string" },
+          "original_filename": { "type": "string" },
+          "content_type": { "type": "string" },
+          "file_size": { "type": "integer" },
+          "caption": { "type": "string" }
+        },
+        "required": ["action", "member_id", "file_path", "original_filename", "content_type", "file_size"]
+      },
+      "MemoryGetFamilyRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["getFamilyMemories"] },
+          "familyId": { "type": "string", "format": "uuid" }
+        },
+        "required": ["action", "familyId"]
+      },
+      "MemoryCreateFamilyRequest": {
+        "type": "object",
+        "properties": {
+          "action": { "type": "string", "enum": ["createFamilyMemory"] },
+          "family_id": { "type": "string", "format": "uuid" },
+          "file_path": { "type": "string" },
+          "original_filename": { "type": "string" },
+          "content_type": { "type": "string" },
+          "file_size": { "type": "integer" },
+          "caption": { "type": "string" },
+          "photo_date": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "linked_member_id": { "type": "string" }
+        },
+        "required": ["action", "family_id", "file_path", "original_filename", "content_type", "file_size"]
+      },
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "type": "object" },
+          "meta": { "type": "object" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": { "type": "string", "example": "VALIDATION_ERROR" },
+              "message": { "type": "string", "example": "Missing required field: name" }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request - validation error",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized - invalid or missing JWT",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Forbidden - not the owner of the resource",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      }
+    }
+  }
+}

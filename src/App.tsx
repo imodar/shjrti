@@ -55,6 +55,7 @@ import RenewSubscription from "./pages/RenewSubscription";
 import CustomDomainRedirect from "./pages/CustomDomainRedirect";
 import PublicTreeViewWithContext from "./pages/PublicTreeView/PublicTreeViewWithContext";
 import NotFound from "./pages/NotFound";
+import ApiDocs from "./pages/ApiDocs";
 import { supabase } from "@/integrations/supabase/client";
 
 const queryClient = new QueryClient();
@@ -245,6 +246,7 @@ const App = () => {
                   <Route path="/terms-conditions" element={<TermsConditions />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/contact" element={<ContactUs />} />
+                  <Route path="/api-docs" element={<ApiDocs />} />
                   <Route path="/tree" element={<PublicTreeViewWithContext />} />
                   <Route path="/share" element={<PublicTreeViewWithContext />} />
                   {/* Redirect old terms route to new one */}
