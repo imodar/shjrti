@@ -303,6 +303,8 @@ async function handleBatchDelete(userId: string, ids: string[]): Promise<Respons
     return errorResponse('VALIDATION_ERROR', 'Member IDs array is required', 400);
   }
 
+  const supabase = createServiceClient();
+
   // Check ownership for all members
   for (const id of ids) {
     const familyId = await getMemberFamilyId(id);
@@ -325,6 +327,39 @@ async function handleBatchDelete(userId: string, ids: string[]): Promise<Respons
   }
   
   return successResponse({ deleted: true, count: ids.length });
+}
+
+// Clear parent reference for children
+async function handleClearParentReference(
+  userId: string, 
+  parentId: string, 
+  parentType: 'father' | 'mother'
+): Promise<Response> {
+  console.log(`[API] Clearing ${parentType} reference for parent: ${parentId}`);
+  
+  const familyId = await getMemberFamilyId(parentId);
+  if (!familyId) {
+    // Parent might not exist, but we can still try to clear references
+    console.log(`[API] Parent ${parentId} not found, proceeding with reference clearing`);
+  } else if (!await checkFamilyOwnership(userId, familyId)) {
+    return errorResponse('FORBIDDEN', 'You do not have access to this member', 403);
+  }
+  
+  const supabase = createServiceClient();
+  const column = parentType === 'father' ? 'father_id' : 'mother_id';
+  
+  const { data, error } = await supabase
+    .from('family_tree_members')
+    .update({ [column]: null })
+    .eq(column, parentId)
+    .select('id');
+  
+  if (error) {
+    console.error('[API] Clear parent reference error:', error);
+    return errorResponse('DATABASE_ERROR', error.message, 500);
+  }
+  
+  return successResponse({ updated: data?.length || 0 });
 }
 
 // Main handler
@@ -373,6 +408,12 @@ Deno.serve(async (req) => {
         
       case 'batchDelete':
         return await handleBatchDelete(user!.id, ids);
+        
+      case 'clearParentReference':
+        if (!payload.parent_id || !payload.parent_type) {
+          return errorResponse('VALIDATION_ERROR', 'parent_id and parent_type are required', 400);
+        }
+        return await handleClearParentReference(user!.id, payload.parent_id as string, payload.parent_type as 'father' | 'mother');
         
       default:
         return errorResponse('BAD_REQUEST', `Unknown action: ${action}`, 400);
