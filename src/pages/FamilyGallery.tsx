@@ -42,6 +42,7 @@ import { ar } from "date-fns/locale";
 import { TimelineView } from "./FamilyGallery/TimelineView";
 import { FamilyGallerySkeleton } from "@/components/skeletons/FamilyGallerySkeleton";
 import { LazyMemoryImage } from "@/components/LazyMemoryImage";
+import { useCreateFamilyMemoryMutation, useDeleteFamilyMemoryMutation, useUpdateFamilyMemoryMutation } from "@/hooks/mutations/useMemoriesMutations";
 
 interface FamilyMemory {
   id: string;
@@ -62,6 +63,11 @@ const FamilyGallery = () => {
   const { direction } = useLanguage();
   const [searchParams] = useSearchParams();
   const familyId = searchParams.get('family');
+  
+  // API Mutations
+  const createMemoryMutation = useCreateFamilyMemoryMutation();
+  const deleteMemoryMutation = useDeleteFamilyMemoryMutation();
+  const updateMemoryMutation = useUpdateFamilyMemoryMutation();
   
   const [familyData, setFamilyData] = useState<any>(null);
   const [memories, setMemories] = useState<FamilyMemory[]>([]);
@@ -288,9 +294,9 @@ const FamilyGallery = () => {
   }, [toast]);
 
 
-  // Handle confirm upload
+  // Handle confirm upload - Using API
   const handleConfirmUpload = async () => {
-    if (!selectedFile) {
+    if (!selectedFile || !familyId) {
       toast({
         title: "خطأ",
         description: "يرجى اختيار صورة أولاً",
@@ -305,7 +311,7 @@ const FamilyGallery = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // رفع الصورة مباشرة بدون قص
+      // رفع الصورة للـ Storage
       const fileExt = selectedFile.name.split('.').pop();
       const fileName = `${familyId}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
 
@@ -318,25 +324,15 @@ const FamilyGallery = () => {
 
       if (uploadError) throw uploadError;
 
-      // حفظ Metadata في قاعدة البيانات
-      const { error: dbError } = await supabase
-        .from('family_memories')
-        .insert({
-          family_id: familyId,
-          file_path: fileName,
-          original_filename: selectedFile.name,
-          content_type: selectedFile.type,
-          file_size: selectedFile.size,
-          uploaded_by: user.id,
-          caption: uploadForm.caption || null,
-          photo_date: uploadForm.photoDate.toISOString()
-        });
-
-      if (dbError) throw dbError;
-
-      toast({
-        title: "نجاح",
-        description: "تم رفع الصورة بنجاح",
+      // حفظ Metadata عبر الـ API
+      await createMemoryMutation.mutateAsync({
+        family_id: familyId,
+        file_path: fileName,
+        original_filename: selectedFile.name,
+        content_type: selectedFile.type,
+        file_size: selectedFile.size,
+        caption: uploadForm.caption || undefined,
+        photo_date: uploadForm.photoDate.toISOString()
       });
 
       // Reset & Close
@@ -377,25 +373,15 @@ const FamilyGallery = () => {
     disabled: isUploading
   });
 
-  // Delete memory
+  // Delete memory - Using API
   const deleteMemory = async (memory: FamilyMemory) => {
+    if (!familyId) return;
+    
     try {
-      const { error: storageError } = await supabase.storage
-        .from('family-memories')
-        .remove([memory.file_path]);
-
-      if (storageError) throw storageError;
-
-      const { error: dbError } = await supabase
-        .from('family_memories')
-        .delete()
-        .eq('id', memory.id);
-
-      if (dbError) throw dbError;
-
-      toast({
-        title: "نجاح",
-        description: "تم حذف الصورة بنجاح",
+      // الحذف عبر الـ API (يحذف من Storage والـ DB معاً)
+      await deleteMemoryMutation.mutateAsync({ 
+        id: memory.id, 
+        familyId 
       });
 
       setIsModalOpen(false);
@@ -403,29 +389,20 @@ const FamilyGallery = () => {
 
     } catch (error) {
       console.error('Delete error:', error);
-      toast({
-        title: "خطأ",
-        description: "فشل حذف الصورة",
-        variant: "destructive"
-      });
     }
   };
 
-  // Save caption
+  // Save caption - Using API
   const saveCaption = async (memory: FamilyMemory) => {
+    if (!familyId) return;
+    
     try {
       setIsSavingCaption(true);
 
-      const { error } = await supabase
-        .from('family_memories')
-        .update({ caption: editedCaption })
-        .eq('id', memory.id);
-
-      if (error) throw error;
-
-      toast({
-        title: "نجاح",
-        description: "تم حفظ الوصف بنجاح",
+      await updateMemoryMutation.mutateAsync({
+        id: memory.id,
+        familyId,
+        caption: editedCaption
       });
 
       await loadMemories();
@@ -440,11 +417,6 @@ const FamilyGallery = () => {
 
     } catch (error) {
       console.error('Save caption error:', error);
-      toast({
-        title: "خطأ",
-        description: "فشل حفظ الوصف",
-        variant: "destructive"
-      });
     } finally {
       setIsSavingCaption(false);
     }
