@@ -118,3 +118,6 @@ verify_jwt = false
 
 [functions.api-marriages]
 verify_jwt = false
+
+[functions.api-memories]
+verify_jwt = false
