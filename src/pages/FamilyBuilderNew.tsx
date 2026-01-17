@@ -1631,7 +1631,14 @@ const FamilyBuilderNew = () => {
   };
 
   // Fetch detailed member profile data
-  const fetchMemberProfile = async (memberId: string) => {
+  // Track latest member click to handle race conditions
+  const latestMemberClickRef = useRef<string | null>(null);
+  
+  const fetchMemberProfile = useCallback(async (memberId: string) => {
+    // Store this as the latest click - if another click comes, this will be outdated
+    const clickId = `${memberId}_${Date.now()}`;
+    latestMemberClickRef.current = clickId;
+    
     try {
       setProfileLoading(true);
 
@@ -1639,76 +1646,122 @@ const FamilyBuilderNew = () => {
         return (familyMembers || []).find((m: any) => m?.id === id) ?? null;
       };
 
-      // Prefer already-loaded member data (fast). Only hit API if we truly don't have it.
-      const cachedMember = getMemberFromLocalCache(memberId);
-      const memberData = cachedMember ?? (await membersApi.get(memberId));
-      if (!memberData) throw new Error('Member not found');
+      // Check if this is still the latest click before proceeding
+      if (latestMemberClickRef.current !== clickId) {
+        console.log('[fetchMemberProfile] Aborted - newer click detected');
+        return;
+      }
 
-      // Build marriages using already-loaded members (avoid N+1 calls to api-members)
+      // Use cached data directly - no API call needed if data exists
+      const cachedMember = getMemberFromLocalCache(memberId);
+      if (!cachedMember) {
+        // Only fetch from API if not in cache
+        const memberData = await membersApi.get(memberId);
+        if (!memberData) throw new Error('Member not found');
+        
+        // Check again if still latest click after API call
+        if (latestMemberClickRef.current !== clickId) {
+          console.log('[fetchMemberProfile] Aborted after API - newer click detected');
+          return;
+        }
+        
+        // Process API data
+        const transformedMember = {
+          id: memberData.id,
+          name: memberData.name,
+          first_name: (memberData as any).first_name ?? null,
+          last_name: (memberData as any).last_name ?? null,
+          fatherId: (memberData as any).father_id ?? null,
+          motherId: (memberData as any).mother_id ?? null,
+          spouseId: (memberData as any).spouse_id ?? null,
+          relatedPersonId: (memberData as any).related_person_id ?? null,
+          isFounder: (memberData as any).is_founder ?? false,
+          gender: (memberData as any).gender ?? null,
+          birthDate: (memberData as any).birth_date ?? "",
+          isAlive: (memberData as any).is_alive ?? null,
+          deathDate: (memberData as any).death_date ?? null,
+          image: (memberData as any).image_url ?? null,
+          bio: (memberData as any).biography ?? "",
+          marital_status: (memberData as any).marital_status ?? 'single',
+          relation: "",
+          is_twin: (memberData as any).is_twin ?? false,
+          twin_group_id: (memberData as any).twin_group_id ?? null,
+        };
+        setMemberProfileData(transformedMember);
+        setEditingMember(transformedMember);
+      } else {
+        // Use cached data directly - fast path!
+        const transformedMember = {
+          id: cachedMember.id,
+          name: cachedMember.name,
+          first_name: cachedMember.first_name ?? cachedMember.firstName ?? null,
+          last_name: cachedMember.last_name ?? cachedMember.lastName ?? null,
+          fatherId: cachedMember.father_id ?? cachedMember.fatherId ?? null,
+          motherId: cachedMember.mother_id ?? cachedMember.motherId ?? null,
+          spouseId: cachedMember.spouse_id ?? cachedMember.spouseId ?? null,
+          relatedPersonId: cachedMember.related_person_id ?? cachedMember.relatedPersonId ?? null,
+          isFounder: cachedMember.is_founder ?? cachedMember.isFounder ?? false,
+          gender: cachedMember.gender ?? null,
+          birthDate: cachedMember.birth_date ?? cachedMember.birthDate ?? "",
+          isAlive: cachedMember.is_alive ?? cachedMember.isAlive ?? null,
+          deathDate: cachedMember.death_date ?? cachedMember.deathDate ?? null,
+          image: cachedMember.image_url ?? cachedMember.image ?? null,
+          bio: cachedMember.biography ?? cachedMember.bio ?? "",
+          marital_status: cachedMember.marital_status ?? cachedMember.maritalStatus ?? 'single',
+          relation: "",
+          is_twin: cachedMember.is_twin ?? cachedMember.isTwin ?? false,
+          twin_group_id: cachedMember.twin_group_id ?? cachedMember.twinGroupId ?? null,
+        };
+        setMemberProfileData(transformedMember);
+        setEditingMember(transformedMember);
+      }
+
+      // Build marriages from local cache
       const sourceMarriages = contextMarriages ?? familyMarriages ?? [];
       const memberMarriagesData = sourceMarriages.filter(
         (m: any) => m?.husband_id === memberId || m?.wife_id === memberId
       );
 
-      const memberMarriages = memberMarriagesData.map((marriage: any) => {
-        const husband = marriage?.husband ?? getMemberFromLocalCache(marriage.husband_id);
-        const wife = marriage?.wife ?? getMemberFromLocalCache(marriage.wife_id);
-        return { ...marriage, husband, wife };
-      });
+      if (memberMarriagesData.length > 0) {
+        const memberMarriages = memberMarriagesData.map((marriage: any) => {
+          const husband = marriage?.husband ?? getMemberFromLocalCache(marriage.husband_id);
+          const wife = marriage?.wife ?? getMemberFromLocalCache(marriage.wife_id);
+          return { ...marriage, husband, wife };
+        });
 
-      // Transform member data (support both snake_case from API and camelCase from local state)
-      const transformedMember = {
-        id: memberData.id,
-        name: memberData.name,
-        first_name: (memberData as any).first_name ?? (memberData as any).firstName ?? null,
-        last_name: (memberData as any).last_name ?? (memberData as any).lastName ?? null,
-        fatherId: (memberData as any).father_id ?? (memberData as any).fatherId ?? null,
-        motherId: (memberData as any).mother_id ?? (memberData as any).motherId ?? null,
-        spouseId: (memberData as any).spouse_id ?? (memberData as any).spouseId ?? null,
-        relatedPersonId: (memberData as any).related_person_id ?? (memberData as any).relatedPersonId ?? null,
-        isFounder: (memberData as any).is_founder ?? (memberData as any).isFounder ?? false,
-        gender: (memberData as any).gender ?? null,
-        birthDate: (memberData as any).birth_date ?? (memberData as any).birthDate ?? "",
-        isAlive: (memberData as any).is_alive ?? (memberData as any).isAlive ?? null,
-        deathDate: (memberData as any).death_date ?? (memberData as any).deathDate ?? null,
-        image: (memberData as any).image_url ?? (memberData as any).image ?? null,
-        bio: (memberData as any).biography ?? (memberData as any).bio ?? "",
-        marital_status: (memberData as any).marital_status ?? (memberData as any).maritalStatus ?? 'single',
-        relation: "",
-        is_twin: (memberData as any).is_twin ?? (memberData as any).isTwin ?? false,
-        twin_group_id: (memberData as any).twin_group_id ?? (memberData as any).twinGroupId ?? null,
-      };
-
-      // Update local state for the profile panel only (avoid re-mapping the entire members list on every click)
-      setMemberProfileData(transformedMember);
-      setEditingMember(transformedMember);
-
-      // Keep marriages data available for the profile view without mutating the global list
-      setFamilyMarriages((prev: any[]) => {
-        if (!memberMarriages.length) return prev;
-        const byId = new Map(prev.map((m: any) => [m.id, m]));
-        memberMarriages.forEach((m: any) => byId.set(m.id, m));
-        return Array.from(byId.values());
-      });
+        setFamilyMarriages((prev: any[]) => {
+          const byId = new Map(prev.map((m: any) => [m.id, m]));
+          memberMarriages.forEach((m: any) => byId.set(m.id, m));
+          return Array.from(byId.values());
+        });
+      }
     } catch (error) {
-      console.error('Error fetching member profile:', error);
-      toast({
-        title: "خطأ",
-        description: "حدث خطأ في تحميل بيانات العضو",
-        variant: "destructive",
-      });
+      // Only show error if this is still the latest click
+      if (latestMemberClickRef.current === clickId) {
+        console.error('Error fetching member profile:', error);
+        toast({
+          title: "خطأ",
+          description: "حدث خطأ في تحميل بيانات العضو",
+          variant: "destructive",
+        });
+      }
     } finally {
-      setProfileLoading(false);
+      // Only update loading if this is still the latest click
+      if (latestMemberClickRef.current === clickId) {
+        setProfileLoading(false);
+      }
     }
-  };
-  const handleViewMember = useCallback(async (member: any) => {
+  }, [familyMembers, contextMarriages, familyMarriages, toast]);
+
+  const handleViewMember = useCallback((member: any) => {
+    // Immediately update UI - no waiting for data fetch
     setFormMode('profile');
     setEditingMember(member);
     if (isMobile) setIsMemberListOpen(false);
 
-    // Fetch fresh member profile data
-    await fetchMemberProfile(member.id);
-  }, [isMobile, familyId, toast]);
+    // Fetch additional profile data in background (non-blocking)
+    fetchMemberProfile(member.id);
+  }, [isMobile, fetchMemberProfile]);
   const handleEditMember = useCallback((member: any) => {
     setFormMode('edit');
     setEditingMember(member);
