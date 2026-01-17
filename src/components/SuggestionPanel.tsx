@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Suggestion {
   id: string;
@@ -25,12 +25,12 @@ export const SuggestionPanel: React.FC<SuggestionPanelProps> = ({
   familyId,
   className = ""
 }) => {
-  const { user } = useCurrentUser();
+  // ✅ Use AuthContext instead of useCurrentUser for consistency
+  const { user } = useAuth();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const { toast } = useToast();
-
   useEffect(() => {
     if (familyId && user?.id) {
       loadSuggestions();
