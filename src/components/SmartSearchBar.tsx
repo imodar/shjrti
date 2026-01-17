@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-
+import { useFamilyData } from '@/contexts/FamilyDataContext';
 interface SearchResult {
   id: string;
   name: string;
@@ -39,7 +39,9 @@ export const SmartSearchBar: React.FC<SmartSearchBarProps> = ({
     hasPhoto: ''
   });
   const { toast } = useToast();
-
+  
+  // ✅ Use FamilyDataContext for cached member data (fallback search)
+  const { familyMembers } = useFamilyData();
   const performSearch = async (searchQuery: string) => {
     if (!searchQuery.trim() || !familyId) return;
 
@@ -76,44 +78,33 @@ export const SmartSearchBar: React.FC<SmartSearchBarProps> = ({
     }
   };
 
-  const performFallbackSearch = async (searchQuery: string) => {
-    try {
-      console.log('Performing fallback search...');
+  // ✅ Use cached familyMembers from context instead of direct query
+  const performFallbackSearch = (searchQuery: string) => {
+    console.log('Performing fallback search using cached data...');
+    
+    const searchLower = searchQuery.toLowerCase();
+    
+    let filteredResults = (familyMembers || []).filter((member: any) => {
+      // Text search in name and biography
+      const nameMatch = member.name?.toLowerCase().includes(searchLower);
+      const bioMatch = member.biography?.toLowerCase().includes(searchLower);
       
-      let query = supabase
-        .from('family_tree_members')
-        .select('*')
-        .eq('family_id', familyId)
-        .or(`name.ilike.%${searchQuery}%, biography.ilike.%${searchQuery}%`);
-
-      if (filters.gender) {
-        query = query.eq('gender', filters.gender);
+      if (!nameMatch && !bioMatch) return false;
+      
+      // Apply filters
+      if (filters.gender && filters.gender !== 'all' && member.gender !== filters.gender) {
+        return false;
       }
-      if (filters.isAlive) {
-        query = query.eq('is_alive', filters.isAlive === 'true');
+      if (filters.isAlive && filters.isAlive !== 'all') {
+        const isAlive = filters.isAlive === 'true';
+        if (member.is_alive !== isAlive) return false;
       }
-
-      const { data, error } = await query.limit(10);
-
-      if (error) {
-        console.error('Fallback search error:', error);
-        toast({
-          title: "خطأ في البحث",
-          description: "حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      setResults(data || []);
-    } catch (error) {
-      console.error('Fallback search failed:', error);
-      toast({
-        title: "خطأ في البحث",
-        description: "فشل في تنفيذ البحث. يرجى المحاولة مرة أخرى.",
-        variant: "destructive"
-      });
-    }
+      
+      return true;
+    });
+    
+    // Limit to 10 results
+    setResults(filteredResults.slice(0, 10));
   };
 
   // تنفيذ البحث عند تغيير الاستعلام

@@ -17,7 +17,7 @@ import { SuggestionPanel } from "@/components/SuggestionPanel";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useFamilyData } from "@/contexts/FamilyDataContext";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import FamilyTreeViewSkeleton from "@/components/skeletons/FamilyTreeViewSkeleton";
 
 const FamilyTreeView = () => {
@@ -36,8 +36,10 @@ const FamilyTreeView = () => {
     error: dataError
   } = useFamilyData();
 
+  // ✅ Use AuthContext for authentication (no duplicate queries!)
+  const { user, loading: authLoading } = useAuth();
+
   const [zoomLevel, setZoomLevel] = useState(1);
-  const [user, setUser] = useState<any>(null);
   const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>("all");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -85,38 +87,36 @@ const FamilyTreeView = () => {
   // Get family ID from URL parameters
   const familyId = searchParams.get('family');
 
-  // Initialize user and handle authentication
+  // Handle authentication and access verification
   useEffect(() => {
-    const initUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate('/auth');
-        return;
-      }
-      setUser(user);
-      
-      // Verify access
-      if (!familyId) {
-        navigate('/dashboard');
-        return;
-      }
-      
-      // Check if user has access (handled by FamilyDataContext)
-      if (familyData && familyData.creator_id !== user.id) {
-        toast({
-          title: "خطأ",
-          description: "لا يمكن الوصول إلى شجرة العائلة المطلوبة",
-          variant: "destructive"
-        });
-        navigate('/dashboard');
-        return;
-      }
-      
-      setIsLoading(false);
-    };
+    // Wait for auth to finish loading
+    if (authLoading) return;
     
-    initUser();
-  }, [familyId, familyData, navigate]);
+    // Redirect to auth if not logged in
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    
+    // Verify access
+    if (!familyId) {
+      navigate('/dashboard');
+      return;
+    }
+    
+    // Check if user has access (handled by FamilyDataContext)
+    if (familyData && familyData.creator_id !== user.id) {
+      toast({
+        title: "خطأ",
+        description: "لا يمكن الوصول إلى شجرة العائلة المطلوبة",
+        variant: "destructive"
+      });
+      navigate('/dashboard');
+      return;
+    }
+    
+    setIsLoading(false);
+  }, [authLoading, user, familyId, familyData, navigate]);
 
   // Also set isLoading to false when data is loaded from context
   useEffect(() => {
