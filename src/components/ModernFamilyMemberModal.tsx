@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { supabase } from "@/integrations/supabase/client";
+import { familiesApi, membersApi } from "@/lib/api";
 import { sanitizeInput, validateName, sanitizeFormData } from "@/lib/security";
 import Cropper from "react-easy-crop";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
@@ -258,21 +258,17 @@ export const ModernFamilyMemberModal = ({
   };
   const fetchFamilyData = async () => {
     try {
-      // Fetch family name first
-      const {
-        data: familyData,
-        error: familyError
-      } = await supabase.from('families').select('name').eq('id', familyId).single();
-      if (familyError) throw familyError;
+      // Fetch family data, members, and marriages using REST API
+      const [familyData, membersData, marriagesData] = await Promise.all([
+        familiesApi.get(familyId),
+        familiesApi.getMembers(familyId),
+        familiesApi.getMarriages(familyId)
+      ]);
+
       setFamilyName(familyData?.name || "");
-      const {
-        data: membersData,
-        error: membersError
-      } = await supabase.from('family_tree_members').select('*').eq('family_id', familyId);
-      if (membersError) throw membersError;
 
       // Transform the data to match our interface
-      const transformedMembers = (membersData || []).map(member => ({
+      const transformedMembers = (membersData || []).map((member: any) => ({
         id: member.id,
         name: member.name,
         gender: member.gender,
@@ -288,42 +284,30 @@ export const ModernFamilyMemberModal = ({
         relatedPersonId: member.related_person_id
       }));
 
-      // Fetch marriages data
-      const {
-        data: marriagesData,
-        error: marriagesError
-      } = await supabase.from('marriages').select(`
-          id,
-          husband_id,
-          wife_id,
-          is_active,
-          husband:family_tree_members!marriages_husband_id_fkey(id, name, is_founder, father_id, is_alive, death_date),
-          wife:family_tree_members!marriages_wife_id_fkey(id, name, is_founder, father_id, is_alive, death_date)
-        `).eq('family_id', familyId).eq('is_active', true);
-      if (marriagesError) throw marriagesError;
+      // Create a lookup map for member names by ID
+      const memberMap = new Map<string, any>();
+      (membersData || []).forEach((m: any) => memberMap.set(m.id, m));
 
-      // Transform marriages data and get father names for husbands and wives
-      const transformedMarriages = await Promise.all((marriagesData || []).map(async marriage => {
+      // Transform marriages data and get father names from the memberMap
+      const transformedMarriages = (marriagesData || []).map((marriage: any) => {
+        const husband = memberMap.get(marriage.husband_id);
+        const wife = memberMap.get(marriage.wife_id);
+        
         let husbandFatherName = "";
         let wifeFatherName = "";
 
-        // Get husband's father name
-        const husband = Array.isArray(marriage.husband) ? marriage.husband[0] : marriage.husband;
+        // Get husband's father name from memberMap
         if (husband?.father_id && !husband?.is_founder) {
-          const {
-            data: fatherData
-          } = await supabase.from('family_tree_members').select('name').eq('id', husband.father_id).single();
-          husbandFatherName = fatherData?.name || "";
+          const father = memberMap.get(husband.father_id);
+          husbandFatherName = father?.name || "";
         }
 
-        // Get wife's father name  
-        const wife = Array.isArray(marriage.wife) ? marriage.wife[0] : marriage.wife;
+        // Get wife's father name from memberMap
         if (wife?.father_id && !wife?.is_founder) {
-          const {
-            data: wifeFatherData
-          } = await supabase.from('family_tree_members').select('name').eq('id', wife.father_id).single();
-          wifeFatherName = wifeFatherData?.name || "";
+          const wifeFather = memberMap.get(wife.father_id);
+          wifeFatherName = wifeFather?.name || "";
         }
+
         return {
           id: marriage.id,
           husband: {
@@ -342,7 +326,8 @@ export const ModernFamilyMemberModal = ({
           },
           is_active: marriage.is_active
         };
-      }));
+      });
+
       setFamilyMembers(transformedMembers);
       setMarriages(transformedMarriages);
 
