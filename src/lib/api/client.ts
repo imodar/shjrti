@@ -1,6 +1,6 @@
 /**
- * API Client for Supabase Edge Functions
- * Provides a unified interface for calling backend APIs
+ * API Client for Supabase Edge Functions (REST)
+ * Provides a unified interface for calling backend APIs using proper HTTP methods
  */
 
 import { supabase } from '@/integrations/supabase/client';
@@ -13,11 +13,6 @@ export interface ApiResponse<T = unknown> {
     code: string;
     message: string;
     details?: unknown;
-  };
-  meta?: {
-    page?: number;
-    limit?: number;
-    total?: number;
   };
 }
 
@@ -36,10 +31,21 @@ export class ApiError extends Error {
   }
 }
 
-// Request options
-interface RequestOptions {
-  body?: unknown;
-  params?: Record<string, string | number | boolean | undefined>;
+/**
+ * Build query string from params
+ */
+function buildQueryString(params?: Record<string, string | number | boolean | undefined | null>): string {
+  if (!params) return '';
+  
+  const searchParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      searchParams.append(key, String(value));
+    }
+  });
+  
+  const queryString = searchParams.toString();
+  return queryString ? `?${queryString}` : '';
 }
 
 /**
@@ -48,32 +54,17 @@ interface RequestOptions {
 async function request<T>(
   functionName: string,
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' = 'GET',
-  options: RequestOptions = {}
+  params?: Record<string, string | number | boolean | undefined | null>,
+  body?: unknown
 ): Promise<T> {
-  const { body, params } = options;
-
-  // Build request body - merge params directly into body
-  // Edge functions expect action and other params directly in JSON body
-  const requestBody: Record<string, unknown> = {};
+  // Build function name with query string for Supabase
+  const queryString = buildQueryString(params);
   
-  // Add params directly to body (action, id, familyId, etc.)
-  if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        requestBody[key] = value;
-      }
-    });
-  }
+  console.log(`[API] ${method} ${functionName}${queryString}`, body || '');
 
-  // Merge body for POST/PUT/PATCH/DELETE
-  if (body && typeof body === 'object') {
-    Object.assign(requestBody, body);
-  }
-
-  console.log(`[API] ${method} ${functionName}`, requestBody);
-
-  const { data, error } = await supabase.functions.invoke(functionName, {
-    body: requestBody,
+  const { data, error } = await supabase.functions.invoke(functionName + queryString, {
+    method,
+    body: body || undefined,
   });
 
   if (error) {
@@ -99,7 +90,7 @@ async function request<T>(
 }
 
 /**
- * API Client with typed methods
+ * REST API Client
  */
 export const apiClient = {
   /**
@@ -107,8 +98,8 @@ export const apiClient = {
    */
   get: <T>(
     functionName: string,
-    params?: Record<string, string | number | boolean | undefined>
-  ) => request<T>(functionName, 'GET', { params }),
+    params?: Record<string, string | number | boolean | undefined | null>
+  ) => request<T>(functionName, 'GET', params),
 
   /**
    * POST request
@@ -116,8 +107,8 @@ export const apiClient = {
   post: <T>(
     functionName: string,
     body?: unknown,
-    params?: Record<string, string | number | boolean | undefined>
-  ) => request<T>(functionName, 'POST', { body, params }),
+    params?: Record<string, string | number | boolean | undefined | null>
+  ) => request<T>(functionName, 'POST', params, body),
 
   /**
    * PUT request
@@ -125,8 +116,8 @@ export const apiClient = {
   put: <T>(
     functionName: string,
     body?: unknown,
-    params?: Record<string, string | number | boolean | undefined>
-  ) => request<T>(functionName, 'PUT', { body, params }),
+    params?: Record<string, string | number | boolean | undefined | null>
+  ) => request<T>(functionName, 'PUT', params, body),
 
   /**
    * PATCH request
@@ -134,8 +125,8 @@ export const apiClient = {
   patch: <T>(
     functionName: string,
     body?: unknown,
-    params?: Record<string, string | number | boolean | undefined>
-  ) => request<T>(functionName, 'PATCH', { body, params }),
+    params?: Record<string, string | number | boolean | undefined | null>
+  ) => request<T>(functionName, 'PATCH', params, body),
 
   /**
    * DELETE request
@@ -143,8 +134,8 @@ export const apiClient = {
   delete: <T>(
     functionName: string,
     body?: unknown,
-    params?: Record<string, string | number | boolean | undefined>
-  ) => request<T>(functionName, 'DELETE', { body, params }),
+    params?: Record<string, string | number | boolean | undefined | null>
+  ) => request<T>(functionName, 'DELETE', params, body),
 };
 
 export default apiClient;

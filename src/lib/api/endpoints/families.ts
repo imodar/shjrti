@@ -1,108 +1,51 @@
 /**
- * Families API Endpoints
- * Provides typed methods for family-related API calls
+ * Families API Endpoints (REST)
  */
 
 import apiClient from '../client';
-import type {
-  Family,
-  FamilyCreateInput,
-  FamilyUpdateInput,
-  Member,
-  Marriage,
-  DeleteResponse,
-} from '../types';
+import type { Family, FamilyCreateInput, FamilyUpdateInput, Member, Marriage, DeleteResponse } from '../types';
 
 const FUNCTION_NAME = 'api-families';
 
-/**
- * Families API
- */
 export const familiesApi = {
-  /**
-   * Get all families for the current user
-   */
   list: async (): Promise<Family[]> => {
-    return apiClient.get<Family[]>(FUNCTION_NAME, { action: 'list' });
+    return apiClient.get<Family[]>(FUNCTION_NAME);
   },
 
-  /**
-   * Get a single family by ID
-   */
   get: async (id: string): Promise<Family> => {
-    return apiClient.get<Family>(FUNCTION_NAME, { action: 'get', id });
+    return apiClient.get<Family>(FUNCTION_NAME, { id });
   },
 
-  /**
-   * Create a new family
-   */
   create: async (input: FamilyCreateInput): Promise<Family> => {
-    return apiClient.post<Family>(FUNCTION_NAME, { action: 'create', ...input });
+    return apiClient.post<Family>(FUNCTION_NAME, input);
   },
 
-  /**
-   * Update a family
-   */
   update: async (id: string, input: FamilyUpdateInput): Promise<Family> => {
-    return apiClient.put<Family>(FUNCTION_NAME, { action: 'update', id, ...input });
+    return apiClient.put<Family>(FUNCTION_NAME, input, { id });
   },
 
-  /**
-   * Delete a family
-   */
   delete: async (id: string): Promise<DeleteResponse> => {
-    return apiClient.delete<DeleteResponse>(FUNCTION_NAME, { action: 'delete', id });
+    return apiClient.delete<DeleteResponse>(FUNCTION_NAME, undefined, { id });
   },
 
-  /**
-   * Get all members of a family
-   */
   getMembers: async (familyId: string): Promise<Member[]> => {
-    return apiClient.get<Member[]>(FUNCTION_NAME, { action: 'getMembers', familyId });
+    return apiClient.get<Member[]>(FUNCTION_NAME, { id: familyId, include: 'members' });
   },
 
-  /**
-   * Get all marriages of a family
-   */
   getMarriages: async (familyId: string): Promise<Marriage[]> => {
-    return apiClient.get<Marriage[]>(FUNCTION_NAME, { action: 'getMarriages', familyId });
+    return apiClient.get<Marriage[]>(FUNCTION_NAME, { id: familyId, include: 'marriages' });
   },
 
-  /**
-   * Archive a family
-   */
   archive: async (id: string): Promise<Family> => {
-    return apiClient.put<Family>(FUNCTION_NAME, { 
-      action: 'update', 
-      id, 
-      is_archived: true, 
-      archived_at: new Date().toISOString() 
-    });
+    return apiClient.put<Family>(FUNCTION_NAME, { is_archived: true, archived_at: new Date().toISOString() }, { id });
   },
 
-  /**
-   * Unarchive a family
-   */
   unarchive: async (id: string): Promise<Family> => {
-    return apiClient.put<Family>(FUNCTION_NAME, { 
-      action: 'update', 
-      id, 
-      is_archived: false, 
-      archived_at: null 
-    });
+    return apiClient.put<Family>(FUNCTION_NAME, { is_archived: false, archived_at: null }, { id });
   },
 
-  /**
-   * Generate a new share token
-   */
-  regenerateShareToken: async (id: string, expiresInHours: number = 2): Promise<{
-    share_token: string;
-    expires_at: string;
-  }> => {
-    return apiClient.post<{ share_token: string; expires_at: string }>(
-      FUNCTION_NAME,
-      { action: 'regenerateShareToken', id, expiresInHours }
-    );
+  regenerateShareToken: async (id: string, expiresInHours: number = 2): Promise<{ share_token: string; expires_at: string }> => {
+    return apiClient.post<{ share_token: string; expires_at: string }>(FUNCTION_NAME, undefined, { id, action: 'regenerateShareToken', expiresInHours });
   },
 };
 

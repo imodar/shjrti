@@ -1,6 +1,16 @@
 /**
- * API: Members
- * Handles all family member CRUD operations
+ * API: Members (REST)
+ * RESTful API for family member CRUD operations
+ * 
+ * Endpoints:
+ * GET    /api-members?id=xxx            → Get a single member
+ * GET    /api-members?id=xxx&include=memories → Get member with memories
+ * POST   /api-members                   → Create a new member
+ * POST   /api-members?action=batch      → Batch create members
+ * PUT    /api-members?id=xxx            → Update a member
+ * DELETE /api-members?id=xxx            → Delete a member
+ * DELETE /api-members?action=batch      → Batch delete members (body: { ids: [...] })
+ * PUT    /api-members?action=clearParent → Clear parent reference (body: { parent_id, parent_type })
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -90,9 +100,9 @@ async function getMemberFamilyId(memberId: string): Promise<string | null> {
   return data?.family_id || null;
 }
 
-// Action handlers
-async function handleGet(userId: string, memberId: string) {
-  console.log(`[API] Getting member: ${memberId}`);
+// GET handler
+async function handleGet(userId: string, memberId: string, include?: string) {
+  console.log(`[API] GET - Getting member: ${memberId}`);
   
   const familyId = await getMemberFamilyId(memberId);
   if (!familyId) {
@@ -104,6 +114,22 @@ async function handleGet(userId: string, memberId: string) {
   }
   
   const supabase = createServiceClient();
+  
+  // Handle include parameter for memories
+  if (include === 'memories') {
+    const { data, error } = await supabase
+      .from('member_memories')
+      .select('*')
+      .eq('member_id', memberId)
+      .order('uploaded_at', { ascending: false });
+    
+    if (error) {
+      return errorResponse('DATABASE_ERROR', error.message, 500);
+    }
+    return successResponse(data || []);
+  }
+  
+  // Default: return member
   const { data, error } = await supabase
     .from('family_tree_members')
     .select('*')
@@ -117,8 +143,9 @@ async function handleGet(userId: string, memberId: string) {
   return successResponse(data);
 }
 
+// POST handler - Create
 async function handleCreate(userId: string, payload: Record<string, unknown>) {
-  console.log(`[API] Creating member`);
+  console.log(`[API] POST - Creating member`);
   
   const { family_id, name } = payload;
   
@@ -152,8 +179,41 @@ async function handleCreate(userId: string, payload: Record<string, unknown>) {
   return successResponse(data, 201);
 }
 
+// POST handler - Batch Create
+async function handleBatchCreate(userId: string, members: Record<string, unknown>[]) {
+  console.log(`[API] POST - Batch creating ${members.length} members`);
+  
+  if (!members || !Array.isArray(members) || members.length === 0) {
+    return errorResponse('VALIDATION_ERROR', 'Members array is required', 400);
+  }
+  
+  // Check ownership for all families
+  const familyIds = [...new Set(members.map(m => m.family_id as string))];
+  for (const familyId of familyIds) {
+    if (!await checkFamilyOwnership(userId, familyId)) {
+      return errorResponse('FORBIDDEN', `You do not have access to family: ${familyId}`, 403);
+    }
+  }
+  
+  const supabase = createServiceClient();
+  const membersWithCreator = members.map(m => ({ ...m, created_by: userId }));
+  
+  const { data, error } = await supabase
+    .from('family_tree_members')
+    .insert(membersWithCreator)
+    .select();
+  
+  if (error) {
+    console.error('[API] Batch create error:', error);
+    return errorResponse('DATABASE_ERROR', error.message, 500);
+  }
+  
+  return successResponse(data, 201);
+}
+
+// PUT handler - Update
 async function handleUpdate(userId: string, memberId: string, payload: Record<string, unknown>) {
-  console.log(`[API] Updating member: ${memberId}`);
+  console.log(`[API] PUT - Updating member: ${memberId}`);
   
   const familyId = await getMemberFamilyId(memberId);
   if (!familyId) {
@@ -165,7 +225,7 @@ async function handleUpdate(userId: string, memberId: string, payload: Record<st
   }
   
   // Remove non-updatable fields
-  const { id, family_id, created_at, created_by, action, ...updateData } = payload;
+  const { id, family_id, created_at, created_by, ...updateData } = payload;
   
   const supabase = createServiceClient();
   const { data, error } = await supabase
@@ -183,8 +243,39 @@ async function handleUpdate(userId: string, memberId: string, payload: Record<st
   return successResponse(data);
 }
 
+// PUT handler - Clear Parent Reference
+async function handleClearParentReference(
+  userId: string, 
+  parentId: string, 
+  parentType: 'father' | 'mother'
+): Promise<Response> {
+  console.log(`[API] PUT - Clearing ${parentType} reference for parent: ${parentId}`);
+  
+  const familyId = await getMemberFamilyId(parentId);
+  if (familyId && !await checkFamilyOwnership(userId, familyId)) {
+    return errorResponse('FORBIDDEN', 'You do not have access to this member', 403);
+  }
+  
+  const supabase = createServiceClient();
+  const column = parentType === 'father' ? 'father_id' : 'mother_id';
+  
+  const { data, error } = await supabase
+    .from('family_tree_members')
+    .update({ [column]: null })
+    .eq(column, parentId)
+    .select('id');
+  
+  if (error) {
+    console.error('[API] Clear parent reference error:', error);
+    return errorResponse('DATABASE_ERROR', error.message, 500);
+  }
+  
+  return successResponse({ updated: data?.length || 0 });
+}
+
+// DELETE handler - Single
 async function handleDelete(userId: string, memberId: string) {
-  console.log(`[API] Deleting member: ${memberId}`);
+  console.log(`[API] DELETE - Deleting member: ${memberId}`);
   
   const familyId = await getMemberFamilyId(memberId);
   if (!familyId) {
@@ -239,66 +330,10 @@ async function handleDelete(userId: string, memberId: string) {
   return successResponse({ deleted: true, id: memberId });
 }
 
-async function handleGetMemories(userId: string, memberId: string) {
-  console.log(`[API] Getting memories for member: ${memberId}`);
-  
-  const familyId = await getMemberFamilyId(memberId);
-  if (!familyId) {
-    return errorResponse('NOT_FOUND', 'Member not found', 404);
-  }
-  
-  if (!await checkFamilyOwnership(userId, familyId)) {
-    return errorResponse('FORBIDDEN', 'You do not have access to this member', 403);
-  }
-  
-  const supabase = createServiceClient();
-  const { data, error } = await supabase
-    .from('member_memories')
-    .select('*')
-    .eq('member_id', memberId)
-    .order('uploaded_at', { ascending: false });
-  
-  if (error) {
-    console.error('[API] Get memories error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
-  }
-  
-  return successResponse(data || []);
-}
-
-async function handleBatchCreate(userId: string, members: Record<string, unknown>[]) {
-  console.log(`[API] Batch creating ${members.length} members`);
-  
-  if (!members || !Array.isArray(members) || members.length === 0) {
-    return errorResponse('VALIDATION_ERROR', 'Members array is required', 400);
-  }
-  
-  // Check ownership for all families
-  const familyIds = [...new Set(members.map(m => m.family_id as string))];
-  for (const familyId of familyIds) {
-    if (!await checkFamilyOwnership(userId, familyId)) {
-      return errorResponse('FORBIDDEN', `You do not have access to family: ${familyId}`, 403);
-    }
-  }
-  
-  const supabase = createServiceClient();
-  const membersWithCreator = members.map(m => ({ ...m, created_by: userId }));
-  
-  const { data, error } = await supabase
-    .from('family_tree_members')
-    .insert(membersWithCreator)
-    .select();
-  
-  if (error) {
-    console.error('[API] Batch create error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
-  }
-  
-  return successResponse(data, 201);
-}
-
-// Batch delete members
+// DELETE handler - Batch
 async function handleBatchDelete(userId: string, ids: string[]): Promise<Response> {
+  console.log(`[API] DELETE - Batch deleting ${ids.length} members`);
+  
   if (!ids || !Array.isArray(ids) || ids.length === 0) {
     return errorResponse('VALIDATION_ERROR', 'Member IDs array is required', 400);
   }
@@ -308,10 +343,9 @@ async function handleBatchDelete(userId: string, ids: string[]): Promise<Respons
   // Check ownership for all members
   for (const id of ids) {
     const familyId = await getMemberFamilyId(id);
-    if (!familyId) continue; // Member might already be deleted
+    if (!familyId) continue;
     
-    const hasAccess = await checkFamilyOwnership(userId, familyId);
-    if (!hasAccess) {
+    if (!await checkFamilyOwnership(userId, familyId)) {
       return errorResponse('FORBIDDEN', `Access denied for member ${id}`, 403);
     }
   }
@@ -329,39 +363,6 @@ async function handleBatchDelete(userId: string, ids: string[]): Promise<Respons
   return successResponse({ deleted: true, count: ids.length });
 }
 
-// Clear parent reference for children
-async function handleClearParentReference(
-  userId: string, 
-  parentId: string, 
-  parentType: 'father' | 'mother'
-): Promise<Response> {
-  console.log(`[API] Clearing ${parentType} reference for parent: ${parentId}`);
-  
-  const familyId = await getMemberFamilyId(parentId);
-  if (!familyId) {
-    // Parent might not exist, but we can still try to clear references
-    console.log(`[API] Parent ${parentId} not found, proceeding with reference clearing`);
-  } else if (!await checkFamilyOwnership(userId, familyId)) {
-    return errorResponse('FORBIDDEN', 'You do not have access to this member', 403);
-  }
-  
-  const supabase = createServiceClient();
-  const column = parentType === 'father' ? 'father_id' : 'mother_id';
-  
-  const { data, error } = await supabase
-    .from('family_tree_members')
-    .update({ [column]: null })
-    .eq(column, parentId)
-    .select('id');
-  
-  if (error) {
-    console.error('[API] Clear parent reference error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
-  }
-  
-  return successResponse({ updated: data?.length || 0 });
-}
-
 // Main handler
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -375,48 +376,52 @@ Deno.serve(async (req) => {
     if (auth.error) return auth.error;
     const { user } = auth;
     
-    // Parse request
-    const body = await req.json().catch(() => ({}));
-    const { action, id, memberId, members, ids, ...payload } = body;
+    // Parse URL and query params
+    const url = new URL(req.url);
+    const id = url.searchParams.get('id');
+    const include = url.searchParams.get('include');
+    const action = url.searchParams.get('action');
     
-    console.log(`[API] Action: ${action}, Method: ${req.method}`);
+    // Parse body for POST/PUT/DELETE
+    let body: Record<string, unknown> = {};
+    if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH' || req.method === 'DELETE') {
+      body = await req.json().catch(() => ({}));
+    }
     
-    // Route to handler based on action
-    switch (action) {
-      case 'get':
+    console.log(`[API] ${req.method} /api-members ${id ? `id=${id}` : ''} ${action ? `action=${action}` : ''}`);
+    
+    // Route based on HTTP method
+    switch (req.method) {
+      case 'GET':
         if (!id) return errorResponse('VALIDATION_ERROR', 'Member ID is required', 400);
-        return await handleGet(user!.id, id);
+        return await handleGet(user!.id, id, include || undefined);
         
-      case 'create':
-        return await handleCreate(user!.id, payload);
+      case 'POST':
+        if (action === 'batch') {
+          return await handleBatchCreate(user!.id, body.members as Record<string, unknown>[]);
+        }
+        return await handleCreate(user!.id, body);
         
-      case 'update':
+      case 'PUT':
+      case 'PATCH':
+        if (action === 'clearParent') {
+          if (!body.parent_id || !body.parent_type) {
+            return errorResponse('VALIDATION_ERROR', 'parent_id and parent_type are required', 400);
+          }
+          return await handleClearParentReference(user!.id, body.parent_id as string, body.parent_type as 'father' | 'mother');
+        }
         if (!id) return errorResponse('VALIDATION_ERROR', 'Member ID is required', 400);
-        return await handleUpdate(user!.id, id, payload);
+        return await handleUpdate(user!.id, id, body);
         
-      case 'delete':
+      case 'DELETE':
+        if (action === 'batch') {
+          return await handleBatchDelete(user!.id, body.ids as string[]);
+        }
         if (!id) return errorResponse('VALIDATION_ERROR', 'Member ID is required', 400);
         return await handleDelete(user!.id, id);
         
-      case 'getMemories':
-        const memId = memberId || id;
-        if (!memId) return errorResponse('VALIDATION_ERROR', 'Member ID is required', 400);
-        return await handleGetMemories(user!.id, memId);
-        
-      case 'batchCreate':
-        return await handleBatchCreate(user!.id, members);
-        
-      case 'batchDelete':
-        return await handleBatchDelete(user!.id, ids);
-        
-      case 'clearParentReference':
-        if (!payload.parent_id || !payload.parent_type) {
-          return errorResponse('VALIDATION_ERROR', 'parent_id and parent_type are required', 400);
-        }
-        return await handleClearParentReference(user!.id, payload.parent_id as string, payload.parent_type as 'father' | 'mother');
-        
       default:
-        return errorResponse('BAD_REQUEST', `Unknown action: ${action}`, 400);
+        return errorResponse('METHOD_NOT_ALLOWED', `Method ${req.method} not allowed`, 405);
     }
   } catch (error) {
     console.error('[API] Unhandled error:', error);
