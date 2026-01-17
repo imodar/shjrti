@@ -10,7 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { MemberMemories } from '@/components/MemberMemories';
 import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { uploadMemberImage } from '@/utils/imageUpload';
-import { supabase } from '@/integrations/supabase/client';
+import { membersApi } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { ImageUploadModal } from '@/components/ImageUploadModal';
@@ -230,15 +230,8 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
         throw new Error(t('profile.image_upload_failed'));
       }
 
-      // Update member's image_url in database
-      const { error: updateError } = await supabase
-        .from('family_tree_members')
-        .update({ image_url: filePath })
-        .eq('id', member.id);
-
-      if (updateError) {
-        throw updateError;
-      }
+      // Update member's image_url via REST API
+      await membersApi.update(member.id, { image_url: filePath });
 
       // Update local member object - this will trigger re-render
       member.image_url = filePath;

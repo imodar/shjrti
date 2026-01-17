@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { familiesApi } from "@/lib/api";
 
 interface TreeDeleteModalProps {
   isOpen: boolean;
@@ -95,12 +95,11 @@ const TreeDeleteModal = ({ isOpen, onClose, onSuccess, treeId, treeName }: TreeD
         setProgress((prev) => Math.min(prev + 5, 95));
       }, 400);
 
-      // Perform deletion via secure function
-      const { data, error } = await supabase
-        .rpc('delete_family_complete', { family_uuid: treeId });
+      // Perform deletion via REST API
+      const result = await familiesApi.delete(treeId);
       
-      if (error || !data) {
-        const message = error?.message || t('dashboard.tree_not_found_error', 'Tree not found or you do not have permission to delete it');
+      if (!result?.deleted) {
+        const message = t('dashboard.tree_not_found_error', 'Tree not found or you do not have permission to delete it');
         setDeletionError(`${t('dashboard.tree_deletion_error', 'Error occurred while deleting family tree')}: ${message}`);
         return;
       }
