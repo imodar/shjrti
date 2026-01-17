@@ -1,14 +1,11 @@
 /**
- * Memories API Endpoints
- * Provides typed methods for memory-related API calls
+ * Memories API Endpoints (REST)
  */
 
 import apiClient from '../client';
 import type { MemberMemory, FamilyMemory, DeleteResponse } from '../types';
 
 const FUNCTION_NAME = 'api-memories';
-
-// ============= Member Memory Input Types =============
 
 export interface MemberMemoryCreateInput {
   member_id: string;
@@ -22,8 +19,6 @@ export interface MemberMemoryCreateInput {
 export interface MemberMemoryUpdateInput {
   caption?: string;
 }
-
-// ============= Family Memory Input Types =============
 
 export interface FamilyMemoryCreateInput {
   family_id: string;
@@ -44,94 +39,39 @@ export interface FamilyMemoryUpdateInput {
   linked_member_id?: string;
 }
 
-/**
- * Memories API
- */
 export const memoriesApi = {
-  // ============= Member Memories =============
-  
-  /**
-   * Get all memories for a member
-   */
+  // Member Memories
   getMemberMemories: async (memberId: string): Promise<MemberMemory[]> => {
-    return apiClient.post<MemberMemory[]>(FUNCTION_NAME, { 
-      action: 'getMemberMemories', 
-      member_id: memberId 
-    });
+    return apiClient.get<MemberMemory[]>(FUNCTION_NAME, { type: 'member', memberId });
   },
 
-  /**
-   * Create a new member memory
-   */
   createMemberMemory: async (input: MemberMemoryCreateInput): Promise<MemberMemory> => {
-    return apiClient.post<MemberMemory>(FUNCTION_NAME, { 
-      action: 'createMemberMemory', 
-      ...input 
-    });
+    return apiClient.post<MemberMemory>(FUNCTION_NAME, input, { type: 'member' });
   },
 
-  /**
-   * Update a member memory
-   */
   updateMemberMemory: async (id: string, input: MemberMemoryUpdateInput): Promise<MemberMemory> => {
-    return apiClient.post<MemberMemory>(FUNCTION_NAME, { 
-      action: 'updateMemberMemory', 
-      id, 
-      ...input 
-    });
+    return apiClient.put<MemberMemory>(FUNCTION_NAME, input, { id, type: 'member' });
   },
 
-  /**
-   * Delete a member memory
-   */
   deleteMemberMemory: async (id: string): Promise<DeleteResponse> => {
-    return apiClient.post<DeleteResponse>(FUNCTION_NAME, { 
-      action: 'deleteMemberMemory', 
-      id 
-    });
+    return apiClient.delete<DeleteResponse>(FUNCTION_NAME, undefined, { id, type: 'member' });
   },
 
-  // ============= Family Memories =============
-  
-  /**
-   * Get all memories for a family
-   */
+  // Family Memories
   getFamilyMemories: async (familyId: string): Promise<FamilyMemory[]> => {
-    return apiClient.post<FamilyMemory[]>(FUNCTION_NAME, { 
-      action: 'getFamilyMemories', 
-      family_id: familyId 
-    });
+    return apiClient.get<FamilyMemory[]>(FUNCTION_NAME, { type: 'family', familyId });
   },
 
-  /**
-   * Create a new family memory
-   */
   createFamilyMemory: async (input: FamilyMemoryCreateInput): Promise<FamilyMemory> => {
-    return apiClient.post<FamilyMemory>(FUNCTION_NAME, { 
-      action: 'createFamilyMemory', 
-      ...input 
-    });
+    return apiClient.post<FamilyMemory>(FUNCTION_NAME, input, { type: 'family' });
   },
 
-  /**
-   * Update a family memory
-   */
   updateFamilyMemory: async (id: string, input: FamilyMemoryUpdateInput): Promise<FamilyMemory> => {
-    return apiClient.post<FamilyMemory>(FUNCTION_NAME, { 
-      action: 'updateFamilyMemory', 
-      id, 
-      ...input 
-    });
+    return apiClient.put<FamilyMemory>(FUNCTION_NAME, input, { id, type: 'family' });
   },
 
-  /**
-   * Delete a family memory
-   */
   deleteFamilyMemory: async (id: string): Promise<DeleteResponse> => {
-    return apiClient.post<DeleteResponse>(FUNCTION_NAME, { 
-      action: 'deleteFamilyMemory', 
-      id 
-    });
+    return apiClient.delete<DeleteResponse>(FUNCTION_NAME, undefined, { id, type: 'family' });
   },
 };
 

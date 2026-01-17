@@ -1,6 +1,16 @@
 /**
- * API: Families
- * Handles all family-related CRUD operations
+ * API: Families (REST)
+ * RESTful API for family-related CRUD operations
+ * 
+ * Endpoints:
+ * GET    /api-families              → List all families
+ * GET    /api-families?id=xxx       → Get a single family
+ * GET    /api-families?id=xxx&include=members    → Get family with members
+ * GET    /api-families?id=xxx&include=marriages  → Get family with marriages
+ * POST   /api-families              → Create a new family
+ * PUT    /api-families?id=xxx       → Update a family
+ * DELETE /api-families?id=xxx       → Delete a family
+ * POST   /api-families/share-token?id=xxx  → Regenerate share token
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -79,9 +89,9 @@ async function checkOwnership(userId: string, familyId: string): Promise<boolean
   return !!data;
 }
 
-// Action handlers
+// GET handlers
 async function handleList(userId: string) {
-  console.log(`[API] Listing families for user: ${userId}`);
+  console.log(`[API] GET - Listing families for user: ${userId}`);
   const supabase = createServiceClient();
   
   const { data, error } = await supabase
@@ -98,14 +108,42 @@ async function handleList(userId: string) {
   return successResponse(data);
 }
 
-async function handleGet(userId: string, familyId: string) {
-  console.log(`[API] Getting family: ${familyId}`);
+async function handleGet(userId: string, familyId: string, include?: string) {
+  console.log(`[API] GET - Getting family: ${familyId}`);
   
   if (!await checkOwnership(userId, familyId)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
   }
   
   const supabase = createServiceClient();
+  
+  // Handle include parameter for nested resources
+  if (include === 'members') {
+    const { data, error } = await supabase
+      .from('family_tree_members')
+      .select('*')
+      .eq('family_id', familyId)
+      .order('created_at', { ascending: true });
+    
+    if (error) {
+      return errorResponse('DATABASE_ERROR', error.message, 500);
+    }
+    return successResponse(data);
+  }
+  
+  if (include === 'marriages') {
+    const { data, error } = await supabase
+      .from('marriages')
+      .select('*')
+      .eq('family_id', familyId);
+    
+    if (error) {
+      return errorResponse('DATABASE_ERROR', error.message, 500);
+    }
+    return successResponse(data);
+  }
+  
+  // Default: return family
   const { data, error } = await supabase
     .from('families')
     .select('*')
@@ -122,8 +160,9 @@ async function handleGet(userId: string, familyId: string) {
   return successResponse(data);
 }
 
+// POST handler
 async function handleCreate(userId: string, payload: Record<string, unknown>) {
-  console.log(`[API] Creating family for user: ${userId}`);
+  console.log(`[API] POST - Creating family for user: ${userId}`);
   
   const { name, description } = payload;
   
@@ -150,15 +189,16 @@ async function handleCreate(userId: string, payload: Record<string, unknown>) {
   return successResponse(data, 201);
 }
 
+// PUT handler
 async function handleUpdate(userId: string, familyId: string, payload: Record<string, unknown>) {
-  console.log(`[API] Updating family: ${familyId}`);
+  console.log(`[API] PUT - Updating family: ${familyId}`);
   
   if (!await checkOwnership(userId, familyId)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
   }
   
   // Remove non-updatable fields
-  const { id, creator_id, created_at, action, ...updateData } = payload;
+  const { id, creator_id, created_at, ...updateData } = payload;
   
   const supabase = createServiceClient();
   const { data, error } = await supabase
@@ -176,8 +216,9 @@ async function handleUpdate(userId: string, familyId: string, payload: Record<st
   return successResponse(data);
 }
 
+// DELETE handler
 async function handleDelete(userId: string, familyId: string) {
-  console.log(`[API] Deleting family: ${familyId}`);
+  console.log(`[API] DELETE - Deleting family: ${familyId}`);
   
   if (!await checkOwnership(userId, familyId)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
@@ -198,51 +239,9 @@ async function handleDelete(userId: string, familyId: string) {
   return successResponse({ deleted: true, id: familyId });
 }
 
-async function handleGetMembers(userId: string, familyId: string) {
-  console.log(`[API] Getting members for family: ${familyId}`);
-  
-  if (!await checkOwnership(userId, familyId)) {
-    return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
-  }
-  
-  const supabase = createServiceClient();
-  const { data, error } = await supabase
-    .from('family_tree_members')
-    .select('*')
-    .eq('family_id', familyId)
-    .order('created_at', { ascending: true });
-  
-  if (error) {
-    console.error('[API] Get members error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
-  }
-  
-  return successResponse(data);
-}
-
-async function handleGetMarriages(userId: string, familyId: string) {
-  console.log(`[API] Getting marriages for family: ${familyId}`);
-  
-  if (!await checkOwnership(userId, familyId)) {
-    return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
-  }
-  
-  const supabase = createServiceClient();
-  const { data, error } = await supabase
-    .from('marriages')
-    .select('*')
-    .eq('family_id', familyId);
-  
-  if (error) {
-    console.error('[API] Get marriages error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
-  }
-  
-  return successResponse(data);
-}
-
+// Special action: Regenerate share token
 async function handleRegenerateShareToken(userId: string, familyId: string, expiresInHours: number) {
-  console.log(`[API] Regenerating share token for family: ${familyId}`);
+  console.log(`[API] POST - Regenerating share token for family: ${familyId}`);
   
   if (!await checkOwnership(userId, familyId)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
@@ -275,46 +274,47 @@ Deno.serve(async (req) => {
     if (auth.error) return auth.error;
     const { user } = auth;
     
-    // Parse request
-    const body = await req.json().catch(() => ({}));
-    const { action, id, familyId, expiresInHours, ...payload } = body;
+    // Parse URL and query params
+    const url = new URL(req.url);
+    const id = url.searchParams.get('id');
+    const include = url.searchParams.get('include');
+    const action = url.searchParams.get('action');
+    const expiresInHours = parseInt(url.searchParams.get('expiresInHours') || '2', 10);
     
-    console.log(`[API] Action: ${action}, Method: ${req.method}`);
+    // Parse body for POST/PUT
+    let body: Record<string, unknown> = {};
+    if (req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') {
+      body = await req.json().catch(() => ({}));
+    }
     
-    // Route to handler based on action
-    switch (action) {
-      case 'list':
+    console.log(`[API] ${req.method} /api-families ${id ? `id=${id}` : ''} ${include ? `include=${include}` : ''}`);
+    
+    // Route based on HTTP method
+    switch (req.method) {
+      case 'GET':
+        if (id) {
+          return await handleGet(user!.id, id, include || undefined);
+        }
         return await handleList(user!.id);
         
-      case 'get':
+      case 'POST':
+        // Special action for share token regeneration
+        if (action === 'regenerateShareToken' && id) {
+          return await handleRegenerateShareToken(user!.id, id, expiresInHours);
+        }
+        return await handleCreate(user!.id, body);
+        
+      case 'PUT':
+      case 'PATCH':
         if (!id) return errorResponse('VALIDATION_ERROR', 'Family ID is required', 400);
-        return await handleGet(user!.id, id);
+        return await handleUpdate(user!.id, id, body);
         
-      case 'create':
-        return await handleCreate(user!.id, payload);
-        
-      case 'update':
-        if (!id) return errorResponse('VALIDATION_ERROR', 'Family ID is required', 400);
-        return await handleUpdate(user!.id, id, payload);
-        
-      case 'delete':
+      case 'DELETE':
         if (!id) return errorResponse('VALIDATION_ERROR', 'Family ID is required', 400);
         return await handleDelete(user!.id, id);
         
-      case 'getMembers':
-        if (!familyId) return errorResponse('VALIDATION_ERROR', 'Family ID is required', 400);
-        return await handleGetMembers(user!.id, familyId);
-        
-      case 'getMarriages':
-        if (!familyId) return errorResponse('VALIDATION_ERROR', 'Family ID is required', 400);
-        return await handleGetMarriages(user!.id, familyId);
-        
-      case 'regenerateShareToken':
-        if (!id) return errorResponse('VALIDATION_ERROR', 'Family ID is required', 400);
-        return await handleRegenerateShareToken(user!.id, id, expiresInHours || 2);
-        
       default:
-        return errorResponse('BAD_REQUEST', `Unknown action: ${action}`, 400);
+        return errorResponse('METHOD_NOT_ALLOWED', `Method ${req.method} not allowed`, 405);
     }
   } catch (error) {
     console.error('[API] Unhandled error:', error);
