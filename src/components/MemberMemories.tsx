@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useImageUploadPermission } from "@/hooks/useImageUploadPermission";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client"; // Still needed for storage operations
+import { memoriesApi } from "@/lib/api";
 import { useNavigate } from "react-router-dom";
 import { 
   Upload, 
@@ -58,22 +59,13 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
   const createMemoryMutation = useCreateMemberMemoryMutation();
   const deleteMemoryMutation = useDeleteMemberMemoryMutation();
 
-  // Load memories for this member
+  // Load memories for this member via REST API
   const loadMemories = useCallback(async () => {
     try {
       setLoading(true);
       
-      // Get memories metadata
-      const { data: memoriesData, error: memoriesError } = await supabase
-        .from('member_memories')
-        .select('*')
-        .eq('member_id', memberId)
-        .order('uploaded_at', { ascending: false });
-
-      if (memoriesError) {
-        console.error('Error fetching memories:', memoriesError);
-        return;
-      }
+      // Get memories metadata via REST API
+      const memoriesData = await memoriesApi.getMemberMemories(memberId);
 
       // Get public URLs for each memory
       const memoriesWithUrls = (memoriesData || []).map((memory) => {

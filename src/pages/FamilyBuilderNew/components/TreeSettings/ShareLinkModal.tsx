@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { supabase } from "@/integrations/supabase/client";
+import { familiesApi } from "@/lib/api";
 
 interface ShareLinkModalProps {
   isOpen: boolean;
@@ -60,29 +60,20 @@ export const ShareLinkModal: React.FC<ShareLinkModalProps> = ({
       
       console.log('[ShareLinkModal] Generating share token for family:', familyId);
       
-      const { data, error } = await supabase.rpc('regenerate_share_token', {
-        p_family_id: familyId,
-        p_expires_in_hours: 2
-      });
+      const result = await familiesApi.regenerateShareToken(familyId, 2);
 
-      if (error) {
-        console.error('[ShareLinkModal] Error generating token:', error);
-        toast({
-          title: t('common.error'),
-          description: 'Failed to generate share link',
-          variant: 'destructive'
-        });
-        return;
-      }
-
-      console.log('[ShareLinkModal] Token generated:', data);
-      
-      if (data && data.length > 0) {
-        setShareToken(data[0].share_token);
-        setTokenExpiresAt(data[0].expires_at);
+      if (result?.share_token) {
+        setShareToken(result.share_token);
+        setTokenExpiresAt(result.expires_at);
+        console.log('[ShareLinkModal] Token generated:', result);
       }
     } catch (error) {
-      console.error('[ShareLinkModal] Unexpected error:', error);
+      console.error('[ShareLinkModal] Error generating token:', error);
+      toast({
+        title: t('common.error'),
+        description: 'Failed to generate share link',
+        variant: 'destructive'
+      });
     } finally {
       setIsGeneratingToken(false);
     }
