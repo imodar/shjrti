@@ -178,6 +178,35 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
     return result;
   }, [familyMembers, children]);
 
+  // Helper function to check if a member is a descendant of the founder
+  const isDescendantOfFounder = useMemo(() => {
+    return (memberId: string, visited = new Set<string>()): boolean => {
+      if (visited.has(memberId)) return false; // Prevent infinite loops
+      visited.add(memberId);
+
+      const m = memberById.get(memberId);
+      if (!m) return false;
+
+      // If this member is the founder, they are part of the founder's lineage
+      const isMemberFounder = [m.is_founder, m.isFounder].some(v => v === true || v === 1 || v === 'true');
+      if (isMemberFounder) return true;
+
+      // Check if father is a descendant of founder (patrilineal lineage)
+      const fatherId = m.father_id || m.fatherId;
+      if (fatherId && isDescendantOfFounder(fatherId, visited)) {
+        return true;
+      }
+
+      // Check if mother is a descendant of founder
+      const motherId = m.mother_id || m.motherId;
+      if (motherId && isDescendantOfFounder(motherId, visited)) {
+        return true;
+      }
+
+      return false;
+    };
+  }, [memberById]);
+
   // Memoized grandchildren groups - inline logic
   const grandchildrenGroups = useMemo(() => {
     const mainGroups: any[] = [];
@@ -1334,25 +1363,23 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                                  <div className="flex-1 ps-3">
                                   <h4 className="font-semibold text-foreground text-lg">
                                     {(() => {
-                                      // Check if spouse is from the same family (has father_id in current family)
-                                      const spouseHasFamilyFather = (spouse.father_id || spouse.fatherId) && 
-                                        familyMembers?.find(m => m.id === (spouse.father_id || spouse.fatherId));
+                                      // Check if spouse is a descendant of the founder (from the family lineage)
+                                      const spouseIsFromFounderLineage = spouse.id && isDescendantOfFounder(spouse.id);
                                       
-                                      if (spouseHasFamilyFather) {
-                                        // From inside family: show only first_name (lineage will show below)
+                                      if (spouseIsFromFounderLineage) {
+                                        // From founder's lineage: show only first_name (lineage will show below)
                                         return spouse.first_name;
                                       } else {
-                                        // From outside family: show first_name + last_name to indicate they're external
+                                        // From outside family lineage: show first_name + last_name
                                         return `${spouse.first_name}${spouse.last_name ? ' ' + spouse.last_name : ''}`;
                                       }
                                     })()}
                                   </h4>
                                   {(() => {
-                                    // Only show lineage if spouse is from the same family (has father_id in current family)
-                                    const spouseHasFamilyFather = (spouse.father_id || spouse.fatherId) && 
-                                      familyMembers?.find(m => m.id === (spouse.father_id || spouse.fatherId));
+                                    // Only show lineage if spouse is a descendant of the founder
+                                    const spouseIsFromFounderLineage = spouse.id && isDescendantOfFounder(spouse.id);
                                     
-                                    if (spouseHasFamilyFather) {
+                                    if (spouseIsFromFounderLineage) {
                                       const spouseLineages = getLineageDisplayForMember(spouse);
                                       return spouseLineages.length > 0 ? (
                                         <p className="text-sm text-muted-foreground mt-0.5">
