@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAdmin } from '@/contexts/AdminContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { Loader } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ProtectedRouteProps {
@@ -15,12 +14,14 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, requireAdmin = false, requireActiveSubscription = false }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdmin();
-  const { isExpired, hasActiveSubscription, loading: subscriptionLoading } = useSubscription();
+  const { hasActiveSubscription, loading: subscriptionLoading } = useSubscription();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  // Remove dangerous development mode bypass for security
-  // Instead of bypassing auth completely, use proper development configuration
+  // Combined loading state - wait for all required checks at once
+  const isLoading = loading || 
+    (requireAdmin && adminLoading) || 
+    (requireActiveSubscription && subscriptionLoading);
   
   useEffect(() => {
     if (!loading && !user) {
@@ -39,7 +40,6 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
     }
   }, [requireAdmin, isAdmin, adminLoading, user, navigate, toast]);
 
-  // Check subscription - redirect if no active subscription
   useEffect(() => {
     if (requireActiveSubscription && !subscriptionLoading && user) {
       if (!hasActiveSubscription) {
@@ -48,27 +48,9 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
     }
   }, [requireActiveSubscription, hasActiveSubscription, subscriptionLoading, navigate, user]);
 
-  if (loading || (requireAdmin && adminLoading)) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-muted-foreground">جاري التحميل...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Wait for subscription loading to complete before making decisions
-  if (requireActiveSubscription && subscriptionLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-muted-foreground">جاري التحقق من الاشتراك...</p>
-        </div>
-      </div>
-    );
+  // Single unified loading check - no intermediate loaders
+  if (isLoading) {
+    return null; // Let page skeleton handle loading state
   }
 
   if (!user || (requireAdmin && !isAdmin)) {
@@ -79,6 +61,5 @@ export function ProtectedRoute({ children, requireAdmin = false, requireActiveSu
     return null;
   }
 
-  
   return <>{children}</>;
 }

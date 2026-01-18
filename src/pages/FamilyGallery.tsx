@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { FamilyHeader } from "@/components/FamilyHeader";
@@ -61,6 +62,7 @@ const FamilyGallery = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { direction } = useLanguage();
+  const { user, loading: authLoading } = useAuth();
   const [searchParams] = useSearchParams();
   const familyId = searchParams.get('family');
   
@@ -194,19 +196,21 @@ const FamilyGallery = () => {
   // Fetch family data
   useEffect(() => {
     const fetchFamilyData = async () => {
+      // Wait for auth to complete
+      if (authLoading) return;
+      
+      if (!user) {
+        navigate('/auth');
+        return;
+      }
+
+      if (!familyId) {
+        navigate('/dashboard');
+        return;
+      }
+
       try {
         setIsLoading(true);
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          navigate('/auth');
-          return;
-        }
-
-        if (!familyId) {
-          navigate('/dashboard');
-          return;
-        }
 
         const { data: familyData, error: familyError } = await supabase
           .from('families')
@@ -245,7 +249,7 @@ const FamilyGallery = () => {
     };
 
     fetchFamilyData();
-  }, [familyId, navigate, toast, loadMemories, calculateStorageUsage, currentPage]);
+  }, [familyId, navigate, toast, loadMemories, calculateStorageUsage, currentPage, user, authLoading]);
 
 
   // Handle file upload - Open dialog instead of direct upload
