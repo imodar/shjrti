@@ -39,9 +39,11 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { toast as sonnerToast } from "sonner";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { FamilyHeader } from "@/components/FamilyHeader";
+import { FamilyDataProvider, useFamilyData } from "@/contexts/FamilyDataContext";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { ar } from "date-fns/locale";
@@ -61,16 +63,16 @@ interface Suggestion {
   } | null;
 }
 
-const FamilySuggestions = () => {
+const FamilySuggestionsContent = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { t, direction, currentLanguage } = useLanguage();
+  const { user, loading: authLoading } = useAuth();
   const [searchParams] = useSearchParams();
   const familyId = searchParams.get('family');
   
-  const [familyMembers, setFamilyMembers] = useState<any[]>([]);
-  const [familyData, setFamilyData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // Use FamilyDataContext for family data and members
+  const { familyData, familyMembers, loading: dataLoading, error } = useFamilyData();
   
   // Suggestions state
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -82,80 +84,32 @@ const FamilySuggestions = () => {
   const [actionType, setActionType] = useState<"accept" | "reject" | null>(null);
   const [adminNotes, setAdminNotes] = useState("");
 
-  // Fetch family data
+  // Handle authentication and authorization
   useEffect(() => {
-    const fetchFamilyData = async () => {
-      try {
-        setIsLoading(true);
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          navigate('/auth');
-          return;
-        }
+    if (authLoading) return;
+    
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
 
-        if (!familyId) {
-          console.error('No family ID provided');
-          navigate('/dashboard');
-          return;
-        }
+    if (!familyId) {
+      navigate('/dashboard');
+      return;
+    }
+  }, [authLoading, user, familyId, navigate]);
 
-        // Fetch specific family data
-        const { data: familyData, error: familyError } = await supabase
-          .from('families')
-          .select('*')
-          .eq('id', familyId)
-          .eq('creator_id', user.id)
-          .single();
-
-        if (familyError) {
-          console.error('Error fetching family:', familyError);
-          if (familyError.code === 'PGRST116') {
-            toast({
-              title: "خطأ",
-              description: "لم يتم العثور على العائلة أو ليس لديك صلاحية للوصول إليها",
-              variant: "destructive"
-            });
-            navigate('/dashboard');
-            return;
-          }
-          throw familyError;
-        }
-
-        if (familyData) {
-          setFamilyData(familyData);
-          
-          // Fetch family members
-          const { data: membersData, error: membersError } = await supabase
-            .from('family_tree_members')
-            .select('*')
-            .eq('family_id', familyData.id)
-            .order('created_at', { ascending: true });
-
-          if (membersError) throw membersError;
-
-          const transformedMembers = membersData?.map(member => ({
-            id: member.id,
-            name: member.name,
-            gender: member.gender,
-          })) || [];
-
-          setFamilyMembers(transformedMembers);
-        }
-      } catch (error) {
-        console.error('Error fetching family data:', error);
-        toast({
-          title: "خطأ",
-          description: "حدث خطأ في تحميل بيانات العائلة",
-          variant: "destructive"
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchFamilyData();
-  }, [familyId, navigate, toast]);
+  // Handle family data errors
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "خطأ",
+        description: "لم يتم العثور على العائلة أو ليس لديك صلاحية للوصول إليها",
+        variant: "destructive"
+      });
+      navigate('/dashboard');
+    }
+  }, [error, navigate, toast]);
 
   // Load suggestions
   const loadSuggestions = async () => {
@@ -222,7 +176,7 @@ const FamilySuggestions = () => {
     setActionLoading(selectedSuggestion.id);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const currentUser = user;
 
       // Update suggestion status
       const { error: updateError } = await supabase
@@ -230,7 +184,7 @@ const FamilySuggestions = () => {
         .update({
           status: actionType === "accept" ? "accepted" : "rejected",
           admin_notes: adminNotes.trim() || null,
-          reviewed_by: user?.id,
+          reviewed_by: currentUser?.id,
           reviewed_at: new Date().toISOString(),
         })
         .eq("id", selectedSuggestion.id);
@@ -328,7 +282,7 @@ const FamilySuggestions = () => {
 
   const generationCount = 0;
 
-  if (isLoading) {
+  if (dataLoading || authLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
         <GlobalHeader />
@@ -645,6 +599,18 @@ const FamilySuggestions = () => {
         </DialogContent>
       </Dialog>
     </div>
+  );
+};
+
+// Wrapper component with FamilyDataProvider
+const FamilySuggestions = () => {
+  const [searchParams] = useSearchParams();
+  const familyId = searchParams.get('family');
+
+  return (
+    <FamilyDataProvider familyId={familyId}>
+      <FamilySuggestionsContent />
+    </FamilyDataProvider>
   );
 };
 
