@@ -284,8 +284,9 @@ async function handleUpdateBySpouse(
     .select('id, family_id')
     .eq(column, spouseId);
   
+  // If no marriages found, return empty array (not an error)
   if (!marriages || marriages.length === 0) {
-    return errorResponse('NOT_FOUND', 'No marriages found for this spouse', 404);
+    return successResponse([]);
   }
   
   // Verify ownership
