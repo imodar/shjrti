@@ -15,7 +15,7 @@ import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import { supabase } from "@/integrations/supabase/client";
+
 import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { DateDisplay } from "@/components/DateDisplay";
@@ -51,7 +51,6 @@ export default function Payments() {
   const [invoicesLoading, setInvoicesLoading] = useState(true);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
-  const [currentFamily, setCurrentFamily] = useState<any>(null);
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -156,29 +155,20 @@ export default function Payments() {
     }
   };
 
-  // Cancel old invoices with improved logic and retry mechanism
-  const cancelOldPendingInvoices = async (retryCount = 0) => {
+  // Cancel old invoices via REST API
+  const cancelOldPendingInvoices = async () => {
     if (!user) return;
     try {
-      const {
-        data,
-        error
-      } = await supabase.functions.invoke('cleanup-old-invoices');
-      if (error) {
-        console.error('Error cleaning up old invoices:', error);
-      } else if (data?.cancelledCount > 0) {
+      const result = await invoicesApi.cleanupOldInvoices();
+      if (result?.cancelledCount > 0) {
         toast({
           title: "تم إلغاء الفواتير القديمة",
-          description: data.message,
+          description: result.message,
           variant: "default"
         });
       }
     } catch (error) {
       console.error('Error cleaning up old invoices:', error);
-      // Retry once on network errors
-      if (retryCount === 0 && error.message?.includes('Failed to fetch')) {
-        setTimeout(() => cancelOldPendingInvoices(1), 2000);
-      }
     }
   };
 
@@ -424,33 +414,18 @@ export default function Payments() {
         packageName: selectedPackage.name
       });
 
-      // Create invoice for user subscription (no family needed)
-      const {
-        data: invoiceId,
-        error: invoiceError
-      } = await supabase.rpc('create_invoice', {
-        p_user_id: user.id,
-        p_package_id: planId,
-        p_amount: amount,
-        p_currency: currency
-        // p_family_id is optional and defaults to null
+      // Create invoice for user subscription via REST API
+      const { invoice_id: invoiceId } = await invoicesApi.create({
+        package_id: planId,
+        amount: amount,
+        currency: currency
       });
-      if (invoiceError) {
-        console.error('Error creating invoice:', invoiceError);
-        throw new Error('Failed to create invoice');
-      }
       console.log('✅ Invoice created successfully:', invoiceId);
 
       // For free plans, complete immediately
       if (amount === 0) {
-        const {
-          data: success,
-          error: upgradeError
-        } = await supabase.rpc('complete_payment_and_upgrade', {
-          p_invoice_id: invoiceId
-        });
-        if (upgradeError) {
-          console.error('Error completing free upgrade:', upgradeError);
+        const { success } = await invoicesApi.completeFreeUpgrade(invoiceId);
+        if (!success) {
           throw new Error('Failed to complete free upgrade');
         }
         toast({
@@ -461,6 +436,7 @@ export default function Payments() {
         // Reload data
         loadUserSubscription();
         loadInvoices();
+        refreshSubscription();
         return;
       }
 
@@ -640,7 +616,7 @@ export default function Payments() {
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">حالة الاشتراك</span>
                         <span className={`${currentPlan ? 'text-green-600' : 'text-gray-600'}`}>
-                          {currentFamily?.subscription_status === 'active' ? 'نشط' : currentFamily?.subscription_status === 'expired' ? 'منتهي الصلاحية' : currentPlan ? 'نشط' : 'مجاني'}
+                          {subscription?.status === 'active' ? 'نشط' : subscription?.status === 'expired' ? 'منتهي الصلاحية' : currentPlan ? 'نشط' : 'مجاني'}
                         </span>
                       </div>
                       <div className="flex justify-between">
@@ -653,17 +629,14 @@ export default function Payments() {
                                 return scheduledDate.toLocaleDateString('en-GB');
                               }
 
-                              // إذا كان هناك اشتراك حالي، جلب تاريخ الانتهاء من قاعدة البيانات
+                              // استخدام تاريخ الانتهاء من SubscriptionContext
+                              if (subscription?.expires_at) {
+                                const expiryDate = new Date(subscription.expires_at);
+                                return expiryDate.toLocaleDateString('en-GB');
+                              }
+
+                              // إذا كان هناك اشتراك حالي لكن بدون تاريخ انتهاء
                               if (currentPlan) {
-                                // استخدام أحدث فاتورة مدفوعة لتحديد تاريخ الانتهاء
-                                const currentInvoice = invoices.find(inv => inv.package_id === currentPlan && inv.payment_status === 'paid');
-                                if (currentInvoice) {
-                                  // حساب تاريخ الانتهاء: تاريخ إنشاء الفاتورة + سنة واحدة
-                                  const startDate = new Date(currentInvoice.created_at);
-                                  const endDate = new Date(startDate);
-                                  endDate.setFullYear(endDate.getFullYear() + 1);
-                                  return endDate.toLocaleDateString('en-GB');
-                                }
                                 return 'غير محدد';
                               } else {
                                 return <span className="text-emerald-600 font-bold">مجاناً للأبد</span>;
