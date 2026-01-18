@@ -33,6 +33,17 @@ export interface Invoice {
   packages?: InvoicePackage;
 }
 
+export interface InvoiceCreateInput {
+  package_id: string;
+  amount: number;
+  currency: string;
+  family_id?: string;
+}
+
+export interface InvoiceCreateResult {
+  invoice_id: string;
+}
+
 export const invoicesApi = {
   /**
    * List all invoices for the current user
@@ -60,6 +71,30 @@ export const invoicesApi = {
    */
   getLatestPaid: async (): Promise<Invoice | null> => {
     return apiClient.get<Invoice | null>(FUNCTION_NAME, { latest: 'true' });
+  },
+
+  /**
+   * Create a new invoice
+   */
+  create: async (input: InvoiceCreateInput): Promise<InvoiceCreateResult> => {
+    return apiClient.post<InvoiceCreateResult>(FUNCTION_NAME, input);
+  },
+
+  /**
+   * Complete a free upgrade (amount = 0)
+   */
+  completeFreeUpgrade: async (invoiceId: string): Promise<{ success: boolean }> => {
+    return apiClient.post<{ success: boolean }>(FUNCTION_NAME, { 
+      action: 'complete_free_upgrade',
+      invoice_id: invoiceId 
+    });
+  },
+
+  /**
+   * Cleanup old pending invoices
+   */
+  cleanupOldInvoices: async (): Promise<{ cancelledCount: number; message: string }> => {
+    return apiClient.post<{ cancelledCount: number; message: string }>('cleanup-old-invoices', {});
   },
 };
 

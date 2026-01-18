@@ -7,6 +7,8 @@
  * GET    /api-invoices?id=xxx             → Get a specific invoice
  * GET    /api-invoices?latest=true        → Get the latest paid invoice
  * GET    /api-invoices?status=paid        → Filter invoices by payment status
+ * POST   /api-invoices                    → Create a new invoice
+ * POST   /api-invoices (action=complete_free_upgrade) → Complete free upgrade
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -15,7 +17,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 };
 
 // Response helpers
@@ -162,6 +164,57 @@ async function handleGet(
   return successResponse(data || []);
 }
 
+// POST handler - Create invoice or complete free upgrade
+async function handlePost(userId: string, body: any) {
+  const supabase = createServiceClient();
+  
+  // Handle complete_free_upgrade action
+  if (body.action === 'complete_free_upgrade') {
+    const { invoice_id } = body;
+    
+    if (!invoice_id) {
+      return errorResponse('VALIDATION_ERROR', 'Missing invoice_id');
+    }
+    
+    console.log(`[API] POST - Completing free upgrade for invoice: ${invoice_id}`);
+    
+    const { data, error } = await supabase.rpc('complete_payment_and_upgrade', {
+      p_invoice_id: invoice_id
+    });
+    
+    if (error) {
+      console.error('[API] Complete free upgrade error:', error);
+      return errorResponse('DATABASE_ERROR', error.message, 500);
+    }
+    
+    return successResponse({ success: data === true });
+  }
+  
+  // Handle invoice creation
+  const { package_id, amount, currency, family_id } = body;
+  
+  if (!package_id || amount === undefined || !currency) {
+    return errorResponse('VALIDATION_ERROR', 'Missing required fields: package_id, amount, currency');
+  }
+  
+  console.log(`[API] POST - Creating invoice for user: ${userId}, package: ${package_id}`);
+  
+  const { data, error } = await supabase.rpc('create_invoice', {
+    p_user_id: userId,
+    p_package_id: package_id,
+    p_amount: amount,
+    p_currency: currency,
+    p_family_id: family_id || null
+  });
+  
+  if (error) {
+    console.error('[API] Create invoice error:', error);
+    return errorResponse('DATABASE_ERROR', error.message, 500);
+  }
+  
+  return successResponse({ invoice_id: data }, 201);
+}
+
 // Main handler
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -187,6 +240,11 @@ Deno.serve(async (req) => {
     switch (req.method) {
       case 'GET':
         return await handleGet(user!.id, invoiceId, status, latest);
+        
+      case 'POST': {
+        const body = await req.json();
+        return await handlePost(user!.id, body);
+      }
         
       default:
         return errorResponse('METHOD_NOT_ALLOWED', `Method ${req.method} not allowed`, 405);
