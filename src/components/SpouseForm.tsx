@@ -29,6 +29,14 @@ export interface SpouseData {
   isSaved: boolean;
 }
 
+interface Marriage {
+  id: string;
+  husband_id: string;
+  wife_id: string;
+  is_active?: boolean;
+  marital_status?: string;
+}
+
 interface SpouseFormProps {
   spouseType: 'husband' | 'wife';
   spouse: SpouseData;
@@ -43,6 +51,7 @@ interface SpouseFormProps {
   onAdd: () => void;
   onClose?: () => void;
   showForm: boolean;
+  marriages?: Marriage[];
 }
 
 export const SpouseForm: React.FC<SpouseFormProps> = ({
@@ -58,7 +67,8 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
   onSave,
   onAdd,
   onClose,
-  showForm
+  showForm,
+  marriages = []
 }) => {
   const { toast } = useToast();
   const { isImageUploadEnabled } = useImageUploadPermission();
@@ -391,7 +401,7 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                           <CommandInput placeholder="ابحث عن فرد..." className="h-9 font-arabic" />
                           <CommandList>
                             <CommandEmpty className="py-6 text-center text-sm text-muted-foreground font-arabic">
-                              لا توجد {isWife ? 'إناث' : 'ذكور'} متاحة من العازبين أو المطلقين.
+                              لا توجد {isWife ? 'إناث' : 'ذكور'} متاحة للزواج.
                             </CommandEmpty>
                              <CommandGroup>
                                {familyMembers.filter(member => {
@@ -399,10 +409,25 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
                                   const hasValidGender = member.gender === spouseGender;
                                   // Exclude the member being edited
                                   const isNotSelf = member.id !== selectedMember?.id;
-                                  // Exclude married members only
-                                  const isNotMarried = member.marital_status !== "married";
                                   
-                                  return hasValidGender && isNotSelf && isNotMarried;
+                                  // Check availability based on gender and marriage rules
+                                  const isAvailable = (() => {
+                                    if (member.gender === 'male') {
+                                      // Men can have up to 4 active wives
+                                      const activeWivesCount = marriages.filter(
+                                        m => m.husband_id === member.id && m.is_active !== false
+                                      ).length;
+                                      return activeWivesCount < 4;
+                                    } else {
+                                      // Women can only have one active marriage at a time
+                                      const hasActiveMarriage = marriages.some(
+                                        m => m.wife_id === member.id && m.is_active !== false
+                                      );
+                                      return !hasActiveMarriage;
+                                    }
+                                  })();
+                                  
+                                  return hasValidGender && isNotSelf && isAvailable;
                                 }).map((member) => {
                                  const displayName = buildFullMemberName(member, familyMembers);
 
