@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -26,9 +26,10 @@ import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { FamilyHeader } from "@/components/FamilyHeader";
 import FamilyStatisticsSkeleton from "@/components/skeletons/FamilyStatisticsSkeleton";
-import { supabase } from "@/integrations/supabase/client";
+import { FamilyDataProvider, useFamilyData } from "@/contexts/FamilyDataContext";
 
-const FamilyStatistics = () => {
+// Inner component that uses FamilyDataContext
+const FamilyStatisticsContent = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { direction } = useLanguage();
@@ -36,125 +37,64 @@ const FamilyStatistics = () => {
   const [searchParams] = useSearchParams();
   const familyId = searchParams.get('family');
   
-  const [familyMembers, setFamilyMembers] = useState<any[]>([]);
-  const [familyMarriages, setFamilyMarriages] = useState<any[]>([]);
-  const [familyData, setFamilyData] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { familyData, familyMembers, marriages: familyMarriages, loading, error } = useFamilyData();
 
-  // Fetch family data
-  useEffect(() => {
-    const fetchFamilyData = async () => {
-      // Wait for auth to complete
-      if (authLoading) return;
-      
-      if (!user) {
-        navigate('/auth');
-        return;
-      }
+  // Handle authentication redirect
+  React.useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [authLoading, user, navigate]);
 
-      if (!familyId) {
-        console.error('No family ID provided');
-        navigate('/dashboard');
-        return;
-      }
+  // Handle errors
+  React.useEffect(() => {
+    if (error) {
+      console.error('Error loading family data:', error);
+      toast({
+        title: "خطأ",
+        description: "حدث خطأ في تحميل بيانات العائلة",
+        variant: "destructive"
+      });
+      navigate('/dashboard');
+    }
+  }, [error, toast, navigate]);
 
-      try {
-        setIsLoading(true);
-        console.log('🔍 Loading family statistics for ID:', familyId);
+  // Transform members to expected format
+  const transformedMembers = React.useMemo(() => {
+    return familyMembers.map(member => ({
+      id: member.id,
+      name: member.name,
+      fatherId: member.father_id,
+      motherId: member.mother_id,
+      spouseId: member.spouse_id,
+      isFounder: member.is_founder,
+      gender: member.gender,
+      birthDate: member.birth_date || "",
+      isAlive: member.is_alive,
+      deathDate: member.death_date || null,
+      bio: member.biography || "",
+      image: member.image_url || null,
+      createdAt: member.created_at
+    }));
+  }, [familyMembers]);
 
-        // Fetch specific family data
-        const { data: familyData, error: familyError } = await supabase
-          .from('families')
-          .select('*')
-          .eq('id', familyId)
-          .eq('creator_id', user.id)
-          .single();
-
-        if (familyError) {
-          console.error('Error fetching family:', familyError);
-          if (familyError.code === 'PGRST116') {
-            toast({
-              title: "خطأ",
-              description: "لم يتم العثور على العائلة أو ليس لديك صلاحية للوصول إليها",
-              variant: "destructive"
-            });
-            navigate('/dashboard');
-            return;
-          }
-          throw familyError;
-        }
-
-        if (familyData) {
-          setFamilyData(familyData);
-          // Fetch family members
-          const { data: membersData, error: membersError } = await supabase
-            .from('family_tree_members')
-            .select('*')
-            .eq('family_id', familyData.id)
-            .order('created_at', { ascending: true });
-
-          if (membersError) throw membersError;
-
-          // Transform data
-          const transformedMembers = membersData?.map(member => ({
-            id: member.id,
-            name: member.name,
-            fatherId: member.father_id,
-            motherId: member.mother_id,
-            spouseId: member.spouse_id,
-            isFounder: member.is_founder,
-            gender: member.gender,
-            birthDate: member.birth_date || "",
-            isAlive: member.is_alive,
-            deathDate: member.death_date || null,
-            bio: member.biography || "",
-            image: member.image_url || null,
-            createdAt: member.created_at
-          })) || [];
-
-          setFamilyMembers(transformedMembers);
-
-          // Fetch marriages
-          const { data: marriagesData, error: marriagesError } = await supabase
-            .from('marriages')
-            .select('*')
-            .eq('family_id', familyData.id)
-            .eq('is_active', true);
-
-          if (marriagesError) throw marriagesError;
-
-          const transformedMarriages = marriagesData?.map(marriage => ({
-            id: marriage.id,
-            familyId: marriage.family_id,
-            isActive: marriage.is_active,
-            husband: transformedMembers.find(m => m.id === marriage.husband_id),
-            wife: transformedMembers.find(m => m.id === marriage.wife_id)
-          })) || [];
-
-          setFamilyMarriages(transformedMarriages);
-        }
-
-      } catch (error) {
-        console.error('Error fetching family data:', error);
-        toast({
-          title: "خطأ",
-          description: "حدث خطأ في تحميل بيانات العائلة",
-          variant: "destructive"
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchFamilyData();
-  }, [navigate, toast, user, authLoading, familyId]);
+  // Transform marriages to expected format
+  const transformedMarriages = React.useMemo(() => {
+    return familyMarriages.map(marriage => ({
+      id: marriage.id,
+      familyId: marriage.family_id,
+      isActive: marriage.is_active,
+      husband: transformedMembers.find(m => m.id === marriage.husband_id),
+      wife: transformedMembers.find(m => m.id === marriage.wife_id)
+    }));
+  }, [familyMarriages, transformedMembers]);
 
   // Calculate statistics
   const getGenerationStats = () => {
     const generationMap = new Map();
     
     // Start ONLY with explicitly marked founders as generation 1
-    familyMembers.forEach(member => {
+    transformedMembers.forEach(member => {
       if (member.isFounder) {
         generationMap.set(member.id, 1);
       }
@@ -169,7 +109,7 @@ const FamilyStatistics = () => {
       changed = false;
       iterations++;
       
-      familyMembers.forEach(member => {
+      transformedMembers.forEach(member => {
         if (!generationMap.has(member.id)) {
           if (member.fatherId || member.motherId) {
             const fatherGeneration = member.fatherId ? generationMap.get(member.fatherId) : undefined;
@@ -189,7 +129,7 @@ const FamilyStatistics = () => {
     }
     
     // Assign spouses to same generation
-    familyMarriages.forEach(marriage => {
+    transformedMarriages.forEach(marriage => {
       const husbandGeneration = generationMap.get(marriage.husband?.id);
       const wifeGeneration = generationMap.get(marriage.wife?.id);
       
@@ -210,26 +150,26 @@ const FamilyStatistics = () => {
   };
 
   const stats = {
-    totalMembers: familyMembers.length,
-    maleMembers: familyMembers.filter(m => m.gender === "male").length,
-    femaleMembers: familyMembers.filter(m => m.gender === "female").length,
-    founders: familyMembers.filter(m => m.isFounder).length,
-    livingMembers: familyMembers.filter(m => m.isAlive).length,
-    deceasedMembers: familyMembers.filter(m => !m.isAlive).length,
-    totalMarriages: familyMarriages.length,
+    totalMembers: transformedMembers.length,
+    maleMembers: transformedMembers.filter(m => m.gender === "male").length,
+    femaleMembers: transformedMembers.filter(m => m.gender === "female").length,
+    founders: transformedMembers.filter(m => m.isFounder).length,
+    livingMembers: transformedMembers.filter(m => m.isAlive).length,
+    deceasedMembers: transformedMembers.filter(m => !m.isAlive).length,
+    totalMarriages: transformedMarriages.length,
     generations: getGenerationStats(),
-    averageAgeAtDeath: familyMembers
+    averageAgeAtDeath: transformedMembers
       .filter(m => !m.isAlive && m.birthDate && m.deathDate)
       .reduce((acc, m) => {
         const birthYear = new Date(m.birthDate).getFullYear();
         const deathYear = new Date(m.deathDate).getFullYear();
         return acc + (deathYear - birthYear);
-      }, 0) / familyMembers.filter(m => !m.isAlive && m.birthDate && m.deathDate).length || 0
+      }, 0) / transformedMembers.filter(m => !m.isAlive && m.birthDate && m.deathDate).length || 0
   };
 
   const generationCount = Math.max(...stats.generations.map(([gen]) => gen)) || 0;
 
-  if (isLoading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden" dir={direction}>
         <GlobalHeader />
@@ -573,6 +513,18 @@ const FamilyStatistics = () => {
 
       <GlobalFooterSimplified />
     </div>
+  );
+};
+
+// Wrapper component with FamilyDataProvider
+const FamilyStatistics = () => {
+  const [searchParams] = useSearchParams();
+  const familyId = searchParams.get('family');
+  
+  return (
+    <FamilyDataProvider familyId={familyId}>
+      <FamilyStatisticsContent />
+    </FamilyDataProvider>
   );
 };
 
