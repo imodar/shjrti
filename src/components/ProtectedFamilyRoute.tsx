@@ -115,30 +115,12 @@ export function ProtectedFamilyRoute({ children, loadingFallback }: ProtectedFam
   }, [user, authLoading, familyId]);
 
   if (loading || authLoading) {
-    // If custom loading fallback is provided, use it
+    // Always use custom loading fallback (skeleton) if provided
     if (loadingFallback) {
       return <>{loadingFallback}</>;
     }
-
-    // Otherwise, use default loading spinner
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950 relative overflow-hidden">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 right-10 w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 animate-pulse"></div>
-          <div className="absolute bottom-32 left-16 w-16 h-16 bg-gradient-to-r from-amber-400 to-orange-400 rounded-full opacity-20 animate-bounce"></div>
-          <div className="absolute top-1/2 right-1/4 w-12 h-12 bg-gradient-to-r from-pink-400 to-rose-400 rounded-full opacity-20 animate-pulse"></div>
-        </div>
-        
-        <div className="relative z-10 min-h-screen flex items-center justify-center">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
-              <Loader className="h-6 w-6 animate-spin text-white" />
-            </div>
-            <p className="text-emerald-600 dark:text-emerald-400 font-medium">{t('common.loading', 'جاري التحميل...')}</p>
-          </div>
-        </div>
-      </div>
-    );
+    // No intermediate loader - return null to let page skeleton handle it
+    return null;
   }
 
   if (error) {

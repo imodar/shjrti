@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { FamilyHeader } from "@/components/FamilyHeader";
@@ -31,6 +32,7 @@ const FamilyStatistics = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { direction } = useLanguage();
+  const { user, loading: authLoading } = useAuth();
   const [searchParams] = useSearchParams();
   const familyId = searchParams.get('family');
   
@@ -42,21 +44,22 @@ const FamilyStatistics = () => {
   // Fetch family data
   useEffect(() => {
     const fetchFamilyData = async () => {
+      // Wait for auth to complete
+      if (authLoading) return;
+      
+      if (!user) {
+        navigate('/auth');
+        return;
+      }
+
+      if (!familyId) {
+        console.error('No family ID provided');
+        navigate('/dashboard');
+        return;
+      }
+
       try {
         setIsLoading(true);
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          navigate('/auth');
-          return;
-        }
-
-        if (!familyId) {
-          console.error('No family ID provided');
-          navigate('/dashboard');
-          return;
-        }
-
         console.log('🔍 Loading family statistics for ID:', familyId);
 
         // Fetch specific family data
@@ -144,7 +147,7 @@ const FamilyStatistics = () => {
     };
 
     fetchFamilyData();
-  }, [navigate, toast]);
+  }, [navigate, toast, user, authLoading, familyId]);
 
   // Calculate statistics
   const getGenerationStats = () => {
