@@ -45,6 +45,7 @@ import { useToast } from "@/hooks/use-toast";
 import { DashboardHeroSkeleton } from "@/components/skeletons/DashboardHeroSkeleton";
 import { FamiliesGridSkeleton } from "@/components/skeletons/FamiliesGridSkeleton";
 import { StatsBarSkeleton } from "@/components/skeletons/StatsBarSkeleton";
+import { profilesApi, subscriptionsApi, invoicesApi } from "@/lib/api";
 
 interface FamilyTree {
   id: string;
@@ -88,7 +89,7 @@ const Dashboard = () => {
   const [deleteTreeId, setDeleteTreeId] = useState<string | null>(null);
   const [deleteTreeName, setDeleteTreeName] = useState("");
 
-  // Fetch user's data
+  // Fetch user's data using REST APIs
   useEffect(() => {
     let isMounted = true;
 
@@ -97,93 +98,78 @@ const Dashboard = () => {
       
       setLoading(true);
       try {
-        // Single optimized query for family trees with member count
-        const { data: families, error: familiesError } = await supabase
-          .from('families')
-          .select(`
-            id,
-            name,
-            created_at,
-            updated_at,
-            family_tree_members(count)
-          `)
-          .eq('creator_id', user.id)
-          .eq('is_archived', false);
-
-        if (familiesError) {
-          throw familiesError;
-        }
-
-        if (!isMounted) return;
-
-        const treesData = families?.map(family => ({
-          id: family.id,
-          name: family.name,
-          members_count: family.family_tree_members?.[0]?.count || 0,
-          created_at: family.created_at,
-          updated_at: family.updated_at
-        })) || [];
-
-        setFamilyTrees(treesData);
-
-        // Parallel fetch for profile and subscription
-        const [profileResult, subscriptionResult] = await Promise.allSettled([
+        // Parallel fetch for families (still using supabase for member count), profile, and subscription via APIs
+        const [familiesResult, profileResult, subscriptionResult] = await Promise.allSettled([
+          // Families with member count - keeping supabase for aggregation support
           supabase
-            .from('profiles')
-            .select('first_name, last_name')
-            .eq('user_id', user.id)
-            .single(),
-          supabase
-            .from('user_subscriptions')
+            .from('families')
             .select(`
-              *,
-              packages (
-                name,
-                max_family_trees,
-                max_family_members,
-                price_sar,
-                price_usd
-              )
+              id,
+              name,
+              created_at,
+              updated_at,
+              family_tree_members(count)
             `)
-            .eq('user_id', user.id)
-            .eq('status', 'active')
-            .maybeSingle()
+            .eq('creator_id', user.id)
+            .eq('is_archived', false),
+          // Profile via API
+          profilesApi.get(),
+          // Subscription via API
+          subscriptionsApi.get()
         ]);
 
         if (!isMounted) return;
 
-        // Handle profile data
-        if (profileResult.status === 'fulfilled' && profileResult.value.data) {
-          setUserProfile(profileResult.value.data);
+        // Handle families data
+        if (familiesResult.status === 'fulfilled' && !familiesResult.value.error) {
+          const families = familiesResult.value.data;
+          const treesData = families?.map(family => ({
+            id: family.id,
+            name: family.name,
+            members_count: family.family_tree_members?.[0]?.count || 0,
+            created_at: family.created_at,
+            updated_at: family.updated_at
+          })) || [];
+          setFamilyTrees(treesData);
         }
 
-        // Handle subscription data
-        if (subscriptionResult.status === 'fulfilled' && subscriptionResult.value.data) {
-          const subscription = subscriptionResult.value.data;
-          let packageDisplayName = t('dashboard.free_package', 'Free Package');
-          
-          if (subscription.packages?.name) {
-            try {
-              const nameObj = typeof subscription.packages.name === 'string' 
-                ? JSON.parse(subscription.packages.name)
-                : subscription.packages.name;
-              packageDisplayName = nameObj[currentLanguage] || nameObj.ar || nameObj.en || packageDisplayName;
-            } catch (e) {
-              packageDisplayName = typeof subscription.packages.name === 'string' 
-                ? subscription.packages.name 
-                : packageDisplayName;
-            }
-          }
-          
-          setUserSubscription({
-            package_name: subscription.packages?.name,
-            status: subscription.status,
-            is_expired: subscription.expires_at ? new Date(subscription.expires_at) <= new Date() : false,
-            max_trees: subscription.packages?.max_family_trees || 1,
-            max_members: subscription.packages?.max_family_members || 50,
-            price_sar: subscription.packages?.price_sar || 0,
-            price_usd: subscription.packages?.price_usd || 0
+        // Handle profile data from API
+        if (profileResult.status === 'fulfilled') {
+          const profile = profileResult.value;
+          setUserProfile({
+            first_name: profile.first_name || undefined,
+            last_name: profile.last_name || undefined
           });
+        }
+
+        // Handle subscription data from API
+        if (subscriptionResult.status === 'fulfilled') {
+          const subscription = subscriptionResult.value;
+          
+          // Check if it's a free subscription (status === 'free')
+          if (subscription.status === 'free' || !subscription.packages) {
+            const pkg = subscription.package || subscription.packages;
+            setUserSubscription({
+              package_name: pkg?.name || t('dashboard.free_package', 'Free Package'),
+              status: 'free',
+              is_expired: false,
+              max_trees: pkg?.max_family_trees || 1,
+              max_members: pkg?.max_family_members || 50,
+              price_sar: pkg?.price_sar || 0,
+              price_usd: pkg?.price_usd || 0
+            });
+          } else {
+            const pkg = subscription.packages;
+            setUserSubscription({
+              package_name: pkg?.name,
+              status: subscription.status,
+              is_expired: subscription.expires_at ? new Date(subscription.expires_at) <= new Date() : false,
+              max_trees: pkg?.max_family_trees || 1,
+              max_members: pkg?.max_family_members || 50,
+              price_sar: pkg?.price_sar || 0,
+              price_usd: pkg?.price_usd || 0
+            });
+          }
         } else {
           // Default free package limits
           setUserSubscription({
@@ -218,33 +204,19 @@ const Dashboard = () => {
     };
   }, [user?.id, currentLanguage, toast, t]);
 
-  // Check for package mismatch (paid invoice with different package)
+  // Check for package mismatch using APIs
   useEffect(() => {
     const checkPackageMismatch = async () => {
       if (!user?.id || !userSubscription) return;
 
       try {
-        // Get latest paid invoice
-        const { data: latestInvoice, error: invoiceError } = await supabase
-          .from('invoices')
-          .select('id, package_id')
-          .eq('user_id', user.id)
-          .eq('payment_status', 'paid')
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .maybeSingle();
+        // Get latest paid invoice via API
+        const latestInvoice = await invoicesApi.getLatestPaid();
+        if (!latestInvoice) return;
 
-        if (invoiceError || !latestInvoice) return;
-
-        // Get current subscription
-        const { data: subscription, error: subError } = await supabase
-          .from('user_subscriptions')
-          .select('package_id, packages(name)')
-          .eq('user_id', user.id)
-          .eq('status', 'active')
-          .single();
-
-        if (subError || !subscription) return;
+        // Get current subscription via API
+        const subscription = await subscriptionsApi.get();
+        if (!subscription || subscription.status === 'free') return;
 
         // Check if there's a mismatch
         if (subscription.package_id !== latestInvoice.package_id) {
