@@ -26,7 +26,8 @@ interface ScheduledPackageChangeCardProps {
     status: string;
     target_package?: {
       name: any;
-      price_usd: number;
+      price_usd?: number;
+      price_sar?: number;
     };
   };
   onCancelled: () => void;

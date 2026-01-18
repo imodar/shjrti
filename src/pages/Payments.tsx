@@ -23,6 +23,7 @@ import { useSubscription } from "@/contexts/SubscriptionContext";
 import { usePackageTransition } from "@/hooks/usePackageTransition";
 import { ScheduledPackageChangeCard } from "@/components/ScheduledPackageChangeCard";
 import { useQuery } from "@tanstack/react-query";
+import { packagesApi, invoicesApi, subscriptionsApi, scheduledChangesApi } from "@/lib/api";
 export default function Payments() {
   const {
     toast
@@ -65,36 +66,12 @@ export default function Payments() {
   const [showDowngradeModal, setShowDowngradeModal] = useState(false);
   const [selectedDowngradePlan, setSelectedDowngradePlan] = useState<any>(null);
 
-  // Query for scheduled package changes
+  // Query for scheduled package changes via REST API
   const { data: scheduledChanges, refetch: refetchScheduledChanges } = useQuery({
     queryKey: ['scheduled-package-changes', user?.id],
     queryFn: async () => {
       if (!user) return null;
-
-      const { data: changes, error: changesError } = await supabase
-        .from('scheduled_package_changes')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false })
-        .maybeSingle();
-
-      if (changesError && changesError.code !== 'PGRST116') throw changesError;
-      if (!changes) return null;
-
-      // Fetch the target package separately
-      const { data: targetPackage, error: packageError } = await supabase
-        .from('packages')
-        .select('name, price_usd')
-        .eq('id', changes.target_package_id)
-        .single();
-
-      if (packageError) throw packageError;
-
-      return {
-        ...changes,
-        target_package: targetPackage
-      };
+      return scheduledChangesApi.get();
     },
     enabled: !!user,
   });
@@ -139,28 +116,11 @@ export default function Payments() {
     return [];
   };
 
-  // Load packages from database
+  // Load packages from REST API
   const loadPackages = async () => {
     try {
       setLoading(true);
-      const {
-        data,
-        error
-      } = await supabase.from('packages').select(`
-          *,
-          name,
-          description,
-          features,
-          price_usd,
-          price_sar,
-          max_family_members,
-          max_family_trees,
-          ai_features_enabled,
-          image_upload_enabled
-        `).eq('is_active', true).order('display_order', {
-        ascending: true
-      });
-      if (error) throw error;
+      const data = await packagesApi.list();
 
       // Transform database data to match UI format while preserving original pricing data
       const transformedPackages = data.map(pkg => {
@@ -222,7 +182,7 @@ export default function Payments() {
     }
   };
 
-  // Load user's invoices
+  // Load user's invoices via REST API
   const loadInvoices = async () => {
     if (!user) return;
     try {
@@ -230,16 +190,7 @@ export default function Payments() {
 
       // إلغاء الفواتير المعلقة القديمة أولاً
       await cancelOldPendingInvoices();
-      const {
-        data,
-        error
-      } = await supabase.from('invoices').select(`
-          *,
-          packages (name)
-        `).eq('user_id', user.id).order('created_at', {
-        ascending: false
-      });
-      if (error) throw error;
+      const data = await invoicesApi.list();
       setInvoices(data || []);
     } catch (error) {
       console.error('Error loading invoices:', error);
@@ -253,20 +204,16 @@ export default function Payments() {
     }
   };
 
-  // Load user's current family and subscription with retry mechanism
-  const loadUserSubscription = async (retryCount = 0) => {
+  // Load user's current family and subscription via REST API
+  const loadUserSubscription = async () => {
     if (!user) return;
     try {
       console.log('🔍 Loading user subscription for user:', user.id);
 
-      // Get user's subscription directly from user_subscriptions table
-      const {
-        data: subscriptionData,
-        error: subscriptionError
-      } = await supabase.from('user_subscriptions').select('package_id').eq('user_id', user.id).eq('status', 'active').maybeSingle();
-      if (subscriptionError) throw subscriptionError;
+      // Get user's subscription via REST API
+      const subscriptionData = await subscriptionsApi.get();
       console.log('📦 Subscription data:', subscriptionData);
-      if (subscriptionData) {
+      if (subscriptionData?.package_id) {
         setCurrentPlan(subscriptionData.package_id);
         console.log('✅ Current plan set to:', subscriptionData.package_id);
       } else {
@@ -276,82 +223,35 @@ export default function Payments() {
       }
     } catch (error) {
       console.error('❌ Error loading user subscription:', error);
-
-      // Retry once on network errors
-      if (retryCount === 0 && (error.message?.includes('Failed to fetch') || error.message?.includes('CONNECTION_RESET'))) {
-        console.log('🔄 Retrying user subscription load in 2 seconds...');
-        setTimeout(() => loadUserSubscription(1), 2000);
-        return;
-      }
-
       // Default to free plan on error
       setCurrentPlan(null);
     }
   };
 
-  // Function to load scheduled downgrades with retry mechanism
-  const loadScheduledDowngrade = async (retryCount = 0) => {
+  // Function to load scheduled downgrades via REST API
+  const loadScheduledDowngrade = async () => {
     if (!user) return;
     try {
-      const {
-        data,
-        error
-      } = await supabase.from('scheduled_package_changes').select('*').eq('user_id', user.id).eq('status', 'pending').maybeSingle();
-      if (error) {
-        console.error('Error loading scheduled downgrade:', error);
-
-        // Retry once on network errors
-        if (retryCount === 0 && (error.message?.includes('Failed to fetch') || error.message?.includes('CONNECTION_RESET'))) {
-          console.log('🔄 Retrying scheduled downgrade load in 2 seconds...');
-          setTimeout(() => loadScheduledDowngrade(1), 2000);
-          return;
-        }
-        return;
-      }
+      const data = await scheduledChangesApi.get();
       if (data) {
-        // Get package details separately
-        const [currentPackageData, targetPackageData] = await Promise.all([supabase.from('packages').select('name').eq('id', data.current_package_id).maybeSingle(), supabase.from('packages').select('name').eq('id', data.target_package_id).maybeSingle()]);
-        const scheduleData = {
-          ...data,
-          current_package: currentPackageData.data,
-          target_package: targetPackageData.data
-        };
-        setScheduledDowngrade(scheduleData);
-        console.log('✅ Scheduled downgrade loaded:', scheduleData);
+        setScheduledDowngrade(data);
+        console.log('✅ Scheduled downgrade loaded:', data);
       } else {
         console.log('❌ No scheduled downgrade found');
         setScheduledDowngrade(null);
       }
     } catch (error) {
       console.error('Error in loadScheduledDowngrade:', error);
-
-      // Retry once on network errors
-      if (retryCount === 0 && (error.message?.includes('Failed to fetch') || error.message?.includes('CONNECTION_RESET'))) {
-        console.log('🔄 Retrying scheduled downgrade load in 2 seconds...');
-        setTimeout(() => loadScheduledDowngrade(1), 2000);
-        return;
-      }
     }
   };
 
-  // Function to cancel scheduled downgrade
+  // Function to cancel scheduled downgrade via REST API
   const cancelScheduledDowngrade = async () => {
     if (!user || !scheduledDowngrade || cancellingDowngrade) return;
     setCancellingDowngrade(true);
     try {
       console.log('🔄 Cancelling scheduled downgrade...');
-      const {
-        error
-      } = await supabase.from('scheduled_package_changes').delete().eq('user_id', user.id).eq('status', 'pending');
-      if (error) {
-        console.error('Error cancelling scheduled downgrade:', error);
-        toast({
-          title: currentLanguage === 'ar' ? "خطأ" : "Error",
-          description: currentLanguage === 'ar' ? "فشل في إلغاء التغيير المجدول" : "Failed to cancel scheduled change",
-          variant: "destructive"
-        });
-        return;
-      }
+      await scheduledChangesApi.cancel();
       setScheduledDowngrade(null);
       console.log('✅ Scheduled downgrade cancelled successfully');
       toast({
