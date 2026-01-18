@@ -1572,10 +1572,20 @@ const FamilyBuilderNew = () => {
     console.log('🚨 SPOUSE DELETE COMPLETED');
   };
   const filteredMembers = familyMembers.filter(member => {
-    const matchesSearch = (member.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (member.first_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (member.last_name || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesFilter = selectedFilter === "all" || selectedFilter === "alive" && member.isAlive || selectedFilter === "deceased" && !member.isAlive || selectedFilter === "male" && member.gender === "male" || selectedFilter === "female" && member.gender === "female" || selectedFilter === "founders" && member.isFounder;
+    const searchLower = searchTerm.toLowerCase();
+    const matchesSearch = !searchTerm || 
+      (member.name || '').toLowerCase().includes(searchLower) ||
+      (member.first_name || '').toLowerCase().includes(searchLower) ||
+      (member.last_name || '').toLowerCase().includes(searchLower);
+    
+    const matchesFilter = 
+      selectedFilter === "all" || 
+      (selectedFilter === "alive" && member.isAlive === true) || 
+      (selectedFilter === "deceased" && member.isAlive === false) || 
+      (selectedFilter === "male" && member.gender === "male") || 
+      (selectedFilter === "female" && member.gender === "female") || 
+      (selectedFilter === "founders" && member.isFounder === true);
+    
     return matchesSearch && matchesFilter;
   });
 
