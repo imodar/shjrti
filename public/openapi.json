@@ -3,7 +3,7 @@
   "info": {
     "title": "Shejrati Family Tree API",
     "description": "RESTful API for managing family trees, members, marriages, and memories. All endpoints require JWT authentication via Supabase.\n\n## Authentication\nAll API requests require a valid JWT token in the Authorization header:\n```\nAuthorization: Bearer <your-jwt-token>\n```\n\n## Rate Limiting\nAPI requests are rate-limited to prevent abuse. Current limits: 100 requests per 30 minutes per user.\n\n## Response Format\nAll responses follow a consistent format:\n```json\n{\n  \"success\": true,\n  \"data\": { ... }\n}\n```\n\nError responses:\n```json\n{\n  \"success\": false,\n  \"error\": { \"code\": \"ERROR_CODE\", \"message\": \"Description\" }\n}\n```",
-    "version": "3.2.0",
+    "version": "3.3.0",
     "contact": {
       "name": "Shejrati Support",
       "url": "https://shjrti.com",
@@ -39,6 +39,18 @@
     {
       "name": "Suggestions",
       "description": "Tree edit suggestions management"
+    },
+    {
+      "name": "Profiles",
+      "description": "User profile management"
+    },
+    {
+      "name": "Subscriptions",
+      "description": "User subscription management"
+    },
+    {
+      "name": "Invoices",
+      "description": "User invoice management"
     }
   ],
   "paths": {
@@ -1154,6 +1166,162 @@
           "404": { "$ref": "#/components/responses/NotFound" }
         }
       }
+    },
+    "/api-profiles": {
+      "get": {
+        "tags": ["Profiles"],
+        "summary": "Get Profile",
+        "description": "Get the current user's profile.",
+        "operationId": "getProfile",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": { "$ref": "#/components/schemas/Profile" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      },
+      "put": {
+        "tags": ["Profiles"],
+        "summary": "Update Profile",
+        "description": "Update the current user's profile.",
+        "operationId": "updateProfile",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ProfileUpdateInput" },
+              "example": {
+                "first_name": "أحمد",
+                "last_name": "محمد"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": { "$ref": "#/components/schemas/Profile" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api-subscriptions": {
+      "get": {
+        "tags": ["Subscriptions"],
+        "summary": "Get Subscription",
+        "description": "Get the current user's subscription with package details.",
+        "operationId": "getSubscription",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "details",
+            "in": "query",
+            "description": "Set to 'true' to get detailed subscription info via RPC",
+            "required": false,
+            "schema": { "type": "string", "enum": ["true"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": { "$ref": "#/components/schemas/Subscription" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/api-invoices": {
+      "get": {
+        "tags": ["Invoices"],
+        "summary": "List or Get Invoices",
+        "description": "List all invoices for the current user, or get a specific invoice.",
+        "operationId": "getInvoices",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Invoice ID to retrieve a specific invoice",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by payment status",
+            "required": false,
+            "schema": { "type": "string", "enum": ["pending", "paid", "failed", "cancelled"] }
+          },
+          {
+            "name": "latest",
+            "in": "query",
+            "description": "Set to 'true' to get the latest paid invoice",
+            "required": false,
+            "schema": { "type": "string", "enum": ["true"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "oneOf": [
+                        { "$ref": "#/components/schemas/Invoice" },
+                        {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Invoice" }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
     }
   },
   "components": {
@@ -1447,6 +1615,74 @@
           "status": { "type": "string", "enum": ["pending", "accepted", "rejected"] },
           "admin_notes": { "type": "string" }
         }
+      },
+      "Profile": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "user_id": { "type": "string", "format": "uuid" },
+          "email": { "type": "string", "format": "email" },
+          "first_name": { "type": "string", "nullable": true },
+          "last_name": { "type": "string", "nullable": true },
+          "phone": { "type": "string", "nullable": true },
+          "date_preference": { "type": "string", "nullable": true },
+          "theme_mode": { "type": "string", "nullable": true },
+          "theme_variant": { "type": "string", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["user_id", "email"]
+      },
+      "ProfileUpdateInput": {
+        "type": "object",
+        "properties": {
+          "first_name": { "type": "string" },
+          "last_name": { "type": "string" },
+          "phone": { "type": "string" },
+          "date_preference": { "type": "string" },
+          "theme_mode": { "type": "string" },
+          "theme_variant": { "type": "string" }
+        }
+      },
+      "Subscription": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "user_id": { "type": "string", "format": "uuid" },
+          "package_id": { "type": "string", "format": "uuid" },
+          "status": { "type": "string", "enum": ["active", "expired", "cancelled", "free"] },
+          "started_at": { "type": "string", "format": "date-time" },
+          "expires_at": { "type": "string", "format": "date-time", "nullable": true },
+          "packages": { "$ref": "#/components/schemas/Package" }
+        },
+        "required": ["user_id", "status"]
+      },
+      "Package": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "object" },
+          "max_family_trees": { "type": "integer" },
+          "max_family_members": { "type": "integer" },
+          "price_sar": { "type": "number" },
+          "price_usd": { "type": "number" }
+        }
+      },
+      "Invoice": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "user_id": { "type": "string", "format": "uuid" },
+          "package_id": { "type": "string", "format": "uuid", "nullable": true },
+          "invoice_number": { "type": "string", "nullable": true },
+          "amount": { "type": "number" },
+          "currency": { "type": "string" },
+          "payment_status": { "type": "string", "enum": ["pending", "paid", "failed", "cancelled"] },
+          "payment_gateway": { "type": "string", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "user_id", "amount"]
       },
       "DeleteResponse": {
         "type": "object",

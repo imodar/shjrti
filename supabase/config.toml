@@ -124,3 +124,12 @@ verify_jwt = false
 
 [functions.api-suggestions]
 verify_jwt = false
+
+[functions.api-profiles]
+verify_jwt = false
+
+[functions.api-subscriptions]
+verify_jwt = false
+
+[functions.api-invoices]
+verify_jwt = false

@@ -31,6 +31,10 @@ export { membersApi } from './endpoints/members';
 export { marriagesApi } from './endpoints/marriages';
 export { memoriesApi } from './endpoints/memories';
 export { suggestionsApi } from './endpoints/suggestions';
+export { profilesApi } from './endpoints/profiles';
+export { subscriptionsApi } from './endpoints/subscriptions';
+export { invoicesApi } from './endpoints/invoices';
+
 export type { 
   MemberMemoryCreateInput, 
   MemberMemoryUpdateInput,
@@ -42,6 +46,19 @@ export type {
   SuggestionCreateInput,
   SuggestionUpdateInput,
 } from './endpoints/suggestions';
+export type {
+  Profile,
+  ProfileUpdateInput,
+} from './endpoints/profiles';
+export type {
+  Subscription,
+  SubscriptionDetails,
+  Package,
+} from './endpoints/subscriptions';
+export type {
+  Invoice,
+  InvoicePackage,
+} from './endpoints/invoices';
 
 // Convenience re-export as a single API object
 import { familiesApi } from './endpoints/families';
@@ -49,6 +66,9 @@ import { membersApi } from './endpoints/members';
 import { marriagesApi } from './endpoints/marriages';
 import { memoriesApi } from './endpoints/memories';
 import { suggestionsApi } from './endpoints/suggestions';
+import { profilesApi } from './endpoints/profiles';
+import { subscriptionsApi } from './endpoints/subscriptions';
+import { invoicesApi } from './endpoints/invoices';
 
 export const api = {
   families: familiesApi,
@@ -56,6 +76,9 @@ export const api = {
   marriages: marriagesApi,
   memories: memoriesApi,
   suggestions: suggestionsApi,
+  profiles: profilesApi,
+  subscriptions: subscriptionsApi,
+  invoices: invoicesApi,
 };
 
 export default api;
