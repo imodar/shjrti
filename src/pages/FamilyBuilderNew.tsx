@@ -3739,7 +3739,8 @@ const FamilyBuilderNew = () => {
                                           onSave={() => handleSpouseSave(activeSpouseType)} 
                                           onAdd={() => handleAddSpouse(activeSpouseType)} 
                                           onClose={activeSpouseType === 'wife' ? handleCloseWifeEdit : handleCloseHusbandEdit} 
-                                          showForm={showSpouseForm} 
+                                          showForm={showSpouseForm}
+                                          marriages={contextMarriages || []}
                                         />
                                       )}
                                   </div>
