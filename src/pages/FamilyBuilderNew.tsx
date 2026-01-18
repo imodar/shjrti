@@ -1766,6 +1766,13 @@ const FamilyBuilderNew = () => {
     setFormMode('edit');
     setEditingMember(member);
     setCurrentStep(1);
+    
+    // Close spouse form before loading member data
+    setCurrentSpouse(null);
+    setActiveSpouseType(null);
+    setShowSpouseForm(false);
+    setSpouseFamilyStatus(null);
+    
     populateFormData(member);
     if (isMobile) setIsMemberListOpen(false);
   }, [isMobile]);
@@ -1799,6 +1806,14 @@ const FamilyBuilderNew = () => {
     setHusbands([]);
     setOriginalWivesData([]);
     setOriginalHusbandData(null);
+    
+    // Reset spouse form states
+    setCurrentSpouse(null);
+    setActiveSpouseType(null);
+    setShowSpouseForm(false);
+    setSpouseFamilyStatus(null);
+    setEditingWifeIndex(null);
+    
     // Clear image states
     setCroppedImage(null);
     setSelectedImage(null);
@@ -2953,6 +2968,12 @@ const FamilyBuilderNew = () => {
       }
     }
     if (currentStep < 2) {
+      // Close spouse form when entering step 2
+      setCurrentSpouse(null);
+      setActiveSpouseType(null);
+      setShowSpouseForm(false);
+      setSpouseFamilyStatus(null);
+      
       setCurrentStep(currentStep + 1);
     }
   };
