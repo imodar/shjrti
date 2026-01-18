@@ -3,7 +3,7 @@
   "info": {
     "title": "Shejrati Family Tree API",
     "description": "RESTful API for managing family trees, members, marriages, and memories. All endpoints require JWT authentication via Supabase.\n\n## Authentication\nAll API requests require a valid JWT token in the Authorization header:\n```\nAuthorization: Bearer <your-jwt-token>\n```\n\n## Rate Limiting\nAPI requests are rate-limited to prevent abuse. Current limits: 100 requests per 30 minutes per user.\n\n## Response Format\nAll responses follow a consistent format:\n```json\n{\n  \"success\": true,\n  \"data\": { ... }\n}\n```\n\nError responses:\n```json\n{\n  \"success\": false,\n  \"error\": { \"code\": \"ERROR_CODE\", \"message\": \"Description\" }\n}\n```",
-    "version": "3.3.0",
+    "version": "3.4.0",
     "contact": {
       "name": "Shejrati Support",
       "url": "https://shjrti.com",
@@ -51,6 +51,10 @@
     {
       "name": "Invoices",
       "description": "User invoice management"
+    },
+    {
+      "name": "Contact",
+      "description": "Contact form submissions (public)"
     }
   ],
   "paths": {
@@ -1167,6 +1171,44 @@
         }
       }
     },
+    "/api-contact": {
+      "post": {
+        "tags": ["Contact"],
+        "summary": "Submit Contact Form",
+        "description": "Submit a contact form message. This endpoint is public and does not require authentication.",
+        "operationId": "submitContact",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ContactSubmission" },
+              "example": {
+                "full_name": "أحمد محمد",
+                "email": "ahmed@example.com",
+                "description": "أريد الاستفسار عن خدماتكم"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Contact form submitted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "id": { "type": "string", "format": "uuid" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" }
+        }
+      }
+    },
     "/api-profiles": {
       "get": {
         "tags": ["Profiles"],
@@ -1697,6 +1739,27 @@
         "properties": {
           "success": { "type": "boolean", "example": false },
           "error": { "type": "string" }
+        }
+      },
+      "ContactSubmission": {
+        "type": "object",
+        "required": ["full_name", "email", "description"],
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Full name of the contact person"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Email address for contact"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Message or inquiry details"
+          }
         }
       }
     },
