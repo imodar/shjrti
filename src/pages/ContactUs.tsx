@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { useToast } from '@/hooks/use-toast';
-import { supabase } from '@/integrations/supabase/client';
+import { contactApi } from '@/lib/api';
 import { sanitizeFormData } from '@/lib/security';
 import { GlobalHeader } from '@/components/GlobalHeader';
 import { GlobalFooter } from '@/components/GlobalFooter';
@@ -71,15 +71,11 @@ const ContactUs: React.FC = () => {
     try {
       const sanitizedData = sanitizeFormData(data);
       
-      const { error } = await supabase
-        .from('contact_submissions')
-        .insert({
-          full_name: sanitizedData.fullName,
-          email: sanitizedData.email,
-          description: sanitizedData.description,
-        });
-
-      if (error) throw error;
+      await contactApi.submit({
+        full_name: sanitizedData.fullName,
+        email: sanitizedData.email,
+        description: sanitizedData.description,
+      });
 
       toast({
         title: t('contact.success', 'تم الإرسال بنجاح'),
@@ -88,6 +84,7 @@ const ContactUs: React.FC = () => {
 
       form.reset();
       setCaptchaValue(null);
+      generateCaptcha();
     } catch (error) {
       console.error('Error submitting contact form:', error);
       toast({
