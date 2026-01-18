@@ -1405,6 +1405,49 @@
           "linked_member_id": { "type": "string", "format": "uuid" }
         }
       },
+      "Suggestion": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "family_id": { "type": "string", "format": "uuid" },
+          "member_id": { "type": "string", "format": "uuid", "nullable": true },
+          "submitter_name": { "type": "string", "example": "أحمد محمد" },
+          "submitter_email": { "type": "string", "format": "email" },
+          "suggestion_type": { "type": "string", "enum": ["correction", "addition", "removal", "other"] },
+          "suggestion_text": { "type": "string" },
+          "suggested_changes": { "type": "object", "nullable": true },
+          "status": { "type": "string", "enum": ["pending", "accepted", "rejected"], "default": "pending" },
+          "admin_notes": { "type": "string", "nullable": true },
+          "is_email_verified": { "type": "boolean", "default": false },
+          "verification_code": { "type": "string", "nullable": true },
+          "verification_code_expires_at": { "type": "string", "format": "date-time", "nullable": true },
+          "reviewed_by": { "type": "string", "format": "uuid", "nullable": true },
+          "reviewed_at": { "type": "string", "format": "date-time", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time", "nullable": true }
+        },
+        "required": ["id", "family_id", "submitter_name", "submitter_email", "suggestion_type", "suggestion_text", "status"]
+      },
+      "SuggestionCreateInput": {
+        "type": "object",
+        "properties": {
+          "family_id": { "type": "string", "format": "uuid" },
+          "member_id": { "type": "string", "format": "uuid" },
+          "submitter_name": { "type": "string" },
+          "submitter_email": { "type": "string", "format": "email" },
+          "suggestion_type": { "type": "string", "enum": ["correction", "addition", "removal", "other"] },
+          "suggestion_text": { "type": "string" },
+          "suggested_changes": { "type": "object" }
+        },
+        "required": ["family_id", "submitter_name", "submitter_email", "suggestion_type", "suggestion_text"]
+      },
+      "SuggestionUpdateInput": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "enum": ["pending", "accepted", "rejected"] },
+          "admin_notes": { "type": "string" }
+        }
+      },
       "DeleteResponse": {
         "type": "object",
         "properties": {
