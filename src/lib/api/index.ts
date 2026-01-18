@@ -34,6 +34,8 @@ export { suggestionsApi } from './endpoints/suggestions';
 export { profilesApi } from './endpoints/profiles';
 export { subscriptionsApi } from './endpoints/subscriptions';
 export { invoicesApi } from './endpoints/invoices';
+export { packagesApi } from './endpoints/packages';
+export { scheduledChangesApi } from './endpoints/scheduledChanges';
 
 export type { 
   MemberMemoryCreateInput, 
@@ -53,12 +55,20 @@ export type {
 export type {
   Subscription,
   SubscriptionDetails,
-  Package,
+  Package as SubscriptionPackage,
 } from './endpoints/subscriptions';
 export type {
   Invoice,
   InvoicePackage,
 } from './endpoints/invoices';
+export type {
+  Package,
+} from './endpoints/packages';
+export type {
+  ScheduledChange,
+  ScheduledChangeCreateInput,
+  ScheduledPackage,
+} from './endpoints/scheduledChanges';
 
 // Convenience re-export as a single API object
 import { familiesApi } from './endpoints/families';
@@ -69,6 +79,8 @@ import { suggestionsApi } from './endpoints/suggestions';
 import { profilesApi } from './endpoints/profiles';
 import { subscriptionsApi } from './endpoints/subscriptions';
 import { invoicesApi } from './endpoints/invoices';
+import { packagesApi } from './endpoints/packages';
+import { scheduledChangesApi } from './endpoints/scheduledChanges';
 
 export const api = {
   families: familiesApi,
@@ -79,6 +91,8 @@ export const api = {
   profiles: profilesApi,
   subscriptions: subscriptionsApi,
   invoices: invoicesApi,
+  packages: packagesApi,
+  scheduledChanges: scheduledChangesApi,
 };
 
 export default api;
