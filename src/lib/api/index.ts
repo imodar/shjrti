@@ -30,24 +30,32 @@ export { familiesApi } from './endpoints/families';
 export { membersApi } from './endpoints/members';
 export { marriagesApi } from './endpoints/marriages';
 export { memoriesApi } from './endpoints/memories';
+export { suggestionsApi } from './endpoints/suggestions';
 export type { 
   MemberMemoryCreateInput, 
   MemberMemoryUpdateInput,
   FamilyMemoryCreateInput,
   FamilyMemoryUpdateInput 
 } from './endpoints/memories';
+export type {
+  Suggestion,
+  SuggestionCreateInput,
+  SuggestionUpdateInput,
+} from './endpoints/suggestions';
 
 // Convenience re-export as a single API object
 import { familiesApi } from './endpoints/families';
 import { membersApi } from './endpoints/members';
 import { marriagesApi } from './endpoints/marriages';
 import { memoriesApi } from './endpoints/memories';
+import { suggestionsApi } from './endpoints/suggestions';
 
 export const api = {
   families: familiesApi,
   members: membersApi,
   marriages: marriagesApi,
   memories: memoriesApi,
+  suggestions: suggestionsApi,
 };
 
 export default api;

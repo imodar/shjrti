@@ -121,3 +121,6 @@ verify_jwt = false
 
 [functions.api-memories]
 verify_jwt = false
+
+[functions.api-suggestions]
+verify_jwt = false

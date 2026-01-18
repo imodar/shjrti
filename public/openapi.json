@@ -3,7 +3,7 @@
   "info": {
     "title": "Shejrati Family Tree API",
     "description": "RESTful API for managing family trees, members, marriages, and memories. All endpoints require JWT authentication via Supabase.\n\n## Authentication\nAll API requests require a valid JWT token in the Authorization header:\n```\nAuthorization: Bearer <your-jwt-token>\n```\n\n## Rate Limiting\nAPI requests are rate-limited to prevent abuse. Current limits: 100 requests per 30 minutes per user.\n\n## Response Format\nAll responses follow a consistent format:\n```json\n{\n  \"success\": true,\n  \"data\": { ... }\n}\n```\n\nError responses:\n```json\n{\n  \"success\": false,\n  \"error\": { \"code\": \"ERROR_CODE\", \"message\": \"Description\" }\n}\n```",
-    "version": "3.1.0",
+    "version": "3.2.0",
     "contact": {
       "name": "Shejrati Support",
       "url": "https://shjrti.com",
@@ -35,6 +35,10 @@
     {
       "name": "Memories",
       "description": "Photo and memory management"
+    },
+    {
+      "name": "Suggestions",
+      "description": "Tree edit suggestions management"
     }
   ],
   "paths": {
@@ -979,6 +983,174 @@
           },
           "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/api-suggestions": {
+      "get": {
+        "tags": ["Suggestions"],
+        "summary": "List Suggestions",
+        "description": "List all edit suggestions for a family tree.",
+        "operationId": "getSuggestions",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "familyId",
+            "in": "query",
+            "description": "Family ID to list suggestions for",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Suggestion ID to get a single suggestion",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "oneOf": [
+                        { "$ref": "#/components/schemas/Suggestion" },
+                        {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Suggestion" }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      },
+      "post": {
+        "tags": ["Suggestions"],
+        "summary": "Create Suggestion",
+        "description": "Create a new edit suggestion (public - no auth required).",
+        "operationId": "createSuggestion",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SuggestionCreateInput" },
+              "example": {
+                "family_id": "uuid-here",
+                "member_id": "uuid-here",
+                "submitter_name": "أحمد محمد",
+                "submitter_email": "ahmed@example.com",
+                "suggestion_type": "correction",
+                "suggestion_text": "تصحيح تاريخ الميلاد"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Suggestion created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": { "$ref": "#/components/schemas/Suggestion" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" }
+        }
+      },
+      "patch": {
+        "tags": ["Suggestions"],
+        "summary": "Update Suggestion",
+        "description": "Update suggestion status (accept/reject).",
+        "operationId": "updateSuggestion",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Suggestion ID to update",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SuggestionUpdateInput" },
+              "example": {
+                "status": "accepted",
+                "admin_notes": "تم قبول الاقتراح وتطبيقه"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Suggestion updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": { "$ref": "#/components/schemas/Suggestion" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "delete": {
+        "tags": ["Suggestions"],
+        "summary": "Delete Suggestion",
+        "description": "Delete an edit suggestion.",
+        "operationId": "deleteSuggestion",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "description": "Suggestion ID to delete",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Suggestion deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeleteResponse" }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
           "404": { "$ref": "#/components/responses/NotFound" }
         }
       }

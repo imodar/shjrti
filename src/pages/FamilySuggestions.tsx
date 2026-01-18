@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,24 +44,12 @@ import { GlobalHeader } from "@/components/GlobalHeader";
 import { GlobalFooterSimplified } from "@/components/GlobalFooterSimplified";
 import { FamilyHeader } from "@/components/FamilyHeader";
 import { FamilyDataProvider, useFamilyData } from "@/contexts/FamilyDataContext";
+import { suggestionsApi, type Suggestion } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
 import { ar } from "date-fns/locale";
 
-interface Suggestion {
-  id: string;
-  submitter_name: string;
-  submitter_email: string;
-  suggestion_type: string;
-  suggestion_text: string;
-  status: string;
-  admin_notes: string | null;
-  created_at: string;
-  member_id: string | null;
-  family_tree_members?: {
-    name: string;
-  } | null;
-}
+// Using Suggestion type from API
 
 const FamilySuggestionsContent = () => {
   const navigate = useNavigate();
@@ -111,30 +99,18 @@ const FamilySuggestionsContent = () => {
     }
   }, [error, navigate, toast]);
 
-  // Load suggestions
-  const loadSuggestions = async () => {
+  // Load suggestions using API
+  const loadSuggestions = useCallback(async () => {
     if (!familyId) return;
     
     try {
-      const { data, error } = await supabase
-        .from("tree_edit_suggestions")
-        .select(`
-          *,
-          family_tree_members (
-            name
-          )
-        `)
-        .eq("family_id", familyId)
-        .eq("is_email_verified", true)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
+      const data = await suggestionsApi.listByFamily(familyId);
       setSuggestions(data || []);
     } catch (error) {
       console.error("Error loading suggestions:", error);
       sonnerToast.error(t('suggestions.load_error'));
     }
-  };
+  }, [familyId, t]);
 
   useEffect(() => {
     if (familyId) {
@@ -176,20 +152,12 @@ const FamilySuggestionsContent = () => {
     setActionLoading(selectedSuggestion.id);
 
     try {
-      const currentUser = user;
-
-      // Update suggestion status
-      const { error: updateError } = await supabase
-        .from("tree_edit_suggestions")
-        .update({
-          status: actionType === "accept" ? "accepted" : "rejected",
-          admin_notes: adminNotes.trim() || null,
-          reviewed_by: currentUser?.id,
-          reviewed_at: new Date().toISOString(),
-        })
-        .eq("id", selectedSuggestion.id);
-
-      if (updateError) throw updateError;
+      // Update suggestion status using API
+      if (actionType === "accept") {
+        await suggestionsApi.accept(selectedSuggestion.id, adminNotes.trim() || undefined);
+      } else {
+        await suggestionsApi.reject(selectedSuggestion.id, adminNotes.trim() || undefined);
+      }
 
       // Send notification email
       const { error: notifyError } = await supabase.functions.invoke("notify-suggestion-status", {
@@ -227,13 +195,7 @@ const FamilySuggestionsContent = () => {
     setActionLoading(suggestionId);
 
     try {
-      const { error } = await supabase
-        .from("tree_edit_suggestions")
-        .delete()
-        .eq("id", suggestionId);
-
-      if (error) throw error;
-
+      await suggestionsApi.delete(suggestionId);
       sonnerToast.success(t('suggestions.deleted_success'));
       loadSuggestions();
     } catch (error) {
