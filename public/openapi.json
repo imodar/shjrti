@@ -2,11 +2,12 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Shejrati Family Tree API",
-    "description": "RESTful API for managing family trees, members, marriages, and memories. All endpoints require JWT authentication via Supabase.",
-    "version": "3.0.0",
+    "description": "RESTful API for managing family trees, members, marriages, and memories. All endpoints require JWT authentication via Supabase.\n\n## Authentication\nAll API requests require a valid JWT token in the Authorization header:\n```\nAuthorization: Bearer <your-jwt-token>\n```\n\n## Rate Limiting\nAPI requests are rate-limited to prevent abuse. Current limits: 100 requests per 30 minutes per user.\n\n## Response Format\nAll responses follow a consistent format:\n```json\n{\n  \"success\": true,\n  \"data\": { ... }\n}\n```\n\nError responses:\n```json\n{\n  \"success\": false,\n  \"error\": { \"code\": \"ERROR_CODE\", \"message\": \"Description\" }\n}\n```",
+    "version": "3.1.0",
     "contact": {
       "name": "Shejrati Support",
-      "url": "https://shjrti.com"
+      "url": "https://shjrti.com",
+      "email": "support@shjrti.com"
     },
     "license": {
       "name": "Proprietary"
@@ -45,13 +46,23 @@
         "operationId": "getFamilies",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "description": "Family ID to retrieve a specific family",
-            "required": false,
-            "schema": { "type": "string", "format": "uuid" }
+        {
+          "name": "id",
+          "in": "query",
+          "description": "Family ID to retrieve a specific family",
+          "required": false,
+          "schema": { "type": "string", "format": "uuid" }
+        },
+        {
+          "name": "include",
+          "in": "query",
+          "description": "Include related data (members or marriages)",
+          "required": false,
+          "schema": { 
+            "type": "string",
+            "enum": ["members", "marriages"]
           }
+        }
         ],
         "responses": {
           "200": {
