@@ -719,25 +719,25 @@ const Dashboard = () => {
               <section className="py-4 relative mt-2">
                 <div className="container mx-auto px-4 relative z-10">
                   {/* Statistics Box */}
-                  <div className="w-full bg-gradient-to-r from-emerald-50 via-teal-50 to-amber-50 dark:from-emerald-950/50 dark:via-teal-950/50 dark:to-amber-950/50 rounded-xl p-3 mb-6 border border-emerald-200/50 dark:border-emerald-700/50">
-                    <div className="grid grid-cols-2 gap-6">
+                  <div className="w-full bg-gradient-to-r from-emerald-50 via-teal-50 to-amber-50 dark:from-emerald-950/50 dark:via-teal-950/50 dark:to-amber-950/50 rounded-xl p-2 sm:p-3 mb-6 border border-emerald-200/50 dark:border-emerald-700/50">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                       {/* Total Families */}
-                      <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                      <div className="flex items-center space-x-2 sm:space-x-3 rtl:space-x-reverse">
                         <div className="flex-shrink-0">
-                          <TreePine className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                          <TreePine className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 dark:text-emerald-400" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between mb-1">
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
+                            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                               {t('dashboard.family_trees_section', 'Family Trees')}
                             </div>
-                            <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                            <div className="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200">
                               {familyTrees.length} / {userSubscription?.max_trees || '∞'}
                             </div>
                           </div>
-                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 sm:h-2">
                             <div 
-                              className="bg-emerald-500 h-2 rounded-full transition-all duration-300" 
+                              className="bg-emerald-500 h-1.5 sm:h-2 rounded-full transition-all duration-300" 
                               style={{ 
                                 width: `${userSubscription?.max_trees ? Math.min((familyTrees.length / userSubscription.max_trees) * 100, 100) : 0}%` 
                               }}
@@ -747,22 +747,22 @@ const Dashboard = () => {
                       </div>
                       
                       {/* Total Members */}
-                      <div className="flex items-center space-x-3 rtl:space-x-reverse">
+                      <div className="flex items-center space-x-2 sm:space-x-3 rtl:space-x-reverse">
                         <div className="flex-shrink-0">
-                          <Users className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                          <Users className="h-4 w-4 sm:h-5 sm:w-5 text-teal-600 dark:text-teal-400" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between mb-1">
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
+                            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                               {t('total_members', 'إجمالي الأفراد')}
                             </div>
-                            <div className="text-sm font-medium text-gray-800 dark:text-gray-200">
+                            <div className="text-xs sm:text-sm font-medium text-gray-800 dark:text-gray-200">
                               {familyTrees.reduce((total, tree) => total + (tree.members_count || 0), 0)} / {userSubscription?.max_members || '∞'}
                             </div>
                           </div>
-                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 sm:h-2">
                             <div 
-                              className="bg-teal-500 h-2 rounded-full transition-all duration-300" 
+                              className="bg-teal-500 h-1.5 sm:h-2 rounded-full transition-all duration-300" 
                               style={{ 
                                 width: `${userSubscription?.max_members ? Math.min((familyTrees.reduce((total, tree) => total + (tree.members_count || 0), 0) / userSubscription.max_members) * 100, 100) : 0}%` 
                               }}
