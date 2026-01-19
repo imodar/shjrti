@@ -609,59 +609,59 @@ const FamilyCreator = () => {
           
           {/* New Header Box */}
           <div className="mb-8">
-            <div className="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-6 shadow-2xl ring-1 ring-white/20 dark:ring-gray-500/20">
-              <div className="flex items-center justify-between gap-8">
+            <div className="relative bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl border border-white/40 dark:border-gray-600/40 rounded-2xl py-4 px-4 md:px-6 shadow-2xl ring-1 ring-white/20 dark:ring-gray-500/20">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8">
                 {/* Right Side: Icon + Title + Description */}
-                <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <div className="relative w-16 h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30">
-                      <TreePine className="h-8 w-8 text-white drop-shadow-lg" />
+                <div className="flex items-center gap-3 md:gap-4 w-full md:w-auto">
+                  <div className="relative flex-shrink-0">
+                    <div className="relative w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 rounded-xl flex items-center justify-center shadow-xl border-2 border-white/30 dark:border-gray-700/30">
+                      <TreePine className="h-6 w-6 md:h-8 md:w-8 text-white drop-shadow-lg" />
                     </div>
                     {/* Status Indicator */}
-                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
-                      <div className="w-2 h-2 bg-white rounded-full animate-ping"></div>
+                    <div className="absolute -bottom-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-green-500 rounded-full border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-white rounded-full animate-ping"></div>
                     </div>
                   </div>
                   
                   {/* Text Content */}
-                  <div className="text-start">
-                    <h1 className="text-2xl md:text-3xl font-bold mb-2">
+                  <div className="text-start flex-1 min-w-0">
+                    <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-1 md:mb-2">
                       <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent text-right rtl:text-right">
                         {t('create_family_tree', 'إنشاء شجرة العائلة')}
                       </span>
                     </h1>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm md:text-base">
+                    <p className="text-gray-600 dark:text-gray-300 text-xs md:text-sm lg:text-base line-clamp-2 md:line-clamp-none">
                       {t('create_tree_description', 'ابدأ رحلتك في بناء تاريخ عائلتك وحفظ ذكرياتك للأجيال القادمة')}
                     </p>
                   </div>
                 </div>
 
                 {/* Left Side: Step Progress */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 md:gap-4 w-full md:w-auto justify-center md:justify-end">
                   <div className="flex flex-col items-center">
-                    <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-500 ${
+                    <div className={`relative w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center text-xs md:text-sm font-bold transition-all duration-500 ${
                       currentStep >= 1 
                         ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg scale-105'
                         : 'bg-white/50 dark:bg-gray-800/50 text-gray-500 border border-gray-200/50'
                     }`}>
                       <span className="relative z-10">1</span>
                     </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('family_info', 'معلومات العائلة')}</span>
+                    <span className="text-[10px] md:text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium whitespace-nowrap">{t('family_info', 'معلومات العائلة')}</span>
                   </div>
                   
-                  <div className={`w-8 h-2 rounded-full transition-all duration-700 ${
+                  <div className={`w-6 md:w-8 h-1.5 md:h-2 rounded-full transition-all duration-700 ${
                     currentStep >= 2 ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gray-200/50 dark:bg-gray-700/50'
                   }`}></div>
                   
                   <div className="flex flex-col items-center">
-                    <div className={`relative w-12 h-12 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-500 ${
+                    <div className={`relative w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center text-xs md:text-sm font-bold transition-all duration-500 ${
                       currentStep >= 2 
                         ? 'bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-lg scale-105' 
                         : 'bg-white/50 dark:bg-gray-800/50 text-gray-500 border border-gray-200/50'
                     }`}>
                       <span className="relative z-10">2</span>
                     </div>
-                    <span className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium">{t('founder_data', 'بيانات المؤسس')}</span>
+                    <span className="text-[10px] md:text-xs text-gray-600 dark:text-gray-400 mt-1 font-medium whitespace-nowrap">{t('founder_data', 'بيانات المؤسس')}</span>
                   </div>
                 </div>
               </div>
