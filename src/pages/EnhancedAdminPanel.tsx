@@ -1093,7 +1093,7 @@ export default function EnhancedAdminPanel() {
               loadCustomJavaScript(); 
               loadGoogleAnalyticsId();
               loadMaintenanceMode();
-            }} disabled={loading} className="bg-gradient-to-r from-emerald-500 to-teal-500">
+            }} disabled={loading} className="relative z-10 bg-gradient-to-r from-emerald-500 to-teal-500">
               <RefreshCw className={`h-4 w-4 me-2 ${loading ? 'animate-spin' : ''}`} />
               تحديث البيانات
             </Button>
