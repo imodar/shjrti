@@ -1094,24 +1094,8 @@ export default function EnhancedAdminPanel() {
               loadGoogleAnalyticsId();
               loadMaintenanceMode();
             }} disabled={loading} className="bg-gradient-to-r from-emerald-500 to-teal-500">
-              <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`h-4 w-4 me-2 ${loading ? 'animate-spin' : ''}`} />
               تحديث البيانات
-            </Button>
-            <Button 
-              onClick={() => navigate('/admin-api-settings')} 
-              variant="outline"
-              className="border-emerald-500 text-emerald-600 hover:bg-emerald-50 hover:!text-emerald-700"
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              إعدادات API
-            </Button>
-            <Button 
-              onClick={() => navigate('/admin/social-media')} 
-              variant="outline"
-              className="border-emerald-500 text-emerald-600 hover:bg-emerald-50 hover:!text-emerald-700"
-            >
-              <Share2 className="h-4 w-4 mr-2" />
-              إعدادات المشاركة
             </Button>
           </div>
         </div>
