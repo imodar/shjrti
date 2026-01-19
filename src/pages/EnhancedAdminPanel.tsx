@@ -40,7 +40,9 @@ import {
   TrendingUp,
   Search,
   Share2,
-  BarChart3
+  BarChart3,
+  DollarSign,
+  Key
 } from "lucide-react";
 import { PackageEditModal } from '@/components/PackageEditModal';
 import { ChangePackageModal } from '@/components/ChangePackageModal';
@@ -52,6 +54,9 @@ import AdminEmailTemplates from './AdminEmailTemplates';
 import AdminEmailLogs from './AdminEmailLogs';
 import AdminPaymentAnalytics from './AdminPaymentAnalytics';
 import AdminUserStatistics from './AdminUserStatistics';
+import AdminAPISettingsContent from './admin/AdminAPISettingsContent';
+import AdminRefundsContent from './admin/AdminRefundsContent';
+import AdminSocialMediaContent from './admin/AdminSocialMediaContent';
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
@@ -1279,6 +1284,39 @@ export default function EnhancedAdminPanel() {
                   <span className="hidden lg:inline text-xs">{direction === 'rtl' ? 'إحصائيات' : 'Statistics'}</span>
                 </div>
               </TabsTrigger>
+
+              <TabsTrigger 
+                value="refunds" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <DollarSign className="h-5 w-5 transition-transform group-hover:scale-110 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline text-xs">{direction === 'rtl' ? 'الاستردادات' : 'Refunds'}</span>
+                </div>
+              </TabsTrigger>
+
+              <TabsTrigger 
+                value="social-media" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <Share2 className="h-5 w-5 transition-transform group-hover:scale-110 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline text-xs">{direction === 'rtl' ? 'السوشل' : 'Social'}</span>
+                </div>
+              </TabsTrigger>
+
+              <TabsTrigger 
+                value="api-settings" 
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <Key className="h-5 w-5 transition-transform group-hover:scale-110 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline text-xs">{direction === 'rtl' ? 'API' : 'API'}</span>
+                </div>
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -2383,6 +2421,18 @@ export default function EnhancedAdminPanel() {
 
           <TabsContent value="user-statistics" className="space-y-6">
             <AdminUserStatistics />
+          </TabsContent>
+
+          <TabsContent value="refunds" className="space-y-6">
+            <AdminRefundsContent />
+          </TabsContent>
+
+          <TabsContent value="social-media" className="space-y-6">
+            <AdminSocialMediaContent />
+          </TabsContent>
+
+          <TabsContent value="api-settings" className="space-y-6">
+            <AdminAPISettingsContent />
           </TabsContent>
         </Tabs>
         
