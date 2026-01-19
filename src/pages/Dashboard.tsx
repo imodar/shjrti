@@ -811,10 +811,10 @@ const Dashboard = () => {
                               </div>
                               
                               {/* Member Count Badge */}
-                              <div className="relative">
+                              <div className="relative flex-shrink-0">
                                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full blur-sm opacity-60"></div>
-                                <Badge className="relative bg-gradient-to-r from-emerald-500/90 to-teal-500/90 text-white border-0 px-4 py-2 rounded-full text-sm font-bold shadow-xl backdrop-blur-sm">
-                                  <Users className="h-3.5 w-3.5 ml-1" />
+                                <Badge className="relative bg-gradient-to-r from-emerald-500/90 to-teal-500/90 text-white border-0 px-2 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-bold shadow-xl backdrop-blur-sm whitespace-nowrap">
+                                  <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5 ml-1" />
                                   {tree.members_count} {tree.members_count === 1 ? t('member_count', 'فرد') : t('members_count', 'أفراد')}
                                 </Badge>
                               </div>
