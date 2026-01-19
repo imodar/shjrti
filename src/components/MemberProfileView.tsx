@@ -1402,16 +1402,16 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                               {/* Children */}
                               {childrenWithSpouse.length > 0 && (
                                 <div className="mt-4 pt-4 border-t border-border/50">
-                                  <div className="flex items-center gap-3 mb-4">
-                                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                                      <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                                      <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4">
+                                    <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                                      <User className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400" />
+                                      <span className="text-xs sm:text-sm font-medium text-blue-700 dark:text-blue-300">
                                         {t('profile.males')} ({childrenWithSpouse.filter(c => c.gender === 'male').length})
                                       </span>
                                     </div>
-                                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800">
-                                      <User className="w-4 h-4 text-pink-600 dark:text-pink-400" />
-                                      <span className="text-sm font-medium text-pink-700 dark:text-pink-300">
+                                    <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800">
+                                      <User className="w-3 h-3 sm:w-4 sm:h-4 text-pink-600 dark:text-pink-400" />
+                                      <span className="text-xs sm:text-sm font-medium text-pink-700 dark:text-pink-300">
                                         {t('profile.females')} ({childrenWithSpouse.filter(c => c.gender === 'female').length})
                                       </span>
                                     </div>
