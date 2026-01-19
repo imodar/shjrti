@@ -3113,17 +3113,17 @@ const FamilyBuilderNew = () => {
 
                   </CardHeader>
                 <CardContent className="relative p-2 sm:p-4 md:p-6 bg-white">
-                  {formMode === 'view' ? <div className="py-8 px-6">
+                  {formMode === 'view' ? <div className="py-4 sm:py-6 md:py-8 px-2 sm:px-4 md:px-6">
                        {/* Family Overview Header - Redesigned */}
                           
                           {/* Animated Background Orbs */}
-                          <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
-                          <div className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-secondary/10 via-secondary/5 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
+                          <div className="absolute top-0 right-0 w-48 sm:w-72 md:w-96 h-48 sm:h-72 md:h-96 bg-gradient-to-bl from-primary/10 via-primary/5 to-transparent rounded-full blur-3xl animate-pulse"></div>
+                          <div className="absolute bottom-0 left-0 w-40 sm:w-60 md:w-80 h-40 sm:h-60 md:h-80 bg-gradient-to-tr from-secondary/10 via-secondary/5 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
                           
                           
-                          <div className="relative z-10 pt-4">
+                          <div className="relative z-10 pt-2 sm:pt-4">
                             {/* Hero Content */}
-                            <div className="text-center space-y-10">
+                            <div className="text-center space-y-6 sm:space-y-8 md:space-y-10">
                               {/* Logo Section with Luxury Design */}
                               <div className="relative inline-block">
                                 <div className="relative group">
@@ -3131,7 +3131,7 @@ const FamilyBuilderNew = () => {
                                   <div className="absolute inset-0 blur-3xl opacity-60 bg-gradient-to-r from-emerald-400 via-teal-500 to-amber-500 rounded-full transform scale-150 group-hover:scale-175 transition-transform duration-700"></div>
                                   
                                   {/* Main Icon Container */}
-                                  <div className="relative w-36 h-36 sm:w-40 sm:h-40 mx-auto">
+                                  <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 mx-auto">
                                     {/* Rotating Decorative Rings */}
                                     <div className="absolute inset-0 rounded-full bg-gradient-to-r from-emerald-500/30 via-teal-500/30 to-amber-500/30 animate-spin blur-sm" style={{animationDuration: '12s'}}></div>
                                     <div className="absolute inset-3 rounded-full bg-gradient-to-r from-amber-500/20 via-emerald-500/20 to-teal-500/20 animate-spin" style={{animationDuration: '10s', animationDirection: 'reverse'}}></div>
@@ -3141,7 +3141,7 @@ const FamilyBuilderNew = () => {
                                     
                                     {/* Main Gradient Icon Circle */}
                                     <div className="absolute inset-8 bg-gradient-to-br from-emerald-500 via-teal-600 to-amber-500 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-500/40 group-hover:shadow-emerald-500/60 group-hover:scale-110 transition-all duration-500 border-4 border-white/20 backdrop-blur-sm">
-                                      <TreePine className="h-14 w-14 sm:h-16 sm:w-16 text-white drop-shadow-2xl group-hover:scale-110 transition-transform duration-500" strokeWidth={2.5} />
+                                      <TreePine className="h-10 w-10 sm:h-14 sm:w-14 md:h-16 md:w-16 text-white drop-shadow-2xl group-hover:scale-110 transition-transform duration-500" strokeWidth={2.5} />
                                     </div>
                                     
                                     {/* Sparkle Effects */}
@@ -3150,23 +3150,23 @@ const FamilyBuilderNew = () => {
                                     <div className="absolute top-8 left-2 w-1 h-1 bg-teal-200 rounded-full shadow-lg shadow-teal-200/50 animate-pulse" style={{animationDelay: '1s'}}></div>
                                     
                                     {/* Premium Badge */}
-                                    <div className="absolute -top-1 -right-1 w-10 h-10 bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500 rounded-full border-4 border-card shadow-2xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-500">
-                                      <Crown className="w-5 h-5 text-white" />
+                                    <div className="absolute -top-1 -right-1 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500 rounded-full border-2 sm:border-4 border-card shadow-2xl flex items-center justify-center group-hover:rotate-12 transition-transform duration-500">
+                                      <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                                     </div>
                                   </div>
                                 </div>
                               </div>
                               
                               {/* Title Section with Luxury Typography */}
-                              <div className="space-y-6">
-                                <div className="space-y-4 relative">
+                              <div className="space-y-3 sm:space-y-4 md:space-y-6">
+                                <div className="space-y-2 sm:space-y-4 relative">
                                   {/* Background Text Effect */}
                                   <div className="absolute inset-0 flex items-center justify-center opacity-5 blur-sm">
-                                    <span className="text-7xl sm:text-8xl font-black">{familyData?.name || ''}</span>
+                                    <span className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black">{familyData?.name || ''}</span>
                                   </div>
                                   
                                   {/* Main Title */}
-                                  <h1 className="relative text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.4] py-4 overflow-visible">
+                                  <h1 className="relative text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight leading-[1.4] py-2 sm:py-4 overflow-visible">
                                     <span className="inline-block bg-gradient-to-r from-emerald-600 via-teal-600 to-amber-600 bg-clip-text text-transparent animate-fade-in hover:scale-105 transition-transform duration-300 pb-3">
                                       عائلة {familyData?.name || 'غير محدد'}
                                     </span>
