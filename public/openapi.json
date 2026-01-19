@@ -3,7 +3,7 @@
   "info": {
     "title": "Shejrati Family Tree API",
     "description": "RESTful API for managing family trees, members, marriages, and memories. All endpoints require JWT authentication via Supabase.\n\n## Authentication\nAll API requests require a valid JWT token in the Authorization header:\n```\nAuthorization: Bearer <your-jwt-token>\n```\n\n## Rate Limiting\nAPI requests are rate-limited to prevent abuse. Current limits: 100 requests per 30 minutes per user.\n\n## Response Format\nAll responses follow a consistent format:\n```json\n{\n  \"success\": true,\n  \"data\": { ... }\n}\n```\n\nError responses:\n```json\n{\n  \"success\": false,\n  \"error\": { \"code\": \"ERROR_CODE\", \"message\": \"Description\" }\n}\n```",
-    "version": "3.4.0",
+    "version": "3.5.0",
     "contact": {
       "name": "Shejrati Support",
       "url": "https://shjrti.com",
@@ -55,6 +55,10 @@
     {
       "name": "Contact",
       "description": "Contact form submissions (public)"
+    },
+    {
+      "name": "Admin",
+      "description": "Admin-only operations (requires admin role)"
     }
   ],
   "paths": {
@@ -1209,6 +1213,52 @@
         }
       }
     },
+    "/admin-refund-payment": {
+      "post": {
+        "tags": ["Admin"],
+        "summary": "Process Refund",
+        "description": "Process a PayPal refund for a paid invoice. Admin only. Supports full or partial refunds.",
+        "operationId": "processRefund",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RefundRequest" },
+              "example": {
+                "invoiceId": "123e4567-e89b-12d3-a456-426614174000",
+                "reason": "Customer requested refund",
+                "amount": 29.99
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Refund processed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "refundId": { "type": "string", "description": "PayPal refund transaction ID" },
+                    "status": { "type": "string", "example": "COMPLETED" },
+                    "amount": { "type": "number", "example": 29.99 },
+                    "invoiceId": { "type": "string", "format": "uuid" },
+                    "newPaymentStatus": { "type": "string", "enum": ["refunded", "partially_refunded"] }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
     "/api-profiles": {
       "get": {
         "tags": ["Profiles"],
@@ -1759,6 +1809,27 @@
             "type": "string",
             "minLength": 10,
             "description": "Message or inquiry details"
+          }
+        }
+      },
+      "RefundRequest": {
+        "type": "object",
+        "required": ["invoiceId"],
+        "properties": {
+          "invoiceId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The invoice ID to refund"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 255,
+            "description": "Optional reason for the refund (sent to customer)"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0.01,
+            "description": "Optional partial refund amount. If not provided, full refund is processed."
           }
         }
       }
