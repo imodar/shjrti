@@ -140,6 +140,14 @@ serve(async (req) => {
 
         if (signInError) {
           console.error("Error signing in:", signInError);
+          // Log failed login attempt
+          await supabase.rpc('log_login_attempt', {
+            user_email: email,
+            user_ip: req.headers.get('x-forwarded-for') || 'unknown',
+            user_agent_text: req.headers.get('user-agent') || 'unknown',
+            is_success: false,
+            reason: signInError.message
+          });
           return new Response(
             JSON.stringify({ error: signInError.message }),
             { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -166,6 +174,15 @@ serve(async (req) => {
       }
 
       console.log(`User logged in successfully: ${email}`);
+      
+      // Log successful login attempt for OTP login
+      await supabase.rpc('log_login_attempt', {
+        user_email: email,
+        user_ip: req.headers.get('x-forwarded-for') || 'unknown',
+        user_agent_text: req.headers.get('user-agent') || 'unknown',
+        is_success: true,
+        reason: null
+      });
 
     } else if (purpose === 'reset_password') {
       if (!password) {
