@@ -1094,17 +1094,17 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                 </div>
               ) : (
                 // حالة: مع كلمة مرور - محمية
-                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <Lock className="h-5 w-5 text-green-600" />
-                      <span className="font-semibold">{t('tree_settings.password_protection_title')}</span>
-                      <CheckCircle className="h-4 w-4 text-green-600" />
+                <div className="p-3 sm:p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 mb-3">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                      <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0" />
+                      <span className="font-semibold text-sm sm:text-base">{t('tree_settings.password_protection_title')}</span>
+                      <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 text-green-600 flex-shrink-0" />
                     </div>
-                    <Badge className="bg-green-600 text-white">{t('tree_settings.password_protected_badge')}</Badge>
+                    <Badge className="bg-green-600 text-white text-xs w-fit">{t('tree_settings.password_protected_badge')}</Badge>
                   </div>
                   
-                  <p className="text-sm text-green-700 dark:text-green-300 mb-3">
+                  <p className="text-xs sm:text-sm text-green-700 dark:text-green-300 mb-3">
                     {t('tree_settings.password_protected_desc')}
                   </p>
                   
