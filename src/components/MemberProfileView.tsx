@@ -1599,16 +1599,16 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                   <div className="bg-card rounded-xl border border-border p-6">
                     <h3 className="font-bold text-lg mb-4 text-primary">{t('profile.grandchildren')}</h3>
 
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                        <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                        <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-6">
+                      <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                        <User className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400" />
+                        <span className="text-xs sm:text-sm font-medium text-blue-700 dark:text-blue-300">
                           {t('profile.males')} ({grandchildren.filter((g: any) => g.gender === 'male').length})
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800">
-                        <User className="w-4 h-4 text-pink-600 dark:text-pink-400" />
-                        <span className="text-sm font-medium text-pink-700 dark:text-pink-300">
+                      <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-800">
+                        <User className="w-3 h-3 sm:w-4 sm:h-4 text-pink-600 dark:text-pink-400" />
+                        <span className="text-xs sm:text-sm font-medium text-pink-700 dark:text-pink-300">
                           {t('profile.females')} ({grandchildren.filter((g: any) => g.gender === 'female').length})
                         </span>
                       </div>
