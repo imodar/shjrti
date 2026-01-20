@@ -584,19 +584,20 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
           <CardContent className="space-y-6">
             
             {/* 1. الرابط العام للشجرة - متاح دائماً */}
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200">
-              <div className="flex items-center justify-between mb-3">
+            <div className="p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 mb-3">
                 <div className="flex items-center gap-2">
-                  <Link2 className="h-5 w-5 text-blue-600" />
-                  <Label className="font-semibold">{t('tree_settings.public_link_title')}</Label>
+                  <Link2 className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                  <Label className="font-semibold text-sm sm:text-base">{t('tree_settings.public_link_title')}</Label>
                 </div>
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={generateShareToken}
                   disabled={isGeneratingToken}
+                  className="text-xs sm:text-sm w-full sm:w-auto"
                 >
-                  <RefreshCw className={`h-4 w-4 ml-2 ${isGeneratingToken ? 'animate-spin' : ''}`} />
+                  <RefreshCw className={`h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2 ${isGeneratingToken ? 'animate-spin' : ''}`} />
                   {t('tree_settings.generate_new_link')}
                 </Button>
               </div>
@@ -606,19 +607,21 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                 </div>
               ) : (
                 <>
-                  <div className="flex gap-2 mb-2">
+                  <div className="flex flex-col sm:flex-row gap-2 mb-2">
                     <Input 
                       readOnly 
                       value={publicShareableLink}
-                      className="flex-1 bg-white dark:bg-gray-800 text-sm"
+                      className="flex-1 bg-white dark:bg-gray-800 text-xs sm:text-sm"
                     />
-                    <Button variant="outline" size="sm" onClick={handleCopyPublicLink} disabled={!shareToken}>
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                    <Button size="sm" onClick={() => setIsShareModalOpen(true)}>
-                      <Share2 className="h-4 w-4 ml-2" />
-                      {t('tree_settings.share_button')}
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm" onClick={handleCopyPublicLink} disabled={!shareToken} className="flex-1 sm:flex-none">
+                        <Copy className="h-3 w-3 sm:h-4 sm:w-4" />
+                      </Button>
+                      <Button size="sm" onClick={() => setIsShareModalOpen(true)} className="flex-1 sm:flex-none text-xs sm:text-sm">
+                        <Share2 className="h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2" />
+                        {t('tree_settings.share_button')}
+                      </Button>
+                    </div>
                   </div>
                   {tokenExpiresAt && (
                     <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground">
@@ -657,17 +660,17 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
               ) : !hasCustomDomainFeature ? (
                 // حالة 1: الميزة غير متاحة (باقة مجانية)
                 <div 
-                  className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border-2 border-dashed border-amber-300 cursor-pointer hover:border-amber-400 transition-colors"
+                  className="p-3 sm:p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border-2 border-dashed border-amber-300 cursor-pointer hover:border-amber-400 transition-colors"
                   onClick={() => setShowUpgradeModal(true)}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
-                        <Globe className="h-5 w-5 text-white" />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold">{t('tree_settings.custom_link_title')}</span>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-1">
+                          <span className="font-semibold text-sm sm:text-base">{t('tree_settings.custom_link_title')}</span>
                           <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs">
                             👑 Premium
                           </Badge>
@@ -677,7 +680,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                         </p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto text-xs sm:text-sm flex-shrink-0">
                       {t('tree_settings.upgrade_now')}
                     </Button>
                   </div>
@@ -710,28 +713,31 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                     <span className="font-semibold">{t('tree_settings.custom_link_title')}</span>
                     <CheckCircle className="h-4 w-4 text-green-600" />
                   </div>
-                  <div className="flex gap-2 mb-2">
+                  <div className="flex flex-col gap-2 mb-2">
                     <Input 
                       readOnly 
                       value={`https://shjrti.com/${familyData.custom_domain}`}
-                      className="flex-1 bg-white dark:bg-gray-800 font-mono text-sm"
+                      className="w-full bg-white dark:bg-gray-800 font-mono text-xs sm:text-sm"
                     />
-                    <Button variant="outline" size="sm" onClick={handleCopyCustomDomain}>
-                      <Copy className="h-4 w-4 ml-1" />
-                      {t('tree_settings.copy_button')}
-                    </Button>
-                    <Button variant="default" size="sm" onClick={() => setIsShareModalOpen(true)}>
-                      <Share2 className="h-4 w-4 ml-1" />
-                      {t('tree_settings.share_button')}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setIsDomainModalOpen(true)}
-                    >
-                      <Pencil className="h-4 w-4 ml-1" />
-                      {t('tree_settings.edit_button')}
-                    </Button>
+                    <div className="flex flex-wrap gap-2">
+                      <Button variant="outline" size="sm" onClick={handleCopyCustomDomain} className="flex-1 sm:flex-none text-xs sm:text-sm">
+                        <Copy className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
+                        {t('tree_settings.copy_button')}
+                      </Button>
+                      <Button variant="default" size="sm" onClick={() => setIsShareModalOpen(true)} className="flex-1 sm:flex-none text-xs sm:text-sm">
+                        <Share2 className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
+                        {t('tree_settings.share_button')}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setIsDomainModalOpen(true)}
+                        className="flex-1 sm:flex-none text-xs sm:text-sm"
+                      >
+                        <Pencil className="h-3 w-3 sm:h-4 sm:w-4 ml-1" />
+                        {t('tree_settings.edit_button')}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -753,17 +759,17 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
               ) : !hasImageUploadFeature ? (
                 // حالة: الميزة غير متاحة (باقة مجانية)
                 <div 
-                  className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border-2 border-dashed border-amber-300 cursor-pointer hover:border-amber-400 transition-colors"
+                  className="p-3 sm:p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border-2 border-dashed border-amber-300 cursor-pointer hover:border-amber-400 transition-colors"
                   onClick={() => setShowUpgradeModal(true)}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
-                        <Images className="h-5 w-5 text-white" />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Images className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold">{t('tree_settings.gallery_sharing_premium')}</span>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-1">
+                          <span className="font-semibold text-sm sm:text-base">{t('tree_settings.gallery_sharing_premium')}</span>
                           <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs">
                             👑 Premium
                           </Badge>
@@ -773,7 +779,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                         </p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto text-xs sm:text-sm flex-shrink-0">
                       {t('tree_settings.upgrade_now')}
                     </Button>
                   </div>
@@ -1009,17 +1015,17 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
               ) : !hasCustomDomainFeature ? (
                 // حالة: الميزة غير متاحة (باقة مجانية)
                 <div 
-                  className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border-2 border-dashed border-amber-300 cursor-pointer hover:border-amber-400 transition-colors"
+                  className="p-3 sm:p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border-2 border-dashed border-amber-300 cursor-pointer hover:border-amber-400 transition-colors"
                   onClick={() => setShowUpgradeModal(true)}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
-                        <Lock className="h-5 w-5 text-white" />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Lock className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold">{t('tree_settings.password_protection_title')}</span>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-1">
+                          <span className="font-semibold text-sm sm:text-base">{t('tree_settings.password_protection_title')}</span>
                           <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs">
                             👑 Premium
                           </Badge>
@@ -1029,7 +1035,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                         </p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto text-xs sm:text-sm flex-shrink-0">
                       {t('tree_settings.upgrade_now')}
                     </Button>
                   </div>
@@ -1061,17 +1067,17 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                 </div>
               ) : !sharePassword ? (
                 // حالة: بدون كلمة مرور - تحذير أمني
-                <div className="p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border-2 border-dashed border-amber-300 cursor-pointer hover:border-amber-400 transition-colors"
+                <div className="p-3 sm:p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-lg border-2 border-dashed border-amber-300 cursor-pointer hover:border-amber-400 transition-colors"
                   onClick={() => setIsEditingPassword(true)}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center">
-                        <AlertTriangle className="h-5 w-5 text-white" />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold">{t('tree_settings.password_protection_title')}</span>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-1">
+                          <span className="font-semibold text-sm sm:text-base">{t('tree_settings.password_protection_title')}</span>
                           <Badge className="bg-red-500 text-white text-xs">
                             {t('tree_settings.password_unprotected_badge')}
                           </Badge>
@@ -1081,7 +1087,7 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                         </p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto text-xs sm:text-sm flex-shrink-0">
                       {t('tree_settings.add_password')}
                     </Button>
                   </div>
@@ -1102,11 +1108,12 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                     {t('tree_settings.password_protected_desc')}
                   </p>
                   
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Button 
                       variant="outline" 
                       size="sm"
                       onClick={() => setIsEditingPassword(true)}
+                      className="text-xs sm:text-sm"
                     >
                       {t('tree_settings.change_password')}
                     </Button>
@@ -1115,9 +1122,9 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
                       size="sm"
                       onClick={handleDeletePassword}
                       disabled={isUpdatingPassword}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 text-xs sm:text-sm"
                     >
-                      <Trash2 className="h-4 w-4 ml-2" />
+                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2" />
                       {isUpdatingPassword ? t('tree_settings.removing_protection') : t('tree_settings.remove_protection')}
                     </Button>
                   </div>
