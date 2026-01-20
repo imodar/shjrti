@@ -1039,7 +1039,7 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                           </TooltipProvider>
                         </div>
                       ) : (
-                        <h1 className="text-3xl lg:text-4xl font-bold text-foreground mb-2 w-full max-w-none text-start">
+                        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2 w-full max-w-none text-start leading-tight">
                           {member.name}
                         </h1>
                       )}
@@ -1056,14 +1056,14 @@ export const MemberProfileView: React.FC<MemberProfileViewProps> = ({
                         (() => {
                           const lineages = getLineageDisplay();
                           return lineages.length > 0 ? lineages.map((lineage, index) => (
-                            <p key={index} className="text-lg text-muted-foreground mb-1 text-start">
+                            <p key={index} className="text-base sm:text-lg text-muted-foreground mb-1 text-start leading-relaxed">
                               {lineage}
                             </p>
                           )) : null;
                         })()
                       )}
                       {member.bio && (
-                        <p className="text-lg italic text-muted-foreground max-w-md text-start">
+                        <p className="text-base sm:text-lg italic text-muted-foreground max-w-md text-start leading-relaxed">
                           "{member.bio}"
                         </p>
                       )}
