@@ -37,7 +37,7 @@ import { FamilyHeader } from "@/components/FamilyHeader";
 import { SmartSearchBar } from "@/components/SmartSearchBar";
 import { DateDisplay } from "@/components/DateDisplay";
 import { SuggestionPanel } from "@/components/SuggestionPanel";
-import { useDashboardData } from "@/hooks/useDashboardData";
+// useDashboardData removed - was causing 5 redundant API calls
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useSubscription } from "@/contexts/SubscriptionContext";
 import { SubscriptionGuard } from "@/components/SubscriptionGuard";
@@ -255,10 +255,8 @@ const FamilyBuilderNew = () => {
     t,
     direction
   } = useLanguage();
-  const {
-    notifications,
-    profile
-  } = useDashboardData();
+  // ✅ REMOVED: useDashboardData() - was causing 5 redundant API calls (profiles, notifications, families, members count)
+  // notifications and profile were not actually used in this component
 
   // Get subscription from context
   const { subscription } = useSubscription();
