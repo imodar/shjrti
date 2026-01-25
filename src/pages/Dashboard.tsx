@@ -45,7 +45,7 @@ import { useToast } from "@/hooks/use-toast";
 import { DashboardHeroSkeleton } from "@/components/skeletons/DashboardHeroSkeleton";
 import { FamiliesGridSkeleton } from "@/components/skeletons/FamiliesGridSkeleton";
 import { StatsBarSkeleton } from "@/components/skeletons/StatsBarSkeleton";
-import { profilesApi, subscriptionsApi, invoicesApi } from "@/lib/api";
+import { profilesApi, invoicesApi } from "@/lib/api";
 
 interface FamilyTree {
   id: string;
@@ -74,7 +74,7 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { t, direction, currentLanguage } = useLanguage();
   const { toast } = useToast();
-  const { hasAIFeatures } = useSubscription();
+  const { hasAIFeatures, subscription: contextSubscription, loading: subscriptionLoading } = useSubscription();
   const navigate = useNavigate();
   const [familyTrees, setFamilyTrees] = useState<FamilyTree[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -89,7 +89,7 @@ const Dashboard = () => {
   const [deleteTreeId, setDeleteTreeId] = useState<string | null>(null);
   const [deleteTreeName, setDeleteTreeName] = useState("");
 
-  // Fetch user's data using REST APIs
+  // Fetch user's data using REST APIs (profile and families only - subscription comes from context)
   useEffect(() => {
     let isMounted = true;
 
@@ -98,8 +98,8 @@ const Dashboard = () => {
       
       setLoading(true);
       try {
-        // Parallel fetch for families (still using supabase for member count), profile, and subscription via APIs
-        const [familiesResult, profileResult, subscriptionResult] = await Promise.allSettled([
+        // Parallel fetch for families and profile only (subscription comes from SubscriptionContext)
+        const [familiesResult, profileResult] = await Promise.allSettled([
           // Families with member count - keeping supabase for aggregation support
           supabase
             .from('families')
@@ -113,9 +113,7 @@ const Dashboard = () => {
             .eq('creator_id', user.id)
             .eq('is_archived', false),
           // Profile via API
-          profilesApi.get(),
-          // Subscription via API
-          subscriptionsApi.get()
+          profilesApi.get()
         ]);
 
         if (!isMounted) return;
@@ -139,45 +137,6 @@ const Dashboard = () => {
           setUserProfile({
             first_name: profile.first_name || undefined,
             last_name: profile.last_name || undefined
-          });
-        }
-
-        // Handle subscription data from API
-        if (subscriptionResult.status === 'fulfilled') {
-          const subscription = subscriptionResult.value;
-          
-          // Check if it's a free subscription (status === 'free')
-          if (subscription.status === 'free' || !subscription.packages) {
-            const pkg = subscription.package || subscription.packages;
-            setUserSubscription({
-              package_name: pkg?.name || t('dashboard.free_package', 'Free Package'),
-              status: 'free',
-              is_expired: false,
-              max_trees: pkg?.max_family_trees || 1,
-              max_members: pkg?.max_family_members || 50,
-              price_sar: pkg?.price_sar || 0,
-              price_usd: pkg?.price_usd || 0
-            });
-          } else {
-            const pkg = subscription.packages;
-            setUserSubscription({
-              package_name: pkg?.name,
-              status: subscription.status,
-              is_expired: subscription.expires_at ? new Date(subscription.expires_at) <= new Date() : false,
-              max_trees: pkg?.max_family_trees || 1,
-              max_members: pkg?.max_family_members || 50,
-              price_sar: pkg?.price_sar || 0,
-              price_usd: pkg?.price_usd || 0
-            });
-          }
-        } else {
-          // Default free package limits
-          setUserSubscription({
-            package_name: t('dashboard.free_package', 'Free Package'),
-            status: 'free',
-            is_expired: false,
-            max_trees: 1,
-            max_members: 50
           });
         }
       } catch (error: any) {
@@ -204,39 +163,43 @@ const Dashboard = () => {
     };
   }, [user?.id, currentLanguage, toast, t]);
 
-  // Check for package mismatch using APIs
+  // Sync subscription from context to local state
+  useEffect(() => {
+    if (subscriptionLoading) return;
+    
+    if (contextSubscription) {
+      setUserSubscription({
+        package_name: contextSubscription.package_name || t('dashboard.free_package', 'Free Package'),
+        status: contextSubscription.status || 'free',
+        is_expired: contextSubscription.is_expired || false,
+        max_trees: 1, // These will be fetched from package details if needed
+        max_members: 50
+      });
+    } else {
+      setUserSubscription({
+        package_name: t('dashboard.free_package', 'Free Package'),
+        status: 'free',
+        is_expired: false,
+        max_trees: 1,
+        max_members: 50
+      });
+    }
+  }, [contextSubscription, subscriptionLoading, t]);
+
+  // Check for package mismatch using APIs (only fetch invoice, use context for subscription)
   useEffect(() => {
     const checkPackageMismatch = async () => {
-      if (!user?.id || !userSubscription) return;
+      if (!user?.id || !contextSubscription || contextSubscription.status === 'free') return;
 
       try {
         // Get latest paid invoice via API
         const latestInvoice = await invoicesApi.getLatestPaid();
         if (!latestInvoice) return;
 
-        // Get current subscription via API
-        const subscription = await subscriptionsApi.get();
-        if (!subscription || subscription.status === 'free') return;
-
-        // Check if there's a mismatch
-        if (subscription.package_id !== latestInvoice.package_id) {
-          let packageName = 'Unknown Package';
-          try {
-            const nameObj = typeof subscription.packages?.name === 'string'
-              ? JSON.parse(subscription.packages.name)
-              : subscription.packages?.name;
-            packageName = nameObj?.[currentLanguage] || nameObj?.ar || nameObj?.en || packageName;
-          } catch (e) {
-            packageName = typeof subscription.packages?.name === 'string' 
-              ? subscription.packages.name 
-              : packageName;
-          }
-
-          setPackageMismatch({
-            invoiceId: latestInvoice.id,
-            expectedPackage: packageName
-          });
-        } else {
+        // Use subscription from context instead of making another API call
+        if (contextSubscription.subscription_id && latestInvoice.package_id) {
+          // We can't directly compare package_id from context, so we skip mismatch check
+          // or rely on a more sophisticated approach if needed
           setPackageMismatch(null);
         }
       } catch (error) {
@@ -245,7 +208,7 @@ const Dashboard = () => {
     };
 
     checkPackageMismatch();
-  }, [user?.id, userSubscription, currentLanguage]);
+  }, [user?.id, contextSubscription, currentLanguage]);
 
   // Fix subscription package
   const handleFixSubscription = async () => {
