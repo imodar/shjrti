@@ -45,7 +45,7 @@ import { useToast } from "@/hooks/use-toast";
 import { DashboardHeroSkeleton } from "@/components/skeletons/DashboardHeroSkeleton";
 import { FamiliesGridSkeleton } from "@/components/skeletons/FamiliesGridSkeleton";
 import { StatsBarSkeleton } from "@/components/skeletons/StatsBarSkeleton";
-import { profilesApi, invoicesApi } from "@/lib/api";
+import { profilesApi, invoicesApi, subscriptionsApi } from "@/lib/api";
 
 interface FamilyTree {
   id: string;
@@ -163,27 +163,54 @@ const Dashboard = () => {
     };
   }, [user?.id, currentLanguage, toast, t]);
 
-  // Sync subscription from context to local state
+  // Sync subscription from context and fetch full package details
   useEffect(() => {
-    if (subscriptionLoading) return;
-    
-    if (contextSubscription) {
-      setUserSubscription({
-        package_name: contextSubscription.package_name || t('dashboard.free_package', 'Free Package'),
-        status: contextSubscription.status || 'free',
-        is_expired: contextSubscription.is_expired || false,
-        max_trees: 1, // These will be fetched from package details if needed
-        max_members: 50
-      });
-    } else {
-      setUserSubscription({
-        package_name: t('dashboard.free_package', 'Free Package'),
-        status: 'free',
-        is_expired: false,
-        max_trees: 1,
-        max_members: 50
-      });
-    }
+    const fetchFullSubscriptionDetails = async () => {
+      if (subscriptionLoading) return;
+      
+      // If user has an active subscription in context, fetch full details with package info
+      if (contextSubscription && contextSubscription.status !== 'free') {
+        try {
+          const fullSubscription = await subscriptionsApi.get();
+          if (fullSubscription && fullSubscription.packages) {
+            const pkg = fullSubscription.packages;
+            setUserSubscription({
+              package_name: pkg.name || contextSubscription.package_name,
+              status: fullSubscription.status || contextSubscription.status,
+              is_expired: fullSubscription.expires_at ? new Date(fullSubscription.expires_at) <= new Date() : false,
+              max_trees: pkg.max_family_trees || 10,
+              max_members: pkg.max_family_members || 500,
+              price_sar: pkg.price_sar || 0,
+              price_usd: pkg.price_usd || 0
+            });
+            return;
+          }
+        } catch (error) {
+          console.error('Error fetching full subscription details:', error);
+        }
+      }
+      
+      // Fallback to context data or free plan
+      if (contextSubscription) {
+        setUserSubscription({
+          package_name: contextSubscription.package_name || t('dashboard.free_package', 'Free Package'),
+          status: contextSubscription.status || 'free',
+          is_expired: contextSubscription.is_expired || false,
+          max_trees: 1,
+          max_members: 50
+        });
+      } else {
+        setUserSubscription({
+          package_name: t('dashboard.free_package', 'Free Package'),
+          status: 'free',
+          is_expired: false,
+          max_trees: 1,
+          max_members: 50
+        });
+      }
+    };
+
+    fetchFullSubscriptionDetails();
   }, [contextSubscription, subscriptionLoading, t]);
 
   // Check for package mismatch using APIs (only fetch invoice, use context for subscription)
