@@ -145,7 +145,7 @@ const FamilyBuilderStitch: React.FC = () => {
 
   return (
     <div className={cn(
-      'min-h-screen overflow-hidden',
+      'theme-stitch min-h-screen overflow-hidden',
       direction === 'rtl' && 'rtl'
     )}>
       {/* Header */}
