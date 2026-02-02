@@ -1,6 +1,4 @@
 import React from 'react';
-import { Edit, UserPlus, Image, Clock, Cake, Bell, Plus } from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 interface Activity {
   id: string;
@@ -41,13 +39,13 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   const getActivityIcon = (type: Activity['type']) => {
     switch (type) {
       case 'edit':
-        return { icon: Edit, className: 'activity-icon edit' };
+        return { icon: 'edit', className: 'bg-blue-50 dark:bg-blue-900/20 text-blue-500' };
       case 'add':
-        return { icon: UserPlus, className: 'activity-icon add' };
+        return { icon: 'person_add', className: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500' };
       case 'photo':
-        return { icon: Image, className: 'activity-icon photo' };
+        return { icon: 'photo_library', className: 'bg-amber-50 dark:bg-amber-900/20 text-amber-500' };
       default:
-        return { icon: Clock, className: 'activity-icon' };
+        return { icon: 'history', className: 'bg-slate-50 dark:bg-slate-800/20 text-slate-500' };
     }
   };
 
@@ -83,22 +81,22 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   ];
 
   return (
-    <section className="stitch-main custom-scrollbar">
-      <div className="stitch-main-content">
+    <section className="flex-1 overflow-y-auto bg-slate-50 dark:bg-background-dark p-8 custom-scrollbar">
+      <div className="max-w-4xl mx-auto">
         {/* Welcome Header */}
         <header className="mb-10">
-          <h2 className="text-3xl font-bold text-foreground mb-2">
+          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
             Welcome back, {userName}!
           </h2>
-          <p className="text-stitch-muted">
+          <p className="text-slate-500">
             Here's what's happening in your family tree today.
           </p>
         </header>
 
         {/* Cards Grid */}
-        <div className="stitch-grid-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Recent Activities */}
-          <div className="stitch-card p-6">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">history</span>
@@ -110,22 +108,22 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
             </div>
             <div className="space-y-6">
               {activities.length > 0 ? activities.map((activity) => {
-                const { icon: Icon, className } = getActivityIcon(activity.type);
+                const { icon, className } = getActivityIcon(activity.type);
                 return (
                   <div key={activity.id} className="flex gap-4">
-                    <div className={className}>
-                      <Icon className="h-4 w-4" />
+                    <div className={`w-8 h-8 rounded-full ${className} flex items-center justify-center flex-shrink-0`}>
+                      <span className="material-icons-round text-sm">{icon}</span>
                     </div>
                     <div>
                       <p className="text-sm font-medium">
                         {activity.title} <span className="font-bold">{activity.highlight}</span>
                       </p>
-                      <p className="text-caption mt-0.5">{activity.timestamp}</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">{activity.timestamp}</p>
                     </div>
                   </div>
                 );
               }) : (
-                <p className="text-sm text-stitch-muted text-center py-4">
+                <p className="text-sm text-slate-500 text-center py-4">
                   No recent activities
                 </p>
               )}
@@ -133,7 +131,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
           </div>
 
           {/* Upcoming Milestones */}
-          <div className="stitch-card p-6">
+          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold flex items-center gap-2">
                 <span className="material-symbols-outlined text-secondary">cake</span>
@@ -142,9 +140,9 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
             </div>
             <div className="space-y-5">
               {milestones.length > 0 ? milestones.map((milestone) => (
-                <div key={milestone.id} className="stat-card p-3 flex items-center justify-between">
+                <div key={milestone.id} className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="stitch-avatar bg-stitch-surface overflow-hidden">
+                    <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center">
                       {milestone.image ? (
                         <img 
                           src={milestone.image} 
@@ -152,27 +150,27 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="text-stitch-muted text-xs font-bold">
+                        <span className="text-slate-500 text-xs font-bold">
                           {milestone.initials}
                         </span>
                       )}
                     </div>
                     <div>
                       <p className="text-sm font-bold">{milestone.title}</p>
-                      <p className="text-caption">
+                      <p className="text-[11px] text-slate-500">
                         In {milestone.daysUntil} days • {milestone.date}
                       </p>
                     </div>
                   </div>
-                  <Bell className="h-5 w-5 text-stitch-muted" />
+                  <span className="material-symbols-outlined text-slate-400">notifications</span>
                 </div>
               )) : (
-                <p className="text-sm text-stitch-muted text-center py-4">
+                <p className="text-sm text-slate-500 text-center py-4">
                   No upcoming milestones
                 </p>
               )}
             </div>
-            <button className="w-full mt-4 py-2 border-2 border-dashed border-border rounded-xl text-xs font-semibold text-stitch-muted hover:text-primary hover:border-primary/50 transition-all">
+            <button className="w-full mt-4 py-2 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-400 hover:text-primary hover:border-primary/50 transition-all">
               + Add Milestone Reminder
             </button>
           </div>
@@ -180,14 +178,14 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
           {/* Quick Actions - Full Width */}
           <div className="md:col-span-2">
             <h3 className="font-bold mb-4">Quick Actions</h3>
-            <div className="stitch-grid-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {quickActions.map((action) => (
                 <button
                   key={action.id}
                   onClick={action.onClick}
-                  className="quick-action group"
+                  className="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-primary/50 hover:shadow-lg transition-all text-center group"
                 >
-                  <div className={cn('quick-action-icon', action.iconBg)}>
+                  <div className={`w-12 h-12 ${action.iconBg} rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform`}>
                     <span className="material-symbols-outlined">{action.icon}</span>
                   </div>
                   <span className="text-xs font-bold">{action.label}</span>
