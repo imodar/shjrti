@@ -10,6 +10,7 @@ export const PROTECTED_ROUTES: string[] = [
   'family-creator',
   'family-builder',
   'family-builder-new',
+  'family-builder-stitch',
   'family-tree-view',
   'family-statistics',
   'family-gallery',
