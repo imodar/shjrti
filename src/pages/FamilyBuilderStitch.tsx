@@ -30,7 +30,14 @@ const FamilyBuilderStitch: React.FC = () => {
     if (currentTheme !== 'stitch') {
       previousThemeRef.current = currentTheme;
     }
+    // Set theme in context (used elsewhere in the app)
     setCurrentTheme('stitch');
+
+    // Force DOM theme class immediately to ensure Stitch CSS selectors apply
+    // (This page relies heavily on `.theme-stitch .stitch-*` selectors.)
+    const html = document.documentElement;
+    html.classList.remove('theme-modern', 'theme-professional');
+    html.classList.add('theme-stitch');
     
     // Verify theme was applied
     setTimeout(() => {
@@ -43,6 +50,12 @@ const FamilyBuilderStitch: React.FC = () => {
       if (previousThemeRef.current !== 'stitch') {
         setCurrentTheme(previousThemeRef.current);
       }
+
+      // Best-effort restore DOM classes to match the previous theme
+      const html = document.documentElement;
+      html.classList.remove('theme-stitch');
+      if (previousThemeRef.current === 'professional') html.classList.add('theme-professional');
+      else html.classList.add('theme-modern');
     };
   }, [setCurrentTheme]);
   
