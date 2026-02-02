@@ -1,47 +1,53 @@
 
-# خطة إصلاح صفحة FamilyBuilderStitch
+
+# خطة إصلاح Tailwind Plugins لـ Stitch Theme
 
 ## المشكلة
-صفحة `/family-builder-stitch` لا تعمل لأن `useFamilyData()` يحتاج أن يكون داخل `FamilyDataProvider`، لكن هذا الـ Provider غير موجود.
+الـ Tailwind CDN يحتوي على plugins مهمة غير مفعّلة في المشروع:
+- `@tailwindcss/forms` - لتنسيق inputs و forms
+- `@tailwindcss/typography` - للتنسيقات النصية (prose classes)
+- `@tailwindcss/container-queries` - للـ container queries (@container)
 
-## الحل (تعديل ملف واحد فقط)
+## الحل
 
-### تعديل `src/App.tsx`
+### الخطوة 1: تثبيت الـ plugins المفقودة
 
-سأضيف wrapper بسيط مباشرة في App.tsx يستخدم نفس النمط الموجود:
-
-```tsx
-// إنشاء wrapper مباشر بدون ملف جديد
-const FamilyBuilderStitchWithProvider: React.FC = () => {
-  const [searchParams] = useSearchParams();
-  const familyId = searchParams.get('family');
-
-  return (
-    <FamilyDataProvider familyId={familyId}>
-      <FamilyBuilderStitch />
-    </FamilyDataProvider>
-  );
-};
+```bash
+npm install @tailwindcss/forms @tailwindcss/container-queries
 ```
 
-ثم استخدامه في الـ Route:
-```tsx
-<Route path="/family-builder-stitch" element={
-  <ProtectedRoute>
-    <ProtectedFamilyRoute loadingFallback={<SkeletonLayoutForBuilder />}>
-      <FamilyBuilderStitchWithProvider />
-    </ProtectedFamilyRoute>
-  </ProtectedRoute>
-} />
+### الخطوة 2: تحديث `tailwind.config.ts`
+
+```typescript
+plugins: [
+  require("tailwindcss-animate"),
+  require("@tailwindcss/forms"),
+  require("@tailwindcss/typography"),
+  require("@tailwindcss/container-queries"),
+],
 ```
 
-## التغييرات المطلوبة
+## الملفات المتأثرة
 
 | الملف | التغيير |
 |-------|---------|
-| `src/App.tsx` | إضافة import لـ `FamilyDataProvider` + إنشاء wrapper component + تحديث Route |
+| `package.json` | إضافة `@tailwindcss/forms` و `@tailwindcss/container-queries` |
+| `tailwind.config.ts` | تفعيل الـ 3 plugins في مصفوفة plugins |
 
-## النتيجة
-- لا ملفات جديدة
-- نفس المنطق والبيانات
-- فقط المظهر مختلف
+## ما توفره هذه الـ Plugins
+
+### @tailwindcss/forms
+- تنسيق أفضل للـ inputs, selects, checkboxes, radio buttons
+- Reset styles للـ form elements
+
+### @tailwindcss/typography
+- `prose` classes للتنسيق النصي
+- تنسيق headings, paragraphs, lists تلقائياً
+
+### @tailwindcss/container-queries
+- `@container` queries بدلاً من `@media`
+- `@lg:`, `@md:`, `@sm:` للـ container-based responsive design
+
+## النتيجة المتوقعة
+بعد تثبيت وتفعيل هذه الـ plugins، ستعمل جميع الـ classes المستخدمة في تصميم Stitch الأصلي بشكل صحيح.
+
