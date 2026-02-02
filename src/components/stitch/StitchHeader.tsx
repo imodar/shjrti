@@ -45,50 +45,47 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   };
 
   return (
-    <header className="h-16 border-b border-border bg-card/80 backdrop-blur-md flex items-center justify-between px-6 sticky top-0 z-50">
+    <header className="stitch-header">
+      {/* Logo & Brand */}
       <div className="flex items-center gap-4">
-        <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/20">
-          <TreeDeciduous className="w-5 h-5" />
+        <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
+          <span className="material-icons-round">park</span>
         </div>
         <div>
-          <h1 className="font-bold text-lg leading-tight">Shjrti</h1>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Genealogy Platform</p>
+          <h1 className="font-bold text-lg leading-tight">{familyName}</h1>
+          <p className="text-[10px] text-stitch-muted uppercase tracking-wider font-semibold">Genealogy Platform</p>
         </div>
-        <div className="ml-6 px-3 py-1 bg-destructive/10 text-destructive rounded-full text-[10px] font-bold border border-destructive/20">
-          Beta Launch
-        </div>
+        <div className="ml-6 stitch-badge beta">Beta Launch</div>
       </div>
 
-      <nav className="hidden lg:flex items-center gap-1 bg-muted p-1 rounded-xl">
-        <Button variant="navActive" size="sm">
-          Dashboard
-        </Button>
-        <Button variant="nav" size="sm">
-          Tree View
-        </Button>
-        <Button variant="nav" size="sm">
-          Gallery
-        </Button>
-        <Button variant="nav" size="sm">
-          Statistics
-        </Button>
-        <Button variant="nav" size="sm" className="relative">
-          Suggestions
-          <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full border-2 border-card"></span>
-        </Button>
+      {/* Navigation Tabs */}
+      <nav className="hidden lg:flex items-center gap-1 bg-stitch-surface p-1 rounded-xl">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => handleTabClick(tab)}
+            className={cn("nav-pill relative", activeTab === tab.id && "active")}
+          >
+            {tab.label}
+            {tab.badge && tab.badge > 0 && (
+              <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full border-2 border-white dark:border-slate-800" />
+            )}
+          </button>
+        ))}
       </nav>
 
+      {/* User Section */}
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="text-muted-foreground">
-          <Bell className="w-5 h-5" />
-        </Button>
+        <button className="p-2 text-stitch-muted hover:bg-stitch-surface rounded-full transition-colors">
+          <Bell className="h-5 w-5" />
+        </button>
         <div className="flex items-center gap-3 pl-4 border-l border-border">
           <div className="text-right hidden sm:block">
-            <p className="text-xs font-bold">Mudar Al-Saeed</p>
-            <p className="text-[10px] text-muted-foreground">Premium Plan</p>
+            <p className="text-xs font-bold">{displayName}</p>
+            <p className="text-[10px] text-stitch-muted">{packageName || "Free Plan"}</p>
           </div>
-          <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-accent border-2 border-card shadow-md flex items-center justify-center text-primary-foreground font-bold">
-            M
+          <div className="w-10 h-10 rounded-full stitch-avatar-gradient border-2 border-white dark:border-slate-700 shadow-md flex items-center justify-center text-white font-bold">
+            {initials}
           </div>
         </div>
       </div>
