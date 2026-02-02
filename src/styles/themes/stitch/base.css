@@ -7,3 +7,10 @@
 /* Material Icons for Stitch theme */
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons+Round');
+
+/* Base Font Application */
+.theme-stitch,
+.theme-stitch body,
+.theme-stitch * {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
