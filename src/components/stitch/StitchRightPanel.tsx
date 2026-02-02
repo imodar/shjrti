@@ -1,5 +1,4 @@
 import React from 'react';
-import { TrendingUp, Bell, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface StitchRightPanelProps {
@@ -26,23 +25,23 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
   ]
 }) => {
   return (
-    <aside className="stitch-right-panel hidden xl:flex custom-scrollbar">
+    <aside className="w-80 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex-col p-6 overflow-y-auto hidden xl:flex custom-scrollbar">
       {/* Growth Statistics */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-bold">Growth Statistics</h3>
-          <TrendingUp className="h-4 w-4 text-stitch-muted" />
+          <span className="material-symbols-outlined text-slate-400 text-sm">trending_up</span>
         </div>
         <div className="space-y-4">
           {/* Completeness */}
-          <div className="stat-card p-4">
+          <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl">
             <div className="flex justify-between items-end mb-2">
-              <p className="text-subheading">Tree Completeness</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Tree Completeness</p>
               <p className="text-sm font-bold text-primary">{completenessPercentage}%</p>
             </div>
-            <div className="stitch-progress">
+            <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
               <div 
-                className="stitch-progress-bar" 
+                className="bg-primary h-full rounded-full" 
                 style={{ width: `${completenessPercentage}%` }}
               />
             </div>
@@ -50,13 +49,13 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="stat-card">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl text-center">
               <p className="text-lg font-bold">{generationsCount}</p>
-              <p className="text-subheading">Generations</p>
+              <p className="text-[10px] text-slate-500 uppercase font-semibold">Generations</p>
             </div>
-            <div className="stat-card">
+            <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl text-center">
               <p className="text-lg font-bold">{documentsCount}</p>
-              <p className="text-subheading">Documents</p>
+              <p className="text-[10px] text-slate-500 uppercase font-semibold">Documents</p>
             </div>
           </div>
         </div>
@@ -66,22 +65,22 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-bold">Pending Suggestions</h3>
-          <span className="stitch-badge new">{pendingSuggestions} New</span>
+          <span className="px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded-full">{pendingSuggestions} New</span>
         </div>
         <div className="space-y-3">
-          <div className="suggestion-card">
+          <div className="p-4 bg-gradient-to-br from-primary/5 to-emerald-500/10 rounded-2xl border border-primary/20">
             <div className="flex items-center gap-2 mb-2">
               <span className="material-icons-round text-primary text-sm">auto_awesome</span>
               <h4 className="font-bold text-xs text-primary">Potential Match</h4>
             </div>
-            <p className="text-[11px] text-stitch-muted leading-relaxed">
+            <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
               We found a match for <span className="font-bold">Abdullah Al-Saeed</span> in the Al-Rahman Public Tree.
             </p>
             <div className="flex gap-2 mt-3">
-              <button className="flex-1 py-1.5 bg-card border border-primary/30 text-primary text-[10px] font-bold rounded-lg hover:bg-primary hover:text-white transition-all">
+              <button className="flex-1 py-1.5 bg-white dark:bg-slate-800 border border-primary/30 text-primary text-[10px] font-bold rounded-lg hover:bg-primary hover:text-white transition-all">
                 Compare
               </button>
-              <button className="p-1.5 bg-stitch-surface rounded-lg text-stitch-muted">
+              <button className="p-1.5 bg-slate-200/50 dark:bg-slate-700/50 rounded-lg text-slate-400">
                 <span className="material-icons-round text-sm">close</span>
               </button>
             </div>
