@@ -15,10 +15,21 @@ import { cn } from '@/lib/utils';
 const FamilyBuilderStitch: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { currentTheme } = useTheme();
+  const { currentTheme, setCurrentTheme } = useTheme();
   const { user } = useAuth();
   const { t, direction } = useLanguage();
   const { subscription } = useSubscription();
+
+  // Apply stitch theme when entering this page
+  useEffect(() => {
+    const previousTheme = currentTheme;
+    setCurrentTheme('stitch');
+    
+    return () => {
+      // Restore previous theme when leaving
+      setCurrentTheme(previousTheme);
+    };
+  }, []);
   
   // Family data from context
   const { 
