@@ -1,0 +1,260 @@
+/* Stitch Theme - Component Styles */
+
+/* Custom Scrollbar */
+.theme-stitch .custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.theme-stitch .custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.theme-stitch .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--stitch-slate-300));
+  border-radius: 10px;
+}
+
+.theme-stitch.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: hsl(var(--stitch-slate-700));
+}
+
+/* Card Styles */
+.theme-stitch .stitch-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 1rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+.theme-stitch .stitch-card:hover {
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+/* Button Styles */
+.theme-stitch .stitch-btn-primary {
+  background: hsl(var(--primary));
+  color: white;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 10px 15px -3px hsl(var(--primary) / 0.2);
+  transition: opacity 0.15s ease;
+}
+
+.theme-stitch .stitch-btn-primary:hover {
+  opacity: 0.9;
+}
+
+.theme-stitch .stitch-btn-secondary {
+  background: hsl(var(--stitch-slate-50));
+  color: hsl(var(--foreground));
+  border-radius: 0.75rem;
+  font-weight: 600;
+}
+
+/* Member Card */
+.theme-stitch .member-card {
+  padding: 0.75rem;
+  background: hsl(var(--stitch-slate-50));
+  border-radius: 0.75rem;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.theme-stitch .member-card:hover {
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+.theme-stitch.dark .member-card {
+  background: hsl(var(--stitch-slate-800) / 0.4);
+}
+
+/* Avatar Styles */
+.theme-stitch .stitch-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.theme-stitch .stitch-avatar-gradient {
+  background: linear-gradient(to top right, hsl(var(--primary)), hsl(160 60% 55%));
+}
+
+/* Header Nav Pills */
+.theme-stitch .nav-pill {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  transition: all 0.15s ease;
+}
+
+.theme-stitch .nav-pill.active {
+  background: white;
+  color: hsl(var(--primary));
+  font-weight: 700;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.theme-stitch .nav-pill:not(.active) {
+  color: hsl(var(--stitch-slate-500));
+}
+
+.theme-stitch .nav-pill:not(.active):hover {
+  color: hsl(var(--primary));
+}
+
+/* Stat Cards */
+.theme-stitch .stat-card {
+  padding: 0.75rem;
+  background: hsl(var(--stitch-slate-50));
+  border-radius: 1rem;
+  text-align: center;
+}
+
+.theme-stitch.dark .stat-card {
+  background: hsl(var(--stitch-slate-800) / 0.4);
+}
+
+/* Progress Bar */
+.theme-stitch .stitch-progress {
+  width: 100%;
+  height: 0.375rem;
+  background: hsl(var(--stitch-slate-200));
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.theme-stitch .stitch-progress-bar {
+  height: 100%;
+  background: hsl(var(--primary));
+  border-radius: 9999px;
+}
+
+.theme-stitch.dark .stitch-progress {
+  background: hsl(var(--stitch-slate-700));
+}
+
+/* Activity Icons */
+.theme-stitch .activity-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.theme-stitch .activity-icon.edit {
+  background: hsl(217 91% 60% / 0.1);
+  color: hsl(217 91% 60%);
+}
+
+.theme-stitch .activity-icon.add {
+  background: hsl(160 60% 45% / 0.1);
+  color: hsl(160 60% 45%);
+}
+
+.theme-stitch .activity-icon.photo {
+  background: hsl(38 92% 50% / 0.1);
+  color: hsl(38 92% 50%);
+}
+
+/* Quick Action Buttons */
+.theme-stitch .quick-action {
+  padding: 1rem;
+  background: hsl(var(--card));
+  border-radius: 1rem;
+  border: 1px solid hsl(var(--border));
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.theme-stitch .quick-action:hover {
+  border-color: hsl(var(--primary) / 0.5);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.theme-stitch .quick-action-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.75rem;
+  transition: transform 0.2s ease;
+}
+
+.theme-stitch .quick-action:hover .quick-action-icon {
+  transform: scale(1.1);
+}
+
+/* Suggestion Card */
+.theme-stitch .suggestion-card {
+  padding: 1rem;
+  background: linear-gradient(to bottom right, hsl(var(--primary) / 0.05), hsl(160 60% 50% / 0.1));
+  border-radius: 1rem;
+  border: 1px solid hsl(var(--primary) / 0.2);
+}
+
+/* Badge */
+.theme-stitch .stitch-badge {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  border-radius: 9999px;
+}
+
+.theme-stitch .stitch-badge.beta {
+  background: hsl(0 84% 60% / 0.1);
+  color: hsl(0 84% 60%);
+  border: 1px solid hsl(0 84% 60% / 0.2);
+}
+
+.theme-stitch .stitch-badge.new {
+  background: hsl(0 84% 95%);
+  color: hsl(0 72% 51%);
+}
+
+/* Input Styles */
+.theme-stitch .stitch-input {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  background: hsl(var(--stitch-slate-50));
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.theme-stitch .stitch-input:focus {
+  outline: none;
+  ring: 2px;
+  ring-color: hsl(var(--primary) / 0.2);
+}
+
+.theme-stitch.dark .stitch-input {
+  background: hsl(var(--stitch-slate-800) / 0.5);
+}
+
+/* Select Styles */
+.theme-stitch .stitch-select {
+  font-size: 0.75rem;
+  border: none;
+  background: hsl(var(--stitch-slate-50));
+  border-radius: 0.5rem;
+  padding: 0.375rem 0.5rem;
+}
+
+.theme-stitch .stitch-select:focus {
+  ring-color: hsl(var(--primary) / 0.2);
+}
+
+.theme-stitch.dark .stitch-select {
+  background: hsl(var(--stitch-slate-800) / 0.5);
+}

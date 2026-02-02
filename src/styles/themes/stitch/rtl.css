@@ -1,0 +1,27 @@
+/* Stitch Theme - RTL Support */
+
+.theme-stitch[dir="rtl"] {
+  font-family: 'Noto Sans Arabic', 'Plus Jakarta Sans', sans-serif;
+}
+
+.theme-stitch[dir="rtl"] .stitch-sidebar {
+  border-right: none;
+  border-left: 1px solid hsl(var(--border));
+}
+
+.theme-stitch[dir="rtl"] .stitch-right-panel {
+  border-left: none;
+  border-right: 1px solid hsl(var(--border));
+}
+
+@media (max-width: 1024px) {
+  .theme-stitch[dir="rtl"] .stitch-sidebar {
+    left: auto;
+    right: 0;
+    transform: translateX(100%);
+  }
+
+  .theme-stitch[dir="rtl"] .stitch-sidebar.open {
+    transform: translateX(0);
+  }
+}

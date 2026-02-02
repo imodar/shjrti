@@ -802,6 +802,77 @@ export default function Profile() {
                           )}
                         </div>
                       </div>
+
+                      {/* Theme Selection Section */}
+                      <div className="mb-6 pb-6 border-b border-gray-200/50 dark:border-gray-700/50">
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center shadow-lg">
+                            <Settings className="h-5 w-5 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                              {t('profile.theme_settings') || 'مظهر التطبيق'}
+                            </h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {t('profile.theme_description') || 'اختر التصميم المفضل لديك'}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          {/* Modern Theme */}
+                          <div 
+                            className="p-4 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 rounded-xl border-2 border-emerald-200/50 dark:border-emerald-700/50 cursor-pointer hover:border-emerald-500 transition-all duration-200 group"
+                            onClick={() => {
+                              const themeContext = (window as any).__themeContext;
+                              if (themeContext?.setCurrentTheme) {
+                                themeContext.setCurrentTheme('modern');
+                              }
+                            }}
+                          >
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-6 h-6 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg"></div>
+                              <span className="font-semibold text-emerald-700 dark:text-emerald-300">Modern</span>
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">تصميم عصري وأنيق</p>
+                          </div>
+                          
+                          {/* Professional Theme */}
+                          <div 
+                            className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-xl border-2 border-blue-200/50 dark:border-blue-700/50 cursor-pointer hover:border-blue-500 transition-all duration-200 group"
+                            onClick={() => {
+                              const themeContext = (window as any).__themeContext;
+                              if (themeContext?.setCurrentTheme) {
+                                themeContext.setCurrentTheme('professional');
+                              }
+                            }}
+                          >
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg"></div>
+                              <span className="font-semibold text-blue-700 dark:text-blue-300">Professional</span>
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">تصميم احترافي</p>
+                          </div>
+                          
+                          {/* Stitch Theme */}
+                          <div 
+                            className="p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 rounded-xl border-2 border-green-200/50 dark:border-green-700/50 cursor-pointer hover:border-green-500 transition-all duration-200 group relative overflow-hidden"
+                            onClick={() => {
+                              const themeContext = (window as any).__themeContext;
+                              if (themeContext?.setCurrentTheme) {
+                                themeContext.setCurrentTheme('stitch');
+                              }
+                            }}
+                          >
+                            <div className="absolute top-1 right-1 px-1.5 py-0.5 bg-amber-500 text-white text-[8px] font-bold rounded">NEW</div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-6 h-6 bg-gradient-to-r from-[#45B38F] to-[#D48C45] rounded-lg"></div>
+                              <span className="font-semibold text-green-700 dark:text-green-300">Stitch</span>
+                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">تصميم Google Stitch</p>
+                          </div>
+                        </div>
+                      </div>
                       
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <Link to="/payments" className="group">

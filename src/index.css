@@ -137,6 +137,112 @@
     --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 16px rgba(0, 0, 0, 0.3);
   }
 
+  /* Stitch Theme - Google Stitch Design */
+  .theme-stitch {
+    /* Primary Colors */
+    --primary: 156 50% 49%; /* #45B38F */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 28 60% 55%; /* #D48C45 */
+    --secondary-foreground: 0 0% 100%;
+    
+    /* Background */
+    --background: 150 33% 96%; /* #F2F9F6 */
+    --foreground: 210 11% 15%;
+    
+    /* Sidebar */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 210 11% 15%;
+    --sidebar-primary: 156 50% 49%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 150 33% 96%;
+    --sidebar-accent-foreground: 210 11% 15%;
+    --sidebar-border: 210 14% 89%;
+    --sidebar-ring: 156 50% 49%;
+    
+    /* Card */
+    --card: 0 0% 100%;
+    --card-foreground: 210 11% 15%;
+    
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 11% 15%;
+    
+    /* Muted */
+    --muted: 210 14% 96%;
+    --muted-foreground: 215 14% 45%;
+    
+    /* Accent */
+    --accent: 150 33% 96%;
+    --accent-foreground: 210 11% 15%;
+    
+    /* Border & Input */
+    --border: 210 14% 89%;
+    --input: 210 14% 89%;
+    --ring: 156 50% 49%;
+    
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Radius */
+    --radius: 0.75rem;
+    
+    /* Stitch Slate Scale */
+    --stitch-slate-50: 210 40% 98%;
+    --stitch-slate-100: 210 14% 96%;
+    --stitch-slate-200: 214 32% 91%;
+    --stitch-slate-300: 213 27% 84%;
+    --stitch-slate-400: 215 20% 65%;
+    --stitch-slate-500: 215 16% 47%;
+    --stitch-slate-600: 215 19% 35%;
+    --stitch-slate-700: 215 25% 27%;
+    --stitch-slate-800: 217 33% 17%;
+    --stitch-slate-900: 222 47% 11%;
+    
+    /* Tree Colors */
+    --tree-primary: 156 50% 49%;
+    --tree-secondary: 160 60% 55%;
+    --tree-accent: 156 50% 55%;
+    --tree-background: 150 33% 96%;
+    --tree-foreground: 210 11% 15%;
+    --tree-gradient: linear-gradient(135deg, hsl(var(--tree-primary)), hsl(var(--tree-secondary)));
+    --tree-shadow: 0 10px 30px -5px hsl(var(--tree-primary) / 0.2);
+  }
+
+  .theme-stitch.dark {
+    /* Background */
+    --background: 200 20% 8%; /* #0F171A */
+    --foreground: 210 40% 98%;
+    
+    /* Sidebar */
+    --sidebar-background: 217 33% 10%;
+    --sidebar-foreground: 210 40% 90%;
+    
+    /* Card */
+    --card: 217 33% 10%;
+    --card-foreground: 210 40% 98%;
+    
+    /* Popover */
+    --popover: 217 33% 10%;
+    --popover-foreground: 210 40% 98%;
+    
+    /* Muted */
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    
+    /* Accent */
+    --accent: 217 33% 17%;
+    --accent-foreground: 210 40% 98%;
+    
+    /* Border & Input */
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    
+    /* Tree Colors */
+    --tree-background: 200 20% 8%;
+    --tree-foreground: 210 40% 98%;
+  }
+
   /* Shared Base Styles */
   * {
     @apply border-border;
@@ -174,6 +280,13 @@
 @import './styles/themes/professional/utilities.css';
 @import './styles/themes/professional/layout.css';
 @import './styles/themes/professional/rtl.css';
+
+/* Stitch Theme Components */
+@import './styles/themes/stitch/base.css';
+@import './styles/themes/stitch/components.css';
+@import './styles/themes/stitch/utilities.css';
+@import './styles/themes/stitch/layout.css';
+@import './styles/themes/stitch/rtl.css';
 
 /* Facebook Theme Global Overrides */
 .theme-professional {

@@ -1,0 +1,153 @@
+/* Stitch Theme - Utility Classes */
+
+/* Typography */
+.theme-stitch {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.theme-stitch .text-display {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.theme-stitch .text-heading {
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.theme-stitch .text-subheading {
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: hsl(var(--stitch-slate-500));
+}
+
+.theme-stitch .text-body {
+  font-size: 0.875rem;
+  color: hsl(var(--foreground));
+}
+
+.theme-stitch .text-caption {
+  font-size: 0.6875rem;
+  color: hsl(var(--stitch-slate-400));
+}
+
+/* Spacing */
+.theme-stitch .gap-stitch {
+  gap: 1.5rem;
+}
+
+.theme-stitch .gap-stitch-sm {
+  gap: 0.75rem;
+}
+
+/* Shadows */
+.theme-stitch .shadow-stitch {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.theme-stitch .shadow-stitch-lg {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.theme-stitch .shadow-stitch-primary {
+  box-shadow: 0 10px 15px -3px hsl(var(--primary) / 0.2);
+}
+
+/* Borders */
+.theme-stitch .border-stitch {
+  border: 1px solid hsl(var(--border));
+}
+
+.theme-stitch .border-stitch-light {
+  border: 1px solid hsl(var(--stitch-slate-100));
+}
+
+.theme-stitch.dark .border-stitch-light {
+  border-color: hsl(var(--stitch-slate-800));
+}
+
+/* Border Radius */
+.theme-stitch .rounded-stitch {
+  border-radius: 0.75rem;
+}
+
+.theme-stitch .rounded-stitch-lg {
+  border-radius: 1rem;
+}
+
+.theme-stitch .rounded-stitch-xl {
+  border-radius: 1.5rem;
+}
+
+/* Colors */
+.theme-stitch .bg-stitch-primary {
+  background: hsl(var(--primary));
+}
+
+.theme-stitch .bg-stitch-secondary {
+  background: hsl(var(--secondary));
+}
+
+.theme-stitch .bg-stitch-surface {
+  background: hsl(var(--stitch-slate-50));
+}
+
+.theme-stitch.dark .bg-stitch-surface {
+  background: hsl(var(--stitch-slate-800) / 0.4);
+}
+
+.theme-stitch .text-stitch-primary {
+  color: hsl(var(--primary));
+}
+
+.theme-stitch .text-stitch-secondary {
+  color: hsl(var(--secondary));
+}
+
+.theme-stitch .text-stitch-muted {
+  color: hsl(var(--stitch-slate-500));
+}
+
+/* Backdrop */
+.theme-stitch .backdrop-stitch {
+  backdrop-filter: blur(12px);
+}
+
+/* Transitions */
+.theme-stitch .transition-stitch {
+  transition: all 0.2s ease;
+}
+
+/* Hover Effects */
+.theme-stitch .hover-stitch:hover {
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+.theme-stitch .hover-scale:hover {
+  transform: scale(1.05);
+}
+
+/* Focus States */
+.theme-stitch .focus-stitch:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.2);
+}
+
+/* Material Icons Integration */
+.theme-stitch .material-icons-round,
+.theme-stitch .material-symbols-outlined {
+  font-size: 1.25rem;
+}
+
+.theme-stitch .icon-sm {
+  font-size: 0.875rem;
+}
+
+.theme-stitch .icon-lg {
+  font-size: 1.5rem;
+}
+
+.theme-stitch .icon-xl {
+  font-size: 2rem;
+}

@@ -30,6 +30,7 @@ import DashboardBackup from "./pages/DashboardBackup";
 import FamilyCreator from "./pages/FamilyCreator";
 import FamilyBuilder from "./pages/FamilyBuilder";
 import FamilyBuilderNewWithContext from "./pages/FamilyBuilderNew/FamilyBuilderNewWithContext";
+import FamilyBuilderStitch from "./pages/FamilyBuilderStitch";
 
 import FamilyTreeView from "./pages/FamilyTreeView/FamilyTreeViewWithContext";
 import FamilyStatistics from "./pages/FamilyStatistics";
@@ -151,6 +152,13 @@ const App = () => {
             <ProtectedRoute>
               <ProtectedFamilyRoute loadingFallback={<SkeletonLayoutForBuilder />}>
                 <FamilyBuilderNewWithContext />
+              </ProtectedFamilyRoute>
+            </ProtectedRoute>
+          } />
+          <Route path="/family-builder-stitch" element={
+            <ProtectedRoute>
+              <ProtectedFamilyRoute loadingFallback={<SkeletonLayoutForBuilder />}>
+                <FamilyBuilderStitch />
               </ProtectedFamilyRoute>
             </ProtectedRoute>
           } />
