@@ -288,6 +288,51 @@
 @import './styles/themes/stitch/layout.css';
 @import './styles/themes/stitch/rtl.css';
 
+/* Stitch Theme Global Font Override */
+.theme-stitch,
+.theme-stitch body {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  background: hsl(150 33% 96%) !important; /* #F2F9F6 */
+}
+
+.theme-stitch * {
+  font-family: inherit;
+}
+
+/* Stitch Typography Classes */
+.theme-stitch .text-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+
+.theme-stitch .text-subheading {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: hsl(var(--stitch-slate-500));
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.theme-stitch .text-caption {
+  font-size: 0.625rem;
+  color: hsl(var(--stitch-slate-400));
+}
+
+/* Stitch Muted Text */
+.theme-stitch .text-stitch-muted {
+  color: hsl(var(--stitch-slate-500));
+}
+
+/* Stitch Surface Background */
+.theme-stitch .bg-stitch-surface {
+  background: hsl(var(--stitch-slate-50));
+}
+
+.theme-stitch.dark .bg-stitch-surface {
+  background: hsl(var(--stitch-slate-800) / 0.4);
+}
+
 /* Facebook Theme Global Overrides */
 .theme-professional {
   /* Global Background */
