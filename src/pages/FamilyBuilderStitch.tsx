@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,16 +20,31 @@ const FamilyBuilderStitch: React.FC = () => {
   const { t, direction } = useLanguage();
   const { subscription } = useSubscription();
 
+  // Save the previous theme on mount
+  const previousThemeRef = useRef(currentTheme);
+
   // Apply stitch theme when entering this page
   useEffect(() => {
-    const previousTheme = currentTheme;
+    console.log('[FamilyBuilderStitch] Applying stitch theme, current:', currentTheme);
+    // Only save the previous theme on initial mount
+    if (currentTheme !== 'stitch') {
+      previousThemeRef.current = currentTheme;
+    }
     setCurrentTheme('stitch');
+    
+    // Verify theme was applied
+    setTimeout(() => {
+      console.log('[FamilyBuilderStitch] HTML classes:', document.documentElement.classList.toString());
+    }, 100);
     
     return () => {
       // Restore previous theme when leaving
-      setCurrentTheme(previousTheme);
+      console.log('[FamilyBuilderStitch] Restoring theme to:', previousThemeRef.current);
+      if (previousThemeRef.current !== 'stitch') {
+        setCurrentTheme(previousThemeRef.current);
+      }
     };
-  }, []);
+  }, [setCurrentTheme]);
   
   // Family data from context
   const { 
