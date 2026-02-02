@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export type ThemeVariant = 'modern' | 'professional';
+export type ThemeVariant = 'modern' | 'professional' | 'stitch';
 
 interface ThemeContextType {
   currentTheme: ThemeVariant;
@@ -23,12 +23,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const themes: Record<ThemeVariant, string> = {
     modern: 'theme-modern',
-    professional: 'theme-professional'
+    professional: 'theme-professional',
+    stitch: 'theme-stitch'
   };
 
   const applyTheme = (theme: ThemeVariant) => {
     // Remove existing theme classes
-    document.documentElement.classList.remove('theme-modern', 'theme-professional');
+    document.documentElement.classList.remove('theme-modern', 'theme-professional', 'theme-stitch');
     // Apply new theme class
     document.documentElement.classList.add(themes[theme]);
   };
@@ -46,6 +47,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     applyTheme(currentTheme);
     // Save to localStorage
     localStorage.setItem('selected-theme', currentTheme);
+    // Expose theme context globally for Profile page
+    (window as any).__themeContext = { currentTheme, setCurrentTheme: handleSetTheme };
   }, [currentTheme]);
 
   const handleSetTheme = (theme: ThemeVariant) => {
