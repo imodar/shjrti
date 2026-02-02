@@ -4,7 +4,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useSearchParams } from "react-router-dom";
+import { FamilyDataProvider } from "@/contexts/FamilyDataContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
@@ -66,6 +67,18 @@ const queryClient = new QueryClient();
 if ('scrollRestoration' in window.history) {
   window.history.scrollRestoration = 'manual';
 }
+
+// Wrapper component for FamilyBuilderStitch with FamilyDataProvider
+const FamilyBuilderStitchWithProvider: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const familyId = searchParams.get('family');
+
+  return (
+    <FamilyDataProvider familyId={familyId}>
+      <FamilyBuilderStitch />
+    </FamilyDataProvider>
+  );
+};
 
 const App = () => {
   const [gaId, setGaId] = useState<string>('');
@@ -158,7 +171,7 @@ const App = () => {
           <Route path="/family-builder-stitch" element={
             <ProtectedRoute>
               <ProtectedFamilyRoute loadingFallback={<SkeletonLayoutForBuilder />}>
-                <FamilyBuilderStitch />
+                <FamilyBuilderStitchWithProvider />
               </ProtectedFamilyRoute>
             </ProtectedRoute>
           } />
