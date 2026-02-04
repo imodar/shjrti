@@ -260,6 +260,48 @@
     font-family: 'Noto Sans Arabic', sans-serif !important;
   }
 
+  /*
+    RTL font override can break icon ligatures/fonts (Material Icons/Symbols).
+    Icons must keep their own font-family regardless of language.
+  */
+  [dir="rtl"] .material-symbols-outlined,
+  [dir="rtl"] .material-symbols-rounded,
+  [dir="rtl"] .material-symbols-sharp {
+    font-family: 'Material Symbols Outlined' !important;
+    font-feature-settings: 'liga' !important;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  [dir="rtl"] .material-icons,
+  [dir="rtl"] .material-icons-round,
+  [dir="rtl"] .material-icons-outlined,
+  [dir="rtl"] .material-icons-sharp,
+  [dir="rtl"] .material-icons-two-tone {
+    font-family: 'Material Icons Round' !important;
+    font-feature-settings: 'liga' !important;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   [dir="rtl"] {
     text-align: right;
   }
