@@ -182,16 +182,7 @@ const FamilyBuilderStitch: React.FC = () => {
       <main className="flex h-[calc(100vh-120px)]">
         {/* Left Sidebar - Members List */}
         <StitchSidebar
-          members={filteredMembers.map(m => ({
-            id: m.id,
-            name: m.name || `${m.first_name} ${m.last_name}`,
-            first_name: m.first_name,
-            last_name: m.last_name,
-            image_url: m.image_url,
-            gender: m.gender,
-            is_founder: m.is_founder,
-            role: m.is_founder ? 'Founder' : undefined
-          }))}
+          members={filteredMembers}
           totalCount={stats.totalMembers}
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -200,6 +191,8 @@ const FamilyBuilderStitch: React.FC = () => {
           selectedMemberId={selectedMemberId}
           isOpen={isSidebarOpen}
           onClose={() => setIsSidebarOpen(false)}
+          familyMembers={familyMembers}
+          marriages={marriages}
         />
 
         {/* Main Content */}
