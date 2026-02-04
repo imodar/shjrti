@@ -165,25 +165,39 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
           const parentageLine = getParentageLine(member);
           const thirdLine = getThirdLineInfo(member);
           const isFounder = member.is_founder || (member as any).isFounder;
+          const isDeceased = (member as any).death_date || (member as any).deathDate || (member as any).is_alive === false;
 
           return (
             <div
               key={member.id}
               onClick={() => onMemberClick(member)}
               className={cn(
-                'p-3 rounded-xl border transition-all cursor-pointer group',
+                'relative p-3 rounded-xl border-2 border-dashed transition-all cursor-pointer group overflow-hidden',
                 selectedMemberId === member.id 
                   ? 'bg-slate-50 dark:bg-slate-800/40 border-primary/30' 
-                  : 'bg-white dark:bg-slate-800/20 border-slate-100 dark:border-slate-800 hover:border-primary/30'
+                  : isFounder
+                    ? 'bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-700 hover:border-slate-400'
+                    : isDeceased
+                      ? 'bg-white dark:bg-slate-800/20 border-slate-200 dark:border-slate-700 hover:border-slate-400'
+                      : 'bg-white dark:bg-slate-800/20 border-primary/10 hover:border-primary/40'
               )}
             >
-              <div className="flex items-start gap-3">
+              {/* Deceased Ribbon - Rotated Corner */}
+              {isDeceased && (
+                <div className="absolute top-0 right-0 w-12 h-12 bg-black flex items-center justify-center transform rotate-45 translate-x-6 -translate-y-6 shadow-md z-10">
+                  <span className="material-symbols-outlined text-white text-[12px] -rotate-45 mt-4 mr-4">skull</span>
+                </div>
+              )}
+
+              <div className="flex items-center gap-3">
                 {/* Avatar */}
                 <div className={cn(
                   'w-10 h-10 rounded-full flex items-center justify-center font-bold overflow-hidden flex-shrink-0',
                   member.image_url 
-                    ? '' 
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
+                    ? 'border border-slate-100 dark:border-slate-800' 
+                    : isFounder
+                      ? 'bg-slate-200 dark:bg-slate-700 text-primary'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
                 )}>
                   {member.image_url ? (
                     <img 
@@ -196,47 +210,66 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
                   )}
                 </div>
 
-                {/* Info - 3 Lines */}
+                {/* Info */}
                 <div className="flex-1 min-w-0">
                   {/* Line 1: Name */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between">
                     <h4 className="text-sm font-bold truncate group-hover:text-primary transition-colors">
                       {getDisplayName(member)}
                     </h4>
-                    {/* Founder Badge */}
-                    {isFounder && (
-                      <div className="w-5 h-5 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
-                        <span className="material-icons-round text-[12px] text-amber-500">workspace_premium</span>
-                      </div>
-                    )}
                   </div>
 
-                  {/* Line 2: Parentage (ابن/ابنة + سلسلة النسب) */}
-                  {parentageLine && (
-                    <p className="text-[11px] text-primary truncate font-arabic mt-0.5">
+                  {/* Line 2: Parentage/Relationship */}
+                  {parentageLine ? (
+                    <p className="text-[10px] text-slate-500 uppercase font-semibold truncate">
                       {parentageLine}
                     </p>
-                  )}
+                  ) : isFounder ? (
+                    <p className="text-[10px] text-slate-500 uppercase font-semibold">
+                      {t('member.founder', 'Grandfather • Founder')}
+                    </p>
+                  ) : null}
 
-                  {/* Line 3: Birth/Death or Spouse Info */}
-                  {thirdLine && (
-                    <div className={cn(
-                      'inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-[10px]',
-                      thirdLine.type === 'founder' && 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400',
-                      thirdLine.type === 'spouse' && 'bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400',
-                      thirdLine.type === 'alive' && 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400',
-                      thirdLine.type === 'birth' && 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
-                      thirdLine.type === 'death' && 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
-                    )}>
-                      {thirdLine.type === 'founder' && <span className="material-icons-round text-[10px]">workspace_premium</span>}
-                      {thirdLine.type === 'spouse' && <span className="material-icons-round text-[10px]">favorite</span>}
-                      {thirdLine.type === 'alive' && <span className="material-icons-round text-[10px]">cake</span>}
-                      {thirdLine.type === 'birth' && <span className="material-icons-round text-[10px]">calendar_today</span>}
-                      {thirdLine.type === 'death' && <span className="material-icons-round text-[10px]">schedule</span>}
-                      <span className="font-arabic">{thirdLine.text}</span>
-                    </div>
-                  )}
+                  {/* Line 3: Status Badge */}
+                  <div className="mt-1.5">
+                    {isFounder && isDeceased ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-black text-white text-[10px] font-bold uppercase tracking-tighter">
+                        {t('member.deceased', 'Deceased')} {thirdLine?.type === 'death' && `(${(member as any).death_date?.split('-')[0] || ''})`}
+                      </span>
+                    ) : thirdLine?.type === 'alive' ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold border border-emerald-200 dark:border-emerald-800/50">
+                        <span className="material-symbols-outlined text-[12px] mr-1">cake</span>
+                        {thirdLine.text}
+                      </span>
+                    ) : thirdLine?.type === 'death' || isDeceased ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-600 text-[10px] font-bold border border-amber-500/20">
+                        <span className="material-symbols-outlined text-[12px] mr-1">history</span>
+                        {thirdLine?.text || t('member.deceased', 'Deceased')}
+                      </span>
+                    ) : thirdLine?.type === 'spouse' ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 text-[10px] font-bold border border-pink-200 dark:border-pink-800/50">
+                        <span className="material-symbols-outlined text-[12px] mr-1">favorite</span>
+                        {thirdLine.text}
+                      </span>
+                    ) : thirdLine?.type === 'birth' ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold border border-emerald-200 dark:border-emerald-800/50">
+                        <span className="material-symbols-outlined text-[12px] mr-1">cake</span>
+                        {thirdLine.text}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800/50 text-slate-400 text-[10px] font-medium italic border border-slate-200 dark:border-slate-700">
+                        {t('member.no_birth_date', 'No birth date available')}
+                      </span>
+                    )}
+                  </div>
                 </div>
+
+                {/* Founder Crown Badge */}
+                {isFounder && (
+                  <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
+                    <span className="material-icons-round text-[14px] text-amber-500">workspace_premium</span>
+                  </div>
+                )}
               </div>
             </div>
           );
