@@ -209,132 +209,81 @@ const StitchDashboard: React.FC = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* RTL: Create New Tree first, then families */}
-            {direction === 'rtl' && (
-              <>
-                {/* Create New Tree Card */}
-                <button 
-                  onClick={handleCreateTree}
-                  className="dashed-card bg-card rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-6 min-h-[340px] group"
-                >
-                  <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/5 transition-all duration-300">
-                    <span className="material-symbols-outlined text-5xl">add</span>
-                  </div>
-                  <div>
-                    <h4 className="text-xl font-bold text-foreground mb-2">Create New Tree</h4>
-                    <p className="text-muted-foreground text-sm max-w-[200px] leading-relaxed">Start a new lineage and begin documenting your heritage.</p>
-                  </div>
-                </button>
-
-                {/* Existing Family Trees */}
-                {families.map((family) => (
-                  <div 
-                    key={family.id}
-                    className="bg-card border border-border rounded-3xl p-8 shadow-sm hover:shadow-md transition-all flex flex-col"
-                  >
-                    <div className="flex justify-between items-start mb-8">
-                      <div className="w-14 h-14 bg-primary/5 text-primary rounded-2xl flex items-center justify-center">
-                        <span className="material-symbols-outlined text-3xl">park</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 px-3 py-1 bg-muted border border-border rounded-full">
-                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wide">Active Tree</span>
-                      </div>
-                    </div>
-                    <h4 className="text-2xl font-bold text-foreground mb-1">{family.name}</h4>
-                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mb-6">
-                      ID: {family.id.substring(0, 8).toUpperCase()}
-                    </p>
-                    <div className="grid grid-cols-2 gap-4 mb-8">
-                      <div className="bg-muted rounded-xl p-3">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Members</p>
-                        <p className="text-lg font-bold text-foreground">{family.memberCount || 0}</p>
-                      </div>
-                      <div className="bg-muted rounded-xl p-3">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Updated</p>
-                        <p className="text-lg font-bold text-primary">
-                          {family.updated_at ? new Date(family.updated_at).toLocaleDateString() : 'N/A'}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-auto flex gap-3">
-                      <button 
-                        onClick={() => handleManageTree(family.id)}
-                        className="flex-1 bg-primary text-primary-foreground font-bold py-3 rounded-xl text-sm hover:bg-primary/90 transition-all"
-                      >
-                        Manage
-                      </button>
-                      <button className="px-3 border border-border text-muted-foreground rounded-xl hover:bg-muted">
-                        <span className="material-symbols-outlined">share</span>
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </>
+            {/* LTR: Create New Tree first, then families */}
+            {direction === 'ltr' && (
+              <button 
+                onClick={handleCreateTree}
+                className="dashed-card bg-card rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-6 min-h-[340px] group"
+              >
+                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/5 transition-all duration-300">
+                  <span className="material-symbols-outlined text-5xl">add</span>
+                </div>
+                <div>
+                  <h4 className="text-xl font-bold text-foreground mb-2">Create New Tree</h4>
+                  <p className="text-muted-foreground text-sm max-w-[200px] leading-relaxed">Start a new lineage and begin documenting your heritage.</p>
+                </div>
+              </button>
             )}
 
-            {/* LTR: Families first, then Create New Tree */}
-            {direction === 'ltr' && (
-              <>
-                {/* Existing Family Trees */}
-                {families.map((family) => (
-                  <div 
-                    key={family.id}
-                    className="bg-card border border-border rounded-3xl p-8 shadow-sm hover:shadow-md transition-all flex flex-col"
-                  >
-                    <div className="flex justify-between items-start mb-8">
-                      <div className="w-14 h-14 bg-primary/5 text-primary rounded-2xl flex items-center justify-center">
-                        <span className="material-symbols-outlined text-3xl">park</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 px-3 py-1 bg-muted border border-border rounded-full">
-                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                        <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wide">Active Tree</span>
-                      </div>
-                    </div>
-                    <h4 className="text-2xl font-bold text-foreground mb-1">{family.name}</h4>
-                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mb-6">
-                      ID: {family.id.substring(0, 8).toUpperCase()}
+            {/* Family Trees - always in middle */}
+            {families.map((family) => (
+              <div 
+                key={family.id}
+                className="bg-card border border-border rounded-3xl p-8 shadow-sm hover:shadow-md transition-all flex flex-col"
+              >
+                <div className="flex justify-between items-start mb-8">
+                  <div className="w-14 h-14 bg-primary/5 text-primary rounded-2xl flex items-center justify-center">
+                    <span className="material-symbols-outlined text-3xl">park</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-3 py-1 bg-muted border border-border rounded-full">
+                    <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wide">Active Tree</span>
+                  </div>
+                </div>
+                <h4 className="text-2xl font-bold text-foreground mb-1">{family.name}</h4>
+                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mb-6">
+                  ID: {family.id.substring(0, 8).toUpperCase()}
+                </p>
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                  <div className="bg-muted rounded-xl p-3">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Members</p>
+                    <p className="text-lg font-bold text-foreground">{family.memberCount || 0}</p>
+                  </div>
+                  <div className="bg-muted rounded-xl p-3">
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Updated</p>
+                    <p className="text-lg font-bold text-primary">
+                      {family.updated_at ? new Date(family.updated_at).toLocaleDateString() : 'N/A'}
                     </p>
-                    <div className="grid grid-cols-2 gap-4 mb-8">
-                      <div className="bg-muted rounded-xl p-3">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Members</p>
-                        <p className="text-lg font-bold text-foreground">{family.memberCount || 0}</p>
-                      </div>
-                      <div className="bg-muted rounded-xl p-3">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Updated</p>
-                        <p className="text-lg font-bold text-primary">
-                          {family.updated_at ? new Date(family.updated_at).toLocaleDateString() : 'N/A'}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-auto flex gap-3">
-                      <button 
-                        onClick={() => handleManageTree(family.id)}
-                        className="flex-1 bg-primary text-primary-foreground font-bold py-3 rounded-xl text-sm hover:bg-primary/90 transition-all"
-                      >
-                        Manage
-                      </button>
-                      <button className="px-3 border border-border text-muted-foreground rounded-xl hover:bg-muted">
-                        <span className="material-symbols-outlined">share</span>
-                      </button>
-                    </div>
                   </div>
-                ))}
+                </div>
+                <div className="mt-auto flex gap-3">
+                  <button 
+                    onClick={() => handleManageTree(family.id)}
+                    className="flex-1 bg-primary text-primary-foreground font-bold py-3 rounded-xl text-sm hover:bg-primary/90 transition-all"
+                  >
+                    Manage
+                  </button>
+                  <button className="px-3 border border-border text-muted-foreground rounded-xl hover:bg-muted">
+                    <span className="material-symbols-outlined">share</span>
+                  </button>
+                </div>
+              </div>
+            ))}
 
-                {/* Create New Tree Card */}
-                <button 
-                  onClick={handleCreateTree}
-                  className="dashed-card bg-card rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-6 min-h-[340px] group"
-                >
-                  <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/5 transition-all duration-300">
-                    <span className="material-symbols-outlined text-5xl">add</span>
-                  </div>
-                  <div>
-                    <h4 className="text-xl font-bold text-foreground mb-2">Create New Tree</h4>
-                    <p className="text-muted-foreground text-sm max-w-[200px] leading-relaxed">Start a new lineage and begin documenting your heritage.</p>
-                  </div>
-                </button>
-              </>
+            {/* RTL: Create New Tree last */}
+            {direction === 'rtl' && (
+              <button 
+                onClick={handleCreateTree}
+                className="dashed-card bg-card rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-6 min-h-[340px] group"
+              >
+                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/5 transition-all duration-300">
+                  <span className="material-symbols-outlined text-5xl">add</span>
+                </div>
+                <div>
+                  <h4 className="text-xl font-bold text-foreground mb-2">Create New Tree</h4>
+                  <p className="text-muted-foreground text-sm max-w-[200px] leading-relaxed">Start a new lineage and begin documenting your heritage.</p>
+                </div>
+              </button>
             )}
           </div>
         </div>
