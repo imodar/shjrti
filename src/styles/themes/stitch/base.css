@@ -4,6 +4,9 @@
 /* Import Plus Jakarta Sans font */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
+/* Import Playfair Display for family titles */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
 /* Material Icons for Stitch theme */
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons+Round');
@@ -13,4 +16,9 @@
 .theme-stitch body,
 .theme-stitch * {
   font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Family title font */
+.theme-stitch .family-title {
+  font-family: 'Playfair Display', serif;
 }
