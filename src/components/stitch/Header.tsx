@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface StitchHeaderProps {
   familyName?: string;
@@ -92,6 +93,8 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
             {initials}
           </div>
         </div>
+        {/* Language Switcher */}
+        <LanguageSwitcher />
       </div>
     </header>
   );
