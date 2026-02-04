@@ -5,6 +5,7 @@
 export const PROTECTED_ROUTES: string[] = [
   'dashboard',
   'dashboard-backup',
+  'stitch-dashboard',
   'auth',
   'profile',
   'family-creator',

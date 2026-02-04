@@ -151,3 +151,45 @@
 .theme-stitch .icon-xl {
   font-size: 2rem;
 }
+
+/* Dashboard Hero Glass */
+.hero-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.4) 100%);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.dark .hero-glass {
+  background: linear-gradient(135deg, hsl(var(--card) / 0.7) 0%, hsl(var(--card) / 0.4) 100%);
+  border-color: hsl(var(--border));
+}
+
+/* Tree Silhouette Mask */
+.tree-silhouette {
+  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+/* Gold Gradient Button */
+.gold-gradient-btn {
+  background: linear-gradient(135deg, hsl(var(--accent-gold)) 0%, hsl(37, 50%, 50%) 100%);
+  transition: all 0.3s ease;
+}
+
+.gold-gradient-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+/* Dashed Card */
+.dashed-card {
+  border: 2px dashed hsl(var(--border));
+  transition: all 0.3s ease;
+}
+
+.dashed-card:hover {
+  border-color: hsl(var(--primary));
+  background-color: hsl(var(--primary) / 0.02);
+}
