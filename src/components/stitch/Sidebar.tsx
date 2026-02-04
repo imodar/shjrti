@@ -184,8 +184,16 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
             >
               {/* Deceased Ribbon - Rotated Corner */}
               {isDeceased && (
-                <div className="absolute top-0 right-0 w-12 h-12 bg-black flex items-center justify-center transform rotate-45 translate-x-6 -translate-y-6 shadow-md z-10">
-                  <span className="material-symbols-outlined text-white text-[12px] -rotate-45 mt-4 mr-4">skull</span>
+                <div className={cn(
+                  "absolute top-0 w-12 h-12 bg-black flex items-center justify-center shadow-md z-10",
+                  direction === 'rtl' 
+                    ? "left-0 -rotate-45 -translate-x-6 -translate-y-6" 
+                    : "right-0 rotate-45 translate-x-6 -translate-y-6"
+                )}>
+                  <span className={cn(
+                    "material-symbols-outlined text-white text-[12px]",
+                    direction === 'rtl' ? "rotate-45 mt-4 ml-4" : "-rotate-45 mt-4 mr-4"
+                  )}>skull</span>
                 </div>
               )}
 
