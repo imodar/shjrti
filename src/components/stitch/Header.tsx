@@ -35,11 +35,11 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   const initials = displayName.charAt(0).toUpperCase();
 
   const tabs = [
-    { id: "dashboard", label: "Dashboard", path: "/family-builder-new" },
-    { id: "tree", label: "Tree View", path: "/family-tree-view" },
-    { id: "gallery", label: "Gallery", path: "/family-gallery" },
-    { id: "statistics", label: "Statistics", path: "/family-statistics" },
-    { id: "suggestions", label: "Suggestions", path: "/family-suggestions", badge: suggestionsCount },
+    { id: "dashboard", label: t('stitch.tab.dashboard', 'لوحة التحكم'), path: "/family-builder-new" },
+    { id: "tree", label: t('stitch.tab.tree_view', 'عرض الشجرة'), path: "/family-tree-view" },
+    { id: "gallery", label: t('stitch.tab.gallery', 'المعرض'), path: "/family-gallery" },
+    { id: "statistics", label: t('stitch.tab.statistics', 'الإحصائيات'), path: "/family-statistics" },
+    { id: "suggestions", label: t('stitch.tab.suggestions', 'الاقتراحات'), path: "/family-suggestions", badge: suggestionsCount },
   ];
 
   const handleTabClick = (tab: (typeof tabs)[0]) => {
@@ -63,10 +63,10 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
         </div>
         <div>
           <h1 className="font-bold text-lg leading-tight">{familyName}</h1>
-          <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Genealogy Platform</p>
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">{t('stitch.genealogy_platform', 'منصة الأنساب')}</p>
         </div>
         <div className="ml-6 px-3 py-1 bg-red-500/10 text-red-500 rounded-full text-[10px] font-bold border border-red-500/20">
-          Beta Launch
+          {t('badge.beta', 'إطلاق تجريبي')}
         </div>
       </div>
 
@@ -102,7 +102,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
             <div className="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-800 cursor-pointer group">
               <div className="text-right hidden sm:block">
                 <p className="text-xs font-bold group-hover:text-primary transition-colors">{displayName}</p>
-                <p className="text-[10px] text-slate-500">{packageName || "Free Plan"}</p>
+                <p className="text-[10px] text-slate-500">{packageName || t('stitch.free_plan', 'باقة مجانية')}</p>
               </div>
               <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-emerald-400 border-2 border-white dark:border-slate-700 shadow-md flex items-center justify-center text-white font-bold group-hover:scale-105 transition-transform">
                 {initials}
