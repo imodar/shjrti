@@ -261,12 +261,12 @@
   }
 
   /*
-    RTL font override can break icon ligatures/fonts (Material Icons/Symbols).
-    Icons must keep their own font-family regardless of language.
+    Global font overrides can break icon ligatures/fonts (Material Icons/Symbols).
+    Icons must keep their own font-family regardless of language or direction.
   */
-  [dir="rtl"] .material-symbols-outlined,
-  [dir="rtl"] .material-symbols-rounded,
-  [dir="rtl"] .material-symbols-sharp {
+  .material-symbols-outlined,
+  .material-symbols-rounded,
+  .material-symbols-sharp {
     font-family: 'Material Symbols Outlined' !important;
     font-feature-settings: 'liga' !important;
     font-weight: normal;
@@ -282,11 +282,11 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  [dir="rtl"] .material-icons,
-  [dir="rtl"] .material-icons-round,
-  [dir="rtl"] .material-icons-outlined,
-  [dir="rtl"] .material-icons-sharp,
-  [dir="rtl"] .material-icons-two-tone {
+  .material-icons,
+  .material-icons-round,
+  .material-icons-outlined,
+  .material-icons-sharp,
+  .material-icons-two-tone {
     font-family: 'Material Icons Round' !important;
     font-feature-settings: 'liga' !important;
     font-weight: normal;
