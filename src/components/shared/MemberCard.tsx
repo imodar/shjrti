@@ -1,14 +1,22 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { User, UserIcon, Crown, Skull, Edit2, Trash2, Calendar, Lock } from "lucide-react";
+import { Crown, Skull, Calendar, Lock } from "lucide-react";
 import { DateDisplay } from "@/components/DateDisplay";
 import { Member, Marriage } from "@/types/family.types";
 import { useResolvedImageUrl } from "@/utils/useResolvedImageUrl";
-import { differenceInYears, parseISO } from 'date-fns';
 import { useLanguage } from '@/contexts/LanguageContext';
+import {
+  getFounderLastName,
+  isMemberFromFamily,
+  buildLineageChain,
+  getParentageInfo,
+  getSpouseDisplayInfo,
+  getBirthDeathDisplayInfo,
+  generateMemberDisplayName as generateDisplayName
+} from '@/lib/memberDisplayUtils';
+
 interface MemberCardProps {
   member: Member;
   familyMembers: Member[];
@@ -35,292 +43,114 @@ export const MemberCard: React.FC<MemberCardProps> = ({
   const memberImageSrc = useResolvedImageUrl((member as any).image || member.image_url, true);
   const { t, direction } = useLanguage();
 
-  // Helper: Get founder's last_name for ending lineage chains
-  const getFounderLastName = (): string => {
-    const founder = familyMembers?.find(m => m?.is_founder || (m as any)?.isFounder);
-    if (founder?.last_name) return founder.last_name;
-    // Fallback: try to get last_name from any member
-    const memberWithLastName = familyMembers?.find(m => m?.last_name);
-    return memberWithLastName?.last_name || '';
-  };
-
-  // Helper: Check if a member is from the family (has parent in tree or is founder)
-  const isMemberFromFamily = (m: Member | undefined): boolean => {
-    if (!m) return false;
-    if (m.is_founder || (m as any).isFounder) return true;
-    const fatherId = m.father_id || (m as any).fatherId;
-    const motherId = m.mother_id || (m as any).motherId;
-    return !!(
-      (fatherId && familyMembers?.find(fm => fm?.id === fatherId)) ||
-      (motherId && familyMembers?.find(fm => fm?.id === motherId))
-    );
-  };
-
-  // Helper: Build lineage chain - max 3 generations, follows family line (father or mother)
-  // useBintForFemaleChild: إذا true استخدم "بنت" بدل "ابنة" (مطلوب في عرض نسب الزوج/الزوجة)
-  const buildLineageChain = (startMember: Member, useBintForFemaleChild: boolean = false): string => {
-    const MAX_GENERATIONS = 3; // عدد الأسماء الأقصى (الشخص + أبوه/أمه + جده/جدته)
-    const parts: string[] = [];
-    let current: Member | undefined = startMember;
-    let previousMember: Member | undefined = undefined;
-    
-    while (current && parts.length < MAX_GENERATIONS) {
-      const name = current.first_name || (current as any).name?.split(' ')[0] || (current as any).name;
-      if (name) {
-        if (parts.length === 0) {
-          parts.push(name);
-        } else {
-          const femaleTerm = useBintForFemaleChild ? 'بنت' : 'ابنة';
-          const childGenderTerm = previousMember?.gender === 'female' ? femaleTerm : 'ابن';
-          parts.push(`${childGenderTerm} ${name}`);
-        }
-      }
-      
-      // توقف عند المؤسس
-      if (current.is_founder || (current as any).isFounder) {
-        break;
-      }
-      
-      previousMember = current;
-      
-      // ابحث عن الوالد الموجود في العائلة (الأب أولاً، ثم الأم)
-      const fatherId = current.father_id || (current as any).fatherId;
-      const motherId = current.mother_id || (current as any).motherId;
-      const father = fatherId ? familyMembers?.find(m => m?.id === fatherId) : undefined;
-      const mother = motherId ? familyMembers?.find(m => m?.id === motherId) : undefined;
-      
-      // إذا الأب من العائلة، اتبعه
-      if (father && isMemberFromFamily(father)) {
-        current = father;
-      } 
-      // إذا الأم من العائلة والأب ليس كذلك، اتبع الأم
-      else if (mother && isMemberFromFamily(mother)) {
-        current = mother;
-      }
-      // إذا الأب موجود (حتى لو من خارج العائلة)، اتبعه
-      else if (father) {
-        current = father;
-      }
-      else {
-        break;
-      }
-    }
-    
-    return parts.join(' ');
-  };
-
   // Check if member has hidden name or image (from privacy settings)
   const isNameHidden = (member as any).name_hidden === true;
   const isImageHidden = (member as any).image_hidden === true;
 
-  const generateMemberDisplayName = () => {
-    // If name is hidden due to privacy settings
-    if (isNameHidden) {
-      // For family_only mode: show lineage without first name
-      const memberHasFamilyFather = (member.father_id || (member as any).fatherId) && familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
-      if (memberHasFamilyFather) {
-        // Return parentage-only display
-        return null; // Will be handled by renderParentage with lock icon
-      }
-      return null; // Fully hidden
-    }
-    
-    // Check if this member is married into the family (actual spouse from outside)
-    const marriage = marriages?.find(m => m.husband_id === member.id || m.wife_id === member.id);
-    const memberHasFamilyFather = (member.father_id || (member as any).fatherId) && familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
-
-    // Show full name for spouses who married into the family (not blood family members)
-    const isSpouseFromOutside = marriage && !memberHasFamilyFather && !member.is_founder;
-    if (isSpouseFromOutside) {
-      // For spouses from outside: show full name (first_name + last_name or complete name)
-      if (member.first_name && member.last_name) {
-        return `${member.first_name} ${member.last_name}`;
-      }
-      // If full name is available in the name field, use it
-      return (member as any).name || member.first_name || "غير معروف";
-    } else {
-      // For all family members: show first name + family name for descendants
-      const firstName = member.first_name || (member as any).name?.split(' ')[0] || (member as any).name || "غير معروف";
-      const isDescendant = !member.is_founder && memberHasFamilyFather;
-      
-      if (isDescendant) {
-        // Show first name with family name (if available)
-        const familyName = member.last_name || "الشهيد"; // Default family name
-        return `${firstName} ${familyName}`;
-      }
-      return firstName;
-    }
+  // Use shared utilities from memberDisplayUtils.ts
+  // Local wrapper functions that pass the component's familyMembers array
+  
+  const getMemberDisplayName = () => {
+    return generateDisplayName(member, familyMembers, marriages, isNameHidden);
   };
+
   const renderRelationship = () => {
     // Only show ابن/ابنة for blood family members (not founders, only descendants with fathers in the family)
     const memberHasFamilyFather = (member.father_id || (member as any).fatherId) && familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
-    const isDescendant = !member.is_founder && memberHasFamilyFather;
-    if (isDescendant) {
+    const isDescendantMember = !member.is_founder && memberHasFamilyFather;
+    if (isDescendantMember) {
       return <span className="text-sm text-muted-foreground font-normal">
           {member.gender === 'female' ? 'ابنة' : 'ابن'}
         </span>;
     }
     return null;
   };
+
   const renderParentage = () => {
-    if (member.is_founder) return null;
+    const parentageInfo = getParentageInfo(member, familyMembers);
+    if (!parentageInfo) return null;
     
-    const mother = familyMembers?.find(m => m?.id === (member.mother_id || (member as any).motherId));
-    const father = familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
-    
-    // Check if father is from the family (has father_id in family tree OR is founder)
-    const fatherIsFromFamily = father && (
-      (father.is_founder || (father as any).isFounder) ||
-      ((father.father_id || (father as any).fatherId) && 
-       familyMembers?.find(m => m?.id === (father.father_id || (father as any).fatherId)))
+    return (
+      <p className="text-sm text-primary truncate font-arabic">
+        {parentageInfo.genderTerm} {parentageInfo.lineage}
+      </p>
     );
-    
-    // Check if mother is from the family (has father_id in family tree OR is founder)
-    const motherIsFromFamily = mother && (
-      (mother.is_founder || (mother as any).isFounder) ||
-      ((mother.father_id || (mother as any).fatherId) && 
-       familyMembers?.find(m => m?.id === (mother.father_id || (mother as any).fatherId)))
-    );
-    
-    const genderTerm = member.gender === 'female' ? 'ابنة' : 'ابن';
-    
-    // PRIORITY LOGIC:
-    // 1. If father is from family → show father's lineage
-    // 2. If mother is from family AND father is NOT from family → show mother's lineage
-    // 3. If father exists but not from family, and mother not from family → show father's name only
-    
-    if (fatherIsFromFamily && father) {
-      // Father is from the family - show paternal lineage with founder's last_name
-      const lineage = buildLineageChain(father);
-      return <p className="text-sm text-primary truncate font-arabic">
-          {genderTerm} {lineage}
-        </p>;
-    }
-    
-    // Mother is from family AND father is NOT from family - show maternal lineage
-    if (motherIsFromFamily && mother) {
-      const lineage = buildLineageChain(mother);
-      return <p className="text-sm text-primary truncate font-arabic">
-          {genderTerm} {lineage}
-        </p>;
-    }
-    
-    // Father exists but not from family - just show father's name
-    if (father) {
-      const fatherName = father.first_name || (father as any).name?.split(' ')[0] || (father as any).name;
-      return <p className="text-sm text-primary truncate font-arabic">
-          {genderTerm} {fatherName}
-        </p>;
-    }
-    
-    return null;
   };
+
   const renderSpouseInfo = () => {
-    // Show founder text for founders
-    const isFounder = member.is_founder || (member as any).isFounder;
-    if (isFounder) {
-      return <p className="text-sm text-primary font-arabic whitespace-normal break-words">الجد الأكبر</p>;
-    }
-
-    // إذا كان العضو من داخل العائلة (له أب)، لا تعرض معلومات الزوج
-    const memberHasFamilyFather = ((member as any).father_id || (member as any).fatherId) &&
-      familyMembers?.find(m => m?.id === ((member as any).father_id || (member as any).fatherId));
+    const spouseInfo = getSpouseDisplayInfo(member, familyMembers, marriages);
+    if (!spouseInfo) return null;
     
-    if (memberHasFamilyFather) {
-      return null; // لا تعرض شيء للأعضاء من داخل العائلة
-    }
-
-    // فقط للأزواج من خارج العائلة: ابحث عن الزوج واعرض معلوماته
-    const marriage = marriages?.find(m => m.husband_id === member.id || m.wife_id === member.id);
-    if (!marriage) return null;
-
-    const spouseId = marriage.husband_id === member.id ? marriage.wife_id : marriage.husband_id;
-    const spouse = familyMembers?.find(m => m?.id === spouseId);
-    if (!spouse) return null;
-
-    // عرض معلومات الزوج بالتفصيل: اسم الزوج + أبوهم + اسم العائلة
-    const spouseName = (spouse as any).first_name || (spouse as any).name?.split(' ')[0] || (spouse as any).name || '';
-    const spouseGenderTerm = (spouse as any).gender === 'female' ? 'ابنة' : 'ابن';
+    const displayText = spouseInfo.label 
+      ? `${spouseInfo.label} ${spouseInfo.info}` 
+      : spouseInfo.info;
     
-    // Get spouse's parent and build short lineage with founder's last_name
-    const spouseFatherId = (spouse as any).father_id || (spouse as any).fatherId;
-    const spouseFather = spouseFatherId ? familyMembers?.find(m => m?.id === spouseFatherId) : null;
-    
-    let spouseInfo = spouseName;
-    
-    if (spouseFather) {
-      // استخدام buildLineageChain للحصول على سلسلة النسب كاملة (حتى 3 أجيال)
-      // ونستخدم "بنت" بدل "ابنة" حسب المتطلب
-      const spouseLineage = buildLineageChain(spouse, true);
-      const founderLastName = getFounderLastName();
-      spouseInfo = `${spouseLineage} ${founderLastName}`;
-    }
-
-    const relationLabel = (member as any).gender === 'male' ? 'زوج' : 'زوجة';
-    return <p className="text-sm text-primary font-arabic whitespace-normal break-words">{relationLabel} {spouseInfo}</p>;
+    return (
+      <p className="text-sm text-primary font-arabic whitespace-normal break-words">
+        {displayText}
+      </p>
+    );
   };
 
   const renderBirthDeathInfo = () => {
-    const birthDate = member.birth_date || (member as any).birthDate;
-    const deathDate = member.death_date || (member as any).deathDate;
-    const isAlive = member.is_alive !== false && (member as any).isAlive !== false;
-    const gender = member.gender || (member as any).gender;
+    const translations = {
+      born_male: t('member.born_male', 'ولد'),
+      born_female: t('member.born_female', 'ولدت'),
+      died_male: t('member.died_male', 'توفي'),
+      died_female: t('member.died_female', 'توفيت'),
+      in_text: t('member.in', 'في'),
+      years: t('member.years', 'سنة')
+    };
     
-    // حالة 1: لا يوجد تاريخ ولادة ولا وفاة
-    if (!birthDate && !deathDate) return null;
+    const info = getBirthDeathDisplayInfo(member, translations);
+    if (!info) return null;
     
-    // حالة 2: يوجد تاريخ وفاة فقط (بدون تاريخ ولادة)
-    if (!birthDate && deathDate) {
-      const deathText = gender === 'female' ? t('member.died_female', 'توفيت') : t('member.died_male', 'توفي');
+    const inText = translations.in_text;
+    const yearsText = translations.years;
+    
+    // حالة: يوجد تاريخ وفاة فقط
+    if (info.type === 'death_only') {
       return (
-        <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
-          <Skull className="h-3 w-3 text-gray-600 dark:text-gray-400" />
-          <span className="text-xs text-gray-700 dark:text-gray-300 font-arabic">
-            {deathText} {t('member.in', 'في')} <DateDisplay date={deathDate} />
+        <div className="flex items-center gap-1 bg-muted px-2 py-1 rounded-full">
+          <Skull className="h-3 w-3 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground font-arabic">
+            {info.deathText} {inText} <DateDisplay date={info.deathDate!} />
           </span>
         </div>
       );
     }
     
-    // حالة 3: يوجد تاريخ ولادة + العضو متوفي + لا يوجد تاريخ وفاة
-    if (birthDate && !isAlive && !deathDate) {
-      const birthText = gender === 'female' ? t('member.born_female', 'ولدت') : t('member.born_male', 'ولد');
+    // حالة: يوجد تاريخ ولادة + العضو متوفي + لا يوجد تاريخ وفاة
+    if (info.type === 'birth_only') {
       return (
         <div className="flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-full">
           <Calendar className="h-3 w-3 text-blue-600 dark:text-blue-400" />
           <span className="text-xs text-blue-700 dark:text-blue-300 font-arabic">
-            {birthText} {t('member.in', 'في')} <DateDisplay date={birthDate} />
+            {info.birthText} {inText} <DateDisplay date={info.birthDate!} />
           </span>
         </div>
       );
     }
     
-    // حالة 4: يوجد تاريخ ولادة + العضو على قيد الحياة
-    if (birthDate && isAlive) {
-      const birthText = gender === 'female' ? t('member.born_female', 'ولدت') : t('member.born_male', 'ولد');
-      const age = differenceInYears(new Date(), parseISO(birthDate));
+    // حالة: يوجد تاريخ ولادة + العضو على قيد الحياة
+    if (info.type === 'alive') {
       return (
         <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded-full">
           <Calendar className="h-3 w-3 text-green-600 dark:text-green-400" />
           <span className="text-xs text-green-700 dark:text-green-300 font-arabic">
-            {birthText} {t('member.in', 'في')} <DateDisplay date={birthDate} /> - {age} {t('member.years', 'سنة')}
+            {info.birthText} {inText} <DateDisplay date={info.birthDate!} /> - {info.age} {yearsText}
           </span>
         </div>
       );
     }
     
-    // حالة 5: يوجد تاريخ ولادة + تاريخ وفاة
-    if (birthDate && deathDate) {
-      const birthText = gender === 'female' ? t('member.born_female', 'ولدت') : t('member.born_male', 'ولد');
-      const deathText = gender === 'female' ? t('member.died_female', 'توفيت') : t('member.died_male', 'توفي');
-      const age = differenceInYears(parseISO(deathDate), parseISO(birthDate));
-      const birthYear = parseISO(birthDate).getFullYear();
-      const deathYear = parseISO(deathDate).getFullYear();
+    // حالة: يوجد تاريخ ولادة + تاريخ وفاة
+    if (info.type === 'both') {
       return (
         <div className="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-full">
           <Calendar className="h-3 w-3 text-amber-600 dark:text-amber-400" />
           <span className="text-xs text-amber-700 dark:text-amber-300 font-arabic">
-            {birthText} {t('member.in', 'في')} {birthYear} - {deathText} {t('member.in', 'في')} {deathYear} - {age} {t('member.years', 'سنة')}
+            {info.birthText} {inText} {info.birthYear} - {info.deathText} {inText} {info.deathYear} - {info.age} {yearsText}
           </span>
         </div>
       );
@@ -381,7 +211,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({
                     </TooltipContent>
                   </Tooltip>
                 )}
-                {generateMemberDisplayName()}
+                {getMemberDisplayName()}
               </h3>
               
               {/* Father + Grandfather names */}
