@@ -209,23 +209,7 @@ const StitchDashboard: React.FC = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* LTR: Create New Tree first, then families */}
-            {direction === 'ltr' && (
-              <button 
-                onClick={handleCreateTree}
-                className="dashed-card bg-card rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-6 min-h-[340px] group"
-              >
-                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/5 transition-all duration-300">
-                  <span className="material-symbols-outlined text-5xl">add</span>
-                </div>
-                <div>
-                  <h4 className="text-xl font-bold text-foreground mb-2">Create New Tree</h4>
-                  <p className="text-muted-foreground text-sm max-w-[200px] leading-relaxed">Start a new lineage and begin documenting your heritage.</p>
-                </div>
-              </button>
-            )}
-
-            {/* Family Trees - always in middle */}
+            {/* Family Trees first */}
             {families.map((family) => (
               <div 
                 key={family.id}
@@ -270,21 +254,19 @@ const StitchDashboard: React.FC = () => {
               </div>
             ))}
 
-            {/* RTL: Create New Tree last */}
-            {direction === 'rtl' && (
-              <button 
-                onClick={handleCreateTree}
-                className="dashed-card bg-card rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-6 min-h-[340px] group"
-              >
-                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/5 transition-all duration-300">
-                  <span className="material-symbols-outlined text-5xl">add</span>
-                </div>
-                <div>
-                  <h4 className="text-xl font-bold text-foreground mb-2">Create New Tree</h4>
-                  <p className="text-muted-foreground text-sm max-w-[200px] leading-relaxed">Start a new lineage and begin documenting your heritage.</p>
-                </div>
-              </button>
-            )}
+            {/* Create New Tree Card - always last (leftmost in RTL, rightmost in LTR) */}
+            <button 
+              onClick={handleCreateTree}
+              className="dashed-card bg-card rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-6 min-h-[340px] group"
+            >
+              <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/5 transition-all duration-300">
+                <span className="material-symbols-outlined text-5xl">add</span>
+              </div>
+              <div>
+                <h4 className="text-xl font-bold text-foreground mb-2">Create New Tree</h4>
+                <p className="text-muted-foreground text-sm max-w-[200px] leading-relaxed">Start a new lineage and begin documenting your heritage.</p>
+              </div>
+            </button>
           </div>
         </div>
 
