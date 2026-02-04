@@ -104,7 +104,7 @@ const StitchDashboard: React.FC = () => {
   };
 
   const handleManageTree = (familyId: string) => {
-    navigate(`/family-builder-new?family=${familyId}`);
+    navigate(`/family-builder-stitch?family=${familyId}`);
   };
 
   return (
