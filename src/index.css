@@ -207,6 +207,9 @@
     --tree-foreground: 210 11% 15%;
     --tree-gradient: linear-gradient(135deg, hsl(var(--tree-primary)), hsl(var(--tree-secondary)));
     --tree-shadow: 0 10px 30px -5px hsl(var(--tree-primary) / 0.2);
+    
+    /* Accent Gold */
+    --accent-gold: 37 60% 60%;
   }
 
   .theme-stitch.dark {

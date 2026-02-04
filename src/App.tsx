@@ -28,6 +28,7 @@ import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
 import Dashboard from "./pages/Dashboard";
 import DashboardBackup from "./pages/DashboardBackup";
+import StitchDashboard from "./pages/StitchDashboard";
 import FamilyCreator from "./pages/FamilyCreator";
 import FamilyBuilder from "./pages/FamilyBuilder";
 import FamilyBuilderNewWithContext from "./pages/FamilyBuilderNew/FamilyBuilderNewWithContext";
@@ -147,6 +148,11 @@ const App = () => {
                   <Route path="/dashboard-backup" element={
                     <ProtectedRoute>
                       <DashboardBackup />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/stitch-dashboard" element={
+                    <ProtectedRoute>
+                      <StitchDashboard />
                     </ProtectedRoute>
                   } />
                   <Route path="/family-creator" element={
