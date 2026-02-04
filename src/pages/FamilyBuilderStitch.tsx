@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useFamilyData } from '@/contexts/FamilyDataContext';
-import { StitchHeader, StitchSidebar, StitchRightPanel, StitchMainContent } from '@/components/stitch';
+import { StitchHeader, StitchFamilyBar, StitchSidebar, StitchRightPanel, StitchMainContent } from '@/components/stitch';
 import { cn } from '@/lib/utils';
 
 /**
@@ -171,8 +171,15 @@ const FamilyBuilderStitch: React.FC = () => {
         suggestionsCount={0}
       />
 
+      {/* Family Bar - NEW */}
+      <StitchFamilyBar
+        familyName={familyData?.name || 'Al-Saeed'}
+        onSwitchTree={() => navigate('/dashboard')}
+        lastUpdated="2h ago"
+      />
+
       {/* Main Layout */}
-      <main className="stitch-layout">
+      <main className="flex h-[calc(100vh-120px)]">
         {/* Left Sidebar - Members List */}
         <StitchSidebar
           members={filteredMembers.map(m => ({
