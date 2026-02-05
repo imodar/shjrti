@@ -125,7 +125,7 @@
        : null;
  
      return (
-      <div className="family-card w-[350px] p-5 bg-white dark:bg-slate-800 border border-primary/20 dark:border-primary/30 rounded-[24px] shadow-sm relative">
+       <div className="family-card w-[420px] p-5 bg-white dark:bg-slate-800 border border-primary/20 dark:border-primary/30 rounded-[24px] shadow-sm relative">
          <div className="flex flex-col items-center gap-4">
            <MemberAvatar member={member} size="md" />
            <div className="text-center">
