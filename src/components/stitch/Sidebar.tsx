@@ -172,7 +172,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
               key={member.id}
               onClick={() => onMemberClick(member)}
               className={cn(
-                'relative p-3 rounded-xl border-2 border-dashed transition-all cursor-pointer group overflow-hidden',
+                'relative p-4 rounded-xl border-2 border-dashed transition-all cursor-pointer group overflow-hidden',
                 selectedMemberId === member.id 
                   ? 'bg-slate-50 dark:bg-slate-800/40 border-primary/30' 
                   : isFounder
