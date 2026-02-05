@@ -382,9 +382,11 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
             {/* Spouses Section */}
             <div className="pt-8 border-t border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-3 mb-6">
-                <span className="material-symbols-outlined text-pink-500 text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
-                <h3 className="text-xs font-bold text-pink-500 uppercase tracking-widest">
-                  {t('member.spouses_info', 'Spouses Information')}
+                <span className={`material-symbols-outlined text-xl ${formData.gender === 'female' ? 'text-blue-500' : 'text-pink-500'}`} style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
+                <h3 className={`text-xs font-bold uppercase tracking-widest ${formData.gender === 'female' ? 'text-blue-500' : 'text-pink-500'}`}>
+                  {formData.gender === 'female' 
+                    ? t('member.husband_info', 'Husband Information')
+                    : t('member.wife_info', 'Wife Information')}
                 </h3>
               </div>
               
@@ -485,15 +487,27 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                   <button
                     type="button"
                     onClick={() => handleAddSpouse(formData.gender === 'male' ? 'wife' : 'husband')}
-                    className="p-6 border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary hover:bg-emerald-50/20 transition-all group"
+                    className={`p-6 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center gap-2 transition-all group ${
+                      formData.gender === 'female' 
+                        ? 'border-blue-100 dark:border-blue-900/30 hover:border-blue-400 hover:bg-blue-50/20' 
+                        : 'border-pink-100 dark:border-pink-900/30 hover:border-pink-400 hover:bg-pink-50/20'
+                    }`}
                   >
-                    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-primary/20 group-hover:text-primary flex items-center justify-center transition-all">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                      formData.gender === 'female'
+                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-400 group-hover:bg-blue-100 group-hover:text-blue-500'
+                        : 'bg-pink-50 dark:bg-pink-900/20 text-pink-400 group-hover:bg-pink-100 group-hover:text-pink-500'
+                    }`}>
                       <span className="material-symbols-outlined text-xl">add</span>
                     </div>
                     <div className="text-center">
-                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 group-hover:text-primary block">
+                      <span className={`text-xs font-bold block ${
+                        formData.gender === 'female'
+                          ? 'text-blue-500 dark:text-blue-400 group-hover:text-blue-600'
+                          : 'text-pink-500 dark:text-pink-400 group-hover:text-pink-600'
+                      }`}>
                         {formData.gender === 'male' 
-                          ? t('member.add_spouse', 'Add Spouse')
+                          ? t('member.add_wife', 'Add Wife')
                           : t('member.add_husband', 'Add Husband')}
                       </span>
                     </div>
