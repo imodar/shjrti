@@ -81,14 +81,6 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
             {t('stitch.family_of', 'Family of')} {familyName}
           </h2>
         </div>
-        <div className="h-4 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2"></div>
-        <button 
-          onClick={onSwitchTree}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 group"
-        >
-          <span className="text-xs font-semibold uppercase tracking-wider">{t('stitch.switch_tree', 'Switch Tree')}</span>
-          <span className="material-icons-round text-lg transition-transform group-hover:translate-y-0.5">expand_more</span>
-        </button>
 
         {/* Root Selector - Only shown on tree view */}
         {showRootSelector && rootOptions.length > 0 && (
