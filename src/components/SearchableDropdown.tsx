@@ -102,6 +102,7 @@ export const SearchableDropdown: React.FC<SearchableDropdownProps> = ({
     <div ref={dropdownRef} className={cn("relative w-full", className)}>
       {/* Trigger Button */}
       <Button
+        type="button"
         variant="outline"
         onClick={handleToggle}
         disabled={disabled}
