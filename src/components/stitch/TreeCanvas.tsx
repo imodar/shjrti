@@ -60,6 +60,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
   const hasCenteredOnce = useRef(false);
   const lastRootIdRef = useRef<string>('');
   const prevSelectedRootRef = useRef<string>(selectedRootMarriage);
+  const lastCenterKeyRef = useRef<string>('');
 
   // Get height based on unit type
   const getUnitHeight = (unit: FamilyUnit): number => {
@@ -399,12 +400,18 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     const rootPosition = positions.get(currentRootId);
     if (!rootPosition) return;
 
+    // If selectedRootMarriage changes but points to the same unit (polygamy alias),
+    // we still must re-center.
+    const centerKey = `${currentRootId}:${selectedRootMarriage}`;
+    const keyChanged = lastCenterKeyRef.current !== centerKey;
+
     const rootChanged = lastRootIdRef.current !== currentRootId;
-    const shouldCenter = rootChanged || !hasCenteredOnce.current;
+    const shouldCenter = keyChanged || rootChanged || !hasCenteredOnce.current;
 
     if (!shouldCenter) return;
 
     lastRootIdRef.current = currentRootId;
+    lastCenterKeyRef.current = centerKey;
     hasCenteredOnce.current = true;
 
     const containerWidth = containerRef.current.offsetWidth || 1200;
@@ -421,7 +428,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       x: containerWidth / 2 / zoomLevel - rootCenterX,
       y: containerHeight / 2 / zoomLevel - rootCenterY
     });
-  }, [positions, rootUnits, zoomLevel]);
+  }, [positions, rootUnits, zoomLevel, selectedRootMarriage]);
 
   // Reset centering when root selection changes
   useEffect(() => {
