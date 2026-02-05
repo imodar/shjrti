@@ -214,7 +214,6 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
                <MemberAvatar member={unit.husband} size="md" />
                <div className="text-center">
                   <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers)}</p>
-                 <RoleBadge role="husband" />
                   {showHusbandMotherBadge && husbandMother && (
                     <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
                       <span className="material-icons-round text-[10px]">face_3</span>
