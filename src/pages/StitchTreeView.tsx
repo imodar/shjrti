@@ -107,66 +107,11 @@
          suggestionsCount={0}
        />
  
-       {/* Tree View Bar */}
-       <div className="h-14 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex items-center justify-between px-8 z-40 relative">
-         <div className="flex items-center gap-6">
-           <div className="flex items-center gap-2">
-             <span className="material-icons-round text-slate-400">family_history</span>
-             <span className="text-sm font-bold text-slate-700 dark:text-slate-300">
-               {t('tree_view.family_branch', 'Family Branch')}: <span className="text-primary">{familyData?.name || 'Unknown'}</span>
-             </span>
-           </div>
-           <div className="h-4 w-px bg-slate-200 dark:bg-slate-700"></div>
-           <div className="flex items-center gap-2">
-             <span className="material-icons-round text-slate-400">group</span>
-             <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
-               {familyMembers.length} {t('tree_view.members', 'Members')}
-             </span>
-           </div>
-         </div>
- 
-         <div className="flex items-center gap-3">
-           {/* View Mode Toggle */}
-           <div className="bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full flex items-center gap-4">
-             <button 
-               onClick={() => setViewMode('vertical')}
-               className={cn(
-                 "text-[11px] font-bold transition-colors",
-                 viewMode === 'vertical' ? 'text-primary' : 'text-slate-400 hover:text-primary'
-               )}
-             >
-               {t('tree_view.vertical', 'VERTICAL')}
-             </button>
-             <button 
-               onClick={() => setViewMode('horizontal')}
-               className={cn(
-                 "text-[11px] font-bold transition-colors",
-                 viewMode === 'horizontal' ? 'text-primary' : 'text-slate-400 hover:text-primary'
-               )}
-             >
-               {t('tree_view.horizontal', 'HORIZONTAL')}
-             </button>
-             <button 
-               onClick={() => setViewMode('radial')}
-               className={cn(
-                 "text-[11px] font-bold transition-colors",
-                 viewMode === 'radial' ? 'text-primary' : 'text-slate-400 hover:text-primary'
-               )}
-             >
-               {t('tree_view.radial', 'RADIAL')}
-             </button>
-           </div>
- 
-           {/* Add Member Button */}
-           <button 
-             onClick={handleAddMember}
-             className="flex items-center gap-2 bg-primary text-white px-4 py-1.5 rounded-lg text-sm font-bold shadow-md shadow-primary/20 hover:bg-primary/90 transition-all"
-           >
-             <span className="material-icons-round text-sm">person_add</span>
-             {t('tree_view.add_member', 'Add Member')}
-           </button>
-         </div>
-       </div>
+      {/* Family Bar - Unified with Builder */}
+      <StitchFamilyBar
+        familyName={familyData?.name || 'Family'}
+        onSwitchTree={() => navigate('/dashboard')}
+      />
  
        {/* Main Tree Canvas */}
        <StitchTreeCanvas
