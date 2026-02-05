@@ -32,7 +32,7 @@ interface Position {
 }
 
 const UNIT_WIDTH = 420;
-const UNIT_HEIGHT = 200;
+const UNIT_HEIGHT = 160;
 const VERTICAL_SPACING = 100;
 const HORIZONTAL_SPACING = 40;
 
