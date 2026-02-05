@@ -151,7 +151,6 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
                    {t('tree_view.mother', 'Mother')}: {mother.first_name || mother.name}
                  </span>
                )}
-               <RoleBadge role="single" />
              </div>
            </div>
          </div>
