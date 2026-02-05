@@ -263,7 +263,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                             : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                         )}
                       >
-                        <span className="material-icons-round text-xs shrink-0">deceased</span>
+                        <span className="material-icons-round text-xs shrink-0">heart_broken</span>
                         <span className="truncate">{t('member.deceased', 'Deceased')}</span>
                       </button>
                     </div>
