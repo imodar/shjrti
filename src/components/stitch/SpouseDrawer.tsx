@@ -219,7 +219,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                   </div>
                 </div>
 
-                {/* Birth Date & Vitality Status - 2 columns */}
+                {/* Birth Date & Marriage Status - 2 columns */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
@@ -237,36 +237,52 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                   </div>
                   <div>
                     <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
-                      {t('member.vitality_status', 'Vitality Status')}
+                      {t('member.marriage_status', 'Marriage Status')}
                     </label>
-                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl overflow-hidden">
-                      <button
-                        type="button"
-                        onClick={() => handleInputChange('isAlive', true)}
-                        className={cn(
-                          "flex-1 py-2 px-2 text-[10px] font-bold rounded-lg transition-all flex items-center justify-center gap-1 min-w-0 truncate",
-                          currentSpouse.isAlive !== false
-                            ? "bg-green-500 text-white shadow-sm"
-                            : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                        )}
-                      >
-                        <span className="material-icons-round text-xs shrink-0">favorite</span>
-                        <span className="truncate">{t('member.alive', 'Alive')}</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleInputChange('isAlive', false)}
-                        className={cn(
-                          "flex-1 py-2 px-2 text-[10px] font-bold rounded-lg transition-all flex items-center justify-center gap-1 min-w-0 truncate",
-                          currentSpouse.isAlive === false
-                            ? "bg-slate-600 text-white shadow-sm"
-                            : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                        )}
-                      >
-                        <span className="material-icons-round text-xs shrink-0">heart_broken</span>
-                        <span className="truncate">{t('member.deceased', 'Deceased')}</span>
-                      </button>
-                    </div>
+                    <select
+                      value={currentSpouse.maritalStatus || 'married'}
+                      onChange={(e) => handleInputChange('maritalStatus', e.target.value)}
+                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
+                    >
+                      <option value="married">{t('member.married', 'Married')}</option>
+                      <option value="divorced">{t('member.divorced', 'Divorced')}</option>
+                      <option value="widowed">{t('member.widowed', 'Widowed')}</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Vitality Status */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
+                    {t('member.vitality_status', 'Vitality Status')}
+                  </label>
+                  <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() => handleInputChange('isAlive', true)}
+                      className={cn(
+                        "flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5",
+                        currentSpouse.isAlive !== false
+                          ? "bg-green-500 text-white shadow-sm"
+                          : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                      )}
+                    >
+                      <span className="material-icons-round text-sm">favorite</span>
+                      {t('member.alive', 'Alive')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleInputChange('isAlive', false)}
+                      className={cn(
+                        "flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5",
+                        currentSpouse.isAlive === false
+                          ? "bg-slate-600 text-white shadow-sm"
+                          : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                      )}
+                    >
+                      <span className="material-icons-round text-sm">heart_broken</span>
+                      {t('member.deceased', 'Deceased')}
+                    </button>
                   </div>
                 </div>
 
@@ -306,21 +322,6 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                 </div>
               </>
             )}
-
-            <div>
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
-                {t('member.marriage_status', 'Marriage Status')}
-              </label>
-              <select
-                value={currentSpouse.maritalStatus || 'married'}
-                onChange={(e) => handleInputChange('maritalStatus', e.target.value)}
-                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
-              >
-                <option value="married">{t('member.married', 'Married')}</option>
-                <option value="divorced">{t('member.divorced', 'Divorced')}</option>
-                <option value="widowed">{t('member.widowed', 'Widowed')}</option>
-              </select>
-            </div>
 
             {/* Photo Upload (Optional) */}
             {spouseFamilyStatus !== 'yes' && (
