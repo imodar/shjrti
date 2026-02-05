@@ -176,7 +176,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <span className="material-symbols-outlined text-primary text-lg">person</span>
-                  {t('member.first_name', 'First Name')} *
+                  {t('first_name', 'First Name')} *
                 </label>
                 <input
                   type="text"
@@ -195,7 +195,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <span className="material-symbols-outlined text-primary text-lg">wc</span>
-                  {t('member.gender', 'Gender')} *
+                  {t('family_builder.gender', 'Gender')} *
                 </label>
                 <StyledDropdown
                   options={[
@@ -212,7 +212,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
               <div className="col-span-2 space-y-2">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <span className="material-symbols-outlined text-primary text-lg">account_tree</span>
-                  {t('member.family_relation', 'Family Relation')} *
+                  {t('family_builder.choose_family', 'Family Relation')} *
                 </label>
                 <StyledDropdown
                   options={marriageOptions.length > 0 ? marriageOptions.map(opt => ({
@@ -247,7 +247,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <span className="material-symbols-outlined text-primary text-lg">groups</span>
-                  {t('member.twins', 'Twins')}
+                  {t('is_twin', 'Twins')}
                 </label>
                 <StyledDropdown
                   options={[
@@ -264,7 +264,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <span className="material-symbols-outlined text-primary text-lg">calendar_today</span>
-                  {t('member.birth_date', 'Birth Date')}
+                  {t('family_builder.birth_year', 'Birth Date')}
                 </label>
                 <input
                   type="date"
@@ -281,7 +281,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <span className="material-symbols-outlined text-primary text-lg">vital_signs</span>
-                  {t('member.vitality_status', 'Vitality Status')}
+                  {t('family_builder.alive', 'Vitality Status')}
                 </label>
                 <StyledDropdown
                   options={[
@@ -328,7 +328,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
               <div className="col-span-3 space-y-2">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <span className="material-symbols-outlined text-primary text-lg">history_edu</span>
-                  {t('member.biography', 'Biography')}
+                  {t('family_builder.biography', 'Biography')}
                 </label>
                 <textarea
                   value={formData.bio}
@@ -343,7 +343,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <span className="material-symbols-outlined text-primary text-lg">image</span>
-                  {t('member.profile_picture', 'Profile Picture')}
+                  {t('family_builder.upload_image', 'Profile Picture')}
                 </label>
                 {displayImage ? (
                   <div className="relative">
