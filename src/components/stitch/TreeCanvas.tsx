@@ -24,6 +24,8 @@ interface FamilyUnit {
   generation: number;
   parentUnitId?: string;
   childUnits: string[];
+  // For root selection by specific marriage
+  marriageIds?: string[];
 }
 
 interface Position {
@@ -104,15 +106,8 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
         children: [],
         isFounder: isFounder || false,
         generation: 0,
-        childUnits: []
-      });
-
-      // Also map all other marriage IDs to this same unit for lookup
-      data.marriageIds.forEach(mId => {
-        if (mId !== primaryMarriageId) {
-          // Create alias mapping (same unit, different ID)
-          units.set(`married_${mId}`, units.get(unitId)!);
-        }
+        childUnits: [],
+        marriageIds: data.marriageIds
       });
 
       processedMemberIds.add(husbandId);
@@ -131,7 +126,8 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
           children: [],
           isFounder: member.is_founder || false,
           generation: 0,
-          childUnits: []
+          childUnits: [],
+          marriageIds: []
         });
       }
     });
@@ -220,10 +216,11 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       return familyUnits;
     }
 
-    const rootUnitId = `married_${selectedRootMarriage}`;
-    if (!familyUnits.has(rootUnitId)) {
-      return familyUnits; // Fallback to all if not found
-    }
+    // Find the unit that corresponds to this marriageId
+    const rootUnit = Array.from(familyUnits.values()).find(u => (u.marriageIds || []).includes(selectedRootMarriage));
+    if (!rootUnit) return familyUnits; // Fallback to all if not found
+
+    const rootUnitId = rootUnit.id;
 
     const filteredUnits = new Map<string, FamilyUnit>();
     
@@ -394,7 +391,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     };
   }, [positions]);
 
-  // Center on root unit
+  // Center on root unit (accounts for zoom)
   useEffect(() => {
     if (rootUnits.length === 0 || positions.size === 0 || !containerRef.current) return;
 
@@ -411,6 +408,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     hasCenteredOnce.current = true;
 
     const containerWidth = containerRef.current.offsetWidth || 1200;
+    const containerHeight = containerRef.current.offsetHeight || 800;
     const rootCenterX = rootPosition.x + UNIT_WIDTH / 2;
     const rootUnit = rootUnits[0];
     const rootHeight = rootUnit ? getUnitHeight(rootUnit) : UNIT_HEIGHT_MARRIED;
@@ -418,10 +416,12 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
 
     setRootCenter({ x: rootCenterX, y: rootCenterY });
     setPanOffset({
-      x: containerWidth / 2 - rootCenterX,
-      y: 100 - rootCenterY
+      // Transform is: translate(pan) scale(zoom)
+      // We want: (rootCenter + pan) * zoom = containerCenter
+      x: containerWidth / 2 / zoomLevel - rootCenterX,
+      y: containerHeight / 2 / zoomLevel - rootCenterY
     });
-  }, [positions, rootUnits]);
+  }, [positions, rootUnits, zoomLevel]);
 
   // Reset centering when root selection changes
   useEffect(() => {
