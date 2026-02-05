@@ -35,6 +35,7 @@ interface Position {
 }
 
 const UNIT_WIDTH = 420;
+const SINGLE_UNIT_WIDTH = 350;
 const UNIT_HEIGHT_SINGLE = 160;
 const UNIT_HEIGHT_MARRIED = 160;
 const UNIT_HEIGHT_POLYGAMY = 280;
@@ -67,6 +68,12 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     if (unit.type === 'polygamy') return UNIT_HEIGHT_POLYGAMY;
     if (unit.type === 'married') return UNIT_HEIGHT_MARRIED;
     return UNIT_HEIGHT_SINGLE;
+  };
+
+  // Get width based on unit type
+  const getUnitWidth = (unit: FamilyUnit): number => {
+    if (unit.type === 'single') return SINGLE_UNIT_WIDTH;
+    return UNIT_WIDTH;
   };
 
   // Build family units from members and marriages (same logic as OrganizationalChart)
@@ -482,7 +489,8 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       if (!parentPos) return;
 
       const parentHeight = getUnitHeight(parentUnit);
-      const parentCenterX = parentPos.x + UNIT_WIDTH / 2;
+      const parentUnitWidth = getUnitWidth(parentUnit);
+      const parentCenterX = parentPos.x + parentUnitWidth / 2;
       const parentBottomY = parentPos.y + parentHeight;
 
       if (children.length === 1) {
@@ -490,7 +498,8 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
         const childPos = positions.get(child.id);
         if (!childPos) return;
 
-        const childCenterX = childPos.x + UNIT_WIDTH / 2;
+        const childUnitWidth = getUnitWidth(child);
+        const childCenterX = childPos.x + childUnitWidth / 2;
         const childTopY = childPos.y;
 
         connections.push(
@@ -513,7 +522,8 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
             {children.map(child => {
               const childPos = positions.get(child.id);
               if (!childPos) return null;
-              const childCenterX = childPos.x + UNIT_WIDTH / 2;
+            const childUnitWidth = getUnitWidth(child);
+            const childCenterX = childPos.x + childUnitWidth / 2;
               return (
                 <line key={`child-line-${child.id}`} x1={childCenterX} y1={distributionY} x2={childCenterX} y2={childPos.y} stroke={primaryColor} strokeWidth="3" />
               );
