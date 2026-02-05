@@ -1,6 +1,6 @@
  import React from 'react';
  import { cn } from '@/lib/utils';
-import { Member, Marriage } from '@/types/family.types';
+ import { Member } from '@/types/family.types';
  import { useLanguage } from '@/contexts/LanguageContext';
  import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { isMemberFromFamily } from '@/lib/memberDisplayUtils';
@@ -18,7 +18,6 @@ import { isMemberFromFamily } from '@/lib/memberDisplayUtils';
  interface StitchFamilyCardProps {
    unit: FamilyUnit;
    familyMembers: Member[];
-  marriages?: Marriage[];
    onMemberClick?: (member: Member) => void;
  }
  
@@ -113,57 +112,51 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
  export const StitchFamilyCard: React.FC<StitchFamilyCardProps> = ({
    unit,
    familyMembers,
-  marriages = [],
    onMemberClick
  }) => {
    const { t } = useLanguage();
-
-  // Helper to check if a member has multiple spouses
-  const hasMultipleSpouses = (memberId: string): boolean => {
-    const memberMarriages = marriages.filter(
-      m => m.husband_id === memberId || m.wife_id === memberId
-    );
-    return memberMarriages.length > 1;
-  };
-
-  // Helper to check if we need to show parent info for a child
-  const shouldShowParentInfo = (member: Member): { show: boolean; parent?: Member } => {
-    const fatherId = member.father_id;
-    const motherId = member.mother_id;
-    
-    if (!fatherId && !motherId) return { show: false };
-    
-    const father = fatherId ? familyMembers.find(m => m.id === fatherId) : undefined;
-    const mother = motherId ? familyMembers.find(m => m.id === motherId) : undefined;
-    
-    // Check if father has multiple wives
-    const fatherHasMultipleWives = fatherId ? hasMultipleSpouses(fatherId) : false;
-    // Check if mother has multiple husbands
-    const motherHasMultipleHusbands = motherId ? hasMultipleSpouses(motherId) : false;
-    
-    // Only show parent info if there's polygamy
-    if (fatherHasMultipleWives && mother) {
-      return { show: true, parent: mother };
-    }
-    if (motherHasMultipleHusbands && father) {
-      return { show: true, parent: father };
-    }
-    
-    return { show: false };
-  };
  
    // Get display name for family card label
    const getUnitLabel = () => {
-    if (unit.type === 'single') return '';
+     if (unit.type === 'single') {
+       const member = unit.husband || unit.wives[0];
+       return `${member?.first_name || member?.name || 'Unknown'}`;
+     }
      if (unit.type === 'polygamy') {
        return `${t('tree_view.family_of', 'Family of')} ${unit.husband?.first_name || unit.husband?.name} (${t('tree_view.multiple_spouses', 'Multiple Spouses')})`;
      }
      return `${t('tree_view.family_of', 'Family of')} ${unit.husband?.first_name || unit.husband?.name}`;
    };
  
-  // Don't render single member cards - they should be shown as children of their parent unit
+   // Render Single Member Card
    if (unit.type === 'single') {
-    return null;
+     const member = unit.husband || unit.wives[0];
+     if (!member) return null;
+ 
+     // Find mother info if available
+     const mother = member.mother_id 
+       ? familyMembers.find(m => m.id === member.mother_id) 
+       : null;
+ 
+     return (
+       <div className="family-card w-[420px] p-5 bg-white dark:bg-slate-800 border border-primary/20 dark:border-primary/30 rounded-[24px] shadow-sm relative">
+         <div className="flex flex-col items-center gap-4">
+           <MemberAvatar member={member} size="md" />
+           <div className="text-center">
+              <h4 className="font-bold text-sm">{getMemberDisplayName(member, familyMembers)}</h4>
+             <div className="mt-2 flex flex-wrap justify-center gap-2">
+               {mother && (
+                 <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1">
+                   <span className="material-icons-round text-[12px]">face_3</span>
+                   {t('tree_view.mother', 'Mother')}: {mother.first_name || mother.name}
+                 </span>
+               )}
+               <RoleBadge role="single" />
+             </div>
+           </div>
+         </div>
+       </div>
+     );
    }
  
    // Render Married Couple Card
