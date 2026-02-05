@@ -125,13 +125,7 @@
        : null;
  
      return (
-       <div className="family-card w-[350px] p-5 pt-10 bg-white dark:bg-slate-800 border border-primary/20 dark:border-primary/30 rounded-[24px] shadow-sm relative">
-         {/* Label */}
-         <div className="family-label absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white px-4 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 whitespace-nowrap z-10">
-           <span className="material-icons-round text-sm">person</span>
-           {t('tree_view.individual', 'Individual View')}
-         </div>
- 
+      <div className="family-card w-[350px] p-5 bg-white dark:bg-slate-800 border border-primary/20 dark:border-primary/30 rounded-[24px] shadow-sm relative">
          <div className="flex flex-col items-center gap-4">
            <MemberAvatar member={member} size="md" />
            <div className="text-center">
