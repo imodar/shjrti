@@ -1,228 +1,482 @@
- import React, { useMemo } from 'react';
- import { cn } from '@/lib/utils';
- import { Member, Marriage } from '@/types/family.types';
- import { StitchFamilyCard } from './FamilyCard';
- import { useLanguage } from '@/contexts/LanguageContext';
- 
- interface StitchTreeCanvasProps {
-   familyMembers: Member[];
-   marriages: Marriage[];
-   zoomLevel: number;
-   viewMode: 'vertical' | 'horizontal' | 'radial';
-   onZoomIn: () => void;
-   onZoomOut: () => void;
-   onResetZoom: () => void;
- }
- 
- interface FamilyUnit {
-   id: string;
-   type: 'married' | 'single' | 'polygamy';
-   husband?: Member;
-   wives: Member[];
-   children: Member[];
-   isFounder: boolean;
-   generation: number;
- }
- 
- export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
-   familyMembers,
-   marriages,
-   zoomLevel,
-   viewMode,
-   onZoomIn,
-   onZoomOut,
-   onResetZoom
- }) => {
-   const { t } = useLanguage();
- 
-   // Build family units from members and marriages
-   const familyUnits = useMemo(() => {
-     const units: FamilyUnit[] = [];
-     const processedMemberIds = new Set<string>();
- 
-     // Group marriages by husband to detect polygamy
-     const marriagesByHusband = new Map<string, Marriage[]>();
-     marriages.forEach(m => {
-       const existing = marriagesByHusband.get(m.husband_id) || [];
-       existing.push(m);
-       marriagesByHusband.set(m.husband_id, existing);
-     });
- 
-     // Process marriages
-     marriagesByHusband.forEach((husbandMarriages, husbandId) => {
-       const husband = familyMembers.find(m => m.id === husbandId);
-       if (!husband) return;
- 
-       const wives = husbandMarriages
-         .map(m => familyMembers.find(mem => mem.id === m.wife_id))
-         .filter(Boolean) as Member[];
- 
-       // Find children of this unit
-       const children = familyMembers.filter(m => 
-         m.father_id === husbandId || 
-         wives.some(w => m.mother_id === w.id)
-       );
- 
-       const isFounder = husband.is_founder;
-       const type = wives.length > 1 ? 'polygamy' : 'married';
- 
-       units.push({
-         id: `unit-${husbandId}`,
-         type,
-         husband,
-         wives,
-         children,
-         isFounder: isFounder || false,
-         generation: isFounder ? 1 : 2 // Simplified generation
-       });
- 
-       processedMemberIds.add(husbandId);
-       wives.forEach(w => processedMemberIds.add(w.id));
-     });
- 
-     // Add unmarried members as single units
-     familyMembers.forEach(member => {
-       if (!processedMemberIds.has(member.id)) {
-         // Check if this member has parents in the tree
-         const hasParents = member.father_id || member.mother_id;
-         
-         units.push({
-           id: `single-${member.id}`,
-           type: 'single',
-           husband: member.gender === 'male' ? member : undefined,
-           wives: member.gender === 'female' ? [member] : [],
-           children: [],
-           isFounder: member.is_founder || false,
-           generation: hasParents ? 3 : 1
-         });
-       }
-     });
- 
-     return units;
-   }, [familyMembers, marriages]);
- 
-   // Get founder unit
-   const founderUnit = familyUnits.find(u => u.isFounder);
- 
-   // Get children units (second generation)
-   const secondGenUnits = familyUnits.filter(u => 
-     !u.isFounder && 
-     (u.husband?.father_id === founderUnit?.husband?.id || 
-      u.wives.some(w => w.father_id === founderUnit?.husband?.id))
-   );
- 
-   return (
-     <main className="relative h-[calc(100vh-120px)] overflow-auto tree-canvas-bg">
-       {/* Zoom Controls */}
-       <div className="absolute bottom-8 right-8 rtl:right-auto rtl:left-8 z-40 flex flex-col gap-3">
-         <div className="bg-white dark:bg-slate-800 p-1.5 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col">
-           <button 
-             onClick={onZoomIn}
-             className="p-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
-           >
-             <span className="material-icons-round">add</span>
-           </button>
-           <div className="h-px bg-slate-100 dark:bg-slate-700 my-1 mx-2"></div>
-           <button 
-             onClick={onZoomOut}
-             className="p-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
-           >
-             <span className="material-icons-round">remove</span>
-           </button>
-         </div>
-         <button 
-           onClick={onResetZoom}
-           className="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300"
-         >
-           <span className="material-icons-round">filter_center_focus</span>
-         </button>
-       </div>
- 
-       {/* Minimap */}
-       <div className="absolute bottom-8 left-8 rtl:left-auto rtl:right-8 z-40 w-48 h-32 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden p-2">
-         <div className="w-full h-full bg-slate-50 dark:bg-slate-900 rounded-lg relative border border-slate-100 dark:border-slate-700">
-           <div className="absolute inset-4 border-2 border-primary/50 bg-primary/5 rounded"></div>
-           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-primary rounded-full"></div>
-         </div>
-       </div>
- 
-       {/* Tree Content */}
-       <div 
-         className="absolute inset-0 flex items-start justify-center pt-20"
-         style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top center' }}
-       >
-         <div className="relative flex flex-col items-center gap-8">
-           {/* Founder Unit */}
-           {founderUnit && (
-             <div className="relative">
-               <StitchFamilyCard
-                 unit={founderUnit}
-                 familyMembers={familyMembers}
-               />
-               
-               {/* Connector line to children */}
-               {secondGenUnits.length > 0 && (
-                 <div className="absolute w-px h-16 bg-primary/40 left-1/2 -translate-x-1/2 top-full" />
-               )}
-             </div>
-           )}
- 
-           {/* Second Generation - Horizontal Line + Units */}
-           {secondGenUnits.length > 0 && (
-             <>
-               {/* Horizontal connector */}
-               <div className="relative w-[1000px] h-px bg-primary/40 mt-8">
-                 {secondGenUnits.map((_, idx) => {
-                   const totalUnits = secondGenUnits.length;
-                   const position = totalUnits > 1 
-                     ? (idx / (totalUnits - 1)) * 100 
-                     : 50;
-                   return (
-                     <div 
-                       key={idx}
-                       className="absolute w-px h-8 bg-primary/40 top-0"
-                       style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
-                     />
-                   );
-                 })}
-               </div>
- 
-               {/* Children Units */}
-               <div className="flex gap-8 items-start flex-wrap justify-center mt-4">
-                 {secondGenUnits.map(unit => (
-                   <StitchFamilyCard
-                     key={unit.id}
-                     unit={unit}
-                     familyMembers={familyMembers}
-                   />
-                 ))}
-               </div>
-             </>
-           )}
- 
-           {/* Empty State */}
-           {familyMembers.length === 0 && (
-             <div className="text-center py-20">
-               <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                 <span className="material-icons-round text-5xl text-primary">account_tree</span>
-               </div>
-               <h3 className="text-xl font-bold text-slate-700 dark:text-slate-200 mb-2">
-                 {t('tree_view.no_members', 'No family members yet')}
-               </h3>
-               <p className="text-slate-500 dark:text-slate-400">
-                 {t('tree_view.start_adding', 'Start by adding the founder of your family tree')}
-               </p>
-             </div>
-           )}
-         </div>
-       </div>
- 
-       <style>{`
-         .tree-canvas-bg {
-           background-image: radial-gradient(circle, hsl(var(--primary) / 0.1) 1px, transparent 1px);
-           background-size: 40px 40px;
-         }
-       `}</style>
-     </main>
-   );
- };
+import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { Member, Marriage } from '@/types/family.types';
+import { StitchFamilyCard } from './FamilyCard';
+import { useLanguage } from '@/contexts/LanguageContext';
+
+interface StitchTreeCanvasProps {
+  familyMembers: Member[];
+  marriages: Marriage[];
+  zoomLevel: number;
+  viewMode: 'vertical' | 'horizontal' | 'radial';
+  onZoomIn: () => void;
+  onZoomOut: () => void;
+  onResetZoom: () => void;
+}
+
+interface FamilyUnit {
+  id: string;
+  type: 'married' | 'single' | 'polygamy';
+  husband?: Member;
+  wives: Member[];
+  children: Member[];
+  isFounder: boolean;
+  generation: number;
+  parentUnitId?: string;
+  childUnits: string[];
+}
+
+interface Position {
+  x: number;
+  y: number;
+  width: number;
+}
+
+const UNIT_WIDTH = 420;
+const UNIT_HEIGHT = 200;
+const VERTICAL_SPACING = 100;
+const HORIZONTAL_SPACING = 40;
+
+export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
+  familyMembers,
+  marriages,
+  zoomLevel,
+  viewMode,
+  onZoomIn,
+  onZoomOut,
+  onResetZoom
+}) => {
+  const { t } = useLanguage();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [rootCenter, setRootCenter] = useState({ x: 0, y: 0 });
+  const hasCenteredOnce = useRef(false);
+  const lastRootIdRef = useRef<string>('');
+
+  // Build family units from members and marriages (same logic as OrganizationalChart)
+  const familyUnits = useMemo(() => {
+    const units = new Map<string, FamilyUnit>();
+    const processedMemberIds = new Set<string>();
+
+    // Group marriages by husband to detect polygamy
+    const marriagesByHusband = new Map<string, Marriage[]>();
+    marriages.forEach(m => {
+      const existing = marriagesByHusband.get(m.husband_id) || [];
+      existing.push(m);
+      marriagesByHusband.set(m.husband_id, existing);
+    });
+
+    // Process marriages
+    marriagesByHusband.forEach((husbandMarriages, husbandId) => {
+      const husband = familyMembers.find(m => m.id === husbandId);
+      if (!husband) return;
+
+      const wives = husbandMarriages
+        .map(m => familyMembers.find(mem => mem.id === m.wife_id))
+        .filter(Boolean) as Member[];
+
+      const isFounder = husband.is_founder;
+      const type = wives.length > 1 ? 'polygamy' : 'married';
+      const unitId = `married_${husbandId}`;
+
+      units.set(unitId, {
+        id: unitId,
+        type,
+        husband,
+        wives,
+        children: [],
+        isFounder: isFounder || false,
+        generation: 0,
+        childUnits: []
+      });
+
+      processedMemberIds.add(husbandId);
+      wives.forEach(w => processedMemberIds.add(w.id));
+    });
+
+    // Add unmarried members as single units
+    familyMembers.forEach(member => {
+      if (!processedMemberIds.has(member.id)) {
+        const unitId = `single_${member.id}`;
+        units.set(unitId, {
+          id: unitId,
+          type: 'single',
+          husband: member.gender === 'male' ? member : undefined,
+          wives: member.gender === 'female' ? [member] : [],
+          children: [],
+          isFounder: member.is_founder || false,
+          generation: 0,
+          childUnits: []
+        });
+      }
+    });
+
+    // Establish parent-child relationships
+    units.forEach((unit, unitId) => {
+      const isFounderUnit = (unit.husband?.is_founder) || unit.wives.some(w => w.is_founder);
+      if (isFounderUnit) return;
+
+      const members = unit.husband ? [unit.husband, ...unit.wives] : [...unit.wives];
+      members.forEach(member => {
+        if (member.father_id || member.mother_id) {
+          for (const [potentialParentId, potentialParent] of units.entries()) {
+            if (potentialParentId === unitId) continue;
+
+            const parentMemberIds = new Set<string>();
+            if (potentialParent.husband) parentMemberIds.add(potentialParent.husband.id);
+            potentialParent.wives.forEach(w => parentMemberIds.add(w.id));
+
+            const hasFather = member.father_id && parentMemberIds.has(member.father_id);
+            const hasMother = member.mother_id && parentMemberIds.has(member.mother_id);
+
+            let isValidParent = false;
+            if (member.father_id && member.mother_id) {
+              isValidParent = !!(hasFather && hasMother);
+            } else if (member.father_id || member.mother_id) {
+              isValidParent = !!(hasFather || hasMother);
+            }
+
+            if (isValidParent) {
+              unit.parentUnitId = potentialParentId;
+              if (!potentialParent.childUnits.includes(unitId)) {
+                potentialParent.childUnits.push(unitId);
+              }
+              break;
+            }
+          }
+        }
+      });
+    });
+
+    // Assign generations using BFS from root units
+    const rootUnitIds: string[] = [];
+    units.forEach((unit, unitId) => {
+      if (!unit.parentUnitId) {
+        rootUnitIds.push(unitId);
+        unit.generation = 1;
+      }
+    });
+
+    const queue: Array<{ id: string; gen: number }> = rootUnitIds.map(id => ({ id, gen: 1 }));
+    const visited = new Set<string>();
+
+    while (queue.length > 0) {
+      const { id, gen } = queue.shift()!;
+      if (visited.has(id)) continue;
+      visited.add(id);
+
+      const unit = units.get(id);
+      if (!unit) continue;
+
+      unit.generation = gen;
+
+      unit.childUnits.forEach(childId => {
+        if (!visited.has(childId)) {
+          queue.push({ id: childId, gen: gen + 1 });
+        }
+      });
+    }
+
+    return units;
+  }, [familyMembers, marriages]);
+
+  // Get root units (no parent)
+  const rootUnits = useMemo(() => {
+    return Array.from(familyUnits.values()).filter(u => !u.parentUnitId);
+  }, [familyUnits]);
+
+  // Calculate positions using centered tree layout (same as OrganizationalChart)
+  const positions = useMemo((): Map<string, Position> => {
+    const positionsMap = new Map<string, Position>();
+    if (rootUnits.length === 0) return positionsMap;
+
+    const calculateSubtreeWidth = (unitId: string, memo: Map<string, number>): number => {
+      if (memo.has(unitId)) return memo.get(unitId)!;
+
+      const unit = familyUnits.get(unitId);
+      if (!unit) return UNIT_WIDTH;
+
+      if (unit.childUnits.length === 0) {
+        memo.set(unitId, UNIT_WIDTH);
+        return UNIT_WIDTH;
+      }
+
+      let totalWidth = 0;
+      unit.childUnits.forEach((childId, index) => {
+        const childWidth = calculateSubtreeWidth(childId, memo);
+        totalWidth += childWidth;
+        if (index < unit.childUnits.length - 1) {
+          totalWidth += HORIZONTAL_SPACING;
+        }
+      });
+
+      const width = Math.max(UNIT_WIDTH, totalWidth);
+      memo.set(unitId, width);
+      return width;
+    };
+
+    const subtreeWidths = new Map<string, number>();
+    rootUnits.forEach(root => {
+      calculateSubtreeWidth(root.id, subtreeWidths);
+    });
+
+    const positionUnit = (unitId: string, startX: number, generation: number): void => {
+      const unit = familyUnits.get(unitId);
+      if (!unit) return;
+
+      const y = (generation - 1) * (UNIT_HEIGHT + VERTICAL_SPACING);
+
+      if (unit.childUnits.length === 0) {
+        positionsMap.set(unitId, { x: startX, y, width: UNIT_WIDTH });
+        return;
+      }
+
+      let currentX = startX;
+      const childCenters: number[] = [];
+
+      unit.childUnits.forEach((childId) => {
+        const childWidth = subtreeWidths.get(childId) || UNIT_WIDTH;
+        positionUnit(childId, currentX, generation + 1);
+
+        const childActualPosition = positionsMap.get(childId);
+        if (childActualPosition) {
+          const childCenter = childActualPosition.x + UNIT_WIDTH / 2;
+          childCenters.push(childCenter);
+        }
+
+        currentX += childWidth + HORIZONTAL_SPACING;
+      });
+
+      const leftmostChild = childCenters[0];
+      const rightmostChild = childCenters[childCenters.length - 1];
+      const childrenCenter = (leftmostChild + rightmostChild) / 2;
+      const parentX = childrenCenter - UNIT_WIDTH / 2;
+
+      positionsMap.set(unitId, { x: parentX, y, width: UNIT_WIDTH });
+    };
+
+    let currentRootX = 0;
+    rootUnits.forEach((root) => {
+      positionUnit(root.id, currentRootX, root.generation);
+      const rootWidth = subtreeWidths.get(root.id) || UNIT_WIDTH;
+      currentRootX += rootWidth + HORIZONTAL_SPACING * 3;
+    });
+
+    return positionsMap;
+  }, [familyUnits, rootUnits]);
+
+  // Calculate tree dimensions
+  const treeDimensions = useMemo(() => {
+    if (positions.size === 0) return { width: 1000, height: 1000 };
+
+    let maxX = 0;
+    let maxY = 0;
+
+    positions.forEach((pos) => {
+      maxX = Math.max(maxX, pos.x + UNIT_WIDTH);
+      maxY = Math.max(maxY, pos.y + UNIT_HEIGHT);
+    });
+
+    return {
+      width: maxX + HORIZONTAL_SPACING * 2,
+      height: maxY + VERTICAL_SPACING * 2
+    };
+  }, [positions]);
+
+  // Center on root unit
+  useEffect(() => {
+    if (rootUnits.length === 0 || positions.size === 0 || !containerRef.current) return;
+
+    const currentRootId = rootUnits[0].id;
+    const rootPosition = positions.get(currentRootId);
+    if (!rootPosition) return;
+
+    const rootChanged = lastRootIdRef.current !== currentRootId;
+    const shouldCenter = rootChanged || !hasCenteredOnce.current;
+
+    if (!shouldCenter) return;
+
+    lastRootIdRef.current = currentRootId;
+    hasCenteredOnce.current = true;
+
+    const containerWidth = containerRef.current.offsetWidth || 1200;
+    const rootCenterX = rootPosition.x + UNIT_WIDTH / 2;
+    const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
+
+    setRootCenter({ x: rootCenterX, y: rootCenterY });
+    setPanOffset({
+      x: containerWidth / 2 - rootCenterX,
+      y: 100 - rootCenterY
+    });
+  }, [positions, rootUnits]);
+
+  // Drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      setPanOffset({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+    };
+    const handleMouseUp = () => setIsDragging(false);
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging, dragStart]);
+
+  // Render connection lines
+  const renderConnections = () => {
+    const connections: JSX.Element[] = [];
+    const primaryColor = 'hsl(var(--primary))';
+
+    familyUnits.forEach(parentUnit => {
+      const children = parentUnit.childUnits
+        .map(id => familyUnits.get(id))
+        .filter(Boolean) as FamilyUnit[];
+
+      if (children.length === 0) return;
+
+      const parentPos = positions.get(parentUnit.id);
+      if (!parentPos) return;
+
+      const parentCenterX = parentPos.x + UNIT_WIDTH / 2;
+      const parentBottomY = parentPos.y + UNIT_HEIGHT;
+
+      if (children.length === 1) {
+        const child = children[0];
+        const childPos = positions.get(child.id);
+        if (!childPos) return;
+
+        const childCenterX = childPos.x + UNIT_WIDTH / 2;
+        const childTopY = childPos.y;
+
+        connections.push(
+          <g key={`connection-${parentUnit.id}-${child.id}`}>
+            <line x1={parentCenterX} y1={parentBottomY} x2={parentCenterX} y2={parentBottomY + VERTICAL_SPACING / 3} stroke={primaryColor} strokeWidth="3" />
+            <line x1={parentCenterX} y1={parentBottomY + VERTICAL_SPACING / 3} x2={childCenterX} y2={parentBottomY + VERTICAL_SPACING / 3} stroke={primaryColor} strokeWidth="3" />
+            <line x1={childCenterX} y1={parentBottomY + VERTICAL_SPACING / 3} x2={childCenterX} y2={childTopY} stroke={primaryColor} strokeWidth="3" />
+          </g>
+        );
+      } else {
+        const childPositions = children.map(child => positions.get(child.id)).filter(Boolean) as Position[];
+        const leftmostX = Math.min(...childPositions.map(pos => pos.x + UNIT_WIDTH / 2));
+        const rightmostX = Math.max(...childPositions.map(pos => pos.x + UNIT_WIDTH / 2));
+        const distributionY = parentBottomY + VERTICAL_SPACING / 2;
+
+        connections.push(
+          <g key={`connection-group-${parentUnit.id}`}>
+            <line x1={parentCenterX} y1={parentBottomY} x2={parentCenterX} y2={distributionY} stroke={primaryColor} strokeWidth="3" />
+            <line x1={leftmostX} y1={distributionY} x2={rightmostX} y2={distributionY} stroke={primaryColor} strokeWidth="3" />
+            {children.map(child => {
+              const childPos = positions.get(child.id);
+              if (!childPos) return null;
+              const childCenterX = childPos.x + UNIT_WIDTH / 2;
+              return (
+                <line key={`child-line-${child.id}`} x1={childCenterX} y1={distributionY} x2={childCenterX} y2={childPos.y} stroke={primaryColor} strokeWidth="3" />
+              );
+            })}
+          </g>
+        );
+      }
+    });
+
+    return connections;
+  };
+
+  return (
+    <main className="relative h-[calc(100vh-120px)] overflow-hidden tree-canvas-bg">
+      {/* Zoom Controls */}
+      <div className="absolute bottom-8 right-8 rtl:right-auto rtl:left-8 z-40 flex flex-col gap-3">
+        <div className="bg-white dark:bg-slate-800 p-1.5 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 flex flex-col">
+          <button onClick={onZoomIn} className="p-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-colors">
+            <span className="material-icons-round">add</span>
+          </button>
+          <div className="h-px bg-slate-100 dark:bg-slate-700 my-1 mx-2"></div>
+          <button onClick={onZoomOut} className="p-2.5 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-colors">
+            <span className="material-icons-round">remove</span>
+          </button>
+        </div>
+        <button onClick={onResetZoom} className="bg-white dark:bg-slate-800 p-3 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-slate-600 dark:text-slate-300">
+          <span className="material-icons-round">filter_center_focus</span>
+        </button>
+      </div>
+
+      {/* Tree Container with Pan/Zoom */}
+      <div
+        ref={containerRef}
+        className="w-full h-full overflow-hidden cursor-grab active:cursor-grabbing select-none"
+        onMouseDown={handleMouseDown}
+      >
+        <div
+          className="absolute"
+          style={{
+            transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
+            transformOrigin: `${rootCenter.x}px ${rootCenter.y}px`,
+            transition: isDragging ? 'none' : 'transform 0.15s ease-out'
+          }}
+        >
+          {/* SVG for connection lines */}
+          <svg
+            className="absolute top-0 left-0 pointer-events-none"
+            width={treeDimensions.width}
+            height={treeDimensions.height}
+          >
+            {renderConnections()}
+          </svg>
+
+          {/* Render all family units */}
+          {Array.from(familyUnits.values()).map(unit => {
+            const position = positions.get(unit.id);
+            if (!position) return null;
+            return (
+              <div
+                key={unit.id}
+                className="absolute"
+                style={{
+                  left: `${position.x}px`,
+                  top: `${position.y}px`,
+                  width: `${UNIT_WIDTH}px`
+                }}
+              >
+                <StitchFamilyCard unit={unit} familyMembers={familyMembers} />
+              </div>
+            );
+          })}
+
+          {/* Empty State */}
+          {familyMembers.length === 0 && (
+            <div className="text-center py-20" style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+              <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                <span className="material-icons-round text-5xl text-primary">account_tree</span>
+              </div>
+              <h3 className="text-xl font-bold text-slate-700 dark:text-slate-200 mb-2">
+                {t('tree_view.no_members', 'No family members yet')}
+              </h3>
+              <p className="text-slate-500 dark:text-slate-400">
+                {t('tree_view.start_adding', 'Start by adding the founder of your family tree')}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <style>{`
+        .tree-canvas-bg {
+          background-image: radial-gradient(circle, hsl(var(--primary) / 0.1) 1px, transparent 1px);
+          background-size: 40px 40px;
+        }
+      `}</style>
+    </main>
+  );
+};
