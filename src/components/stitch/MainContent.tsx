@@ -1,6 +1,7 @@
 import React from 'react';
 import { AddMemberForm } from './AddMemberForm';
 import { Member, Marriage } from '@/types/family.types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Activity {
   id: string;
@@ -57,6 +58,8 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   formMode = 'add',
   onMemberSaved
 }) => {
+  const { t } = useLanguage();
+
   const getActivityIcon = (type: Activity['type']) => {
     switch (type) {
       case 'edit':
@@ -73,30 +76,30 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   const quickActions = [
     { 
       id: 'export', 
-      label: 'Export Tree', 
+      label: t('stitch.export_tree', 'Export Tree'), 
       icon: 'account_tree',
       iconBg: 'bg-primary/10 text-primary',
       onClick: onExportTree 
     },
     { 
       id: 'import', 
-      label: 'Import GEDCOM', 
+      label: t('stitch.import_gedcom', 'Import GEDCOM'), 
       icon: 'upload_file',
-      iconBg: 'bg-emerald-100/50 text-emerald-600',
+      iconBg: 'bg-emerald-100/50 text-emerald-600 dark:bg-emerald-900/30',
       onClick: onImportGedcom 
     },
     { 
       id: 'story', 
-      label: 'Family Story', 
+      label: t('stitch.family_story', 'Family Story'), 
       icon: 'auto_stories',
-      iconBg: 'bg-amber-100/50 text-amber-600',
+      iconBg: 'bg-amber-100/50 text-amber-600 dark:bg-amber-900/30',
       onClick: onFamilyStory 
     },
     { 
       id: 'print', 
-      label: 'Print Poster', 
+      label: t('stitch.print_poster', 'Print Poster'), 
       icon: 'print',
-      iconBg: 'bg-blue-100/50 text-blue-600',
+      iconBg: 'bg-blue-100/50 text-blue-600 dark:bg-blue-900/30',
       onClick: onPrintPoster 
     }
   ];
@@ -104,18 +107,16 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   // Show Add Member Form if active
   if (showAddMemberForm && familyId && onCloseForm && onMemberSaved) {
     return (
-      <section className="flex-1 overflow-hidden bg-slate-50 dark:bg-background-dark">
-        <AddMemberForm
-          familyId={familyId}
-          familyMembers={familyMembers}
-          marriages={marriages}
-          familyData={familyData}
-          editingMember={editingMember}
-          formMode={formMode}
-          onClose={onCloseForm}
-          onMemberSaved={onMemberSaved}
-        />
-      </section>
+      <AddMemberForm
+        familyId={familyId}
+        familyMembers={familyMembers}
+        marriages={marriages}
+        familyData={familyData}
+        editingMember={editingMember}
+        formMode={formMode}
+        onClose={onCloseForm}
+        onMemberSaved={onMemberSaved}
+      />
     );
   }
 
@@ -125,10 +126,10 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
         {/* Welcome Header */}
         <header className="mb-10">
           <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Welcome back, {userName}!
+            {t('stitch.welcome_back', 'Welcome back')}, {userName}!
           </h2>
           <p className="text-slate-500">
-            Here's what's happening in your family tree today.
+            {t('stitch.whats_happening', "Here's what's happening in your family tree today.")}
           </p>
         </header>
 

@@ -228,13 +228,15 @@ const FamilyBuilderStitch: React.FC = () => {
           onMemberSaved={handleMemberSaved}
         />
 
-        {/* Right Panel - Stats */}
-        <StitchRightPanel
-          completenessPercentage={stats.completeness}
-          generationsCount={stats.generations}
-          documentsCount={stats.documents}
-          pendingSuggestions={0}
-        />
+        {/* Right Panel - Stats (hidden when adding member) */}
+        {!showAddMemberForm && (
+          <StitchRightPanel
+            completenessPercentage={stats.completeness}
+            generationsCount={stats.generations}
+            documentsCount={stats.documents}
+            pendingSuggestions={0}
+          />
+        )}
       </main>
 
       {/* Mobile Overlay - Desktop Optimized Message */}

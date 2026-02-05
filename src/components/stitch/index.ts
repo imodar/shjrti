@@ -7,5 +7,6 @@ export { StitchMainContent } from './MainContent';
 export { StitchTreeCanvas } from './TreeCanvas';
 export { StitchFamilyCard } from './FamilyCard';
 export { AddMemberForm } from './AddMemberForm';
+export { SpouseDrawer } from './SpouseDrawer';
 export { useAddMemberForm } from './useAddMemberForm';
 export * from './AddMemberFormTypes';
