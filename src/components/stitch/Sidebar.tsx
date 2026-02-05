@@ -280,7 +280,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
       </div>
 
       {/* Footer - Add Button */}
-      <div className="p-4 bg-slate-50 dark:bg-slate-800/50">
+      <div className="p-6 bg-slate-50 dark:bg-slate-800/50">
         <button
           onClick={onAddMember}
           className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-all flex items-center justify-center gap-2"
