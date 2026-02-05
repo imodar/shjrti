@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getLocalizedText } from '@/lib/packageUtils';
 import { supabase } from '@/integrations/supabase/client';
+import '@/styles/themes/stitch/index.css';
 
 interface FamilyWithCount {
   id: string;
