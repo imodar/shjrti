@@ -72,6 +72,9 @@ const FamilyBuilderStitch: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMemberId, setSelectedMemberId] = useState<string | undefined>();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [showAddMemberForm, setShowAddMemberForm] = useState(false);
+  const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
+  const [editingMember, setEditingMember] = useState<any>(null);
 
   // Filter members based on search
   const filteredMembers = useMemo(() => {
@@ -130,8 +133,20 @@ const FamilyBuilderStitch: React.FC = () => {
   };
 
   const handleAddMember = () => {
-    // TODO: Open add member form
-    navigate('/family-builder-new?mode=add');
+    setEditingMember(null);
+    setFormMode('add');
+    setShowAddMemberForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowAddMemberForm(false);
+    setEditingMember(null);
+  };
+
+  const handleMemberSaved = () => {
+    refetch();
+    setShowAddMemberForm(false);
+    setEditingMember(null);
   };
 
   const handleTabChange = (tab: string) => {
@@ -202,6 +217,15 @@ const FamilyBuilderStitch: React.FC = () => {
           onImportGedcom={() => {/* TODO */}}
           onFamilyStory={() => {/* TODO */}}
           onPrintPoster={() => {/* TODO */}}
+          showAddMemberForm={showAddMemberForm}
+          onCloseForm={handleCloseForm}
+          familyMembers={familyMembers}
+          marriages={marriages}
+          familyId={searchParams.get('family') || ''}
+          familyData={familyData}
+          editingMember={editingMember}
+          formMode={formMode}
+          onMemberSaved={handleMemberSaved}
         />
 
         {/* Right Panel - Stats */}
