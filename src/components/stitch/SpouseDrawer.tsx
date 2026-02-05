@@ -80,7 +80,8 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
       {/* Overlay */}
       <div 
         className={cn(
-          "fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60] transition-opacity duration-300",
+          "fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60]",
+          "transition-all duration-500 ease-out",
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         onClick={onClose}
@@ -89,11 +90,18 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
       {/* Drawer */}
       <aside 
         className={cn(
-          "fixed top-0 h-full w-[400px] bg-white dark:bg-slate-900 shadow-2xl z-[70] transform transition-transform duration-300 ease-in-out border-slate-200 dark:border-slate-800 flex flex-col",
+          "fixed top-0 h-full w-[400px] bg-white dark:bg-slate-900 shadow-2xl z-[70] flex flex-col",
+          "border-slate-200 dark:border-slate-800",
+          "transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
           isRTL 
-            ? "left-0 border-r" + (isOpen ? " translate-x-0" : " -translate-x-full")
-            : "right-0 border-l" + (isOpen ? " translate-x-0" : " translate-x-full")
+            ? cn("left-0 border-r", isOpen ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0")
+            : cn("right-0 border-l", isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0")
         )}
+        style={{
+          boxShadow: isOpen 
+            ? (isRTL ? '20px 0 60px -15px rgba(0,0,0,0.3)' : '-20px 0 60px -15px rgba(0,0,0,0.3)')
+            : 'none'
+        }}
       >
         {/* Header */}
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
