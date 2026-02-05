@@ -15,6 +15,7 @@ import { useAddMemberForm } from './useAddMemberForm';
 import { AddMemberFormProps } from './AddMemberFormTypes';
 import { SpouseDrawer } from './SpouseDrawer';
 import { SearchableDropdown } from '@/components/SearchableDropdown';
+import { StyledDropdown } from './StyledDropdown';
 
 export const AddMemberForm: React.FC<AddMemberFormProps> = ({
   familyId,
@@ -196,14 +197,15 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                   <span className="material-symbols-outlined text-primary text-lg">wc</span>
                   {t('member.gender', 'Gender')} *
                 </label>
-                <select
+                <StyledDropdown
+                  options={[
+                    { value: 'male', label: t('member.male', 'Male'), icon: 'male' },
+                    { value: 'female', label: t('member.female', 'Female'), icon: 'female' }
+                  ]}
                   value={formData.gender}
-                  onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value as 'male' | 'female' }))}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
-                >
-                  <option value="male">{t('member.male', 'Male')}</option>
-                  <option value="female">{t('member.female', 'Female')}</option>
-                </select>
+                  onChange={(value) => setFormData(prev => ({ ...prev, gender: value as 'male' | 'female' }))}
+                  accentColor="primary"
+                />
               </div>
 
               {/* Family Relation - 2/4 */}
@@ -249,14 +251,15 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                   <span className="material-symbols-outlined text-primary text-lg">groups</span>
                   {t('member.twins', 'Twins')}
                 </label>
-                <select
+                <StyledDropdown
+                  options={[
+                    { value: 'no', label: t('common.no', 'No'), icon: 'person' },
+                    { value: 'yes', label: t('common.yes', 'Yes'), icon: 'group' }
+                  ]}
                   value={formData.is_twin ? 'yes' : 'no'}
-                  onChange={(e) => setFormData(prev => ({ ...prev, is_twin: e.target.value === 'yes' }))}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
-                >
-                  <option value="no">{t('common.no', 'No')}</option>
-                  <option value="yes">{t('common.yes', 'Yes')}</option>
-                </select>
+                  onChange={(value) => setFormData(prev => ({ ...prev, is_twin: value === 'yes' }))}
+                  accentColor="primary"
+                />
               </div>
 
               {/* Birth Date - 1/4 */}
@@ -282,18 +285,19 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                   <span className="material-symbols-outlined text-primary text-lg">vital_signs</span>
                   {t('member.vitality_status', 'Vitality Status')}
                 </label>
-                <select
+                <StyledDropdown
+                  options={[
+                    { value: 'living', label: t('member.living', 'Living'), icon: 'favorite' },
+                    { value: 'deceased', label: t('member.deceased', 'Deceased'), icon: 'heart_broken' }
+                  ]}
                   value={formData.isAlive ? 'living' : 'deceased'}
-                  onChange={(e) => setFormData(prev => ({ 
+                  onChange={(value) => setFormData(prev => ({ 
                     ...prev, 
-                    isAlive: e.target.value === 'living',
-                    deathDate: e.target.value === 'living' ? null : prev.deathDate
+                    isAlive: value === 'living',
+                    deathDate: value === 'living' ? null : prev.deathDate
                   }))}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
-                >
-                  <option value="living">{t('member.living', 'Living')}</option>
-                  <option value="deceased">{t('member.deceased', 'Deceased')}</option>
-                </select>
+                  accentColor="primary"
+                />
               </div>
 
               {/* Death Date - 1/4 (only visible if deceased) */}
