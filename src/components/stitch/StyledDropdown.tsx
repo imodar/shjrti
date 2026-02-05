@@ -103,7 +103,7 @@ export const StyledDropdown: React.FC<StyledDropdownProps> = ({
   };
 
   return (
-    <div ref={dropdownRef} className={cn("relative z-50", className)}>
+    <div ref={dropdownRef} className={cn("relative", className)} style={{ zIndex: isOpen ? 9999 : 'auto' }}>
       {/* Trigger */}
       <button
         type="button"
@@ -139,7 +139,9 @@ export const StyledDropdown: React.FC<StyledDropdownProps> = ({
           "animate-in fade-in slide-in-from-top-2 duration-200",
           accentClasses.border,
           isRTL ? "right-0" : "left-0"
-        )}>
+        )}
+        style={{ zIndex: 9999 }}
+        >
           {/* Search Input */}
           {searchable && (
             <div className="p-2 border-b border-slate-100 dark:border-slate-700">
