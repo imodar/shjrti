@@ -18,6 +18,7 @@ interface StitchHeaderProps {
   activeTab?: string;
   onTabChange?: (tab: string) => void;
   suggestionsCount?: number;
+  hideNav?: boolean;
 }
 
 export const StitchHeader: React.FC<StitchHeaderProps> = ({
@@ -27,6 +28,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   activeTab = "dashboard",
   onTabChange,
   suggestionsCount = 0,
+  hideNav = false,
 }) => {
   const navigate = useNavigate();
   const { t, currentLanguage } = useLanguage();
@@ -73,6 +75,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
       </div>
 
       {/* Navigation */}
+      {!hideNav && (
       <nav className="hidden lg:flex items-center gap-1 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-xl">
         {tabs.map((tab) => (
           <button
@@ -91,6 +94,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
           </button>
         ))}
       </nav>
+      )}
 
       {/* User Section */}
       <div className="flex items-center gap-4">
