@@ -410,6 +410,12 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     });
   }, [positions, rootUnits]);
 
+  // Reset centering when root selection changes
+  useEffect(() => {
+    hasCenteredOnce.current = false;
+    lastRootIdRef.current = '';
+  }, [selectedRootMarriage]);
+
   // Drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
