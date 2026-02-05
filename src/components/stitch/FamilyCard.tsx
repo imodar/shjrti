@@ -236,7 +236,6 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
                <MemberAvatar member={wife} size="md" />
                <div className="text-center">
                   <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers) || t('tree_view.unknown_wife', 'Unknown Wife')}</p>
-                 <RoleBadge role="wife" />
                   {showWifeMotherBadge && wifeMother && (
                     <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
                       <span className="material-icons-round text-[10px]">face_3</span>
@@ -277,7 +276,6 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
                <div key={wife.id} className="flex flex-col items-center gap-2">
                  <MemberAvatar member={wife} size="md" />
                   <p className="font-bold text-[11px]">{getMemberDisplayName(wife, familyMembers)}</p>
-                 <RoleBadge role={wife.is_alive !== false ? 'spouse' : 'ex-spouse'} />
                </div>
              ))}
            </div>
