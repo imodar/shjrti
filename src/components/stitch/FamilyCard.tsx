@@ -180,6 +180,17 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
    if (unit.type === 'married') {
      const wife = unit.wives[0];
  
+      // Check if husband or wife's parent has multiple spouses
+      const husbandMother = unit.husband?.mother_id 
+        ? familyMembers.find(m => m.id === unit.husband?.mother_id) 
+        : null;
+      const wifeMother = wife?.mother_id 
+        ? familyMembers.find(m => m.id === wife?.mother_id) 
+        : null;
+      
+      const showHusbandMotherBadge = unit.husband && husbandMother && hasParentMultipleSpouses(unit.husband, familyMembers);
+      const showWifeMotherBadge = wife && wifeMother && hasParentMultipleSpouses(wife, familyMembers);
+
      return (
        <div className="family-card w-[420px] p-6 pt-10 bg-white dark:bg-slate-800 border border-primary/20 dark:border-primary/30 rounded-[24px] shadow-sm relative">
          {/* Label */}
@@ -204,6 +215,12 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
                <div className="text-center">
                   <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers)}</p>
                  <RoleBadge role="husband" />
+                  {showHusbandMotherBadge && husbandMother && (
+                    <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
+                      <span className="material-icons-round text-[10px]">face_3</span>
+                      {t('tree_view.mother', 'Mother')}: {husbandMother.first_name || husbandMother.name}
+                    </span>
+                  )}
                </div>
              </div>
            )}
@@ -220,6 +237,12 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
                <div className="text-center">
                   <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers) || t('tree_view.unknown_wife', 'Unknown Wife')}</p>
                  <RoleBadge role="wife" />
+                  {showWifeMotherBadge && wifeMother && (
+                    <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
+                      <span className="material-icons-round text-[10px]">face_3</span>
+                      {t('tree_view.mother', 'Mother')}: {wifeMother.first_name || wifeMother.name}
+                    </span>
+                  )}
                </div>
              </div>
            )}
