@@ -5,7 +5,8 @@
  import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { isMemberFromFamily, getFounderLastName } from '@/lib/memberDisplayUtils';
 
-// Helper to check if member is a descendant of the founder (recursive check)
+// Helper to check if member is a descendant of the founder through paternal line (recursive check)
+// In patrilineal systems, descent is traced through the father
 const isDescendantOfFounder = (
   member: Member | undefined, 
   familyMembers: Member[], 
@@ -17,14 +18,11 @@ const isDescendantOfFounder = (
   visited.add(member.id);
   
   const fatherId = member.father_id || (member as any).fatherId;
-  const motherId = member.mother_id || (member as any).motherId;
   
   const father = fatherId ? familyMembers.find(m => m.id === fatherId) : undefined;
-  const mother = motherId ? familyMembers.find(m => m.id === motherId) : undefined;
   
-  // If either parent is a descendant of the founder, then this member is too
-  return isDescendantOfFounder(father, familyMembers, visited) || 
-         isDescendantOfFounder(mother, familyMembers, visited);
+  // Only check paternal line - if father is a descendant of the founder, then this member is too
+  return isDescendantOfFounder(father, familyMembers, visited);
 };
  
 // Helper to check if parent has multiple spouses (polygamy case)
