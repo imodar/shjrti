@@ -57,6 +57,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
   const [rootCenter, setRootCenter] = useState({ x: 0, y: 0 });
   const hasCenteredOnce = useRef(false);
   const lastRootIdRef = useRef<string>('');
+  const prevSelectedRootRef = useRef<string>(selectedRootMarriage);
 
   // Get height based on unit type
   const getUnitHeight = (unit: FamilyUnit): number => {
@@ -424,9 +425,15 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
 
   // Reset centering when root selection changes
   useEffect(() => {
+    // Only trigger when root actually changes (not on initial mount)
+    if (prevSelectedRootRef.current === selectedRootMarriage) return;
+    prevSelectedRootRef.current = selectedRootMarriage;
+    
     hasCenteredOnce.current = false;
     lastRootIdRef.current = '';
-  }, [selectedRootMarriage]);
+    // Reset zoom to default when changing root
+    onResetZoom();
+  }, [selectedRootMarriage, onResetZoom]);
 
   // Drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
