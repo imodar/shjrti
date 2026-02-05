@@ -33,4 +33,5 @@ export const PROTECTED_ROUTES: string[] = [
   'terms',
   '404',
   'api-docs',
+  'stitch-tree-view',
 ];

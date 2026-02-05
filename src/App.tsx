@@ -33,6 +33,7 @@ import FamilyCreator from "./pages/FamilyCreator";
 import FamilyBuilder from "./pages/FamilyBuilder";
 import FamilyBuilderNewWithContext from "./pages/FamilyBuilderNew/FamilyBuilderNewWithContext";
 import FamilyBuilderStitch from "./pages/FamilyBuilderStitch";
+import StitchTreeView from "./pages/StitchTreeView";
 
 import FamilyTreeView from "./pages/FamilyTreeView/FamilyTreeViewWithContext";
 import FamilyStatistics from "./pages/FamilyStatistics";
@@ -77,6 +78,18 @@ const FamilyBuilderStitchWithProvider: React.FC = () => {
   return (
     <FamilyDataProvider familyId={familyId}>
       <FamilyBuilderStitch />
+    </FamilyDataProvider>
+  );
+};
+
+// Wrapper component for StitchTreeView with FamilyDataProvider
+const StitchTreeViewWithProvider: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const familyId = searchParams.get('family');
+
+  return (
+    <FamilyDataProvider familyId={familyId}>
+      <StitchTreeView />
     </FamilyDataProvider>
   );
 };
@@ -178,6 +191,13 @@ const App = () => {
             <ProtectedRoute>
               <ProtectedFamilyRoute loadingFallback={<SkeletonLayoutForBuilder />}>
                 <FamilyBuilderStitchWithProvider />
+              </ProtectedFamilyRoute>
+            </ProtectedRoute>
+          } />
+          <Route path="/stitch-tree-view" element={
+            <ProtectedRoute>
+              <ProtectedFamilyRoute loadingFallback={<SkeletonLayoutForBuilder />}>
+                <StitchTreeViewWithProvider />
               </ProtectedFamilyRoute>
             </ProtectedRoute>
           } />

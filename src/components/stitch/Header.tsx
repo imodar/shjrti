@@ -39,19 +39,25 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   const localizedPackageName = getLocalizedText(packageName, currentLanguage, t('stitch.free_plan', 'باقة مجانية'));
 
   const tabs = [
-    { id: "dashboard", label: t('stitch.tab.dashboard', 'لوحة التحكم'), path: "/family-builder-new" },
-    { id: "tree", label: t('stitch.tab.tree_view', 'عرض الشجرة'), path: "/family-tree-view" },
+    { id: "dashboard", label: t('stitch.tab.dashboard', 'لوحة التحكم'), path: "/family-builder-stitch" },
+    { id: "tree", label: t('stitch.tab.tree_view', 'عرض الشجرة'), path: "/stitch-tree-view" },
     { id: "gallery", label: t('stitch.tab.gallery', 'المعرض'), path: "/family-gallery" },
     { id: "statistics", label: t('stitch.tab.statistics', 'الإحصائيات'), path: "/family-statistics" },
     { id: "suggestions", label: t('stitch.tab.suggestions', 'الاقتراحات'), path: "/family-suggestions", badge: suggestionsCount },
   ];
 
+  // Preserve family ID in navigation
   const handleTabClick = (tab: (typeof tabs)[0]) => {
     if (onTabChange) {
       onTabChange(tab.id);
     }
-    navigate(tab.path);
+    // Append family query param if present in current URL
+    const searchParams = new URLSearchParams(window.location.search);
+    const familyId = searchParams.get('family');
+    const targetPath = familyId ? `${tab.path}?family=${familyId}` : tab.path;
+    navigate(targetPath);
   };
+
 
   const handleSignOut = async () => {
     await signOut();
