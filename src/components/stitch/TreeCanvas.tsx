@@ -32,7 +32,9 @@ interface Position {
 }
 
 const UNIT_WIDTH = 420;
-const UNIT_HEIGHT = 160;
+const UNIT_HEIGHT_SINGLE = 160;
+const UNIT_HEIGHT_MARRIED = 160;
+const UNIT_HEIGHT_POLYGAMY = 280;
 const VERTICAL_SPACING = 100;
 const HORIZONTAL_SPACING = 40;
 
@@ -53,6 +55,13 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
   const [rootCenter, setRootCenter] = useState({ x: 0, y: 0 });
   const hasCenteredOnce = useRef(false);
   const lastRootIdRef = useRef<string>('');
+
+  // Get height based on unit type
+  const getUnitHeight = (unit: FamilyUnit): number => {
+    if (unit.type === 'polygamy') return UNIT_HEIGHT_POLYGAMY;
+    if (unit.type === 'married') return UNIT_HEIGHT_MARRIED;
+    return UNIT_HEIGHT_SINGLE;
+  };
 
   // Build family units from members and marriages (same logic as OrganizationalChart)
   const familyUnits = useMemo(() => {
@@ -191,6 +200,26 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     const positionsMap = new Map<string, Position>();
     if (rootUnits.length === 0) return positionsMap;
 
+    // Calculate max height per generation for proper vertical spacing
+    const maxHeightPerGeneration = new Map<number, number>();
+    familyUnits.forEach(unit => {
+      const height = getUnitHeight(unit);
+      const currentMax = maxHeightPerGeneration.get(unit.generation) || 0;
+      if (height > currentMax) {
+        maxHeightPerGeneration.set(unit.generation, height);
+      }
+    });
+
+    // Calculate cumulative Y offset per generation
+    const generationYOffset = new Map<number, number>();
+    let cumulativeY = 0;
+    const maxGen = Math.max(...Array.from(familyUnits.values()).map(u => u.generation));
+    for (let gen = 1; gen <= maxGen; gen++) {
+      generationYOffset.set(gen, cumulativeY);
+      const genHeight = maxHeightPerGeneration.get(gen) || UNIT_HEIGHT_MARRIED;
+      cumulativeY += genHeight + VERTICAL_SPACING;
+    }
+
     const calculateSubtreeWidth = (unitId: string, memo: Map<string, number>): number => {
       if (memo.has(unitId)) return memo.get(unitId)!;
 
@@ -225,7 +254,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       const unit = familyUnits.get(unitId);
       if (!unit) return;
 
-      const y = (generation - 1) * (UNIT_HEIGHT + VERTICAL_SPACING);
+      const y = generationYOffset.get(generation) || 0;
 
       if (unit.childUnits.length === 0) {
         positionsMap.set(unitId, { x: startX, y, width: UNIT_WIDTH });
@@ -274,8 +303,8 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     let maxY = 0;
 
     positions.forEach((pos) => {
-      maxX = Math.max(maxX, pos.x + UNIT_WIDTH);
-      maxY = Math.max(maxY, pos.y + UNIT_HEIGHT);
+      maxX = Math.max(maxX, pos.x + UNIT_WIDTH + 100);
+      maxY = Math.max(maxY, pos.y + UNIT_HEIGHT_POLYGAMY);
     });
 
     return {
@@ -302,7 +331,9 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
 
     const containerWidth = containerRef.current.offsetWidth || 1200;
     const rootCenterX = rootPosition.x + UNIT_WIDTH / 2;
-    const rootCenterY = rootPosition.y + UNIT_HEIGHT / 2;
+    const rootUnit = rootUnits[0];
+    const rootHeight = rootUnit ? getUnitHeight(rootUnit) : UNIT_HEIGHT_MARRIED;
+    const rootCenterY = rootPosition.y + rootHeight / 2;
 
     setRootCenter({ x: rootCenterX, y: rootCenterY });
     setPanOffset({
@@ -350,8 +381,9 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       const parentPos = positions.get(parentUnit.id);
       if (!parentPos) return;
 
+      const parentHeight = getUnitHeight(parentUnit);
       const parentCenterX = parentPos.x + UNIT_WIDTH / 2;
-      const parentBottomY = parentPos.y + UNIT_HEIGHT;
+      const parentBottomY = parentPos.y + parentHeight;
 
       if (children.length === 1) {
         const child = children[0];
