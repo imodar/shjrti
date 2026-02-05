@@ -414,8 +414,8 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     lastCenterKeyRef.current = centerKey;
     hasCenteredOnce.current = true;
 
-    const containerWidth = containerRef.current.offsetWidth || 1200;
-    const containerHeight = containerRef.current.offsetHeight || 800;
+    const containerWidth = containerRef.current.clientWidth || 1200;
+    const containerHeight = containerRef.current.clientHeight || 800;
     const rootCenterX = rootPosition.x + UNIT_WIDTH / 2;
     const rootUnit = rootUnits[0];
     const rootHeight = rootUnit ? getUnitHeight(rootUnit) : UNIT_HEIGHT_MARRIED;
@@ -423,12 +423,12 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
 
     setRootCenter({ x: rootCenterX, y: rootCenterY });
     setPanOffset({
-      // Transform is: translate(pan) scale(zoom)
-      // We want: (rootCenter + pan) * zoom = containerCenter
-      x: containerWidth / 2 / zoomLevel - rootCenterX,
-      y: containerHeight / 2 / zoomLevel - rootCenterY
+      // NOTE: We scale around `transformOrigin` = rootCenter, so the root point
+      // does NOT move with zoom. Centering should therefore be independent of zoom.
+      x: containerWidth / 2 - rootCenterX,
+      y: containerHeight / 2 - rootCenterY
     });
-  }, [positions, rootUnits, zoomLevel, selectedRootMarriage]);
+  }, [positions, rootUnits, selectedRootMarriage]);
 
   // Reset centering when root selection changes
   useEffect(() => {
@@ -553,6 +553,8 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
         <div
           className="absolute"
           style={{
+            top: 0,
+            left: 0,
             transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
             transformOrigin: `${rootCenter.x}px ${rootCenter.y}px`,
             transition: isDragging ? 'none' : 'transform 0.15s ease-out'
