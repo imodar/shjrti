@@ -70,26 +70,30 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     const units = new Map<string, FamilyUnit>();
     const processedMemberIds = new Set<string>();
 
-    // Group marriages by husband to detect polygamy
-    const marriagesByHusband = new Map<string, Marriage[]>();
+    // Group marriages by husband to detect polygamy and create units
+    const marriagesByHusband = new Map<string, { marriages: Marriage[], marriageIds: string[] }>();
     marriages.forEach(m => {
-      const existing = marriagesByHusband.get(m.husband_id) || [];
-      existing.push(m);
+      const existing = marriagesByHusband.get(m.husband_id) || { marriages: [], marriageIds: [] };
+      existing.marriages.push(m);
+      existing.marriageIds.push(m.id);
       marriagesByHusband.set(m.husband_id, existing);
     });
 
-    // Process marriages
-    marriagesByHusband.forEach((husbandMarriages, husbandId) => {
+    // Process marriages - use FIRST marriage ID as the unit ID for consistency
+    marriagesByHusband.forEach((data, husbandId) => {
       const husband = familyMembers.find(m => m.id === husbandId);
       if (!husband) return;
 
-      const wives = husbandMarriages
+      const wives = data.marriages
         .map(m => familyMembers.find(mem => mem.id === m.wife_id))
         .filter(Boolean) as Member[];
 
       const isFounder = husband.is_founder;
       const type = wives.length > 1 ? 'polygamy' : 'married';
-      const unitId = `married_${husbandId}`;
+      
+      // Use first marriage ID as unit ID (matches how FamilyTreeView works)
+      const primaryMarriageId = data.marriageIds[0];
+      const unitId = `married_${primaryMarriageId}`;
 
       units.set(unitId, {
         id: unitId,
@@ -100,6 +104,14 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
         isFounder: isFounder || false,
         generation: 0,
         childUnits: []
+      });
+
+      // Also map all other marriage IDs to this same unit for lookup
+      data.marriageIds.forEach(mId => {
+        if (mId !== primaryMarriageId) {
+          // Create alias mapping (same unit, different ID)
+          units.set(`married_${mId}`, units.get(unitId)!);
+        }
       });
 
       processedMemberIds.add(husbandId);
