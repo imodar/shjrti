@@ -72,7 +72,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
           <span className="material-icons-round">park</span>
         </div>
         <div>
-          <h1 className="font-bold text-lg leading-tight">{familyName}</h1>
+          <h1 className="font-bold text-lg leading-tight">{t('site.name', 'شجرتي')}</h1>
           <p className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">{t('stitch.genealogy_platform', 'منصة الأنساب')}</p>
         </div>
         <div className="ml-6 px-3 py-1 bg-red-500/10 text-red-500 rounded-full text-[10px] font-bold border border-red-500/20">
