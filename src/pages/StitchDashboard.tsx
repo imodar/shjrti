@@ -109,7 +109,11 @@ const StitchDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-background">
-      <StitchHeader activeTab="dashboard" />
+       <StitchHeader 
+         activeTab="dashboard" 
+         userName={displayName}
+         packageName={packageName}
+       />
       
       <main className="max-w-7xl mx-auto px-6 py-10">
         {/* Hero Section */}
