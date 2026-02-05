@@ -38,7 +38,7 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
   selectedRoot = 'all',
   onRootChange
 }) => {
-  const { t } = useLanguage();
+  const { t, direction } = useLanguage();
   const navigate = useNavigate();
 
   // Default collaborators if none provided
@@ -53,6 +53,17 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
   return (
     <div className="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 z-40 relative">
       <div className="flex items-center gap-4">
+        {/* Back to Dashboard - First on the right in RTL */}
+        <button 
+          onClick={() => navigate('/dashboard?theme=stitch')}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 group"
+        >
+          <span className={`material-icons-round text-lg ${direction === 'rtl' ? 'rotate-180' : ''}`}>arrow_back</span>
+          <span className="text-xs font-semibold uppercase tracking-wider">{t('stitch.back_to_dashboard', 'عودة للحساب')}</span>
+        </button>
+
+        <div className="h-4 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2"></div>
+
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-primary text-xl">account_tree</span>
           <h2 className="family-title text-xl font-semibold text-slate-800 dark:text-slate-100 italic" style={{ fontFamily: "'Playfair Display', serif" }}>
@@ -66,15 +77,6 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
         >
           <span className="text-xs font-semibold uppercase tracking-wider">{t('stitch.switch_tree', 'Switch Tree')}</span>
           <span className="material-icons-round text-lg transition-transform group-hover:translate-y-0.5">expand_more</span>
-        </button>
-
-        {/* Back to Dashboard */}
-        <button 
-          onClick={() => navigate('/dashboard')}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 group"
-        >
-          <span className="material-icons-round text-lg">arrow_back</span>
-          <span className="text-xs font-semibold uppercase tracking-wider">{t('stitch.back_to_dashboard', 'عودة للحساب')}</span>
         </button>
 
         {/* Root Selector - Only shown on tree view */}
