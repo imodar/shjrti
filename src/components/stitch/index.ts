@@ -8,5 +8,6 @@ export { StitchTreeCanvas } from './TreeCanvas';
 export { StitchFamilyCard } from './FamilyCard';
 export { AddMemberForm } from './AddMemberForm';
 export { SpouseDrawer } from './SpouseDrawer';
+export { StyledDropdown } from './StyledDropdown';
 export { useAddMemberForm } from './useAddMemberForm';
 export * from './AddMemberFormTypes';

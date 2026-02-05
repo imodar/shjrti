@@ -8,6 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { Member, Marriage } from '@/types/family.types';
 import { SpouseData } from '@/components/SpouseForm';
+import { StyledDropdown } from './StyledDropdown';
 
 interface SpouseDrawerProps {
   isOpen: boolean;
@@ -162,18 +163,19 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                   <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
                     {t('member.select_member', 'Select Member')} *
                   </label>
-                  <select
+                  <StyledDropdown
+                    options={availableMembers.map(member => ({
+                      value: member.id,
+                      label: `${member.first_name || member.name} ${member.last_name || ''}`.trim(),
+                      icon: 'person'
+                    }))}
                     value={currentSpouse.existingFamilyMemberId || ''}
-                    onChange={(e) => handleExistingMemberSelect(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
-                  >
-                    <option value="">{t('member.select_placeholder', 'Select a family member...')}</option>
-                    {availableMembers.map(member => (
-                      <option key={member.id} value={member.id}>
-                        {member.first_name || member.name} {member.last_name || ''}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={handleExistingMemberSelect}
+                    placeholder={t('member.select_placeholder', 'Select a family member...')}
+                    searchable={true}
+                    searchPlaceholder={t('common.search', 'Search...')}
+                    accentColor="pink"
+                  />
                 </div>
 
                 {/* Marriage Status - shown after selecting a member */}
@@ -182,15 +184,16 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                     <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
                       {t('member.marriage_status', 'Marriage Status')}
                     </label>
-                    <select
+                    <StyledDropdown
+                      options={[
+                        { value: 'married', label: t('member.married', 'Married'), icon: 'favorite' },
+                        { value: 'divorced', label: t('member.divorced', 'Divorced'), icon: 'heart_broken' },
+                        { value: 'widowed', label: t('member.widowed', 'Widowed'), icon: 'deceased' }
+                      ]}
                       value={currentSpouse.maritalStatus || 'married'}
-                      onChange={(e) => handleInputChange('maritalStatus', e.target.value)}
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
-                    >
-                      <option value="married">{t('member.married', 'Married')}</option>
-                      <option value="divorced">{t('member.divorced', 'Divorced')}</option>
-                      <option value="widowed">{t('member.widowed', 'Widowed')}</option>
-                    </select>
+                      onChange={(value) => handleInputChange('maritalStatus', value)}
+                      accentColor="pink"
+                    />
                   </div>
                 )}
               </>
@@ -259,15 +262,16 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                     <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
                       {t('member.marriage_status', 'Marriage Status')}
                     </label>
-                    <select
+                    <StyledDropdown
+                      options={[
+                        { value: 'married', label: t('member.married', 'Married'), icon: 'favorite' },
+                        { value: 'divorced', label: t('member.divorced', 'Divorced'), icon: 'heart_broken' },
+                        { value: 'widowed', label: t('member.widowed', 'Widowed'), icon: 'deceased' }
+                      ]}
                       value={currentSpouse.maritalStatus || 'married'}
-                      onChange={(e) => handleInputChange('maritalStatus', e.target.value)}
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
-                    >
-                      <option value="married">{t('member.married', 'Married')}</option>
-                      <option value="divorced">{t('member.divorced', 'Divorced')}</option>
-                      <option value="widowed">{t('member.widowed', 'Widowed')}</option>
-                    </select>
+                      onChange={(value) => handleInputChange('maritalStatus', value)}
+                      accentColor="pink"
+                    />
                   </div>
                 </div>
 
