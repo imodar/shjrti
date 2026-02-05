@@ -157,23 +157,43 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
           <div className="space-y-4">
             {spouseFamilyStatus === 'yes' ? (
               /* Link Existing Member */
-              <div>
-                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
-                  {t('member.select_member', 'Select Member')} *
-                </label>
-                <select
-                  value={currentSpouse.existingFamilyMemberId || ''}
-                  onChange={(e) => handleExistingMemberSelect(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
-                >
-                  <option value="">{t('member.select_placeholder', 'Select a family member...')}</option>
-                  {availableMembers.map(member => (
-                    <option key={member.id} value={member.id}>
-                      {member.first_name || member.name} {member.last_name || ''}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <>
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
+                    {t('member.select_member', 'Select Member')} *
+                  </label>
+                  <select
+                    value={currentSpouse.existingFamilyMemberId || ''}
+                    onChange={(e) => handleExistingMemberSelect(e.target.value)}
+                    className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
+                  >
+                    <option value="">{t('member.select_placeholder', 'Select a family member...')}</option>
+                    {availableMembers.map(member => (
+                      <option key={member.id} value={member.id}>
+                        {member.first_name || member.name} {member.last_name || ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Marriage Status - shown after selecting a member */}
+                {currentSpouse.existingFamilyMemberId && (
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
+                      {t('member.marriage_status', 'Marriage Status')}
+                    </label>
+                    <select
+                      value={currentSpouse.maritalStatus || 'married'}
+                      onChange={(e) => handleInputChange('maritalStatus', e.target.value)}
+                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
+                    >
+                      <option value="married">{t('member.married', 'Married')}</option>
+                      <option value="divorced">{t('member.divorced', 'Divorced')}</option>
+                      <option value="widowed">{t('member.widowed', 'Widowed')}</option>
+                    </select>
+                  </div>
+                )}
+              </>
             ) : (
               /* Create New */
               <>
