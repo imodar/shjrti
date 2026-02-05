@@ -1,9 +1,16 @@
 import React from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Collaborator {
   id: string;
   initial: string;
   color?: string;
+}
+
+interface RootOption {
+  id: string;
+  label: string;
 }
 
 interface StitchFamilyBarProps {
@@ -12,6 +19,11 @@ interface StitchFamilyBarProps {
   collaborators?: Collaborator[];
   additionalCount?: number;
   lastUpdated?: string;
+  // Tree root selection (only shown when provided)
+  showRootSelector?: boolean;
+  rootOptions?: RootOption[];
+  selectedRoot?: string;
+  onRootChange?: (rootId: string) => void;
 }
 
 export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
@@ -19,8 +31,14 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
   onSwitchTree,
   collaborators = [],
   additionalCount = 0,
-  lastUpdated = '2h ago'
+  lastUpdated = '2h ago',
+  showRootSelector = false,
+  rootOptions = [],
+  selectedRoot = 'all',
+  onRootChange
 }) => {
+  const { t } = useLanguage();
+
   // Default collaborators if none provided
   const displayCollaborators = collaborators.length > 0 ? collaborators : [
     { id: '1', initial: 'S' },
@@ -36,7 +54,7 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-primary text-xl">account_tree</span>
           <h2 className="family-title text-xl font-semibold text-slate-800 dark:text-slate-100 italic" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Family of {familyName}
+            {t('stitch.family_of', 'Family of')} {familyName}
           </h2>
         </div>
         <div className="h-4 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2"></div>
@@ -44,9 +62,40 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
           onClick={onSwitchTree}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 group"
         >
-          <span className="text-xs font-semibold uppercase tracking-wider">Switch Tree</span>
+          <span className="text-xs font-semibold uppercase tracking-wider">{t('stitch.switch_tree', 'Switch Tree')}</span>
           <span className="material-icons-round text-lg transition-transform group-hover:translate-y-0.5">expand_more</span>
         </button>
+
+        {/* Root Selector - Only shown on tree view */}
+        {showRootSelector && rootOptions.length > 0 && (
+          <>
+            <div className="h-4 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2"></div>
+            <div className="flex items-center gap-2">
+              <span className="material-icons-round text-slate-400 text-lg">family_restroom</span>
+              <Select value={selectedRoot} onValueChange={onRootChange}>
+                <SelectTrigger className="w-[200px] h-8 text-xs font-medium bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700">
+                  <SelectValue placeholder={t('tree_view.select_root', 'Select Root')} />
+                </SelectTrigger>
+                <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg z-[100]">
+                  <SelectItem value="all" className="text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="material-icons-round text-sm text-primary">account_tree</span>
+                      {t('tree_view.all_branches', 'All Branches')}
+                    </div>
+                  </SelectItem>
+                  {rootOptions.map(option => (
+                    <SelectItem key={option.id} value={option.id} className="text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="material-icons-round text-sm text-pink-500">favorite</span>
+                        {option.label}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="flex items-center gap-6">
@@ -66,7 +115,7 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
             </div>
           )}
         </div>
-        <p className="text-[11px] text-slate-400 font-medium">Last updated: {lastUpdated}</p>
+        <p className="text-[11px] text-slate-400 font-medium">{t('stitch.last_updated', 'Last updated')}: {lastUpdated}</p>
       </div>
     </div>
   );
