@@ -177,39 +177,130 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
             ) : (
               /* Create New */
               <>
-                <div>
-                  <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
-                    {t('member.spouse_name', 'Spouse Name')} *
-                  </label>
-                  <div className="relative">
-                    <span className="material-icons-round absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">person</span>
-                    <input
-                      type="text"
-                      value={currentSpouse.name || ''}
-                      onChange={(e) => {
-                        const name = e.target.value;
-                        const [firstName = '', ...rest] = name.split(' ');
-                        handleInputChange('name', name);
-                        handleInputChange('firstName', firstName);
-                        handleInputChange('lastName', rest.join(' '));
-                      }}
-                      placeholder={t('member.enter_full_name', 'Enter full name')}
-                      className="w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
-                    />
+                {/* First Name & Last Name - 2 columns */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
+                      {t('member.first_name', 'First Name')} *
+                    </label>
+                    <div className="relative">
+                      <span className="material-icons-round absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">person</span>
+                      <input
+                        type="text"
+                        value={currentSpouse.firstName || ''}
+                        onChange={(e) => {
+                          const firstName = e.target.value;
+                          handleInputChange('firstName', firstName);
+                          handleInputChange('name', `${firstName} ${currentSpouse.lastName || ''}`.trim());
+                        }}
+                        placeholder={t('member.first_name_placeholder', 'First name')}
+                        className="w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
+                      {t('member.last_name', 'Last Name')}
+                    </label>
+                    <div className="relative">
+                      <span className="material-icons-round absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">badge</span>
+                      <input
+                        type="text"
+                        value={currentSpouse.lastName || ''}
+                        onChange={(e) => {
+                          const lastName = e.target.value;
+                          handleInputChange('lastName', lastName);
+                          handleInputChange('name', `${currentSpouse.firstName || ''} ${lastName}`.trim());
+                        }}
+                        placeholder={t('member.last_name_placeholder', 'Last name')}
+                        className="w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
+                      />
+                    </div>
                   </div>
                 </div>
 
+                {/* Birth Date & Vitality Status - 2 columns */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
+                      {t('member.birth_date', 'Birth Date')}
+                    </label>
+                    <div className="relative">
+                      <span className="material-icons-round absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">calendar_today</span>
+                      <input
+                        type="date"
+                        value={currentSpouse.birthDate ? (currentSpouse.birthDate instanceof Date ? currentSpouse.birthDate.toISOString().split('T')[0] : currentSpouse.birthDate) : ''}
+                        onChange={(e) => handleInputChange('birthDate', e.target.value ? new Date(e.target.value) : null)}
+                        className="w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
+                      {t('member.vitality_status', 'Vitality Status')}
+                    </label>
+                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                      <button
+                        type="button"
+                        onClick={() => handleInputChange('isAlive', true)}
+                        className={cn(
+                          "flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1",
+                          currentSpouse.isAlive !== false
+                            ? "bg-green-500 text-white shadow-sm"
+                            : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        )}
+                      >
+                        <span className="material-icons-round text-sm">favorite</span>
+                        {t('member.alive', 'Alive')}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleInputChange('isAlive', false)}
+                        className={cn(
+                          "flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1",
+                          currentSpouse.isAlive === false
+                            ? "bg-slate-600 text-white shadow-sm"
+                            : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
+                        )}
+                      >
+                        <span className="material-icons-round text-sm">deceased</span>
+                        {t('member.deceased', 'Deceased')}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Death Date - only show if deceased */}
+                {currentSpouse.isAlive === false && (
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
+                      {t('member.death_date', 'Death Date')}
+                    </label>
+                    <div className="relative">
+                      <span className="material-icons-round absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">event_busy</span>
+                      <input
+                        type="date"
+                        value={currentSpouse.deathDate ? (currentSpouse.deathDate instanceof Date ? currentSpouse.deathDate.toISOString().split('T')[0] : currentSpouse.deathDate) : ''}
+                        onChange={(e) => handleInputChange('deathDate', e.target.value ? new Date(e.target.value) : null)}
+                        className="w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Biography */}
                 <div>
                   <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
-                    {t('member.birth_date', 'Birth Date')}
+                    {t('member.biography', 'Biography')}
                   </label>
                   <div className="relative">
-                    <span className="material-icons-round absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">calendar_today</span>
-                    <input
-                      type="date"
-                      value={currentSpouse.birthDate ? (currentSpouse.birthDate instanceof Date ? currentSpouse.birthDate.toISOString().split('T')[0] : currentSpouse.birthDate) : ''}
-                      onChange={(e) => handleInputChange('birthDate', e.target.value ? new Date(e.target.value) : null)}
-                      className="w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
+                    <span className="material-icons-round absolute start-3 top-3 text-slate-400 text-sm">notes</span>
+                    <textarea
+                      value={currentSpouse.biography || ''}
+                      onChange={(e) => handleInputChange('biography', e.target.value)}
+                      placeholder={t('member.biography_placeholder', 'Write a short biography...')}
+                      rows={3}
+                      className="w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 resize-none"
                     />
                   </div>
                 </div>
