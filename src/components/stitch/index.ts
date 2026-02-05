@@ -6,3 +6,6 @@ export { StitchRightPanel } from './RightPanel';
 export { StitchMainContent } from './MainContent';
 export { StitchTreeCanvas } from './TreeCanvas';
 export { StitchFamilyCard } from './FamilyCard';
+export { AddMemberForm } from './AddMemberForm';
+export { useAddMemberForm } from './useAddMemberForm';
+export * from './AddMemberFormTypes';

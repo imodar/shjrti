@@ -1,4 +1,6 @@
 import React from 'react';
+import { AddMemberForm } from './AddMemberForm';
+import { Member, Marriage } from '@/types/family.types';
 
 interface Activity {
   id: string;
@@ -25,6 +27,16 @@ interface StitchMainContentProps {
   onImportGedcom?: () => void;
   onFamilyStory?: () => void;
   onPrintPoster?: () => void;
+  // Add Member Form props
+  showAddMemberForm?: boolean;
+  onCloseForm?: () => void;
+  familyMembers?: Member[];
+  marriages?: Marriage[];
+  familyId?: string;
+  familyData?: any;
+  editingMember?: any;
+  formMode?: 'add' | 'edit';
+  onMemberSaved?: () => void;
 }
 
 export const StitchMainContent: React.FC<StitchMainContentProps> = ({
@@ -34,7 +46,16 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   onExportTree,
   onImportGedcom,
   onFamilyStory,
-  onPrintPoster
+  onPrintPoster,
+  showAddMemberForm = false,
+  onCloseForm,
+  familyMembers = [],
+  marriages = [],
+  familyId,
+  familyData,
+  editingMember,
+  formMode = 'add',
+  onMemberSaved
 }) => {
   const getActivityIcon = (type: Activity['type']) => {
     switch (type) {
@@ -79,6 +100,24 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
       onClick: onPrintPoster 
     }
   ];
+
+  // Show Add Member Form if active
+  if (showAddMemberForm && familyId && onCloseForm && onMemberSaved) {
+    return (
+      <section className="flex-1 overflow-hidden bg-slate-50 dark:bg-background-dark">
+        <AddMemberForm
+          familyId={familyId}
+          familyMembers={familyMembers}
+          marriages={marriages}
+          familyData={familyData}
+          editingMember={editingMember}
+          formMode={formMode}
+          onClose={onCloseForm}
+          onMemberSaved={onMemberSaved}
+        />
+      </section>
+    );
+  }
 
   return (
     <section className="flex-1 overflow-y-auto bg-slate-50 dark:bg-background-dark p-8 custom-scrollbar">
