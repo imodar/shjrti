@@ -126,8 +126,16 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       const isFounderUnit = (unit.husband?.is_founder) || unit.wives.some(w => w.is_founder);
       if (isFounderUnit) return;
 
+      // Already has a parent assigned? Skip
+      if (unit.parentUnitId) return;
+
       const members = unit.husband ? [unit.husband, ...unit.wives] : [...unit.wives];
-      members.forEach(member => {
+      
+      // Find parent unit - stop once found
+      let foundParent = false;
+      for (const member of members) {
+        if (foundParent) break;
+        
         if (member.father_id || member.mother_id) {
           for (const [potentialParentId, potentialParent] of units.entries()) {
             if (potentialParentId === unitId) continue;
@@ -151,11 +159,12 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
               if (!potentialParent.childUnits.includes(unitId)) {
                 potentialParent.childUnits.push(unitId);
               }
+              foundParent = true;
               break;
             }
           }
         }
-      });
+      }
     });
 
     // Assign generations using BFS from root units
