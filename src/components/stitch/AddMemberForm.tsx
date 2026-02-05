@@ -123,198 +123,136 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
         {/* Form Card */}
         <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
           <form onSubmit={(e) => { e.preventDefault(); handleFormSubmit(); }} className="space-y-8">
-            {/* 3-Column Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              
-              {/* Column 1 */}
-              <div className="space-y-6">
-                {/* First Name */}
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    <span className="material-symbols-outlined text-primary text-lg">person</span>
-                    {t('member.first_name', 'First Name')} *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.first_name}
-                    onChange={(e) => setFormData(prev => ({ 
-                      ...prev, 
-                      first_name: e.target.value,
-                      name: `${e.target.value} ${prev.name.split(' ').slice(1).join(' ')}`.trim()
-                    }))}
-                    placeholder={t('member.first_name_placeholder', 'Enter first name')}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                  />
-                </div>
-
-                {/* Twins */}
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    <span className="material-symbols-outlined text-primary text-lg">groups</span>
-                    {t('member.twins', 'Twins')}
-                  </label>
-                  <select
-                    value={formData.is_twin ? 'yes' : 'no'}
-                    onChange={(e) => setFormData(prev => ({ ...prev, is_twin: e.target.value === 'yes' }))}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
-                  >
-                    <option value="no">{t('common.no', 'No')}</option>
-                    <option value="yes">{t('common.yes', 'Yes')}</option>
-                  </select>
-                </div>
-
-                {/* Biography */}
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    <span className="material-symbols-outlined text-primary text-lg">history_edu</span>
-                    {t('member.biography', 'Biography')}
-                  </label>
-                  <textarea
-                    value={formData.bio}
-                    onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-                    placeholder={t('member.biography_placeholder', 'Brief history or description...')}
-                    rows={6}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
-                  />
-                </div>
+            {/* Row 1: Name (1/4), Gender (1/4), Family Relation (2/4) */}
+            <div className="grid grid-cols-4 gap-6">
+              {/* First Name - 1/4 */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-primary text-lg">person</span>
+                  {t('member.first_name', 'First Name')} *
+                </label>
+                <input
+                  type="text"
+                  value={formData.first_name}
+                  onChange={(e) => setFormData(prev => ({ 
+                    ...prev, 
+                    first_name: e.target.value,
+                    name: `${e.target.value} ${prev.name.split(' ').slice(1).join(' ')}`.trim()
+                  }))}
+                  placeholder={t('member.first_name_placeholder', 'Enter first name')}
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                />
               </div>
 
-              {/* Column 2 */}
-              <div className="space-y-6">
-                {/* Gender */}
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    <span className="material-symbols-outlined text-primary text-lg">wc</span>
-                    {t('member.gender', 'Gender')} *
-                  </label>
-                  <select
-                    value={formData.gender}
-                    onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value as 'male' | 'female' }))}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
-                  >
-                    <option value="male">{t('member.male', 'Male')}</option>
-                    <option value="female">{t('member.female', 'Female')}</option>
-                  </select>
-                </div>
-
-                {/* Birth Date */}
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    <span className="material-symbols-outlined text-primary text-lg">calendar_today</span>
-                    {t('member.birth_date', 'Birth Date')}
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.birthDate ? formData.birthDate.toISOString().split('T')[0] : ''}
-                    onChange={(e) => setFormData(prev => ({ 
-                      ...prev, 
-                      birthDate: e.target.value ? new Date(e.target.value) : null 
-                    }))}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                  />
-                </div>
-
-                {/* Profile Picture */}
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    <span className="material-symbols-outlined text-primary text-lg">image</span>
-                    {t('member.profile_picture', 'Profile Picture')}
-                  </label>
-                  {displayImage ? (
-                    <div className="relative">
-                      <img 
-                        src={displayImage} 
-                        alt="Profile" 
-                        className="w-full h-40 object-cover rounded-2xl border-2 border-slate-200 dark:border-slate-700"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleDeleteImage}
-                        className="absolute top-2 end-2 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                      >
-                        <span className="material-symbols-outlined text-sm">delete</span>
-                      </button>
-                    </div>
-                  ) : (
-                    <label className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-6 flex flex-col items-center justify-center text-center bg-slate-50/50 dark:bg-slate-800/30 hover:border-primary hover:bg-emerald-50/10 transition-all cursor-pointer">
-                      <span className="material-symbols-outlined text-3xl text-primary mb-2">upload</span>
-                      <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
-                        {t('member.click_to_upload', 'Click to upload image')}
-                      </p>
-                      <p className="text-[10px] text-slate-400 mt-1">PNG, JPG, GIF up to 10MB</p>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleImageSelect}
-                        disabled={!isImageUploadEnabled}
-                      />
-                    </label>
-                  )}
-                </div>
+              {/* Gender - 1/4 */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-primary text-lg">wc</span>
+                  {t('member.gender', 'Gender')} *
+                </label>
+                <select
+                  value={formData.gender}
+                  onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value as 'male' | 'female' }))}
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+                >
+                  <option value="male">{t('member.male', 'Male')}</option>
+                  <option value="female">{t('member.female', 'Female')}</option>
+                </select>
               </div>
 
-              {/* Column 3 */}
-              <div className="space-y-6">
-                {/* Family Relation / Parents */}
-                {formMode === 'add' && marriageOptions.length > 0 && (
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                      <span className="material-symbols-outlined text-primary text-lg">account_tree</span>
-                      {t('member.family_relation', 'Family Relation')} *
-                    </label>
-                    <select
-                      value={formData.selectedParent || ''}
-                      onChange={(e) => setFormData(prev => ({ 
-                        ...prev, 
-                        selectedParent: e.target.value || null,
-                        isFounder: !e.target.value
-                      }))}
-                      disabled={parentsLocked}
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
-                    >
-                      <option value="">{t('member.select_relation', 'Select relation')}</option>
-                      {marriageOptions.map(option => (
-                        <option key={option.id} value={option.id}>
-                          {formData.gender === 'male' ? t('member.son', 'Son') : t('member.daughter', 'Daughter')} - {option.label}
-                        </option>
-                      ))}
-                    </select>
-                    {!formData.selectedParent && (
-                      <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                        <span className="material-icons-round text-sm">info</span>
-                        {t('member.founder_hint', 'Will be registered as founder')}
-                      </p>
-                    )}
-                  </div>
+              {/* Family Relation - 2/4 */}
+              <div className="col-span-2 space-y-2">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-primary text-lg">account_tree</span>
+                  {t('member.family_relation', 'Family Relation')} *
+                </label>
+                <select
+                  value={formData.selectedParent || ''}
+                  onChange={(e) => setFormData(prev => ({ 
+                    ...prev, 
+                    selectedParent: e.target.value || null,
+                    isFounder: !e.target.value
+                  }))}
+                  disabled={parentsLocked}
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+                >
+                  <option value="">{t('member.select_relation', 'Select relation')}</option>
+                  {marriageOptions.map(option => (
+                    <option key={option.id} value={option.id}>
+                      {formData.gender === 'male' ? t('member.son', 'Son') : t('member.daughter', 'Daughter')} - {option.label}
+                    </option>
+                  ))}
+                </select>
+                {!formData.selectedParent && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                    <span className="material-icons-round text-sm">info</span>
+                    {t('member.founder_hint', 'Will be registered as founder')}
+                  </p>
                 )}
+              </div>
+            </div>
 
-                {/* Vitality Status */}
-                <div className="space-y-2">
-                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                    <span className="material-symbols-outlined text-primary text-lg">vital_signs</span>
-                    {t('member.vitality_status', 'Vitality Status')}
-                  </label>
-                  <select
-                    value={formData.isAlive ? 'living' : 'deceased'}
-                    onChange={(e) => setFormData(prev => ({ 
-                      ...prev, 
-                      isAlive: e.target.value === 'living',
-                      deathDate: e.target.value === 'living' ? null : prev.deathDate
-                    }))}
-                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
-                  >
-                    <option value="living">{t('member.living', 'Living')}</option>
-                    <option value="deceased">{t('member.deceased', 'Deceased')}</option>
-                  </select>
-                </div>
+            {/* Row 2: Twins (1/4), Birth Date (1/4), Vitality (1/4), Death Date (1/4) */}
+            <div className="grid grid-cols-4 gap-6">
+              {/* Twins - 1/4 */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-primary text-lg">groups</span>
+                  {t('member.twins', 'Twins')}
+                </label>
+                <select
+                  value={formData.is_twin ? 'yes' : 'no'}
+                  onChange={(e) => setFormData(prev => ({ ...prev, is_twin: e.target.value === 'yes' }))}
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+                >
+                  <option value="no">{t('common.no', 'No')}</option>
+                  <option value="yes">{t('common.yes', 'Yes')}</option>
+                </select>
+              </div>
 
-                {/* Death Date (conditional) */}
-                {!formData.isAlive && (
-                  <div className="space-y-2">
+              {/* Birth Date - 1/4 */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-primary text-lg">calendar_today</span>
+                  {t('member.birth_date', 'Birth Date')}
+                </label>
+                <input
+                  type="date"
+                  value={formData.birthDate ? formData.birthDate.toISOString().split('T')[0] : ''}
+                  onChange={(e) => setFormData(prev => ({ 
+                    ...prev, 
+                    birthDate: e.target.value ? new Date(e.target.value) : null 
+                  }))}
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                />
+              </div>
+
+              {/* Vitality Status - 1/4 */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-primary text-lg">vital_signs</span>
+                  {t('member.vitality_status', 'Vitality Status')}
+                </label>
+                <select
+                  value={formData.isAlive ? 'living' : 'deceased'}
+                  onChange={(e) => setFormData(prev => ({ 
+                    ...prev, 
+                    isAlive: e.target.value === 'living',
+                    deathDate: e.target.value === 'living' ? null : prev.deathDate
+                  }))}
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+                >
+                  <option value="living">{t('member.living', 'Living')}</option>
+                  <option value="deceased">{t('member.deceased', 'Deceased')}</option>
+                </select>
+              </div>
+
+              {/* Death Date - 1/4 (only visible if deceased) */}
+              <div className="space-y-2">
+                {!formData.isAlive ? (
+                  <>
                     <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                      <span className="material-symbols-outlined text-primary text-lg">skull</span>
+                      <span className="material-symbols-outlined text-primary text-lg">event</span>
                       {t('member.death_date', 'Death Date')}
                     </label>
                     <input
@@ -326,7 +264,66 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                       }))}
                       className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     />
+                  </>
+                ) : (
+                  <div className="h-full" />
+                )}
+              </div>
+            </div>
+
+            {/* Row 3: Biography (3/4), Profile Picture (1/4) */}
+            <div className="grid grid-cols-4 gap-6">
+              {/* Biography - 3/4 */}
+              <div className="col-span-3 space-y-2">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-primary text-lg">history_edu</span>
+                  {t('member.biography', 'Biography')}
+                </label>
+                <textarea
+                  value={formData.bio}
+                  onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                  placeholder={t('member.biography_placeholder', 'Brief history or description...')}
+                  rows={5}
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+                />
+              </div>
+
+              {/* Profile Picture - 1/4 */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-primary text-lg">image</span>
+                  {t('member.profile_picture', 'Profile Picture')}
+                </label>
+                {displayImage ? (
+                  <div className="relative">
+                    <img 
+                      src={displayImage} 
+                      alt="Profile" 
+                      className="w-full h-28 object-cover rounded-2xl border-2 border-slate-200 dark:border-slate-700"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleDeleteImage}
+                      className="absolute top-2 end-2 p-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                    >
+                      <span className="material-symbols-outlined text-sm">delete</span>
+                    </button>
                   </div>
+                ) : (
+                  <label className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-4 h-28 flex flex-col items-center justify-center text-center bg-slate-50/50 dark:bg-slate-800/30 hover:border-primary hover:bg-emerald-50/10 transition-all cursor-pointer">
+                    <span className="material-symbols-outlined text-2xl text-primary mb-1">upload</span>
+                    <p className="text-[10px] font-semibold text-slate-600 dark:text-slate-300">
+                      {t('member.click_to_upload', 'Click to upload')}
+                    </p>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageSelect}
+                      disabled={!isImageUploadEnabled}
+                    />
+                  </label>
                 )}
               </div>
             </div>
