@@ -16,7 +16,7 @@ interface FamilyWithCount {
 interface PackageData {
   max_family_trees: number | null;
   max_family_members: number | null;
-  name: Record<string, string> | string;
+  name: Record<string, string>;
 }
 
 const StitchDashboard: React.FC = () => {
@@ -34,9 +34,7 @@ const StitchDashboard: React.FC = () => {
   const maxTrees = packageData?.max_family_trees || 3;
   const maxMembers = packageData?.max_family_members || 500;
   const treesUsed = families.length;
-  const packageName = typeof packageData?.name === 'object' 
-    ? (packageData.name as Record<string, string>)?.en || 'Free Plan'
-    : packageData?.name || subscription?.package_name?.en || 'Free Plan';
+  const packageName = packageData?.name || subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
 
   useEffect(() => {
     const fetchData = async () => {

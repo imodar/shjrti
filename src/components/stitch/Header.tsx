@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { getLocalizedText } from "@/lib/packageUtils";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { TreePine, Settings, CreditCard, HelpCircle, LogOut } from "lucide-react";
 import {
@@ -13,7 +14,7 @@ import {
 interface StitchHeaderProps {
   familyName?: string;
   userName?: string;
-  packageName?: string;
+  packageName?: Record<string, string> | string;
   activeTab?: string;
   onTabChange?: (tab: string) => void;
   suggestionsCount?: number;
@@ -28,11 +29,12 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   suggestionsCount = 0,
 }) => {
   const navigate = useNavigate();
-  const { t } = useLanguage();
+  const { t, currentLanguage } = useLanguage();
   const { user, signOut } = useAuth();
 
   const displayName = userName || user?.email?.split("@")[0] || "User";
   const initials = displayName.charAt(0).toUpperCase();
+  const localizedPackageName = getLocalizedText(packageName, currentLanguage, t('stitch.free_plan', 'باقة مجانية'));
 
   const tabs = [
     { id: "dashboard", label: t('stitch.tab.dashboard', 'لوحة التحكم'), path: "/family-builder-new" },
@@ -102,7 +104,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
             <div className="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-800 cursor-pointer group">
               <div className="text-right hidden sm:block">
                 <p className="text-xs font-bold group-hover:text-primary transition-colors">{displayName}</p>
-                <p className="text-[10px] text-slate-500">{packageName || t('stitch.free_plan', 'باقة مجانية')}</p>
+                <p className="text-[10px] text-slate-500">{localizedPackageName}</p>
               </div>
               <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-emerald-400 border-2 border-white dark:border-slate-700 shadow-md flex items-center justify-center text-white font-bold group-hover:scale-105 transition-transform">
                 {initials}
