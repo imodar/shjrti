@@ -239,32 +239,32 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                     <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
                       {t('member.vitality_status', 'Vitality Status')}
                     </label>
-                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+                    <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl overflow-hidden">
                       <button
                         type="button"
                         onClick={() => handleInputChange('isAlive', true)}
                         className={cn(
-                          "flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1",
+                          "flex-1 py-2 px-2 text-[10px] font-bold rounded-lg transition-all flex items-center justify-center gap-1 min-w-0 truncate",
                           currentSpouse.isAlive !== false
                             ? "bg-green-500 text-white shadow-sm"
                             : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                         )}
                       >
-                        <span className="material-icons-round text-sm">favorite</span>
-                        {t('member.alive', 'Alive')}
+                        <span className="material-icons-round text-xs shrink-0">favorite</span>
+                        <span className="truncate">{t('member.alive', 'Alive')}</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => handleInputChange('isAlive', false)}
                         className={cn(
-                          "flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1",
+                          "flex-1 py-2 px-2 text-[10px] font-bold rounded-lg transition-all flex items-center justify-center gap-1 min-w-0 truncate",
                           currentSpouse.isAlive === false
                             ? "bg-slate-600 text-white shadow-sm"
                             : "text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                         )}
                       >
-                        <span className="material-icons-round text-sm">deceased</span>
-                        {t('member.deceased', 'Deceased')}
+                        <span className="material-icons-round text-xs shrink-0">deceased</span>
+                        <span className="truncate">{t('member.deceased', 'Deceased')}</span>
                       </button>
                     </div>
                   </div>
