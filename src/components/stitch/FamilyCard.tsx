@@ -5,6 +5,21 @@
  import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { isMemberFromFamily } from '@/lib/memberDisplayUtils';
  
+// Helper to check if parent has multiple spouses (polygamy case)
+const hasParentMultipleSpouses = (member: Member, familyMembers: Member[]): boolean => {
+  if (!member.father_id) return false;
+  
+  // Find all siblings with the same father
+  const fatherSiblings = familyMembers.filter(m => 
+    m.father_id === member.father_id && m.father_id !== null
+  );
+  
+  // Check if there are different mothers among siblings (father has multiple wives)
+  const uniqueMotherIds = new Set(fatherSiblings.map(m => m.mother_id).filter(Boolean));
+  
+  return uniqueMotherIds.size > 1;
+};
+
  interface FamilyUnit {
    id: string;
    type: 'married' | 'single' | 'polygamy';
@@ -138,20 +153,23 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
        ? familyMembers.find(m => m.id === member.mother_id) 
        : null;
  
+      // Only show mother badge if parent has multiple spouses (polygamy)
+      const showMotherBadge = mother && hasParentMultipleSpouses(member, familyMembers);
+
      return (
        <div className="family-card w-[420px] p-5 bg-white dark:bg-slate-800 border border-primary/20 dark:border-primary/30 rounded-[24px] shadow-sm relative">
          <div className="flex flex-col items-center gap-4">
            <MemberAvatar member={member} size="md" />
            <div className="text-center">
               <h4 className="font-bold text-sm">{getMemberDisplayName(member, familyMembers)}</h4>
-             <div className="mt-2 flex flex-wrap justify-center gap-2">
-               {mother && (
+              {showMotherBadge && (
+                <div className="mt-2 flex flex-wrap justify-center gap-2">
                  <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1">
                    <span className="material-icons-round text-[12px]">face_3</span>
                    {t('tree_view.mother', 'Mother')}: {mother.first_name || mother.name}
                  </span>
-               )}
-             </div>
+                </div>
+              )}
            </div>
          </div>
        </div>
