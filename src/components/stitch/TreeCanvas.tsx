@@ -11,6 +11,7 @@ interface StitchTreeCanvasProps {
   onZoomIn: () => void;
   onZoomOut: () => void;
   onResetZoom: () => void;
+  selectedRootMarriage?: string;
 }
 
 interface FamilyUnit {
@@ -45,7 +46,8 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
   viewMode,
   onZoomIn,
   onZoomOut,
-  onResetZoom
+  onResetZoom,
+  selectedRootMarriage = 'all'
 }) => {
   const { t } = useLanguage();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -197,12 +199,69 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     }
 
     return units;
-  }, [familyMembers, marriages]);
+  }, [familyMembers, marriages, selectedRootMarriage]);
+
+  // Filter units based on selected root marriage
+  const filteredFamilyUnits = useMemo(() => {
+    if (selectedRootMarriage === 'all') {
+      return familyUnits;
+    }
+
+    const rootUnitId = `married_${selectedRootMarriage}`;
+    if (!familyUnits.has(rootUnitId)) {
+      return familyUnits; // Fallback to all if not found
+    }
+
+    const filteredUnits = new Map<string, FamilyUnit>();
+    
+    // Collect descendants recursively
+    const collectDescendants = (unitId: string, visited = new Set<string>()) => {
+      if (visited.has(unitId)) return;
+      visited.add(unitId);
+      
+      const unit = familyUnits.get(unitId);
+      if (unit) {
+        // Clone unit to avoid mutation
+        filteredUnits.set(unitId, { ...unit, childUnits: [...unit.childUnits] });
+        unit.childUnits.forEach(childId => collectDescendants(childId, visited));
+      }
+    };
+    
+    collectDescendants(rootUnitId);
+    
+    // Clean up parent/child references
+    filteredUnits.forEach((unit) => {
+      if (unit.parentUnitId && !filteredUnits.has(unit.parentUnitId)) {
+        unit.parentUnitId = undefined;
+      }
+      unit.childUnits = unit.childUnits.filter(id => filteredUnits.has(id));
+    });
+
+    // Recompute generations from selected root
+    filteredUnits.forEach(u => { u.generation = 0; });
+    if (filteredUnits.has(rootUnitId)) {
+      const q: Array<{ id: string; gen: number }> = [{ id: rootUnitId, gen: 1 }];
+      const seen = new Set<string>();
+      while (q.length) {
+        const { id, gen } = q.shift()!;
+        if (seen.has(id)) continue;
+        seen.add(id);
+        const u = filteredUnits.get(id);
+        if (!u) continue;
+        u.generation = gen;
+        u.childUnits.forEach(cid => { 
+          if (filteredUnits.has(cid)) q.push({ id: cid, gen: gen + 1 }); 
+        });
+      }
+    }
+
+    return filteredUnits;
+  }, [familyUnits, selectedRootMarriage]);
 
   // Get root units (no parent)
   const rootUnits = useMemo(() => {
-    return Array.from(familyUnits.values()).filter(u => !u.parentUnitId);
-  }, [familyUnits]);
+    return Array.from(filteredFamilyUnits.values()).filter(u => !u.parentUnitId);
+  }, [filteredFamilyUnits]);
 
   // Calculate positions using centered tree layout (same as OrganizationalChart)
   const positions = useMemo((): Map<string, Position> => {
@@ -211,7 +270,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
 
     // Calculate max height per generation for proper vertical spacing
     const maxHeightPerGeneration = new Map<number, number>();
-    familyUnits.forEach(unit => {
+    filteredFamilyUnits.forEach(unit => {
       const height = getUnitHeight(unit);
       const currentMax = maxHeightPerGeneration.get(unit.generation) || 0;
       if (height > currentMax) {
@@ -222,7 +281,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     // Calculate cumulative Y offset per generation
     const generationYOffset = new Map<number, number>();
     let cumulativeY = 0;
-    const maxGen = Math.max(...Array.from(familyUnits.values()).map(u => u.generation));
+    const maxGen = Math.max(...Array.from(filteredFamilyUnits.values()).map(u => u.generation));
     for (let gen = 1; gen <= maxGen; gen++) {
       generationYOffset.set(gen, cumulativeY);
       const genHeight = maxHeightPerGeneration.get(gen) || UNIT_HEIGHT_MARRIED;
@@ -232,7 +291,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     const calculateSubtreeWidth = (unitId: string, memo: Map<string, number>): number => {
       if (memo.has(unitId)) return memo.get(unitId)!;
 
-      const unit = familyUnits.get(unitId);
+      const unit = filteredFamilyUnits.get(unitId);
       if (!unit) return UNIT_WIDTH;
 
       if (unit.childUnits.length === 0) {
@@ -260,7 +319,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     });
 
     const positionUnit = (unitId: string, startX: number, generation: number): void => {
-      const unit = familyUnits.get(unitId);
+      const unit = filteredFamilyUnits.get(unitId);
       if (!unit) return;
 
       const y = generationYOffset.get(generation) || 0;
@@ -380,9 +439,9 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     const connections: JSX.Element[] = [];
     const primaryColor = 'hsl(var(--primary))';
 
-    familyUnits.forEach(parentUnit => {
+    filteredFamilyUnits.forEach(parentUnit => {
       const children = parentUnit.childUnits
-        .map(id => familyUnits.get(id))
+        .map(id => filteredFamilyUnits.get(id))
         .filter(Boolean) as FamilyUnit[];
 
       if (children.length === 0) return;
@@ -477,7 +536,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
           </svg>
 
           {/* Render all family units */}
-          {Array.from(familyUnits.values()).map(unit => {
+          {Array.from(filteredFamilyUnits.values()).map(unit => {
             const position = positions.get(unit.id);
             if (!position) return null;
             return (

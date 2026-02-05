@@ -1,4 +1,4 @@
- import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
  import { useSearchParams, useNavigate } from 'react-router-dom';
  import { useTheme } from '@/contexts/ThemeContext';
  import { useAuth } from '@/contexts/AuthContext';
@@ -56,6 +56,7 @@
    // Zoom state
    const [zoomLevel, setZoomLevel] = useState(1);
    const [viewMode, setViewMode] = useState<'vertical' | 'horizontal' | 'radial'>('horizontal');
+  const [selectedRootMarriage, setSelectedRootMarriage] = useState<string>('all');
  
    // Zoom handlers
    const handleZoomIn = useCallback(() => {
@@ -85,6 +86,30 @@
    // Get package name
    const packageName = subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
  
+  // Generate root options from marriages
+  const rootOptions = useMemo(() => {
+    if (!marriages || marriages.length === 0) return [];
+    
+    return marriages.map(marriage => {
+      const husband = familyMembers.find(m => m.id === marriage.husband_id);
+      const wife = familyMembers.find(m => m.id === marriage.wife_id);
+      
+      const husbandName = husband?.first_name || husband?.name || t('tree_view.unknown', 'Unknown');
+      const wifeName = wife?.first_name || wife?.name || t('tree_view.unknown_wife', 'Unknown');
+      
+      return {
+        id: marriage.id,
+        label: `${husbandName} & ${wifeName}`
+      };
+    });
+  }, [marriages, familyMembers, t]);
+
+  // Handle root change
+  const handleRootChange = useCallback((rootId: string) => {
+    setSelectedRootMarriage(rootId);
+    setZoomLevel(1); // Reset zoom when changing root
+  }, []);
+
    if (loading) {
      return (
        <div className="min-h-screen bg-background flex items-center justify-center">
@@ -111,6 +136,10 @@
       <StitchFamilyBar
         familyName={familyData?.name || 'Family'}
         onSwitchTree={() => navigate('/dashboard')}
+        showRootSelector={true}
+        rootOptions={rootOptions}
+        selectedRoot={selectedRootMarriage}
+        onRootChange={handleRootChange}
       />
  
        {/* Main Tree Canvas */}
@@ -122,6 +151,7 @@
          onZoomIn={handleZoomIn}
          onZoomOut={handleZoomOut}
          onResetZoom={handleResetZoom}
+          selectedRootMarriage={selectedRootMarriage}
        />
  
        {/* Mobile Overlay */}
