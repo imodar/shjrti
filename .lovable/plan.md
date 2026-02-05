@@ -1,119 +1,167 @@
 
 
-# خطة: استخراج الدوال المشتركة إلى ملف `memberDisplayUtils.ts`
+# خطة إضافة فورم العضو لتصميم Stitch
 
-## الهدف
-استخراج دوال عرض الأعضاء من `MemberCard.tsx` إلى ملف مشترك يمكن استخدامه في جميع الثيمات (Modern, Professional, Stitch).
+## نظرة عامة
+
+سيتم إنشاء مكون فورم مستقل `AddMemberForm.tsx` داخل مجلد `src/components/stitch/` يحتوي على كامل لوجيك إضافة/تعديل الأعضاء المستخرج من `FamilyBuilderNew.tsx` مع تنسيق متوافق مع تصميم Stitch.
 
 ---
 
-## الملفات المتأثرة
+## الهيكل المقترح
 
-| الملف | نوع التغيير |
-|-------|-------------|
-| `src/lib/memberDisplayUtils.ts` | **جديد** - الدوال المشتركة |
-| `src/components/shared/MemberCard.tsx` | تعديل - استيراد واستخدام الدوال |
-| `src/components/stitch/Sidebar.tsx` | تعديل - استخدام الدوال + تحديث العرض |
-| `src/pages/FamilyBuilderStitch.tsx` | تعديل - تمرير البيانات الكاملة |
+```text
+src/components/stitch/
+├── AddMemberForm.tsx        <-- المكون الجديد الرئيسي
+├── AddMemberFormTypes.ts    <-- تعريفات Types
+├── useAddMemberForm.ts      <-- Hook مخصص للحالة والمنطق
+├── Sidebar.tsx              <-- (تعديل) لفتح الفورم
+├── MainContent.tsx          <-- (تعديل) لعرض الفورم
+└── index.ts                 <-- (تعديل) تصدير المكونات الجديدة
+```
 
 ---
 
 ## التفاصيل التقنية
 
-### 1. إنشاء `src/lib/memberDisplayUtils.ts`
+### 1. إنشاء ملف الأنواع `AddMemberFormTypes.ts`
 
-سيحتوي على الدوال التالية كـ **pure functions**:
+سيحتوي على:
+- `MemberFormData` - بيانات الفورم
+- `SpouseData` - بيانات الزوج/الزوجة (مستورد من SpouseForm)
+- `FormMode` - أوضاع الفورم (add/edit/view)
+- Props للمكونات
 
-```typescript
-// الدوال المستخرجة من MemberCard.tsx
+### 2. إنشاء Hook مخصص `useAddMemberForm.ts`
 
-getFounderLastName(familyMembers: Member[]): string
-// الحصول على اسم عائلة المؤسس
+سيتضمن اللوجيك التالي المستخرج من FamilyBuilderNew:
 
-isMemberFromFamily(member: Member, familyMembers: Member[]): boolean
-// التحقق إذا العضو من داخل العائلة (له أب/أم في الشجرة أو مؤسس)
+**الحالات (States):**
+- `formData` - بيانات الفورم الأساسية
+- `currentStep` - الخطوة الحالية (1 أو 2)
+- `formMode` - وضع الفورم (add/edit)
+- `editingMember` - العضو قيد التعديل
+- `wives/husbands` - قوائم الأزواج
+- `isSaving` - حالة الحفظ
+- `showSpouseForm` - إظهار فورم الزوج
 
-buildLineageChain(startMember: Member, familyMembers: Member[], useBintForFemaleChild?: boolean): string
-// بناء سلسلة النسب (حتى 3 أجيال)
+**الدوال (Handlers):**
+- `handleFormSubmit` - حفظ العضو (الدالة الرئيسية ~1250 سطر)
+- `resetFormData` - إعادة تعيين الفورم
+- `populateFormData` - ملء البيانات للتعديل
+- `handleImageCrop` - قص الصورة
+- `handleSpouseSave/Delete` - إدارة الأزواج
+- `nextStep/prevStep` - التنقل بين الخطوات
 
-generateMemberDisplayName(member: Member, familyMembers: Member[], marriages: Marriage[]): string | null
-// توليد اسم العرض للعضو
+**الاستعلامات المستخدمة:**
+- `membersApi.create/update/delete`
+- `marriagesApi.create/update/delete/upsert`
+- `uploadMemberImage`
 
-getParentageInfo(member: Member, familyMembers: Member[]): { genderTerm: string; lineage: string } | null
-// الحصول على معلومات النسب (ابن/ابنة + سلسلة الآباء)
+### 3. إنشاء المكون الرئيسي `AddMemberForm.tsx`
 
-getSpouseDisplayInfo(member: Member, familyMembers: Member[], marriages: Marriage[]): { label: string; info: string } | null
-// معلومات الزوج/الزوجة للأعضاء من خارج العائلة
+سيتضمن واجهة المستخدم:
 
-getBirthDeathDisplayInfo(member: Member, t: Function): DisplayInfo | null
-// معلومات الولادة/الوفاة مع حساب العمر
-```
+**الخطوة 1 - المعلومات الأساسية:**
+- الاسم الأول والأخير
+- الجنس (ذكر/أنثى)
+- اختيار الوالدين (من قائمة الزيجات)
+- تاريخ الميلاد والحالة الحيوية
+- تاريخ الوفاة (إن وجد)
+- السيرة الذاتية
+- صورة العضو (مع دعم القص)
 
-### 2. تحديث `MemberCard.tsx`
+**الخطوة 2 - بيانات الزواج:**
+- إضافة زوج/زوجة
+- فورم الزوج المضمن (SpouseForm)
+- قائمة الأزواج الحاليين مع خيارات التعديل/الحذف
+- دعم تعدد الزوجات (4 زوجات كحد أقصى للرجال)
 
-- استيراد الدوال من `@/lib/memberDisplayUtils`
-- استبدال الدوال المحلية باستدعاءات للدوال المشتركة
-- الحفاظ على نفس السلوك الحالي تماماً
+**تصميم Stitch:**
+- استخدام ألوان الـ Emerald/Teal
+- خلفية بيضاء مع ظلال خفيفة
+- أزرار مستديرة (rounded-xl)
+- أيقونات Material Icons
+- دعم RTL كامل
 
-### 3. تحديث `Sidebar.tsx` (Stitch Theme)
+### 4. تعديل `Sidebar.tsx`
 
-**توسيع الـ Member interface:**
-```typescript
-interface Member {
-  // الموجود حالياً
-  id, name, first_name, last_name, image_url, gender, is_founder, role
-  // الجديد
-  father_id?: string;
-  mother_id?: string;
-  birth_date?: string;
-  death_date?: string;
-  is_alive?: boolean;
-}
-```
+**التغييرات:**
+- إضافة prop جديد: `onAddMember` يستقبل callback لفتح الفورم
+- تحديث زر "إضافة عضو" لاستدعاء الـ callback
 
-**إضافة props جديدة:**
-```typescript
-interface StitchSidebarProps {
-  // الموجود حالياً...
-  familyMembers: Member[];  // جديد - للبحث عن الآباء
-  marriages: Marriage[];    // جديد - لمعلومات الأزواج
-}
-```
+### 5. تعديل `MainContent.tsx`
 
-**تحديث العرض لـ 3 سطور:**
+**التغييرات:**
+- إضافة props جديدة:
+  - `showAddMemberForm: boolean`
+  - `onCloseForm: () => void`
+  - `familyMembers: Member[]`
+  - `marriages: Marriage[]`
+  - `familyId: string`
+  - `onMemberAdded: () => void`
+- إظهار `AddMemberForm` بدلاً من Dashboard عند الحاجة
+
+### 6. تعديل `FamilyBuilderStitch.tsx`
+
+**التغييرات:**
+- إضافة state: `showAddMemberForm`
+- تمرير الـ callbacks والـ props للمكونات
+- استدعاء `refetch()` بعد إضافة عضو جديد
+
+---
+
+## تدفق العمل
+
 ```text
-┌─────────────────────────────────────────┐
-│ [صورة]  محمد السعيد              [🏆]  │ ← السطر 1
-│         ابن سعيد ابن أحمد السعيد        │ ← السطر 2
-│         🎂 ولد في 1990 - 35 سنة        │ ← السطر 3
-└─────────────────────────────────────────┘
-```
-
-### 4. تحديث `FamilyBuilderStitch.tsx`
-
-تمرير البيانات الكاملة للـ Sidebar:
-```typescript
-<StitchSidebar
-  members={filteredMembers.map(m => ({
-    ...m,  // تمرير كل الحقول
-    father_id: m.father_id,
-    mother_id: m.mother_id,
-    birth_date: m.birth_date,
-    death_date: m.death_date,
-    is_alive: m.is_alive,
-  }))}
-  familyMembers={familyMembers}  // جديد
-  marriages={marriages}           // جديد
-  // ... باقي الـ props
-/>
+المستخدم يضغط "إضافة عضو"
+        ↓
+Sidebar.onAddMember() → setShowAddMemberForm(true)
+        ↓
+MainContent يعرض AddMemberForm
+        ↓
+المستخدم يملأ البيانات (Step 1 → Step 2)
+        ↓
+handleFormSubmit() → membersApi.create()
+        ↓
+onMemberAdded() → refetch() + setShowAddMemberForm(false)
+        ↓
+العودة للـ Dashboard مع تحديث القائمة
 ```
 
 ---
 
-## الفوائد
+## الملفات المطلوب إنشاؤها/تعديلها
 
-- **لا تكرار للكود**: دالة واحدة مشتركة بين جميع الثيمات
-- **سهولة الصيانة**: أي تعديل على منطق العرض يتم في مكان واحد
-- **توحيد السلوك**: نفس المنطق يعمل في Modern و Professional و Stitch
-- **قابلية التوسع**: يمكن لأي ثيم جديد استخدام نفس الدوال
+| الملف | الإجراء | الوصف |
+|-------|---------|-------|
+| `src/components/stitch/AddMemberFormTypes.ts` | إنشاء | تعريفات الأنواع |
+| `src/components/stitch/useAddMemberForm.ts` | إنشاء | Hook للحالة واللوجيك |
+| `src/components/stitch/AddMemberForm.tsx` | إنشاء | المكون الرئيسي |
+| `src/components/stitch/MainContent.tsx` | تعديل | دعم عرض الفورم |
+| `src/components/stitch/Sidebar.tsx` | تعديل | تمرير callback الإضافة |
+| `src/components/stitch/index.ts` | تعديل | تصدير المكونات الجديدة |
+| `src/pages/FamilyBuilderStitch.tsx` | تعديل | إدارة حالة الفورم |
+
+---
+
+## المكونات المستوردة
+
+سيتم استيراد المكونات التالية الموجودة مسبقاً:
+- `SpouseForm` من `@/components/SpouseForm`
+- `EnhancedDatePicker` من `@/components/ui/enhanced-date-picker`
+- `SearchableDropdown` من `@/components/SearchableDropdown`
+- جميع مكونات UI من `@/components/ui/`
+- الـ APIs من `@/lib/api/`
+- الـ Hooks من `@/hooks/`
+
+---
+
+## ملاحظات مهمة
+
+1. **فصل المنطق عن العرض**: اللوجيك في Hook منفصل، والعرض في المكون
+2. **إعادة استخدام الكود**: استيراد `SpouseForm` الموجود بدلاً من تكراره
+3. **التوافق مع التصميم**: استخدام CSS classes من Stitch theme
+4. **الحفاظ على الأداء**: استخدام `useMemo` و `useCallback` للتحسين
+5. **دعم RTL**: جميع العناصر تدعم الاتجاه من اليمين لليسار
 
