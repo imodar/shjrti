@@ -90,7 +90,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
  
  // Role Badge Component
  const RoleBadge: React.FC<{
-   role: 'husband' | 'wife' | 'spouse' | 'ex-spouse' | 'single' | 'primary';
+  role: 'husband' | 'wife' | 'spouse' | 'ex-spouse' | 'ex-wife' | 'single' | 'primary';
    className?: string;
  }> = ({ role, className }) => {
    const { t } = useLanguage();
@@ -100,6 +100,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
      wife: 'bg-pink-50 text-pink-500 dark:bg-pink-900/50 dark:text-pink-300',
      spouse: 'text-pink-400 border border-pink-100 dark:border-pink-700',
      'ex-spouse': 'text-slate-400 border border-slate-100 dark:border-slate-600',
+    'ex-wife': 'text-slate-400 border border-slate-100 dark:border-slate-600',
      single: 'bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-300',
      primary: 'bg-blue-600 text-white'
    };
@@ -109,6 +110,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
      wife: t('tree_view.wife', 'WIFE'),
      spouse: t('tree_view.spouse', 'Spouse'),
      'ex-spouse': t('tree_view.ex_spouse', 'Ex-Spouse'),
+    'ex-wife': t('tree_view.ex_wife', 'Ex-Wife'),
      single: t('tree_view.single', 'Single'),
      primary: t('tree_view.primary_member', 'Primary Member')
    };
@@ -274,7 +276,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
                <div key={wife.id} className="flex flex-col items-center gap-2">
                  <MemberAvatar member={wife} size="md" />
                   <p className="font-bold text-[11px]">{getMemberDisplayName(wife, familyMembers)}</p>
-                  <RoleBadge role={wife.is_alive !== false ? 'spouse' : 'ex-spouse'} />
+                  <RoleBadge role={wife.is_alive !== false ? 'wife' : 'ex-wife'} />
                </div>
              ))}
            </div>
