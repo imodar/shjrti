@@ -141,7 +141,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
           <span className="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
           <input
             className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20"
-            placeholder={t('stitch.search_placeholder', 'Search by name...')}
+            placeholder={t('family_builder.search_placeholder', 'Search by name...')}
             type="text"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
