@@ -118,43 +118,43 @@ const StitchDashboard: React.FC = () => {
       
       <main className="max-w-7xl mx-auto px-6 py-10">
         {/* Hero Section */}
-        <section className="hero-glass rounded-[2.5rem] p-12 mb-12 shadow-xl shadow-slate-200/50 relative overflow-hidden border border-white dark:border-border">
+        <section className="hero-glass rounded-[2rem] p-6 mb-10 shadow-xl shadow-slate-200/50 relative overflow-hidden border border-white dark:border-border">
           <div className="absolute inset-0 flex items-center justify-center tree-silhouette">
-            <span className="material-symbols-outlined text-[40rem]" style={{ color: 'rgb(63 176 135 / 10%)' }}>park</span>
+            <span className="material-symbols-outlined text-[20rem]" style={{ color: 'rgb(63 176 135 / 10%)' }}>park</span>
           </div>
           
-          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
-            <div className="flex-1">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-bold mb-6">
+          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div className="flex-1 min-w-0">
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 bg-primary/10 text-primary rounded-full text-[10px] font-bold mb-3">
                 <span className="material-symbols-outlined text-sm">auto_awesome</span>
                 Personal Workspace
               </div>
-              <h2 className="text-4xl md:text-5xl font-extrabold text-foreground mb-6 tracking-tight">
+              <h2 className="text-2xl md:text-3xl font-extrabold text-foreground mb-3 tracking-tight">
                 Welcome back, <span className="text-primary">{displayName}</span>
               </h2>
-              <p className="text-muted-foreground text-lg leading-relaxed mb-10 max-w-lg">
+              <p className="text-muted-foreground text-sm leading-relaxed mb-5 max-w-lg">
                 Your family legacy continues to grow. You have documented <span className="text-foreground font-bold">{totalMembers} relatives</span> across your family trees.
               </p>
               
-              <div className="space-y-6 max-w-md">
-                <div className="space-y-2">
+              <div className="space-y-3 max-w-md">
+                <div className="space-y-1">
                   <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                     <span>Tree Slots</span>
                     <span className="text-foreground">{treesUsed} / {maxTrees} Trees ({Math.round((treesUsed / maxTrees) * 100)}%)</span>
                   </div>
-                  <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                  <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-primary rounded-full shadow-[0_0_10px_hsl(var(--primary)/0.3)]" 
                       style={{ width: `${Math.min((treesUsed / maxTrees) * 100, 100)}%` }}
                     />
                   </div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1">
                   <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                     <span>Member Limit</span>
                     <span className="text-foreground">{totalMembers} / {maxMembers} Members</span>
                   </div>
-                  <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
+                  <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                     <div 
                       className="h-full bg-accent-gold rounded-full shadow-[0_0_10px_rgba(217,161,92,0.3)]" 
                       style={{ width: `${Math.min((totalMembers / maxMembers) * 100, 100)}%` }}
@@ -164,23 +164,23 @@ const StitchDashboard: React.FC = () => {
               </div>
             </div>
             
-            <div className="w-full lg:w-80">
-              <div className="bg-card rounded-3xl p-8 shadow-2xl shadow-slate-200/60 dark:shadow-none border border-border relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
+            <div className="w-full lg:w-64 flex-shrink-0">
+              <div className="bg-card rounded-2xl p-5 shadow-xl shadow-slate-200/60 dark:shadow-none border border-border relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-110" />
                 <div className="relative z-10 text-center">
-                  <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <span className="material-symbols-outlined text-3xl">verified</span>
+                  <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <span className="material-symbols-outlined text-2xl">verified</span>
                   </div>
-                  <h3 className="text-lg font-bold text-foreground mb-1">{localizedPackageName}</h3>
-                  <p className="text-sm text-muted-foreground mb-6">{treesUsed} of {maxTrees} Trees Used</p>
+                  <h3 className="text-base font-bold text-foreground mb-0.5">{localizedPackageName}</h3>
+                  <p className="text-xs text-muted-foreground mb-4">{treesUsed} of {maxTrees} Trees Used</p>
                   <button 
                     onClick={() => navigate('/plan-selection')}
-                    className="w-full gold-gradient-btn text-white font-bold py-4 rounded-xl text-sm shadow-lg shadow-accent-gold/30 mb-4"
+                    className="w-full gold-gradient-btn text-white font-bold py-2.5 rounded-lg text-xs shadow-lg shadow-accent-gold/30 mb-3"
                   >
                     Upgrade Plan
                   </button>
                   {subscription?.expires_at && (
-                    <p className="text-[10px] text-muted-foreground font-medium italic">
+                    <p className="text-[9px] text-muted-foreground font-medium italic">
                       Renews on {new Date(subscription.expires_at).toLocaleDateString()}
                     </p>
                   )}
