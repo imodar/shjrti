@@ -426,7 +426,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       // NOTE: We scale around `transformOrigin` = rootCenter, so the root point
       // does NOT move with zoom. Centering should therefore be independent of zoom.
       x: containerWidth / 2 - rootCenterX,
-      y: containerHeight / 2 - rootCenterY
+      y: containerHeight / 3 - rootCenterY  // Position root at upper third of screen
     });
   }, [positions, rootUnits, selectedRootMarriage]);
 
