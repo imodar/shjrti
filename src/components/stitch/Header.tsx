@@ -68,12 +68,12 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
     <header className="h-20 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md flex items-center justify-between px-6 sticky top-0 z-50">
       {/* Brand */}
       <div className="flex items-center gap-4">
-        <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
-          <span className="material-icons-round text-2xl">park</span>
+        <div className="w-14 h-14 bg-primary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20">
+          <span className="material-icons-round text-3xl">park</span>
         </div>
         <div>
-          <h1 className="font-bold text-xl leading-tight">{t('site.name', 'شجرتي')}</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">{t('stitch.genealogy_platform', 'منصة الأنساب')}</p>
+          <h1 className="font-bold text-2xl leading-tight">{t('site.name', 'شجرتي')}</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">{t('stitch.genealogy_platform', 'منصة الأنساب')}</p>
         </div>
         <div className="ml-6 px-3 py-1 bg-red-500/10 text-red-500 rounded-full text-[10px] font-bold border border-red-500/20">
           {t('badge.beta', 'إطلاق تجريبي')}
