@@ -56,7 +56,7 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
         {/* Back to Dashboard - First on the right in RTL */}
         <button 
           onClick={() => navigate('/dashboard?theme=stitch')}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 group"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 group"
         >
           <span className={`material-icons-round text-lg ${direction === 'rtl' ? 'rotate-180' : ''}`}>arrow_back</span>
           <span className="text-xs font-semibold uppercase tracking-wider">{t('stitch.back_to_dashboard', 'عودة للحساب')}</span>
