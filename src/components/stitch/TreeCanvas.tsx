@@ -570,7 +570,9 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
           </svg>
 
           {/* Render all family units */}
-          {Array.from(filteredFamilyUnits.values()).map(unit => {
+          {Array.from(filteredFamilyUnits.values())
+            .filter(unit => unit.type !== 'single') // Don't render single member units
+            .map(unit => {
             const position = positions.get(unit.id);
             if (!position) return null;
             return (
@@ -583,7 +585,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
                   width: `${UNIT_WIDTH}px`
                 }}
               >
-                <StitchFamilyCard unit={unit} familyMembers={familyMembers} />
+                <StitchFamilyCard unit={unit} familyMembers={familyMembers} marriages={marriages} />
               </div>
             );
           })}
