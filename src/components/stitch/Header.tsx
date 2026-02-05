@@ -113,10 +113,10 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
           <HoverCardTrigger asChild>
             <div className="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-800 cursor-pointer group">
               <div className="text-right hidden sm:block">
-                <p className="text-xs font-bold group-hover:text-primary transition-colors">{displayName}</p>
-                <p className="text-[10px] text-slate-500">{localizedPackageName}</p>
+                <p className="text-base font-bold group-hover:text-primary transition-colors">{displayName}</p>
+                <p className="text-sm text-slate-500">{localizedPackageName}</p>
               </div>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-emerald-400 border-2 border-white dark:border-slate-700 shadow-md flex items-center justify-center text-white font-bold group-hover:scale-105 transition-transform">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-primary to-emerald-400 border-2 border-white dark:border-slate-700 shadow-md flex items-center justify-center text-white font-bold text-xl group-hover:scale-105 transition-transform">
                 {initials}
               </div>
             </div>
