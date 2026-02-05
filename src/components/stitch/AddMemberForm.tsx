@@ -1,23 +1,19 @@
 /**
  * AddMemberForm - Stitch Theme Add/Edit Member Form
- * Modular component for adding and editing family members
+ * Single-step form matching the new design with 3-column layout
  */
 
 import React, { useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Slider } from '@/components/ui/slider';
-import { EnhancedDatePicker } from '@/components/ui/enhanced-date-picker';
-import { SpouseForm, SpouseData } from '@/components/SpouseForm';
+import { Label } from '@/components/ui/label';
 import Cropper from 'react-easy-crop';
 import { useAddMemberForm } from './useAddMemberForm';
-import { AddMemberFormProps, FormMode } from './AddMemberFormTypes';
+import { AddMemberFormProps } from './AddMemberFormTypes';
+import { SpouseDrawer } from './SpouseDrawer';
 
 export const AddMemberForm: React.FC<AddMemberFormProps> = ({
   familyId,
@@ -34,8 +30,6 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
   const isRTL = direction === 'rtl';
 
   const {
-    currentStep,
-    setCurrentStep,
     formData,
     setFormData,
     isSaving,
@@ -72,8 +66,6 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
     closeSpouseForm,
     populateFormData,
     handleFormSubmit,
-    nextStep,
-    prevStep,
     currentSiblings
   } = useAddMemberForm({
     familyId,
@@ -111,499 +103,404 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
   const displayImage = croppedImage || editingMemberImageUrl || null;
 
   return (
-    <div className={cn(
-      'h-full overflow-y-auto bg-white dark:bg-slate-900 p-6 custom-scrollbar',
-      isRTL && 'rtl'
-    )}>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          >
-            <span className="material-icons-round text-slate-500">
-              {isRTL ? 'arrow_forward' : 'arrow_back'}
-            </span>
-          </button>
-          <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-              {formMode === 'edit' 
-                ? t('member.edit', 'تعديل العضو')
-                : t('member.add', 'إضافة عضو جديد')}
-            </h2>
-            <p className="text-sm text-slate-500">
-              {t('member.step', 'الخطوة')} {currentStep} {t('member.of', 'من')} 2
-            </p>
-          </div>
+    <section className="flex-1 overflow-y-auto p-8 md:p-12 custom-scrollbar bg-slate-50 dark:bg-background-dark">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
+            <span className="material-symbols-outlined text-primary text-3xl">person_add</span>
+            {formMode === 'edit' 
+              ? t('member.edit', 'تعديل العضو')
+              : t('stitch.add_new_member', 'Add New Member')}
+          </h2>
+          <p className="text-slate-500 text-sm mt-1">
+            {formMode === 'edit'
+              ? t('member.edit_desc', 'قم بتعديل بيانات العضو')
+              : t('stitch.add_member_desc', `Create a new profile for a family member in the ${familyData?.name || 'family'} tree.`)}
+          </p>
         </div>
 
-        {/* Step indicator */}
-        <div className="flex items-center gap-2">
-          <div className={cn(
-            'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors',
-            currentStep >= 1 
-              ? 'bg-primary text-primary-foreground' 
-              : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
-          )}>
-            1
-          </div>
-          <div className="w-8 h-0.5 bg-slate-200 dark:bg-slate-700" />
-          <div className={cn(
-            'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors',
-            currentStep >= 2 
-              ? 'bg-primary text-primary-foreground' 
-              : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
-          )}>
-            2
-          </div>
-        </div>
-      </div>
-
-      {/* Step 1: Basic Information */}
-      {currentStep === 1 && (
-        <div className="space-y-6">
-          {/* Photo */}
-          <div className="flex flex-col items-center">
-            <div className="relative">
-              <div className={cn(
-                'w-24 h-24 rounded-full overflow-hidden border-4 border-slate-100 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center',
-                displayImage && 'border-primary/50'
-              )}>
-                {displayImage ? (
-                  <img 
-                    src={displayImage} 
-                    alt="Member" 
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span className="material-icons-round text-4xl text-slate-300">person</span>
-                )}
-              </div>
-              {isImageUploadEnabled && (
-                <label className="absolute bottom-0 right-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:opacity-90 transition-opacity">
-                  <span className="material-icons-round text-sm">add_a_photo</span>
+        {/* Form Card */}
+        <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
+          <form onSubmit={(e) => { e.preventDefault(); handleFormSubmit(); }} className="space-y-8">
+            {/* 3-Column Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              
+              {/* Column 1 */}
+              <div className="space-y-6">
+                {/* First Name */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-primary text-lg">person</span>
+                    {t('member.first_name', 'First Name')} *
+                  </label>
                   <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageSelect}
+                    type="text"
+                    value={formData.first_name}
+                    onChange={(e) => setFormData(prev => ({ 
+                      ...prev, 
+                      first_name: e.target.value,
+                      name: `${e.target.value} ${prev.name.split(' ').slice(1).join(' ')}`.trim()
+                    }))}
+                    placeholder={t('member.first_name_placeholder', 'Enter first name')}
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                   />
-                </label>
-              )}
-            </div>
-            {displayImage && (
-              <button
-                onClick={handleDeleteImage}
-                className="mt-2 text-xs text-red-500 hover:text-red-600 flex items-center gap-1"
-              >
-                <span className="material-icons-round text-sm">delete</span>
-                {t('member.delete_image', 'حذف الصورة')}
-              </button>
-            )}
-          </div>
+                </div>
 
-          {/* Name Fields */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                {t('member.first_name', 'الاسم الأول')} *
-              </Label>
-              <Input
-                value={formData.first_name}
-                onChange={(e) => setFormData(prev => ({ 
-                  ...prev, 
-                  first_name: e.target.value,
-                  name: `${e.target.value} ${prev.name.split(' ').slice(1).join(' ')}`.trim()
-                }))}
-                placeholder={t('member.first_name_placeholder', 'أحمد')}
-                className="h-11 rounded-xl border-slate-200 dark:border-slate-700 focus:border-primary"
-              />
-            </div>
-            <div>
-              <Label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                {t('member.last_name', 'اسم العائلة')}
-              </Label>
-              <Input
-                value={formData.name.split(' ').slice(1).join(' ') || familyData?.name || ''}
-                onChange={(e) => setFormData(prev => ({ 
-                  ...prev, 
-                  name: `${prev.first_name} ${e.target.value}`.trim()
-                }))}
-                placeholder={familyData?.name || t('member.last_name_placeholder', 'السعيد')}
-                className="h-11 rounded-xl border-slate-200 dark:border-slate-700 focus:border-primary"
-              />
-            </div>
-          </div>
+                {/* Twins */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-primary text-lg">groups</span>
+                    {t('member.twins', 'Twins')}
+                  </label>
+                  <select
+                    value={formData.is_twin ? 'yes' : 'no'}
+                    onChange={(e) => setFormData(prev => ({ ...prev, is_twin: e.target.value === 'yes' }))}
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+                  >
+                    <option value="no">{t('common.no', 'No')}</option>
+                    <option value="yes">{t('common.yes', 'Yes')}</option>
+                  </select>
+                </div>
 
-          {/* Gender */}
-          <div>
-            <Label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-              {t('member.gender', 'الجنس')} *
-            </Label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, gender: 'male' }))}
-                className={cn(
-                  'p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-2',
-                  formData.gender === 'male'
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600'
-                    : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
-                )}
-              >
-                <span className="material-icons-round">male</span>
-                <span className="font-medium">{t('member.male', 'ذكر')}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, gender: 'female' }))}
-                className={cn(
-                  'p-4 rounded-xl border-2 transition-all flex items-center justify-center gap-2',
-                  formData.gender === 'female'
-                    ? 'border-pink-500 bg-pink-50 dark:bg-pink-900/20 text-pink-600'
-                    : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
-                )}
-              >
-                <span className="material-icons-round">female</span>
-                <span className="font-medium">{t('member.female', 'أنثى')}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Parents Selection (only for adding new members) */}
-          {formMode === 'add' && marriageOptions.length > 0 && (
-            <div>
-              <Label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                {t('member.parents', 'الوالدين')}
-              </Label>
-              <Select
-                value={formData.selectedParent || 'none'}
-                onValueChange={(value) => setFormData(prev => ({ 
-                  ...prev, 
-                  selectedParent: value === 'none' ? null : value 
-                }))}
-                disabled={parentsLocked}
-              >
-                <SelectTrigger className="h-11 rounded-xl">
-                  <SelectValue placeholder={t('member.select_parents', 'اختر الوالدين')} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">{t('member.no_parents', 'بدون والدين (مؤسس)')}</SelectItem>
-                  {marriageOptions.map(option => (
-                    <SelectItem key={option.id} value={option.id}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {!formData.selectedParent && formMode === 'add' && (
-                <p className="text-xs text-amber-600 dark:text-amber-400 mt-1 flex items-center gap-1">
-                  <span className="material-icons-round text-sm">info</span>
-                  {t('member.founder_hint', 'سيتم تسجيله كمؤسس')}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Birth Date */}
-          <div>
-            <Label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-              {t('member.birth_date', 'تاريخ الميلاد')}
-            </Label>
-            <EnhancedDatePicker
-              value={formData.birthDate || undefined}
-              onChange={(date) => setFormData(prev => ({ ...prev, birthDate: date || null }))}
-              placeholder={t('member.select_date', 'اختر التاريخ')}
-            />
-          </div>
-
-          {/* Is Alive */}
-          <div>
-            <Label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-              {t('member.status', 'الحالة')}
-            </Label>
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, isAlive: true, deathDate: null }))}
-                className={cn(
-                  'p-3 rounded-xl border-2 transition-all flex items-center justify-center gap-2',
-                  formData.isAlive
-                    ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600'
-                    : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
-                )}
-              >
-                <span className="material-icons-round text-sm">favorite</span>
-                <span className="font-medium text-sm">{t('member.alive', 'على قيد الحياة')}</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, isAlive: false }))}
-                className={cn(
-                  'p-3 rounded-xl border-2 transition-all flex items-center justify-center gap-2',
-                  !formData.isAlive
-                    ? 'border-slate-500 bg-slate-50 dark:bg-slate-800 text-slate-600'
-                    : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
-                )}
-              >
-                <span className="material-icons-round text-sm">history</span>
-                <span className="font-medium text-sm">{t('member.deceased', 'متوفى')}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Death Date (if deceased) */}
-          {!formData.isAlive && (
-            <div>
-              <Label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-                {t('member.death_date', 'تاريخ الوفاة')}
-              </Label>
-            <EnhancedDatePicker
-              value={formData.deathDate || undefined}
-              onChange={(date) => setFormData(prev => ({ ...prev, deathDate: date || null }))}
-              placeholder={t('member.select_date', 'اختر التاريخ')}
-            />
-            </div>
-          )}
-
-          {/* Biography */}
-          <div>
-            <Label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
-              {t('member.biography', 'السيرة الذاتية')}
-            </Label>
-            <Textarea
-              value={formData.bio}
-              onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-              placeholder={t('member.biography_placeholder', 'اكتب نبذة عن العضو...')}
-              className="min-h-[100px] rounded-xl border-slate-200 dark:border-slate-700 focus:border-primary resize-none"
-            />
-          </div>
-
-          {/* Next Button */}
-          <div className="flex justify-end pt-4">
-            <Button
-              onClick={nextStep}
-              disabled={!formData.first_name.trim()}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-6 h-11"
-            >
-              {t('member.next', 'التالي')}
-              <span className={cn('material-icons-round text-sm', isRTL ? 'mr-2' : 'ml-2')}>
-                {isRTL ? 'arrow_back' : 'arrow_forward'}
-              </span>
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Step 2: Marriage Information */}
-      {currentStep === 2 && (
-        <div className="space-y-6">
-          {/* Marriage Section Header */}
-          <div className="bg-gradient-to-br from-pink-50 to-rose-100 dark:from-pink-950/30 dark:to-rose-900/30 rounded-2xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-pink-500/20 flex items-center justify-center">
-                <span className="material-icons-round text-pink-600">favorite</span>
+                {/* Biography */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-primary text-lg">history_edu</span>
+                    {t('member.biography', 'Biography')}
+                  </label>
+                  <textarea
+                    value={formData.bio}
+                    onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                    placeholder={t('member.biography_placeholder', 'Brief history or description...')}
+                    rows={6}
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+                  />
+                </div>
               </div>
-              <div>
-                <h3 className="font-bold text-slate-900 dark:text-white">
-                  {t('member.marriage_info', 'معلومات الزواج')}
+
+              {/* Column 2 */}
+              <div className="space-y-6">
+                {/* Gender */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-primary text-lg">wc</span>
+                    {t('member.gender', 'Gender')} *
+                  </label>
+                  <select
+                    value={formData.gender}
+                    onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value as 'male' | 'female' }))}
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+                  >
+                    <option value="male">{t('member.male', 'Male')}</option>
+                    <option value="female">{t('member.female', 'Female')}</option>
+                  </select>
+                </div>
+
+                {/* Birth Date */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-primary text-lg">calendar_today</span>
+                    {t('member.birth_date', 'Birth Date')}
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.birthDate ? formData.birthDate.toISOString().split('T')[0] : ''}
+                    onChange={(e) => setFormData(prev => ({ 
+                      ...prev, 
+                      birthDate: e.target.value ? new Date(e.target.value) : null 
+                    }))}
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  />
+                </div>
+
+                {/* Profile Picture */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-primary text-lg">image</span>
+                    {t('member.profile_picture', 'Profile Picture')}
+                  </label>
+                  {displayImage ? (
+                    <div className="relative">
+                      <img 
+                        src={displayImage} 
+                        alt="Profile" 
+                        className="w-full h-40 object-cover rounded-2xl border-2 border-slate-200 dark:border-slate-700"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleDeleteImage}
+                        className="absolute top-2 end-2 p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-6 flex flex-col items-center justify-center text-center bg-slate-50/50 dark:bg-slate-800/30 hover:border-primary hover:bg-emerald-50/10 transition-all cursor-pointer">
+                      <span className="material-symbols-outlined text-3xl text-primary mb-2">upload</span>
+                      <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                        {t('member.click_to_upload', 'Click to upload image')}
+                      </p>
+                      <p className="text-[10px] text-slate-400 mt-1">PNG, JPG, GIF up to 10MB</p>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageSelect}
+                        disabled={!isImageUploadEnabled}
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+
+              {/* Column 3 */}
+              <div className="space-y-6">
+                {/* Family Relation / Parents */}
+                {formMode === 'add' && marriageOptions.length > 0 && (
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      <span className="material-symbols-outlined text-primary text-lg">account_tree</span>
+                      {t('member.family_relation', 'Family Relation')} *
+                    </label>
+                    <select
+                      value={formData.selectedParent || ''}
+                      onChange={(e) => setFormData(prev => ({ 
+                        ...prev, 
+                        selectedParent: e.target.value || null,
+                        isFounder: !e.target.value
+                      }))}
+                      disabled={parentsLocked}
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+                    >
+                      <option value="">{t('member.select_relation', 'Select relation')}</option>
+                      {marriageOptions.map(option => (
+                        <option key={option.id} value={option.id}>
+                          {formData.gender === 'male' ? t('member.son', 'Son') : t('member.daughter', 'Daughter')} - {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {!formData.selectedParent && (
+                      <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                        <span className="material-icons-round text-sm">info</span>
+                        {t('member.founder_hint', 'Will be registered as founder')}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Vitality Status */}
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-primary text-lg">vital_signs</span>
+                    {t('member.vitality_status', 'Vitality Status')}
+                  </label>
+                  <select
+                    value={formData.isAlive ? 'living' : 'deceased'}
+                    onChange={(e) => setFormData(prev => ({ 
+                      ...prev, 
+                      isAlive: e.target.value === 'living',
+                      deathDate: e.target.value === 'living' ? null : prev.deathDate
+                    }))}
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+                  >
+                    <option value="living">{t('member.living', 'Living')}</option>
+                    <option value="deceased">{t('member.deceased', 'Deceased')}</option>
+                  </select>
+                </div>
+
+                {/* Death Date (conditional) */}
+                {!formData.isAlive && (
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      <span className="material-symbols-outlined text-primary text-lg">skull</span>
+                      {t('member.death_date', 'Death Date')}
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.deathDate ? formData.deathDate.toISOString().split('T')[0] : ''}
+                      onChange={(e) => setFormData(prev => ({ 
+                        ...prev, 
+                        deathDate: e.target.value ? new Date(e.target.value) : null 
+                      }))}
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Spouses Section */}
+            <div className="pt-8 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="material-symbols-outlined text-pink-500 text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
+                <h3 className="text-xs font-bold text-pink-500 uppercase tracking-widest">
+                  {t('member.spouses_info', 'Spouses Information')}
                 </h3>
-                <p className="text-sm text-slate-500">
-                  {formData.gender === 'male' 
-                    ? t('member.add_wives', 'أضف زوجة أو أكثر')
-                    : t('member.add_husband', 'أضف الزوج')}
-                </p>
               </div>
-            </div>
-          </div>
-
-          {/* Existing Spouses List */}
-          {formData.gender === 'male' && wives.length > 0 && (
-            <div className="space-y-3">
-              <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                {t('member.current_wives', 'الزوجات الحالية')} ({wives.length})
-              </Label>
-              {wives.map((wife, index) => (
-                <div 
-                  key={wife.id || index}
-                  className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center">
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Existing Spouses */}
+                {formData.gender === 'male' && wives.map((wife, index) => (
+                  <div 
+                    key={wife.id || index}
+                    className="p-6 bg-white dark:bg-slate-900 border border-pink-100 dark:border-pink-900/30 rounded-2xl flex items-start gap-5 relative group hover:shadow-lg hover:shadow-pink-500/5 transition-all"
+                  >
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pink-500 to-rose-400 flex items-center justify-center text-white shadow-xl shadow-pink-500/20 shrink-0">
                       {wife.croppedImage ? (
                         <img src={wife.croppedImage} alt={wife.name} className="w-full h-full rounded-full object-cover" />
                       ) : (
-                        <span className="text-pink-600 font-bold">
-                          {wife.firstName?.charAt(0) || wife.name?.charAt(0) || '?'}
-                        </span>
+                        <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
                       )}
                     </div>
-                    <div>
-                      <p className="font-medium text-slate-900 dark:text-white">
-                        {wife.name || `${wife.firstName} ${wife.lastName}`.trim() || t('member.unnamed', 'بدون اسم')}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        {wife.isFamilyMember 
-                          ? t('member.family_member', 'من أفراد العائلة')
-                          : t('member.external', 'خارج العائلة')}
-                      </p>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-800 dark:text-slate-100">
+                        {wife.name || `${wife.firstName} ${wife.lastName}`.trim() || t('member.unnamed', 'Unnamed')}
+                      </h4>
+                      <div className="flex flex-col gap-1 mt-1">
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-pink-500 uppercase">
+                          <span className="w-1.5 h-1.5 rounded-full bg-pink-500" />
+                          {t('member.spouse', 'Spouse')} ({wife.maritalStatus || 'Married'})
+                        </span>
+                      </div>
+                      <div className="flex gap-2 mt-3">
+                        <button 
+                          type="button"
+                          onClick={() => handleSpouseEdit('wife', wife, index)}
+                          className="px-4 py-1.5 bg-white dark:bg-slate-800 border border-pink-100 dark:border-pink-900/50 text-pink-600 dark:text-pink-400 text-xs font-bold rounded-lg hover:bg-pink-50 transition-colors"
+                        >
+                          {t('common.edit', 'Edit')}
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => handleSpouseDelete(wife, index)}
+                          className="px-4 py-1.5 bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 text-xs font-bold rounded-lg hover:bg-pink-100 transition-colors"
+                        >
+                          {t('common.delete', 'Delete')}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="absolute top-4 end-4 text-pink-500/30">
+                      <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleSpouseEdit('wife', wife, index)}
-                      className="p-2 text-slate-400 hover:text-primary transition-colors"
-                    >
-                      <span className="material-icons-round text-sm">edit</span>
-                    </button>
-                    <button
-                      onClick={() => handleSpouseDelete(wife, index)}
-                      className="p-2 text-slate-400 hover:text-red-500 transition-colors"
-                    >
-                      <span className="material-icons-round text-sm">delete</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
 
-          {formData.gender === 'female' && husbands.length > 0 && (
-            <div className="space-y-3">
-              <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                {t('member.current_husband', 'الزوج الحالي')}
-              </Label>
-              {husbands.map((husband, index) => (
-                <div 
-                  key={husband.id || index}
-                  className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                {formData.gender === 'female' && husbands.map((husband, index) => (
+                  <div 
+                    key={husband.id || index}
+                    className="p-6 bg-white dark:bg-slate-900 border border-blue-100 dark:border-blue-900/30 rounded-2xl flex items-start gap-5 relative group hover:shadow-lg hover:shadow-blue-500/5 transition-all"
+                  >
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-indigo-400 flex items-center justify-center text-white shadow-xl shadow-blue-500/20 shrink-0">
                       {husband.croppedImage ? (
                         <img src={husband.croppedImage} alt={husband.name} className="w-full h-full rounded-full object-cover" />
                       ) : (
-                        <span className="text-blue-600 font-bold">
-                          {husband.firstName?.charAt(0) || husband.name?.charAt(0) || '?'}
-                        </span>
+                        <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
                       )}
                     </div>
-                    <div>
-                      <p className="font-medium text-slate-900 dark:text-white">
-                        {husband.name || `${husband.firstName} ${husband.lastName}`.trim() || t('member.unnamed', 'بدون اسم')}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        {husband.isFamilyMember 
-                          ? t('member.family_member', 'من أفراد العائلة')
-                          : t('member.external', 'خارج العائلة')}
-                      </p>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-800 dark:text-slate-100">
+                        {husband.name || `${husband.firstName} ${husband.lastName}`.trim() || t('member.unnamed', 'Unnamed')}
+                      </h4>
+                      <div className="flex flex-col gap-1 mt-1">
+                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-blue-500 uppercase">
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                          {t('member.spouse', 'Spouse')} ({husband.maritalStatus || 'Married'})
+                        </span>
+                      </div>
+                      <div className="flex gap-2 mt-3">
+                        <button 
+                          type="button"
+                          onClick={() => handleSpouseEdit('husband', husband, index)}
+                          className="px-4 py-1.5 bg-white dark:bg-slate-800 border border-blue-100 dark:border-blue-900/50 text-blue-600 dark:text-blue-400 text-xs font-bold rounded-lg hover:bg-blue-50 transition-colors"
+                        >
+                          {t('common.edit', 'Edit')}
+                        </button>
+                        <button 
+                          type="button"
+                          onClick={() => handleSpouseDelete(husband, index)}
+                          className="px-4 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-bold rounded-lg hover:bg-blue-100 transition-colors"
+                        >
+                          {t('common.delete', 'Delete')}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="absolute top-4 end-4 text-blue-500/30">
+                      <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleSpouseEdit('husband', husband, index)}
-                      className="p-2 text-slate-400 hover:text-primary transition-colors"
-                    >
-                      <span className="material-icons-round text-sm">edit</span>
-                    </button>
-                    <button
-                      onClick={() => handleSpouseDelete(husband, index)}
-                      className="p-2 text-slate-400 hover:text-red-500 transition-colors"
-                    >
-                      <span className="material-icons-round text-sm">delete</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))}
+
+                {/* Add Spouse Button */}
+                {((formData.gender === 'male' && wives.length < 4) || (formData.gender === 'female' && husbands.length === 0)) && (
+                  <button
+                    type="button"
+                    onClick={() => handleAddSpouse(formData.gender === 'male' ? 'wife' : 'husband')}
+                    className="p-6 border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-2xl flex flex-col items-center justify-center gap-2 hover:border-primary hover:bg-emerald-50/20 transition-all group"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 group-hover:bg-primary/20 group-hover:text-primary flex items-center justify-center transition-all">
+                      <span className="material-symbols-outlined text-xl">add</span>
+                    </div>
+                    <div className="text-center">
+                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 group-hover:text-primary block">
+                        {formData.gender === 'male' 
+                          ? t('member.add_spouse', 'Add Spouse')
+                          : t('member.add_husband', 'Add Husband')}
+                      </span>
+                    </div>
+                  </button>
+                )}
+              </div>
             </div>
-          )}
 
-          {/* Spouse Form */}
-          {showSpouseForm && currentSpouse && activeSpouseType && (
-            <SpouseForm
-              spouseType={activeSpouseType}
-              spouse={currentSpouse}
-              onSpouseChange={(spouse) => setCurrentSpouse(spouse)}
-              familyMembers={familyMembers}
-              selectedMember={editingMember}
-              commandOpen={spouseCommandOpen}
-              onCommandOpenChange={setSpouseCommandOpen}
-              familyStatus={spouseFamilyStatus || 'no'}
-              onFamilyStatusChange={(status) => setSpouseFamilyStatus(status as 'yes' | 'no')}
-              onSave={() => handleSpouseSave(activeSpouseType)}
-              onAdd={() => {}}
-              onClose={closeSpouseForm}
-              showForm={true}
-              marriages={marriages}
-            />
-          )}
-
-          {/* Add Spouse Button */}
-          {!showSpouseForm && (
-            <>
-              {formData.gender === 'male' && wives.length < 4 && (
-                <button
-                  onClick={() => handleAddSpouse('wife')}
-                  className="w-full p-4 border-2 border-dashed border-pink-300 dark:border-pink-700 rounded-xl text-pink-600 dark:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/30 transition-colors flex items-center justify-center gap-2"
-                >
-                  <span className="material-icons-round">add</span>
-                  {t('member.add_wife', 'إضافة زوجة')}
-                </button>
-              )}
-              {formData.gender === 'female' && husbands.length === 0 && (
-                <button
-                  onClick={() => handleAddSpouse('husband')}
-                  className="w-full p-4 border-2 border-dashed border-blue-300 dark:border-blue-700 rounded-xl text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors flex items-center justify-center gap-2"
-                >
-                  <span className="material-icons-round">add</span>
-                  {t('member.add_husband', 'إضافة زوج')}
-                </button>
-              )}
-            </>
-          )}
-
-          {/* Action Buttons */}
-          <div className="flex justify-between pt-6 border-t border-slate-100 dark:border-slate-800">
-            <Button
-              variant="outline"
-              onClick={prevStep}
-              className="rounded-xl px-6 h-11"
-            >
-              <span className={cn('material-icons-round text-sm', isRTL ? 'ml-2' : 'mr-2')}>
-                {isRTL ? 'arrow_forward' : 'arrow_back'}
-              </span>
-              {t('member.back', 'السابق')}
-            </Button>
-            <Button
-              onClick={handleFormSubmit}
-              disabled={isSaving}
-              className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-8 h-11"
-            >
-              {isSaving ? (
-                <>
-                  <span className="material-icons-round animate-spin text-sm mr-2">refresh</span>
-                  {t('member.saving', 'جاري الحفظ...')}
-                </>
-              ) : (
-                <>
-                  <span className="material-icons-round text-sm mr-2">save</span>
-                  {formMode === 'edit' 
-                    ? t('member.save_changes', 'حفظ التغييرات')
-                    : t('member.save_member', 'حفظ العضو')}
-                </>
-              )}
-            </Button>
-          </div>
+            {/* Footer Actions */}
+            <div className="pt-8 flex items-center justify-end gap-4 border-t border-slate-100 dark:border-slate-800">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-8 py-3.5 text-slate-500 dark:text-slate-400 font-bold text-sm hover:text-slate-700 transition-colors"
+              >
+                {t('common.cancel', 'Cancel')}
+              </button>
+              <button
+                type="submit"
+                disabled={isSaving || !formData.first_name.trim()}
+                className="px-10 py-3.5 bg-primary text-white font-bold text-sm rounded-xl shadow-lg shadow-primary/20 hover:opacity-95 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="material-symbols-outlined text-lg">check_circle</span>
+                {isSaving 
+                  ? t('member.saving', 'Saving...')
+                  : formMode === 'edit' 
+                    ? t('member.save_changes', 'Save Changes')
+                    : t('member.save_member', 'Save Member')}
+              </button>
+            </div>
+          </form>
         </div>
-      )}
+      </div>
+
+      {/* Spouse Drawer */}
+      <SpouseDrawer
+        isOpen={showSpouseForm}
+        onClose={closeSpouseForm}
+        spouseType={activeSpouseType}
+        currentSpouse={currentSpouse}
+        onSpouseChange={setCurrentSpouse}
+        familyMembers={familyMembers}
+        marriages={marriages}
+        spouseCommandOpen={spouseCommandOpen}
+        onCommandOpenChange={setSpouseCommandOpen}
+        spouseFamilyStatus={spouseFamilyStatus}
+        onFamilyStatusChange={setSpouseFamilyStatus}
+        onSave={() => activeSpouseType && handleSpouseSave(activeSpouseType)}
+      />
 
       {/* Image Crop Dialog */}
       <Dialog open={showCropDialog} onOpenChange={setShowCropDialog}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{t('member.crop_image', 'قص الصورة')}</DialogTitle>
+            <DialogTitle>{t('member.crop_image', 'Crop Image')}</DialogTitle>
           </DialogHeader>
           <div className="relative h-64 bg-slate-900 rounded-xl overflow-hidden">
             {selectedImage && (
@@ -622,7 +519,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
           </div>
           <div className="space-y-4">
             <div>
-              <Label className="text-sm text-slate-500">{t('member.zoom', 'التكبير')}</Label>
+              <Label className="text-sm text-slate-500">{t('member.zoom', 'Zoom')}</Label>
               <Slider
                 value={[zoom]}
                 onValueChange={([value]) => setZoom(value)}
@@ -638,19 +535,19 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                 onClick={() => setShowCropDialog(false)}
                 className="rounded-xl"
               >
-                {t('common.cancel', 'إلغاء')}
+                {t('common.cancel', 'Cancel')}
               </Button>
               <Button
                 onClick={handleCropSave}
                 className="bg-primary text-primary-foreground rounded-xl"
               >
-                {t('member.apply', 'تطبيق')}
+                {t('member.apply', 'Apply')}
               </Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </section>
   );
 };
 
