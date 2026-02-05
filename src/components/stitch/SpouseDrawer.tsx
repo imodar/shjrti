@@ -107,13 +107,17 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
         {/* Header */}
         <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-pink-100 dark:bg-pink-900/30 text-pink-600 rounded-xl flex items-center justify-center">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+              spouseType === 'husband' 
+                ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600' 
+                : 'bg-pink-100 dark:bg-pink-900/30 text-pink-600'
+            }`}>
               <span className="material-symbols-outlined">favorite</span>
             </div>
-            <h3 className="font-bold text-lg">
+            <h3 className={`font-bold text-lg ${spouseType === 'husband' ? 'text-blue-600' : 'text-pink-600'}`}>
               {spouseType === 'wife' 
-                ? t('member.add_wife_details', 'Add Wife Details')
-                : t('member.add_husband_details', 'Add Husband Details')}
+                ? t('member.add_wife_details', 'Wife Information')
+                : t('member.add_husband_details', 'Husband Information')}
             </h3>
           </div>
           <button 
@@ -134,7 +138,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
               className={cn(
                 "flex-1 py-2 text-xs font-bold rounded-lg transition-all",
                 spouseFamilyStatus === 'no' || !spouseFamilyStatus
-                  ? "bg-white dark:bg-slate-700 text-pink-600 shadow-sm"
+                  ? `bg-white dark:bg-slate-700 shadow-sm ${spouseType === 'husband' ? 'text-blue-600' : 'text-pink-600'}`
                   : "text-slate-500 dark:text-slate-400"
               )}
             >
@@ -146,7 +150,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
               className={cn(
                 "flex-1 py-2 text-xs font-bold rounded-lg transition-all",
                 spouseFamilyStatus === 'yes'
-                  ? "bg-white dark:bg-slate-700 text-pink-600 shadow-sm"
+                  ? `bg-white dark:bg-slate-700 shadow-sm ${spouseType === 'husband' ? 'text-blue-600' : 'text-pink-600'}`
                   : "text-slate-500 dark:text-slate-400"
               )}
             >
@@ -174,7 +178,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                     placeholder={t('member.select_placeholder', 'Select a family member...')}
                     searchable={true}
                     searchPlaceholder={t('common.search', 'Search...')}
-                    accentColor="pink"
+                    accentColor={spouseType === 'husband' ? 'blue' : 'pink'}
                   />
                 </div>
 
@@ -192,7 +196,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                       ]}
                       value={currentSpouse.maritalStatus || 'married'}
                       onChange={(value) => handleInputChange('maritalStatus', value)}
-                      accentColor="pink"
+                      accentColor={spouseType === 'husband' ? 'blue' : 'pink'}
                     />
                   </div>
                 )}
@@ -217,7 +221,9 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                           handleInputChange('name', `${firstName} ${currentSpouse.lastName || ''}`.trim());
                         }}
                         placeholder={t('member.first_name_placeholder', 'First name')}
-                        className="w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
+                        className={`w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 ${
+                          spouseType === 'husband' ? 'focus:ring-blue-500/20 focus:border-blue-500' : 'focus:ring-pink-500/20 focus:border-pink-500'
+                        }`}
                       />
                     </div>
                   </div>
@@ -236,7 +242,9 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                           handleInputChange('name', `${currentSpouse.firstName || ''} ${lastName}`.trim());
                         }}
                         placeholder={t('member.last_name_placeholder', 'Last name')}
-                        className="w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
+                        className={`w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 ${
+                          spouseType === 'husband' ? 'focus:ring-blue-500/20 focus:border-blue-500' : 'focus:ring-pink-500/20 focus:border-pink-500'
+                        }`}
                       />
                     </div>
                   </div>
@@ -254,7 +262,9 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                         type="date"
                         value={currentSpouse.birthDate ? (currentSpouse.birthDate instanceof Date ? currentSpouse.birthDate.toISOString().split('T')[0] : currentSpouse.birthDate) : ''}
                         onChange={(e) => handleInputChange('birthDate', e.target.value ? new Date(e.target.value) : null)}
-                        className="w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
+                        className={`w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 ${
+                          spouseType === 'husband' ? 'focus:ring-blue-500/20 focus:border-blue-500' : 'focus:ring-pink-500/20 focus:border-pink-500'
+                        }`}
                       />
                     </div>
                   </div>
@@ -270,7 +280,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                       ]}
                       value={currentSpouse.maritalStatus || 'married'}
                       onChange={(value) => handleInputChange('maritalStatus', value)}
-                      accentColor="pink"
+                      accentColor={spouseType === 'husband' ? 'blue' : 'pink'}
                     />
                   </div>
                 </div>
@@ -322,7 +332,9 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                         type="date"
                         value={currentSpouse.deathDate ? (currentSpouse.deathDate instanceof Date ? currentSpouse.deathDate.toISOString().split('T')[0] : currentSpouse.deathDate) : ''}
                         onChange={(e) => handleInputChange('deathDate', e.target.value ? new Date(e.target.value) : null)}
-                        className="w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500"
+                        className={`w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 ${
+                          spouseType === 'husband' ? 'focus:ring-blue-500/20 focus:border-blue-500' : 'focus:ring-pink-500/20 focus:border-pink-500'
+                        }`}
                       />
                     </div>
                   </div>
@@ -340,7 +352,9 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                       onChange={(e) => handleInputChange('biography', e.target.value)}
                       placeholder={t('member.biography_placeholder', 'Write a short biography...')}
                       rows={3}
-                      className="w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 resize-none"
+                      className={`w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 resize-none ${
+                        spouseType === 'husband' ? 'focus:ring-blue-500/20 focus:border-blue-500' : 'focus:ring-pink-500/20 focus:border-pink-500'
+                      }`}
                     />
                   </div>
                 </div>
@@ -349,9 +363,13 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
 
             {/* Photo Upload (Optional) */}
             {spouseFamilyStatus !== 'yes' && (
-              <div className="p-4 rounded-xl border-2 border-dashed border-pink-500/20 bg-pink-50/30 dark:bg-pink-900/5 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-pink-50/50 transition-colors">
-                <span className="material-symbols-outlined text-pink-500">upload_file</span>
-                <span className="text-xs font-medium text-pink-600">
+              <div className={`p-4 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${
+                spouseType === 'husband'
+                  ? 'border-blue-500/20 bg-blue-50/30 dark:bg-blue-900/5 hover:bg-blue-50/50'
+                  : 'border-pink-500/20 bg-pink-50/30 dark:bg-pink-900/5 hover:bg-pink-50/50'
+              }`}>
+                <span className={`material-symbols-outlined ${spouseType === 'husband' ? 'text-blue-500' : 'text-pink-500'}`}>upload_file</span>
+                <span className={`text-xs font-medium ${spouseType === 'husband' ? 'text-blue-600' : 'text-pink-600'}`}>
                   {t('member.upload_photo_optional', 'Upload Photo (Optional)')}
                 </span>
               </div>
@@ -372,9 +390,15 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
             type="button"
             onClick={onSave}
             disabled={!currentSpouse.name && !currentSpouse.existingFamilyMemberId}
-            className="flex-1 py-2.5 bg-pink-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-pink-600/20 hover:bg-pink-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`flex-1 py-2.5 text-white rounded-xl text-sm font-bold shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+              spouseType === 'husband'
+                ? 'bg-blue-600 shadow-blue-600/20 hover:bg-blue-700'
+                : 'bg-pink-600 shadow-pink-600/20 hover:bg-pink-700'
+            }`}
           >
-            {t('member.confirm_spouse', 'Confirm Spouse')}
+            {spouseType === 'husband' 
+              ? t('member.confirm_husband', 'Confirm Husband')
+              : t('member.confirm_wife', 'Confirm Wife')}
           </button>
         </div>
       </aside>
