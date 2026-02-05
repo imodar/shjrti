@@ -274,6 +274,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
                <div key={wife.id} className="flex flex-col items-center gap-2">
                  <MemberAvatar member={wife} size="md" />
                   <p className="font-bold text-[11px]">{getMemberDisplayName(wife, familyMembers)}</p>
+                  <RoleBadge role={wife.is_alive !== false ? 'spouse' : 'ex-spouse'} />
                </div>
              ))}
            </div>
