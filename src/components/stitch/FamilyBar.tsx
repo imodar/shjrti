@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 
 interface Collaborator {
   id: string;
@@ -40,6 +41,16 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
 }) => {
   const { t, direction } = useLanguage();
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+
+  // Get selected option label
+  const getSelectedLabel = () => {
+    if (selectedRoot === 'all') {
+      return t('tree_view.all_branches', 'All Branches');
+    }
+    const option = rootOptions.find(o => o.id === selectedRoot);
+    return option?.label || t('tree_view.select_root', 'Select Root');
+  };
 
   // Default collaborators if none provided
   const displayCollaborators = collaborators.length > 0 ? collaborators : [
@@ -84,28 +95,50 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
           <>
             <div className="h-4 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2"></div>
             <div className="flex items-center gap-0">
-              <Select value={selectedRoot} onValueChange={onRootChange}>
-                <SelectTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 border-0 bg-transparent h-auto w-auto shadow-none">
-                  <span className="material-icons-round text-lg text-slate-400">family_restroom</span>
-                  <SelectValue placeholder={t('tree_view.select_root', 'Select Root')} />
-                </SelectTrigger>
-                <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg z-[100]">
-                  <SelectItem value="all" className="text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className="material-icons-round text-sm text-primary">account_tree</span>
-                      {t('tree_view.all_branches', 'All Branches')}
-                    </div>
-                  </SelectItem>
-                  {rootOptions.map(option => (
-                    <SelectItem key={option.id} value={option.id} className="text-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="material-icons-round text-sm text-pink-500">favorite</span>
-                        {option.label}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                  <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400">
+                    <span className="material-icons-round text-lg text-slate-400">family_restroom</span>
+                    <span className="text-xs font-semibold uppercase tracking-wider">{getSelectedLabel()}</span>
+                    <span className="material-icons-round text-lg">expand_more</span>
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[250px] p-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg z-[100]" align="start">
+                  <Command>
+                    <CommandInput placeholder={t('tree_view.search_branch', 'Search branch...')} className="h-9" />
+                    <CommandList>
+                      <CommandEmpty>{t('tree_view.no_results', 'No results found')}</CommandEmpty>
+                      <CommandGroup>
+                        <CommandItem
+                          value="all"
+                          onSelect={() => {
+                            onRootChange?.('all');
+                            setOpen(false);
+                          }}
+                          className="text-xs cursor-pointer"
+                        >
+                          <span className="material-icons-round text-sm text-primary me-2">account_tree</span>
+                          {t('tree_view.all_branches', 'All Branches')}
+                        </CommandItem>
+                        {rootOptions.map(option => (
+                          <CommandItem
+                            key={option.id}
+                            value={option.label}
+                            onSelect={() => {
+                              onRootChange?.(option.id);
+                              setOpen(false);
+                            }}
+                            className="text-xs cursor-pointer"
+                          >
+                            <span className="material-icons-round text-sm text-pink-500 me-2">favorite</span>
+                            {option.label}
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
             </div>
           </>
         )}
