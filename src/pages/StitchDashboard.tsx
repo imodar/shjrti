@@ -4,6 +4,7 @@ import { StitchHeader } from '@/components/stitch';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { getLocalizedText } from '@/lib/packageUtils';
 import { supabase } from '@/integrations/supabase/client';
 
 interface FamilyWithCount {
@@ -22,7 +23,7 @@ interface PackageData {
 const StitchDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { direction } = useLanguage();
+  const { direction, currentLanguage } = useLanguage();
   const { subscription } = useSubscription();
   
   const [families, setFamilies] = useState<FamilyWithCount[]>([]);
@@ -35,6 +36,7 @@ const StitchDashboard: React.FC = () => {
   const maxMembers = packageData?.max_family_members || 500;
   const treesUsed = families.length;
   const packageName = packageData?.name || subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
+  const localizedPackageName = getLocalizedText(packageName, currentLanguage, currentLanguage === 'ar' ? 'باقة مجانية' : 'Free Plan');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -168,7 +170,7 @@ const StitchDashboard: React.FC = () => {
                   <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-6">
                     <span className="material-symbols-outlined text-3xl">verified</span>
                   </div>
-                  <h3 className="text-lg font-bold text-foreground mb-1">{packageName}</h3>
+                  <h3 className="text-lg font-bold text-foreground mb-1">{localizedPackageName}</h3>
                   <p className="text-sm text-muted-foreground mb-6">{treesUsed} of {maxTrees} Trees Used</p>
                   <button 
                     onClick={() => navigate('/plan-selection')}
