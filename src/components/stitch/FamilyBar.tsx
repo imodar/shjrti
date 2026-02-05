@@ -88,7 +88,6 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
                 <SelectTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 border-0 bg-transparent h-auto w-auto shadow-none">
                   <span className="material-icons-round text-lg text-slate-400">family_restroom</span>
                   <SelectValue placeholder={t('tree_view.select_root', 'Select Root')} />
-                  <span className="material-icons-round text-lg">expand_more</span>
                 </SelectTrigger>
                 <SelectContent className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg z-[100]">
                   <SelectItem value="all" className="text-xs">
