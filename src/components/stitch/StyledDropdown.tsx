@@ -23,7 +23,7 @@ interface StyledDropdownProps {
   searchPlaceholder?: string;
   disabled?: boolean;
   className?: string;
-  accentColor?: 'primary' | 'pink';
+  accentColor?: 'primary' | 'pink' | 'blue';
 }
 
 export const StyledDropdown: React.FC<StyledDropdownProps> = ({
@@ -45,21 +45,29 @@ export const StyledDropdown: React.FC<StyledDropdownProps> = ({
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Color classes based on accent
-  const accentClasses = accentColor === 'pink' 
+  const accentClasses = accentColor === 'blue'
     ? {
-        border: 'border-pink-500',
-        ring: 'focus:ring-pink-500/20 focus:border-pink-500',
-        hover: 'hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600',
-        selected: 'bg-pink-50 dark:bg-pink-900/30 text-pink-600 font-medium',
-        text: 'text-pink-600'
+        border: 'border-blue-500',
+        ring: 'focus:ring-blue-500/20 focus:border-blue-500',
+        hover: 'hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600',
+        selected: 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 font-medium',
+        text: 'text-blue-600'
       }
-    : {
-        border: 'border-primary',
-        ring: 'focus:ring-primary/20 focus:border-primary',
-        hover: 'hover:bg-primary/10 hover:text-primary',
-        selected: 'bg-primary/10 text-primary font-medium',
-        text: 'text-primary'
-      };
+    : accentColor === 'pink' 
+      ? {
+          border: 'border-pink-500',
+          ring: 'focus:ring-pink-500/20 focus:border-pink-500',
+          hover: 'hover:bg-pink-50 dark:hover:bg-pink-900/20 hover:text-pink-600',
+          selected: 'bg-pink-50 dark:bg-pink-900/30 text-pink-600 font-medium',
+          text: 'text-pink-600'
+        }
+      : {
+          border: 'border-primary',
+          ring: 'focus:ring-primary/20 focus:border-primary',
+          hover: 'hover:bg-primary/10 hover:text-primary',
+          selected: 'bg-primary/10 text-primary font-medium',
+          text: 'text-primary'
+        };
 
   // Filter options based on search
   const filteredOptions = options.filter(option =>
