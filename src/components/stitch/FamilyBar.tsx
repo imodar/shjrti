@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
@@ -38,6 +39,7 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
   onRootChange
 }) => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   // Default collaborators if none provided
   const displayCollaborators = collaborators.length > 0 ? collaborators : [
@@ -64,6 +66,15 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
         >
           <span className="text-xs font-semibold uppercase tracking-wider">{t('stitch.switch_tree', 'Switch Tree')}</span>
           <span className="material-icons-round text-lg transition-transform group-hover:translate-y-0.5">expand_more</span>
+        </button>
+
+        {/* Back to Dashboard */}
+        <button 
+          onClick={() => navigate('/dashboard')}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 group"
+        >
+          <span className="material-icons-round text-lg">arrow_back</span>
+          <span className="text-xs font-semibold uppercase tracking-wider">{t('stitch.back_to_dashboard', 'عودة للحساب')}</span>
         </button>
 
         {/* Root Selector - Only shown on tree view */}
