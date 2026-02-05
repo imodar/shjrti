@@ -3,7 +3,7 @@
  * Single-step form matching the new design with 3-column layout
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import Cropper from 'react-easy-crop';
 import { useAddMemberForm } from './useAddMemberForm';
 import { AddMemberFormProps } from './AddMemberFormTypes';
 import { SpouseDrawer } from './SpouseDrawer';
+import { SearchableDropdown } from '@/components/SearchableDropdown';
 
 export const AddMemberForm: React.FC<AddMemberFormProps> = ({
   familyId,
@@ -85,19 +86,64 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
     }
   }, [formMode, editingMember, populateFormData]);
 
-  // Build marriage options for parent selection
-  const marriageOptions = marriages.map(marriage => {
-    const husband = familyMembers.find(m => m.id === marriage.husband_id);
-    const wife = familyMembers.find(m => m.id === marriage.wife_id);
-    const husbandName = husband?.first_name || husband?.name || t('member.unknown', 'غير معروف');
-    const wifeName = wife?.first_name || wife?.name || t('member.unknown', 'غير معروف');
-    return {
-      id: marriage.id,
-      label: `${husbandName} & ${wifeName}`,
-      husband,
-      wife
-    };
-  });
+  // Build marriage options for parent selection - matching FamilyBuilderNew format
+  const marriageOptions = useMemo(() => {
+    if (!marriages || !familyMembers) return [];
+    
+    return marriages
+      .filter(marriage => marriage && marriage.id && marriage.husband_id && marriage.wife_id)
+      .map(marriage => {
+        const husbandMember = familyMembers.find(m => m.id === marriage.husband_id);
+        const wifeMember = familyMembers.find(m => m.id === marriage.wife_id);
+        
+        // Helper to build full name with lineage (matching FamilyBuilderNew logic)
+        const buildFullName = (member: any, isWife: boolean = false) => {
+          if (!member) return t('member.unknown', 'غير معروف');
+          const firstName = member.first_name || member.name?.split(' ')[0] || '';
+          const father = familyMembers.find(m => m.id === member.father_id);
+          const grandfather = father ? familyMembers.find(m => m.id === father.father_id) : null;
+          const isInternal = Boolean(father) || Boolean(member.is_founder);
+
+          if (isInternal) {
+            if (isWife) {
+              if (father) {
+                const relationship = member.gender === 'female' ? 'بنت' : 'ابن';
+                const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
+                if (grandfather) {
+                  const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
+                  return `${firstName} ${relationship} ${fatherFirstName} بن ${grandfatherFirstName}`;
+                }
+                return `${firstName} ${relationship} ${fatherFirstName}`;
+              }
+              return firstName;
+            } else {
+              if (father) {
+                const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
+                if (grandfather) {
+                  const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
+                  return `${firstName} بن ${fatherFirstName} بن ${grandfatherFirstName}`;
+                }
+                return `${firstName} بن ${fatherFirstName}`;
+              }
+              return firstName;
+            }
+          } else {
+            return member.name || firstName;
+          }
+        };
+
+        const husbandName = buildFullName(husbandMember);
+        const wifeName = buildFullName(wifeMember, true);
+
+        return {
+          value: marriage.id,
+          familyMember: husbandName,
+          spouse: wifeName,
+          heartIcon: marriage.divorce_date ? 'heart-crack' as const : 'heart' as const,
+          isFounder: husbandMember?.is_founder || false
+        };
+      });
+  }, [marriages, familyMembers, t]);
 
   // Get display image
   const displayImage = croppedImage || editingMemberImageUrl || null;
@@ -166,23 +212,26 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                   <span className="material-symbols-outlined text-primary text-lg">account_tree</span>
                   {t('member.family_relation', 'Family Relation')} *
                 </label>
-                <select
+                <SearchableDropdown
+                  options={marriageOptions.length > 0 ? marriageOptions : [{
+                    value: "no-data",
+                    label: t('member.no_marriages', 'لا توجد زيجات مسجلة'),
+                    disabled: true
+                  }]}
                   value={formData.selectedParent || ''}
-                  onChange={(e) => setFormData(prev => ({ 
+                  onValueChange={(value) => setFormData(prev => ({ 
                     ...prev, 
-                    selectedParent: e.target.value || null,
-                    isFounder: !e.target.value
+                    selectedParent: value === 'none' || value === 'no-data' ? null : value,
+                    isFounder: !value || value === 'none' || value === 'no-data'
                   }))}
                   disabled={parentsLocked}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
-                >
-                  <option value="">{t('member.select_relation', 'Select relation')}</option>
-                  {marriageOptions.map(option => (
-                    <option key={option.id} value={option.id}>
-                      {formData.gender === 'male' ? t('member.son', 'Son') : t('member.daughter', 'Daughter')} - {option.label}
-                    </option>
-                  ))}
-                </select>
+                  placeholder={parentsLocked 
+                    ? t('member.parents_locked', 'تم اختيار الوالدين تلقائياً')
+                    : t('member.select_parents', 'اختر الوالدين')}
+                  searchPlaceholder={t('member.search_parents', 'ابحث عن الوالدين...')}
+                  emptyMessage={t('member.no_search_results', 'لا توجد نتائج')}
+                  className="w-full"
+                />
                 {!formData.selectedParent && (
                   <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
                     <span className="material-icons-round text-sm">info</span>
