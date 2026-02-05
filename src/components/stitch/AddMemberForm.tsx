@@ -214,14 +214,18 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                   <span className="material-symbols-outlined text-primary text-lg">account_tree</span>
                   {t('member.family_relation', 'Family Relation')} *
                 </label>
-                <SearchableDropdown
-                  options={marriageOptions.length > 0 ? marriageOptions : [{
+                <StyledDropdown
+                  options={marriageOptions.length > 0 ? marriageOptions.map(opt => ({
+                    value: opt.value,
+                    label: `${opt.familyMember} ❤ ${opt.spouse}`,
+                    icon: 'family_restroom'
+                  })) : [{
                     value: "no-data",
                     label: t('member.no_marriages', 'لا توجد زيجات مسجلة'),
-                    disabled: true
+                    icon: 'info'
                   }]}
                   value={formData.selectedParent || ''}
-                  onValueChange={(value) => setFormData(prev => ({ 
+                  onChange={(value) => setFormData(prev => ({ 
                     ...prev, 
                     selectedParent: value === 'none' || value === 'no-data' ? null : value,
                     isFounder: !value || value === 'none' || value === 'no-data'
@@ -230,9 +234,9 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                   placeholder={parentsLocked 
                     ? t('member.parents_locked', 'تم اختيار الوالدين تلقائياً')
                     : t('member.select_parents', 'اختر الوالدين')}
+                  searchable={true}
                   searchPlaceholder={t('member.search_parents', 'ابحث عن الوالدين...')}
-                  emptyMessage={t('member.no_search_results', 'لا توجد نتائج')}
-                  className="w-full"
+                  accentColor="primary"
                 />
                 {!formData.selectedParent && (
                   <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
