@@ -238,12 +238,6 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                   searchPlaceholder={t('member.search_parents', 'ابحث عن الوالدين...')}
                   accentColor="primary"
                 />
-                {!formData.selectedParent && (
-                  <p className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1">
-                    <span className="material-icons-round text-sm">info</span>
-                    {t('member.founder_hint', 'Will be registered as founder')}
-                  </p>
-                )}
               </div>
             </div>
 
