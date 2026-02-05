@@ -246,10 +246,14 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
              </div>
            )}
  
-           {/* Heart Icon */}
-           <div className="flex items-center justify-center">
-             <span className="material-icons-round text-red-400 animate-pulse">favorite</span>
-           </div>
+            {/* Heart Icon */}
+            <div className="flex items-center justify-center">
+              {wife?.marital_status === 'divorced' ? (
+                <span className="material-icons-round text-slate-400">heart_broken</span>
+              ) : (
+                <span className="material-icons-round text-red-400 animate-pulse">favorite</span>
+              )}
+            </div>
  
            {/* Wife */}
            {wife && (
