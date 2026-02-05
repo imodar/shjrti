@@ -3,7 +3,29 @@
  import { Member } from '@/types/family.types';
  import { useLanguage } from '@/contexts/LanguageContext';
  import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
-import { isMemberFromFamily } from '@/lib/memberDisplayUtils';
+import { isMemberFromFamily, getFounderLastName } from '@/lib/memberDisplayUtils';
+
+// Helper to check if member is a descendant of the founder (recursive check)
+const isDescendantOfFounder = (
+  member: Member | undefined, 
+  familyMembers: Member[], 
+  visited: Set<string> = new Set()
+): boolean => {
+  if (!member) return false;
+  if (member.is_founder || (member as any).isFounder) return true;
+  if (visited.has(member.id)) return false;
+  visited.add(member.id);
+  
+  const fatherId = member.father_id || (member as any).fatherId;
+  const motherId = member.mother_id || (member as any).motherId;
+  
+  const father = fatherId ? familyMembers.find(m => m.id === fatherId) : undefined;
+  const mother = motherId ? familyMembers.find(m => m.id === motherId) : undefined;
+  
+  // If either parent is a descendant of the founder, then this member is too
+  return isDescendantOfFounder(father, familyMembers, visited) || 
+         isDescendantOfFounder(mother, familyMembers, visited);
+};
  
 // Helper to check if parent has multiple spouses (polygamy case)
 const hasParentMultipleSpouses = (member: Member, familyMembers: Member[]): boolean => {
@@ -36,12 +58,12 @@ const hasParentMultipleSpouses = (member: Member, familyMembers: Member[]): bool
    onMemberClick?: (member: Member) => void;
  }
  
-// Helper to get display name - shows full name for external spouses
+// Helper to get display name - shows full name for non-descendants (external spouses or their children)
 const getMemberDisplayName = (member: Member, familyMembers: Member[]): string => {
-  const isFromFamily = isMemberFromFamily(member, familyMembers);
+  const isFromFamily = isDescendantOfFounder(member, familyMembers);
   const firstName = member.first_name || member.name?.split(' ')[0] || member.name || '';
   
-  // If not from the family (external spouse), show full name
+  // If not a descendant of the founder, show full name with their family name
   if (!isFromFamily && member.last_name) {
     return `${firstName} ${member.last_name}`;
   }
