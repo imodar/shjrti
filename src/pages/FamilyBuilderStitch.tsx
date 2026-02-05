@@ -143,10 +143,8 @@ const FamilyBuilderStitch: React.FC = () => {
                    user?.email?.split('@')[0] || 
                    'User';
 
-  // Get package name
-  const packageName = subscription?.package_name?.en || 
-                      subscription?.status || 
-                      'Free Plan';
+  // Get package name - pass the full object for localization in Header
+  const packageName = subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
 
   if (loading) {
     return (
