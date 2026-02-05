@@ -3,6 +3,7 @@
  import { Member } from '@/types/family.types';
  import { useLanguage } from '@/contexts/LanguageContext';
  import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
+import { isMemberFromFamily } from '@/lib/memberDisplayUtils';
  
  interface FamilyUnit {
    id: string;
@@ -20,6 +21,19 @@
    onMemberClick?: (member: Member) => void;
  }
  
+// Helper to get display name - shows full name for external spouses
+const getMemberDisplayName = (member: Member, familyMembers: Member[]): string => {
+  const isFromFamily = isMemberFromFamily(member, familyMembers);
+  const firstName = member.first_name || member.name?.split(' ')[0] || member.name || '';
+  
+  // If not from the family (external spouse), show full name
+  if (!isFromFamily && member.last_name) {
+    return `${firstName} ${member.last_name}`;
+  }
+  
+  return firstName;
+};
+
  // Member Avatar Component
  const MemberAvatar: React.FC<{
    member: Member;
@@ -129,7 +143,7 @@
          <div className="flex flex-col items-center gap-4">
            <MemberAvatar member={member} size="md" />
            <div className="text-center">
-             <h4 className="font-bold text-sm">{member.first_name || member.name}</h4>
+              <h4 className="font-bold text-sm">{getMemberDisplayName(member, familyMembers)}</h4>
              <div className="mt-2 flex flex-wrap justify-center gap-2">
                {mother && (
                  <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1">
@@ -171,7 +185,7 @@
              <div className="flex flex-col items-center gap-2">
                <MemberAvatar member={unit.husband} size="md" />
                <div className="text-center">
-                 <p className="font-bold text-sm">{unit.husband.first_name || unit.husband.name}</p>
+                  <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers)}</p>
                  <RoleBadge role="husband" />
                </div>
              </div>
@@ -187,7 +201,7 @@
              <div className="flex flex-col items-center gap-2">
                <MemberAvatar member={wife} size="md" />
                <div className="text-center">
-                 <p className="font-bold text-sm">{wife.first_name || wife.name || t('tree_view.unknown_wife', 'Unknown Wife')}</p>
+                  <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers) || t('tree_view.unknown_wife', 'Unknown Wife')}</p>
                  <RoleBadge role="wife" />
                </div>
              </div>
@@ -212,7 +226,7 @@
            {unit.husband && (
              <div className="flex flex-col items-center gap-2">
                <MemberAvatar member={unit.husband} size="md" className="shadow-sm" />
-               <p className="font-bold text-sm">{unit.husband.first_name || unit.husband.name}</p>
+                <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers)}</p>
                <RoleBadge role="primary" />
              </div>
            )}
@@ -222,7 +236,7 @@
              {unit.wives.map((wife, index) => (
                <div key={wife.id} className="flex flex-col items-center gap-2">
                  <MemberAvatar member={wife} size="md" />
-                 <p className="font-bold text-[11px]">{wife.first_name || wife.name}</p>
+                  <p className="font-bold text-[11px]">{getMemberDisplayName(wife, familyMembers)}</p>
                  <RoleBadge role={wife.is_alive !== false ? 'spouse' : 'ex-spouse'} />
                </div>
              ))}
