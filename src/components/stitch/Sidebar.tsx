@@ -286,7 +286,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
           className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-all flex items-center justify-center gap-2"
         >
           <span className="material-icons-round text-lg">add</span>
-          {t('stitch.add_member', 'Add New Member')}
+          {t('family_builder.add_new_member', 'Add New Member')}
         </button>
       </div>
     </aside>
