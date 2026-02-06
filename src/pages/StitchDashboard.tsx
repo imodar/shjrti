@@ -24,7 +24,7 @@ interface PackageData {
 const StitchDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { direction, currentLanguage } = useLanguage();
+  const { direction, currentLanguage, t } = useLanguage();
   const { subscription } = useSubscription();
   
   const [families, setFamilies] = useState<FamilyWithCount[]>([]);
@@ -332,17 +332,15 @@ const StitchDashboard: React.FC = () => {
                   </div>
                   <div>
                     <h4 className="text-xl font-bold mb-2" style={{ color: 'hsl(37 60% 30%)' }}>
-                      {currentLanguage === 'ar' ? 'الحد الأقصى للأشجار' : 'Tree Limit Reached'}
+                      {t('dashboard.upgrade_required', 'Tree Limit Reached')}
                     </h4>
                     <p className="text-sm max-w-[220px] leading-relaxed mb-4" style={{ color: 'hsl(37 40% 45%)' }}>
-                      {currentLanguage === 'ar' 
-                        ? `لقد وصلت للحد الأقصى (${maxTrees} أشجار). قم بالترقية لإضافة المزيد.`
-                        : `You've reached your limit of ${maxTrees} tree${maxTrees > 1 ? 's' : ''}. Upgrade to add more.`}
+                      {t('dashboard.reached_tree_limit', `You've reached your limit of ${maxTrees} trees. Upgrade to add more.`)}
                     </p>
                     <span className="inline-flex items-center gap-2 text-white font-bold py-2.5 px-6 rounded-xl text-sm shadow-lg"
                       style={{ background: 'linear-gradient(135deg, hsl(37 70% 55%), hsl(30 70% 45%))' }}>
                       <span className="material-symbols-outlined text-lg">rocket_launch</span>
-                      {currentLanguage === 'ar' ? 'ترقية الباقة' : 'Upgrade Plan'}
+                      {t('dashboard.upgrade_package', 'Upgrade Plan')}
                     </span>
                   </div>
                 </div>
