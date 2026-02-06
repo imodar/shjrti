@@ -299,19 +299,55 @@ const StitchDashboard: React.FC = () => {
               </div>
             ))}
 
-            {/* Create New Tree Card - always last (leftmost in RTL, rightmost in LTR) */}
-            <button 
-              onClick={handleCreateTree}
-              className="dashed-card bg-card rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-6 min-h-[340px] group"
-            >
-              <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/5 transition-all duration-300">
-                <span className="material-symbols-outlined text-5xl">add</span>
-              </div>
-              <div>
-                <h4 className="text-xl font-bold text-foreground mb-2">Create New Tree</h4>
-                <p className="text-muted-foreground text-sm max-w-[200px] leading-relaxed">Start a new lineage and begin documenting your heritage.</p>
-              </div>
-            </button>
+            {/* Create New Tree / Upgrade Card */}
+            {treesUsed < maxTrees ? (
+              <button 
+                onClick={handleCreateTree}
+                className="dashed-card bg-card rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-6 min-h-[340px] group"
+              >
+                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:text-primary group-hover:bg-primary/5 transition-all duration-300">
+                  <span className="material-symbols-outlined text-5xl">add</span>
+                </div>
+                <div>
+                  <h4 className="text-xl font-bold text-foreground mb-2">
+                    {currentLanguage === 'ar' ? 'إنشاء شجرة جديدة' : 'Create New Tree'}
+                  </h4>
+                  <p className="text-muted-foreground text-sm max-w-[200px] leading-relaxed">
+                    {currentLanguage === 'ar' ? 'ابدأ سلالة جديدة ووثّق تراثك.' : 'Start a new lineage and begin documenting your heritage.'}
+                  </p>
+                </div>
+              </button>
+            ) : (
+              <button 
+                onClick={() => navigate('/plan-selection')}
+                className="rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-6 min-h-[340px] group border-2 border-dashed border-yellow-400/50 relative overflow-hidden"
+                style={{ background: 'linear-gradient(135deg, hsl(45 100% 97%), hsl(40 80% 93%))' }}
+              >
+                <div className="absolute inset-0 opacity-10"
+                  style={{ background: 'radial-gradient(circle at 50% 0%, hsl(37 60% 60%), transparent 70%)' }} />
+                <div className="relative z-10 flex flex-col items-center gap-4">
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform"
+                    style={{ background: 'hsla(37, 60%, 60%, 0.15)' }}>
+                    <span className="material-symbols-outlined text-5xl" style={{ color: 'hsl(37 60% 45%)' }}>lock</span>
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-bold mb-2" style={{ color: 'hsl(37 60% 30%)' }}>
+                      {currentLanguage === 'ar' ? 'الحد الأقصى للأشجار' : 'Tree Limit Reached'}
+                    </h4>
+                    <p className="text-sm max-w-[220px] leading-relaxed mb-4" style={{ color: 'hsl(37 40% 45%)' }}>
+                      {currentLanguage === 'ar' 
+                        ? `لقد وصلت للحد الأقصى (${maxTrees} أشجار). قم بالترقية لإضافة المزيد.`
+                        : `You've reached your limit of ${maxTrees} tree${maxTrees > 1 ? 's' : ''}. Upgrade to add more.`}
+                    </p>
+                    <span className="inline-flex items-center gap-2 text-white font-bold py-2.5 px-6 rounded-xl text-sm shadow-lg"
+                      style={{ background: 'linear-gradient(135deg, hsl(37 70% 55%), hsl(30 70% 45%))' }}>
+                      <span className="material-symbols-outlined text-lg">rocket_launch</span>
+                      {currentLanguage === 'ar' ? 'ترقية الباقة' : 'Upgrade Plan'}
+                    </span>
+                  </div>
+                </div>
+              </button>
+            )}
           </div>
         </div>
 
