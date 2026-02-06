@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getLocalizedText } from '@/lib/packageUtils';
 import { supabase } from '@/integrations/supabase/client';
+import { profilesApi } from '@/lib/api';
 
 interface FamilyWithCount {
   id: string;
@@ -30,7 +31,7 @@ const StitchDashboard: React.FC = () => {
   const [packageData, setPackageData] = useState<PackageData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const displayName = user?.email?.split('@')[0] || 'User';
+  const [displayName, setDisplayName] = useState(user?.email?.split('@')[0] || 'User');
   const totalMembers = families.reduce((acc, f) => acc + (f.memberCount || 0), 0);
   const maxTrees = packageData?.max_family_trees || 3;
   const maxMembers = packageData?.max_family_members || 500;
@@ -43,46 +44,53 @@ const StitchDashboard: React.FC = () => {
       if (!user?.id) return;
       
       try {
-        // Fetch families
-        const { data: familiesData, error: familiesError } = await supabase
-          .from('families')
-          .select('id, name, updated_at')
-          .eq('creator_id', user.id)
-          .order('updated_at', { ascending: false });
+        // Parallel fetch: families with aggregation + profile via REST API + package data
+        const [familiesResult, profileResult, subResult] = await Promise.allSettled([
+          supabase
+            .from('families')
+            .select(`
+              id,
+              name,
+              updated_at,
+              family_tree_members(count)
+            `)
+            .eq('creator_id', user.id)
+            .eq('is_archived', false)
+            .order('updated_at', { ascending: false }),
+          profilesApi.get(),
+          supabase
+            .from('user_subscriptions')
+            .select('package_id')
+            .eq('user_id', user.id)
+            .eq('status', 'active')
+            .maybeSingle()
+        ]);
 
-        if (familiesError) {
-          console.error('Error fetching families:', familiesError);
-        } else {
-          // Get member counts for each family
-          const familiesWithCounts = await Promise.all(
-            (familiesData || []).map(async (family) => {
-              const { count } = await supabase
-                .from('family_tree_members')
-                .select('id', { count: 'exact', head: true })
-                .eq('family_id', family.id);
-
-              return {
-                ...family,
-                memberCount: count || 0
-              };
-            })
+        // Handle families with aggregated member count
+        if (familiesResult.status === 'fulfilled' && !familiesResult.value.error) {
+          const familiesData = familiesResult.value.data;
+          setFamilies(
+            (familiesData || []).map(family => ({
+              id: family.id,
+              name: family.name,
+              updated_at: family.updated_at,
+              memberCount: (family as any).family_tree_members?.[0]?.count || 0
+            }))
           );
-          setFamilies(familiesWithCounts);
         }
 
-        // Fetch package data from user subscription
-        const { data: subData, error: subError } = await supabase
-          .from('user_subscriptions')
-          .select('package_id')
-          .eq('user_id', user.id)
-          .eq('status', 'active')
-          .maybeSingle();
+        // Handle profile from REST API
+        if (profileResult.status === 'fulfilled') {
+          const profile = profileResult.value;
+          setDisplayName(profile.first_name || user?.email?.split('@')[0] || 'User');
+        }
 
-        if (!subError && subData?.package_id) {
+        // Handle package data
+        if (subResult.status === 'fulfilled' && !subResult.value.error && subResult.value.data?.package_id) {
           const { data: pkgData } = await supabase
             .from('packages')
             .select('name, max_family_trees, max_family_members')
-            .eq('id', subData.package_id)
+            .eq('id', subResult.value.data.package_id)
             .single();
 
           if (pkgData) {
