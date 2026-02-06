@@ -1,5 +1,6 @@
 import React from 'react';
 import { AddMemberForm } from './AddMemberForm';
+import { StitchMemberProfile } from './MemberProfile';
 import { Member, Marriage } from '@/types/family.types';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -38,6 +39,12 @@ interface StitchMainContentProps {
   editingMember?: any;
   formMode?: 'add' | 'edit';
   onMemberSaved?: () => void;
+  // Member Profile props
+  selectedMember?: any;
+  onEditMember?: () => void;
+  onDeleteMember?: () => void;
+  onBackFromProfile?: () => void;
+  onMemberClick?: (member: any) => void;
 }
 
 export const StitchMainContent: React.FC<StitchMainContentProps> = ({
@@ -56,7 +63,12 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   familyData,
   editingMember,
   formMode = 'add',
-  onMemberSaved
+  onMemberSaved,
+  selectedMember,
+  onEditMember,
+  onDeleteMember,
+  onBackFromProfile,
+  onMemberClick,
 }) => {
   const { t } = useLanguage();
 
@@ -104,7 +116,22 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
     }
   ];
 
-  // Show Add Member Form if active
+  // Show Member Profile if a member is selected
+  if (selectedMember && !showAddMemberForm) {
+    return (
+      <StitchMemberProfile
+        member={selectedMember}
+        familyMembers={familyMembers as any[]}
+        marriages={marriages as any[]}
+        onEdit={onEditMember}
+        onDelete={onDeleteMember}
+        onBack={onBackFromProfile}
+        onMemberClick={onMemberClick}
+      />
+    );
+  }
+
+
   if (showAddMemberForm && familyId && onCloseForm && onMemberSaved) {
     return (
       <AddMemberForm
