@@ -164,8 +164,12 @@ const StitchDashboard: React.FC = () => {
                   </div>
                   <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-accent-gold rounded-full shadow-[0_0_10px_rgba(217,161,92,0.3)]" 
-                      style={{ width: `${Math.min((totalMembers / maxMembers) * 100, 100)}%` }}
+                      className="h-full rounded-full"
+                      style={{ 
+                        width: `${Math.min((totalMembers / maxMembers) * 100, 100)}%`,
+                        background: 'linear-gradient(135deg, hsl(37 60% 60%), hsl(37 50% 50%))',
+                        boxShadow: '0 0 10px hsla(37, 60%, 60%, 0.3)'
+                      }}
                     />
                   </div>
                 </div>
