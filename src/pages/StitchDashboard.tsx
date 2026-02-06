@@ -181,9 +181,10 @@ const StitchDashboard: React.FC = () => {
                   </div>
                   <h3 className="text-base font-bold text-foreground mb-0.5">{localizedPackageName}</h3>
                   <p className="text-xs text-muted-foreground mb-4">{treesUsed} of {maxTrees} Trees Used</p>
-                  <button 
+                  <button
                     onClick={() => navigate('/plan-selection')}
-                    className="w-full gold-gradient-btn text-white font-bold py-2.5 rounded-lg text-xs shadow-lg shadow-accent-gold/30 mb-3"
+                    style={{ background: 'linear-gradient(135deg, hsl(37 60% 60%), hsl(37 50% 50%))' }}
+                    className="w-full text-white font-bold py-2.5 rounded-lg text-xs shadow-lg mb-3 hover:brightness-110 transition-all"
                   >
                     Upgrade Plan
                   </button>
