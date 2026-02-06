@@ -135,13 +135,13 @@ const StitchDashboard: React.FC = () => {
             <div className="flex-1 min-w-0">
               <div className="inline-flex items-center gap-2 px-2.5 py-0.5 bg-primary/10 text-primary rounded-full text-[10px] font-bold mb-3">
                 <span className="material-symbols-outlined text-sm">auto_awesome</span>
-                Personal Workspace
+                {t('dashboard.personal_workspace', 'Personal Workspace')}
               </div>
               <h2 className="text-2xl md:text-3xl font-extrabold text-foreground mb-3 tracking-tight">
-                Welcome back, <span className="text-primary">{displayName}</span>
+                {t('dashboard.welcome_back', 'Welcome back')}, <span className="text-primary">{displayName}</span>
               </h2>
               <p className="text-muted-foreground text-sm leading-relaxed mb-5 max-w-lg">
-                Your family legacy continues to grow. You have documented <span className="text-foreground font-bold">{totalMembers} relatives</span> across your family trees.
+                {t('dashboard.legacy_description', 'Your family legacy continues to grow. You have documented')} <span className="text-foreground font-bold">{totalMembers} {t('dashboard.relatives', 'relatives')}</span> {t('dashboard.across_trees', 'across your family trees.')}
               </p>
               
               <div className="space-y-3 max-w-md">
