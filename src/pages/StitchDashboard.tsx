@@ -177,28 +177,55 @@ const StitchDashboard: React.FC = () => {
             </div>
             
             <div className="w-full lg:w-64 flex-shrink-0">
-              <div className="bg-card rounded-2xl p-5 shadow-xl shadow-slate-200/60 dark:shadow-none border border-border relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-110" />
-                <div className="relative z-10 text-center">
-                  <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <span className="material-symbols-outlined text-2xl">verified</span>
-                  </div>
-                  <h3 className="text-base font-bold text-foreground mb-0.5">{localizedPackageName}</h3>
-                  <p className="text-xs text-muted-foreground mb-4">{treesUsed} of {maxTrees} Trees Used</p>
-                  <button
-                    onClick={() => navigate('/plan-selection')}
-                    style={{ background: 'linear-gradient(135deg, hsl(37 60% 60%), hsl(37 50% 50%))' }}
-                    className="w-full text-white font-bold py-2.5 rounded-lg text-xs shadow-lg mb-3 hover:brightness-110 transition-all"
-                  >
-                    Upgrade Plan
-                  </button>
-                  {subscription?.expires_at && (
-                    <p className="text-[9px] text-muted-foreground font-medium italic">
-                      Renews on {new Date(subscription.expires_at).toLocaleDateString()}
+              {/* Free Plan - Gold Upgrade CTA */}
+              {(!packageData || (packageData && !subscription?.expires_at)) ? (
+                <div className="rounded-2xl p-5 shadow-xl border-2 border-yellow-400/50 relative overflow-hidden group"
+                  style={{ background: 'linear-gradient(135deg, hsl(45 100% 96%), hsl(40 80% 90%))' }}>
+                  <div className="absolute top-0 right-0 w-28 h-28 rounded-full -mr-14 -mt-14 transition-transform group-hover:scale-110"
+                    style={{ background: 'hsla(37, 60%, 60%, 0.15)' }} />
+                  <div className="relative z-10 text-center">
+                    <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4"
+                      style={{ background: 'hsla(37, 60%, 60%, 0.2)' }}>
+                      <span className="material-symbols-outlined text-3xl" style={{ color: 'hsl(37 60% 45%)' }}>workspace_premium</span>
+                    </div>
+                    <h3 className="text-base font-bold mb-1" style={{ color: 'hsl(37 60% 30%)' }}>
+                      {currentLanguage === 'ar' ? 'ترقية باقتك' : 'Upgrade Your Plan'}
+                    </h3>
+                    <p className="text-xs mb-4" style={{ color: 'hsl(37 40% 45%)' }}>
+                      {currentLanguage === 'ar' 
+                        ? 'احصل على ميزات أكثر وأشجار غير محدودة' 
+                        : 'Get more features and unlimited trees'}
                     </p>
-                  )}
+                    <button
+                      onClick={() => navigate('/plan-selection')}
+                      className="w-full text-white font-bold py-3 rounded-xl text-sm shadow-lg hover:brightness-110 hover:-translate-y-0.5 transition-all"
+                      style={{ background: 'linear-gradient(135deg, hsl(37 70% 55%), hsl(30 70% 45%))' }}
+                    >
+                      <span className="flex items-center justify-center gap-2">
+                        <span className="material-symbols-outlined text-lg">rocket_launch</span>
+                        {currentLanguage === 'ar' ? 'ترقية الآن' : 'Upgrade Now'}
+                      </span>
+                    </button>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                /* Paid Plan - Normal Card */
+                <div className="bg-card rounded-2xl p-5 shadow-xl shadow-slate-200/60 dark:shadow-none border border-border relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-110" />
+                  <div className="relative z-10 text-center">
+                    <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto mb-4">
+                      <span className="material-symbols-outlined text-2xl">verified</span>
+                    </div>
+                    <h3 className="text-base font-bold text-foreground mb-0.5">{localizedPackageName}</h3>
+                    <p className="text-xs text-muted-foreground mb-4">{treesUsed} of {maxTrees} Trees Used</p>
+                    {subscription?.expires_at && (
+                      <p className="text-[9px] text-muted-foreground font-medium italic">
+                        {currentLanguage === 'ar' ? 'يتجدد في' : 'Renews on'} {new Date(subscription.expires_at).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
