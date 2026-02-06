@@ -234,8 +234,8 @@ const StitchDashboard: React.FC = () => {
         <div className="mb-8">
           <div className="flex items-end justify-between mb-8">
             <div>
-              <h3 className="text-2xl font-bold text-foreground">My Family Trees</h3>
-              <p className="text-muted-foreground mt-1">Curate and maintain your family lineages</p>
+              <h3 className="text-2xl font-bold text-foreground">{t('dashboard.my_family_trees', 'My Family Trees')}</h3>
+              <p className="text-muted-foreground mt-1">{t('dashboard.family_trees_subtitle', 'Curate and maintain your family lineages')}</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center bg-card border border-border rounded-lg p-1">
@@ -248,7 +248,7 @@ const StitchDashboard: React.FC = () => {
               </div>
               <button className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground bg-card px-4 py-2 border border-border rounded-lg transition-colors">
                 <span className="material-symbols-outlined text-lg">filter_list</span>
-                Filter
+                {t('dashboard.filter', 'Filter')}
               </button>
             </div>
           </div>
@@ -266,7 +266,7 @@ const StitchDashboard: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-1.5 px-3 py-1 bg-muted border border-border rounded-full">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
-                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wide">Active Tree</span>
+                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wide">{t('dashboard.active_tree', 'Active Tree')}</span>
                   </div>
                 </div>
                 <h4 className="text-2xl font-bold text-foreground mb-1">{family.name}</h4>
@@ -275,13 +275,13 @@ const StitchDashboard: React.FC = () => {
                 </p>
                 <div className="grid grid-cols-2 gap-4 mb-8">
                   <div className="bg-muted rounded-xl p-3">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Members</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">{t('dashboard.members', 'Members')}</p>
                     <p className="text-lg font-bold text-foreground">{family.memberCount || 0}</p>
                   </div>
                   <div className="bg-muted rounded-xl p-3">
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Updated</p>
+                    <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">{t('dashboard.updated', 'Updated')}</p>
                     <p className="text-lg font-bold text-primary">
-                      {family.updated_at ? new Date(family.updated_at).toLocaleDateString() : 'N/A'}
+                      {family.updated_at ? new Date(family.updated_at).toLocaleDateString() : t('dashboard.not_available', 'N/A')}
                     </p>
                   </div>
                 </div>
@@ -290,7 +290,7 @@ const StitchDashboard: React.FC = () => {
                     onClick={() => handleManageTree(family.id)}
                     className="flex-1 bg-primary text-primary-foreground font-bold py-3 rounded-xl text-sm hover:bg-primary/90 transition-all"
                   >
-                    Manage
+                     {t('dashboard.manage', 'Manage')}
                   </button>
                   <button className="px-3 border border-border text-muted-foreground rounded-xl hover:bg-muted">
                     <span className="material-symbols-outlined">share</span>
@@ -310,10 +310,10 @@ const StitchDashboard: React.FC = () => {
                 </div>
                 <div>
                   <h4 className="text-xl font-bold text-foreground mb-2">
-                    {currentLanguage === 'ar' ? 'إنشاء شجرة جديدة' : 'Create New Tree'}
+                    {t('dashboard.create_new_tree', 'Create New Tree')}
                   </h4>
                   <p className="text-muted-foreground text-sm max-w-[200px] leading-relaxed">
-                    {currentLanguage === 'ar' ? 'ابدأ سلالة جديدة ووثّق تراثك.' : 'Start a new lineage and begin documenting your heritage.'}
+                    {t('dashboard.create_tree_description', 'Start a new lineage and begin documenting your heritage.')}
                   </p>
                 </div>
               </button>
@@ -356,8 +356,8 @@ const StitchDashboard: React.FC = () => {
               <span className="material-symbols-outlined text-blue-500">verified_user</span>
             </div>
             <div>
-              <h5 className="font-bold text-foreground mb-2">Secure & Private</h5>
-              <p className="text-muted-foreground text-sm leading-relaxed">Your family data is encrypted and only visible to you and your invited members.</p>
+               <h5 className="font-bold text-foreground mb-2">{t('dashboard.secure_private', 'Secure & Private')}</h5>
+               <p className="text-muted-foreground text-sm leading-relaxed">{t('dashboard.secure_private_desc', 'Your family data is encrypted and only visible to you and your invited members.')}</p>
             </div>
           </div>
           <div className="flex gap-5">
@@ -365,8 +365,8 @@ const StitchDashboard: React.FC = () => {
               <span className="material-symbols-outlined text-accent-gold">lightbulb</span>
             </div>
             <div>
-              <h5 className="font-bold text-foreground mb-2">Build Together</h5>
-              <p className="text-muted-foreground text-sm leading-relaxed">Invite siblings and cousins to contribute photos and stories to your shared tree.</p>
+               <h5 className="font-bold text-foreground mb-2">{t('dashboard.build_together', 'Build Together')}</h5>
+               <p className="text-muted-foreground text-sm leading-relaxed">{t('dashboard.build_together_desc', 'Invite siblings and cousins to contribute photos and stories to your shared tree.')}</p>
             </div>
           </div>
           <div className="flex gap-5">
@@ -374,8 +374,8 @@ const StitchDashboard: React.FC = () => {
               <span className="material-symbols-outlined text-primary">support_agent</span>
             </div>
             <div>
-              <h5 className="font-bold text-foreground mb-2">Expert Support</h5>
-              <p className="text-muted-foreground text-sm leading-relaxed">Need help tracing your roots? Our genealogy experts are here to assist you.</p>
+               <h5 className="font-bold text-foreground mb-2">{t('dashboard.expert_support', 'Expert Support')}</h5>
+               <p className="text-muted-foreground text-sm leading-relaxed">{t('dashboard.expert_support_desc', 'Need help tracing your roots? Our genealogy experts are here to assist you.')}</p>
             </div>
           </div>
         </div>
@@ -388,13 +388,13 @@ const StitchDashboard: React.FC = () => {
             <div className="w-8 h-8 bg-muted rounded flex items-center justify-center">
               <span className="material-symbols-outlined text-muted-foreground text-lg">park</span>
             </div>
-            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[2px]">© 2024 Shjrti Platform</p>
-          </div>
-          <nav className="flex gap-8">
-            <a className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors" href="/privacy-policy">Privacy</a>
-            <a className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors" href="/terms-conditions">Terms</a>
-            <a className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors" href="/api-docs">API docs</a>
-            <a className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors" href="/contact">Support</a>
+             <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[2px]">{t('dashboard.copyright', '© 2024 Shjrti Platform')}</p>
+           </div>
+           <nav className="flex gap-8">
+             <a className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors" href="/privacy-policy">{t('dashboard.privacy', 'Privacy')}</a>
+             <a className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors" href="/terms-conditions">{t('dashboard.terms', 'Terms')}</a>
+             <a className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors" href="/api-docs">{t('dashboard.api_docs', 'API docs')}</a>
+             <a className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors" href="/contact">{t('dashboard.support', 'Support')}</a>
           </nav>
         </div>
       </footer>
