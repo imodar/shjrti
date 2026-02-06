@@ -11,3 +11,4 @@ export { SpouseDrawer } from './SpouseDrawer';
 export { StyledDropdown } from './StyledDropdown';
 export { useAddMemberForm } from './useAddMemberForm';
 export * from './AddMemberFormTypes';
+export { StitchMemberProfile } from './MemberProfile';

@@ -129,7 +129,7 @@ const FamilyBuilderStitch: React.FC = () => {
   // Handlers
   const handleMemberClick = (member: any) => {
     setSelectedMemberId(member.id);
-    // TODO: Open member profile or edit mode
+    setShowAddMemberForm(false);
   };
 
   const handleAddMember = () => {
@@ -143,6 +143,10 @@ const FamilyBuilderStitch: React.FC = () => {
     setEditingMember(null);
   };
 
+  const handleBackFromProfile = () => {
+    setSelectedMemberId(undefined);
+  };
+
   const handleMemberSaved = () => {
     refetch();
     setShowAddMemberForm(false);
@@ -152,6 +156,12 @@ const FamilyBuilderStitch: React.FC = () => {
   const handleTabChange = (tab: string) => {
     // Navigation is handled in StitchHeader
   };
+
+  // Get selected member object
+  const selectedMember = useMemo(() => {
+    if (!selectedMemberId) return undefined;
+    return familyMembers.find(m => m.id === selectedMemberId);
+  }, [selectedMemberId, familyMembers]);
 
   // Get user display name
   const userName = user?.user_metadata?.first_name || 
@@ -226,10 +236,21 @@ const FamilyBuilderStitch: React.FC = () => {
           editingMember={editingMember}
           formMode={formMode}
           onMemberSaved={handleMemberSaved}
+          selectedMember={selectedMember}
+          onEditMember={() => {
+            if (selectedMember) {
+              setEditingMember(selectedMember);
+              setFormMode('edit');
+              setShowAddMemberForm(true);
+            }
+          }}
+          onDeleteMember={() => {/* TODO: implement delete */}}
+          onBackFromProfile={handleBackFromProfile}
+          onMemberClick={handleMemberClick}
         />
 
-        {/* Right Panel - Stats (hidden when adding member) */}
-        {!showAddMemberForm && (
+        {/* Right Panel - Stats (hidden when adding member or viewing profile) */}
+        {!showAddMemberForm && !selectedMember && (
           <StitchRightPanel
             completenessPercentage={stats.completeness}
             generationsCount={stats.generations}
