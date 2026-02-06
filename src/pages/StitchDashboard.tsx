@@ -128,7 +128,7 @@ const StitchDashboard: React.FC = () => {
         {/* Hero Section */}
         <section className="hero-glass rounded-[2rem] p-6 mb-10 shadow-xl shadow-slate-200/50 relative overflow-hidden border border-white dark:border-border">
           <div className="absolute inset-0 flex items-center justify-center tree-silhouette">
-            <span className="material-symbols-outlined text-[100rem]" style={{ color: 'rgb(63 176 135 / 10%)' }}>park</span>
+            <span className="material-symbols-outlined text-[50rem]" style={{ color: 'rgb(63 176 135 / 10%)' }}>park</span>
           </div>
           
           <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
