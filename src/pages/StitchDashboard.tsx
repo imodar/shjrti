@@ -147,8 +147,8 @@ const StitchDashboard: React.FC = () => {
               <div className="space-y-3 max-w-md">
                 <div className="space-y-1">
                   <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                    <span>Tree Slots</span>
-                    <span className="text-foreground">{treesUsed} / {maxTrees} Trees ({Math.round((treesUsed / maxTrees) * 100)}%)</span>
+                    <span>{t('dashboard.family_trees_section', 'Tree Slots')}</span>
+                    <span className="text-foreground">{treesUsed} / {maxTrees} {t('dashboard.family_trees_section', 'Trees')} ({Math.round((treesUsed / maxTrees) * 100)}%)</span>
                   </div>
                   <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                     <div 
@@ -159,8 +159,8 @@ const StitchDashboard: React.FC = () => {
                 </div>
                 <div className="space-y-1">
                   <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                    <span>Member Limit</span>
-                    <span className="text-foreground">{totalMembers} / {maxMembers} Members</span>
+                    <span>{t('total_members', 'Member Limit')}</span>
+                    <span className="text-foreground">{totalMembers} / {maxMembers} {t('total_members', 'Members')}</span>
                   </div>
                   <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                     <div 
