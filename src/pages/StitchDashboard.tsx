@@ -237,20 +237,6 @@ const StitchDashboard: React.FC = () => {
               <h3 className="text-2xl font-bold text-foreground">{t('dashboard.my_family_trees', 'My Family Trees')}</h3>
               <p className="text-muted-foreground mt-1">{t('dashboard.family_trees_subtitle', 'Curate and maintain your family lineages')}</p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center bg-card border border-border rounded-lg p-1">
-                <button className="p-1.5 bg-muted rounded text-foreground">
-                  <span className="material-symbols-outlined text-xl">grid_view</span>
-                </button>
-                <button className="p-1.5 text-muted-foreground hover:text-foreground">
-                  <span className="material-symbols-outlined text-xl">view_list</span>
-                </button>
-              </div>
-              <button className="flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground bg-card px-4 py-2 border border-border rounded-lg transition-colors">
-                <span className="material-symbols-outlined text-lg">filter_list</span>
-                {t('dashboard.filter', 'Filter')}
-              </button>
-            </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
