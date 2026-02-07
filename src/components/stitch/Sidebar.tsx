@@ -233,34 +233,78 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
                     </p>
                   ) : null}
 
-                  {/* Line 3: Status Badge */}
-                  <div className="mt-1.5">
-                    {isFounder && isDeceased ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-black text-white text-[10px] font-bold uppercase tracking-tighter">
-                        {t('member.deceased', 'Deceased')} {thirdLine?.type === 'death' && `(${(member as any).death_date?.split('-')[0] || ''})`}
-                      </span>
-                    ) : thirdLine?.type === 'alive' ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold border border-emerald-200 dark:border-emerald-800/50">
-                        <span className="material-symbols-outlined text-[12px] mr-1">cake</span>
-                        {thirdLine.text}
-                      </span>
-                    ) : thirdLine?.type === 'spouse' ? (
+                  {/* Line 3: Spouse Badge (for spouses only) */}
+                  {thirdLine?.type === 'spouse' && (
+                    <div className="mt-1.5">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 text-[10px] font-bold border border-pink-200 dark:border-pink-800/50">
                         <span className="material-symbols-outlined text-[12px] mr-1">favorite</span>
                         {thirdLine.text}
                       </span>
-                    ) : thirdLine?.type === 'death' || isDeceased ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-600 text-[10px] font-bold border border-amber-500/20">
-                        <span className="material-symbols-outlined text-[12px] mr-1">history</span>
-                        {thirdLine?.text || t('member.deceased', 'Deceased')}
-                      </span>
-                    ) : thirdLine?.type === 'birth' ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold border border-emerald-200 dark:border-emerald-800/50">
-                        <span className="material-symbols-outlined text-[12px] mr-1">cake</span>
-                        {thirdLine.text}
-                      </span>
-                    ) : null}
-                  </div>
+                    </div>
+                  )}
+
+                  {/* Line 4: Vitality/Date Badge (separate from spouse) */}
+                  {thirdLine?.type !== 'spouse' && (
+                    <div className="mt-1.5">
+                      {(() => {
+                        const isMemberDeceased = isDeceased;
+                        const birthYear = member.birth_date?.split('-')[0];
+                        const deathYear = (member as any).death_date?.split('-')[0];
+                        const hasBirth = !!member.birth_date;
+                        const hasDeath = !!(member as any).death_date;
+                        const isFemale = member.gender === 'female';
+                        const yearsText = t('member.years', 'سنة');
+
+                        if (isMemberDeceased) {
+                          // Deceased + both dates → "birthYear - deathYear (age سنة)"
+                          if (hasBirth && hasDeath) {
+                            const age = Number(deathYear) - Number(birthYear);
+                            return (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-black dark:text-slate-200 text-[10px] font-bold border border-slate-300 dark:border-slate-600">
+                                <span className="material-symbols-outlined text-[12px] mr-1">history</span>
+                                {birthYear} - {deathYear} ({age} {yearsText})
+                              </span>
+                            );
+                          }
+                          // Deceased + death date only → "توفي/توفيت [year]"
+                          if (!hasBirth && hasDeath) {
+                            const deathText = isFemale ? t('member.died_female', 'توفيت') : t('member.died_male', 'توفي');
+                            return (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-black dark:text-slate-200 text-[10px] font-bold border border-slate-300 dark:border-slate-600">
+                                {deathText} {deathYear}
+                              </span>
+                            );
+                          }
+                          // Deceased + no dates OR birth only → "متوفى/متوفية"
+                          const deceasedText = isFemale ? t('member.deceased_female', 'متوفية') : t('member.deceased', 'متوفى');
+                          return (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-black dark:text-slate-200 text-[10px] font-bold border border-slate-300 dark:border-slate-600">
+                              {deceasedText}
+                            </span>
+                          );
+                        }
+
+                        // Alive + has birth date → green with cake + year + age
+                        if (hasBirth) {
+                          const now = new Date();
+                          const age = now.getFullYear() - Number(birthYear);
+                          return (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold border border-emerald-200 dark:border-emerald-800/50">
+                              <span className="material-symbols-outlined text-[12px] mr-1">cake</span>
+                              {birthYear} - {age} {yearsText}
+                            </span>
+                          );
+                        }
+
+                        // Alive + no birth date → green "على قيد الحياة"
+                        return (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold border border-emerald-200 dark:border-emerald-800/50">
+                            {t('member.alive', 'على قيد الحياة')}
+                          </span>
+                        );
+                      })()}
+                    </div>
+                  )}
                 </div>
 
                 {/* Founder Crown Badge */}
