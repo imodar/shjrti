@@ -3,6 +3,7 @@ import { AddMemberForm } from './AddMemberForm';
 import { StitchMemberProfile } from './MemberProfile';
 import { Member, Marriage } from '@/types/family.types';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getParentageInfo } from '@/lib/memberDisplayUtils';
 
 interface Activity {
   id: string;
@@ -224,6 +225,20 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
                     </div>
                     <div>
                       <p className="text-sm font-bold">{milestone.title}</p>
+                      {(() => {
+                        const member = familyMembers.find((m: any) => m.id === milestone.id);
+                        if (member) {
+                          const parentageInfo = getParentageInfo(member, familyMembers);
+                          if (parentageInfo) {
+                            return (
+                              <p className="text-[11px] text-slate-400">
+                                {parentageInfo.genderTerm} {parentageInfo.lineage}
+                              </p>
+                            );
+                          }
+                        }
+                        return null;
+                      })()}
                       <p className="text-[11px] text-slate-500">
                         {milestone.daysUntil === 0 
                           ? `🎉 ${t('stitch.birthday_today', 'Today!')}` 
