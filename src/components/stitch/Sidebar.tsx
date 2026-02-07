@@ -7,6 +7,7 @@ import {
   getSpouseDisplayInfo, 
   getBirthDeathDisplayInfo 
 } from '@/lib/memberDisplayUtils';
+import { MemberAvatar } from './MemberAvatar';
 
 interface StitchSidebarProps {
   members: Member[];
@@ -194,24 +195,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
 
               <div className="flex items-center gap-3">
                 {/* Avatar */}
-                <div className={cn(
-                  'w-10 h-10 rounded-full flex items-center justify-center font-bold overflow-hidden flex-shrink-0',
-                  member.image_url 
-                    ? 'border border-slate-100 dark:border-slate-800' 
-                    : isFounder
-                      ? 'bg-slate-200 dark:bg-slate-700 text-primary'
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-400'
-                )}>
-                  {member.image_url ? (
-                    <img 
-                      src={member.image_url} 
-                      alt={getDisplayName(member)}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    getInitials(member)
-                  )}
-                </div>
+                <MemberAvatar member={member} isFounder={isFounder} />
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
