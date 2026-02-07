@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { cn } from '@/lib/utils';
+import { getParentageInfo } from '@/lib/memberDisplayUtils';
 
 interface FamilyTabProps {
   member: any;
@@ -120,14 +121,9 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
   };
 
   const getSpouseSubtitle = (spouse: any) => {
-    // Show "Daughter/Son of [parent name]"
-    const fatherId = spouse.father_id || spouse.fatherId;
-    const spouseFather = fatherId ? familyMembers.find(m => m.id === fatherId) : null;
-    if (spouseFather) {
-      const prefix = spouse.gender === 'female'
-        ? t('profile.daughter_of', 'Daughter of')
-        : t('profile.son_of', 'Son of');
-      return `${prefix} ${spouseFather.first_name || spouseFather.name}`;
+    const parentageInfo = getParentageInfo(spouse, familyMembers);
+    if (parentageInfo) {
+      return `${parentageInfo.genderTerm} ${parentageInfo.lineage}`;
     }
     if (spouse.last_name) return spouse.last_name;
     return null;
