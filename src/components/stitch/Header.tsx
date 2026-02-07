@@ -97,8 +97,10 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
             }
           >
             {tab.label}
-            {tab.badge && tab.badge > 0 && (
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-800"></span>
+            {tab.badge != null && tab.badge > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 bg-red-500 text-white text-[11px] font-bold rounded-full flex items-center justify-center border-2 border-white dark:border-slate-800">
+                {tab.badge}
+              </span>
             )}
           </button>
         ))}
