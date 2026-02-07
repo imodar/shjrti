@@ -148,7 +148,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
               {father && (
                 <button
                   onClick={() => onMemberClick?.(father)}
-                  className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-blue-200 transition-colors group text-left"
+                  className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-blue-200 transition-colors group text-start"
                 >
                   <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-500 shadow-sm">
                     <span className="material-symbols-outlined text-xl">male</span>
@@ -164,7 +164,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
               {mother && (
                 <button
                   onClick={() => onMemberClick?.(mother)}
-                  className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-pink-200 transition-colors text-left"
+                  className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-pink-200 transition-colors text-start"
                 >
                   <div className="w-10 h-10 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center text-pink-500 shadow-sm">
                     <span className="material-symbols-outlined text-xl">female</span>
@@ -194,7 +194,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                   <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                     <button
                       onClick={() => onMemberClick?.(spouse)}
-                      className="flex items-center gap-4 text-left hover:opacity-80 transition-opacity"
+                      className="flex items-center gap-4 text-start hover:opacity-80 transition-opacity"
                     >
                       <div className={cn(
                         'w-12 h-12 rounded-full flex items-center justify-center ring-4',
@@ -347,7 +347,7 @@ const ChildChip: React.FC<{ child: any; onClick: () => void; compact?: boolean }
   <button
     onClick={onClick}
     className={cn(
-      'flex items-center justify-between px-3 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-lg shadow-sm hover:border-primary/30 transition-colors text-left',
+      'flex items-center justify-between px-3 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-lg shadow-sm hover:border-primary/30 transition-colors text-start',
       compact ? 'py-2' : 'py-2.5'
     )}
   >
