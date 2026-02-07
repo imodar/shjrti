@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useFamilyData } from '@/contexts/FamilyDataContext';
+import { subscriptionsApi } from '@/lib/api';
 import { StitchHeader, StitchFamilyBar, StitchSidebar, StitchRightPanel, StitchMainContent } from '@/components/stitch';
 import { cn } from '@/lib/utils';
 
@@ -75,6 +76,25 @@ const FamilyBuilderStitch: React.FC = () => {
   const [showAddMemberForm, setShowAddMemberForm] = useState(false);
   const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
   const [editingMember, setEditingMember] = useState<any>(null);
+  const [maxFamilyMembers, setMaxFamilyMembers] = useState<number | null>(null);
+
+  // Fetch package limits
+  useEffect(() => {
+    const fetchPackageLimits = async () => {
+      try {
+        const sub = await subscriptionsApi.get();
+        const pkg = sub?.packages;
+        if (pkg?.max_family_members) {
+          setMaxFamilyMembers(pkg.max_family_members);
+        }
+      } catch (error) {
+        console.error('Error fetching package limits:', error);
+      }
+    };
+    if (user) fetchPackageLimits();
+  }, [user]);
+
+  const canAddMember = maxFamilyMembers === null || familyMembers.length < maxFamilyMembers;
 
   // Filter members based on search
   const filteredMembers = useMemo(() => {
@@ -133,6 +153,9 @@ const FamilyBuilderStitch: React.FC = () => {
   };
 
   const handleAddMember = () => {
+    if (!canAddMember) {
+      return;
+    }
     setEditingMember(null);
     setFormMode('add');
     setShowAddMemberForm(true);
@@ -216,6 +239,8 @@ const FamilyBuilderStitch: React.FC = () => {
           onClose={() => setIsSidebarOpen(false)}
           familyMembers={familyMembers}
           marriages={marriages}
+          canAddMember={canAddMember}
+          maxFamilyMembers={maxFamilyMembers}
         />
 
         {/* Main Content */}

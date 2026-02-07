@@ -21,6 +21,8 @@ interface StitchSidebarProps {
   onClose?: () => void;
   familyMembers: Member[];
   marriages: Marriage[];
+  canAddMember?: boolean;
+  maxFamilyMembers?: number | null;
 }
 
 export const StitchSidebar: React.FC<StitchSidebarProps> = ({
@@ -34,7 +36,9 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
   isOpen = true,
   onClose,
   familyMembers,
-  marriages
+  marriages,
+  canAddMember = true,
+  maxFamilyMembers
 }) => {
   const { t, direction } = useLanguage();
 
@@ -131,7 +135,14 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
           </div>
           <button 
             onClick={onAddMember}
-            className="p-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors"
+            disabled={!canAddMember}
+            className={cn(
+              "p-2 rounded-lg transition-colors",
+              canAddMember 
+                ? "bg-primary/10 text-primary hover:bg-primary/20" 
+                : "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+            )}
+            title={!canAddMember && maxFamilyMembers ? `تم الوصول للحد الأقصى (${maxFamilyMembers} أعضاء)` : undefined}
           >
             <span className="material-icons-round">person_add</span>
           </button>
@@ -300,10 +311,21 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
       <div className="p-6 bg-slate-50 dark:bg-slate-800/50">
         <button
           onClick={onAddMember}
-          className="w-full py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-all flex items-center justify-center gap-2"
+          disabled={!canAddMember}
+          className={cn(
+            "w-full py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
+            canAddMember 
+              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90" 
+              : "bg-muted text-muted-foreground cursor-not-allowed"
+          )}
         >
           <span className="material-icons-round text-lg">add</span>
-          {t('family_builder.add_new_member', 'Add New Member')}
+          {canAddMember 
+            ? t('family_builder.add_new_member', 'Add New Member')
+            : maxFamilyMembers 
+              ? `${t('family_builder.max_reached', 'تم الوصول للحد الأقصى')} (${maxFamilyMembers})`
+              : t('family_builder.add_new_member', 'Add New Member')
+          }
         </button>
       </div>
     </aside>
