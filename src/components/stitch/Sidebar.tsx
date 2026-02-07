@@ -140,7 +140,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
               "p-2 rounded-lg transition-colors",
               canAddMember 
                 ? "bg-primary/10 text-primary hover:bg-primary/20" 
-                : "bg-muted text-muted-foreground cursor-not-allowed opacity-50"
+                : "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-300/60 dark:border-amber-600/40 cursor-not-allowed animate-pulse"
             )}
             title={!canAddMember && maxFamilyMembers ? `تم الوصول للحد الأقصى (${maxFamilyMembers} أعضاء)` : undefined}
           >
@@ -316,7 +316,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
             "w-full py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
             canAddMember 
               ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90" 
-              : "bg-muted text-muted-foreground cursor-not-allowed"
+              : "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-300/60 dark:border-amber-600/40 cursor-not-allowed shadow-sm shadow-amber-200/30"
           )}
         >
           <span className="material-icons-round text-lg">add</span>
