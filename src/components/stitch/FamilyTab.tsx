@@ -134,9 +134,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      {/* Left column: Main content */}
-      <div className="lg:col-span-2 space-y-6">
+    <div className="space-y-6">
         {/* Parents */}
         {(father || mother) && (
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
@@ -327,34 +325,6 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
             </div>
           </div>
         )}
-      </div>
-
-      {/* Right column: Statistics */}
-      <div className="space-y-6">
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
-          <h3 className="font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary">analytics</span>
-            {t('profile.family_statistics', 'Family Statistics')}
-          </h3>
-          <div className="space-y-4">
-            <StatRow label={t('profile.children', 'Children')} value={children.length} />
-            <StatRow label={t('profile.spouses', 'Spouses')} value={spouses.length} />
-            <StatRow label={t('profile.grandchildren', 'Grandchildren')} value={grandchildren.length} />
-            {father && (
-              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                <span className="text-slate-500 font-medium text-xs">{t('profile.father', 'Father')}</span>
-                <span className="text-primary font-bold text-xs">{father.first_name || father.name}</span>
-              </div>
-            )}
-            {mother && (
-              <div className={cn(!father && 'pt-4 border-t border-slate-100 dark:border-slate-800', 'flex items-center justify-between')}>
-                <span className="text-slate-500 font-medium text-xs">{t('profile.mother', 'Mother')}</span>
-                <span className="text-primary font-bold text-xs">{mother.first_name || mother.name}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
