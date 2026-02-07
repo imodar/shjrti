@@ -237,7 +237,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
                       <span className={cn(
                         "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border",
                         thirdLine.type === 'spouse-divorced'
-                          ? "bg-slate-100 dark:bg-slate-800/30 text-slate-500 dark:text-slate-400 border-slate-300 dark:border-slate-600/50"
+                          ? "bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-800/50"
                           : "bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-800/50"
                       )}>
                         <span className="material-symbols-outlined text-[12px] mr-1.5">
