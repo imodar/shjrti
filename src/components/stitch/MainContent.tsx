@@ -197,12 +197,12 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
             </div>
           </div>
 
-          {/* Upcoming Milestones */}
+          {/* Upcoming Birthdays */}
           <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold flex items-center gap-2">
                 <span className="material-symbols-outlined text-secondary">cake</span>
-                Upcoming Milestones
+                {t('stitch.upcoming_birthdays', 'Upcoming Birthdays')}
               </h3>
             </div>
             <div className="space-y-5">
@@ -225,21 +225,21 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
                     <div>
                       <p className="text-sm font-bold">{milestone.title}</p>
                       <p className="text-[11px] text-slate-500">
-                        In {milestone.daysUntil} days • {milestone.date}
+                        {milestone.daysUntil === 0 
+                          ? `🎉 ${t('stitch.birthday_today', 'Today!')}` 
+                          : `${t('stitch.in_days', 'In')} ${milestone.daysUntil} ${t('stitch.days', 'days')} • ${milestone.date}`
+                        }
                       </p>
                     </div>
                   </div>
-                  <span className="material-symbols-outlined text-slate-400">notifications</span>
+                  <span className="material-symbols-outlined text-amber-400">cake</span>
                 </div>
               )) : (
                 <p className="text-sm text-slate-500 text-center py-4">
-                  No upcoming milestones
+                  {t('stitch.no_birthdays', 'No upcoming birthdays')}
                 </p>
               )}
             </div>
-            <button className="w-full mt-4 py-2 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-400 hover:text-primary hover:border-primary/50 transition-all">
-              + Add Milestone Reminder
-            </button>
           </div>
 
           {/* Quick Actions - Full Width */}
