@@ -12,3 +12,4 @@ export { StyledDropdown } from './StyledDropdown';
 export { useAddMemberForm } from './useAddMemberForm';
 export * from './AddMemberFormTypes';
 export { StitchMemberProfile } from './MemberProfile';
+export { StitchFamilyTab } from './FamilyTab';

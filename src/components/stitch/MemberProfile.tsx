@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ImageUploadModal } from '@/components/ImageUploadModal';
 import { DateDisplay, LifespanDisplay } from '@/components/DateDisplay';
 import { cn } from '@/lib/utils';
+import { StitchFamilyTab } from './FamilyTab';
 
 interface StitchMemberProfileProps {
   member: any;
@@ -356,14 +357,18 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
         )}
 
         {activeTab === 'family' && (
-          <FamilyTab
+          <StitchFamilyTab
+            member={member}
             spouses={spouses}
             children={children}
             grandchildren={grandchildren}
             father={father}
             mother={mother}
+            familyMembers={familyMembers}
+            marriages={marriages}
             onMemberClick={onMemberClick}
-            t={t}
+            onAddChild={onAddChild}
+            readOnly={readOnly}
           />
         )}
 
@@ -435,94 +440,5 @@ const StatRow: React.FC<{ label: string; value: number | string; isText?: boolea
     <span className={cn('font-bold', isText ? 'text-primary' : '')}>{value}</span>
   </div>
 );
-
-const FamilyTab: React.FC<{
-  spouses: any[];
-  children: any[];
-  grandchildren: any[];
-  father: any;
-  mother: any;
-  onMemberClick?: (member: any) => void;
-  t: (key: string, fallback?: string) => string;
-}> = ({ spouses, children, grandchildren, father, mother, onMemberClick, t }) => {
-  const renderMemberChip = (m: any) => (
-    <button
-      key={m.id}
-      onClick={() => onMemberClick?.(m)}
-      className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors cursor-pointer border border-slate-100 dark:border-slate-800"
-    >
-      <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center font-bold text-sm overflow-hidden">
-        {m.image_url ? (
-          <img src={m.image_url} alt={m.first_name || m.name} className="w-full h-full object-cover" />
-        ) : (
-          (m.first_name || m.name || '?').charAt(0).toUpperCase()
-        )}
-      </div>
-      <div className="text-left">
-        <p className="text-sm font-bold">{m.first_name ? `${m.first_name} ${m.last_name || ''}` : m.name}</p>
-        {m.marital_status && (
-          <p className="text-[10px] text-slate-500 capitalize">{m.marital_status}</p>
-        )}
-      </div>
-    </button>
-  );
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Parents */}
-      {(father || mother) && (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
-          <h3 className="font-bold mb-4 flex items-center gap-2">
-            <span className="material-symbols-outlined text-amber-500">family_restroom</span>
-            {t('profile.parents', 'Parents')}
-          </h3>
-          <div className="space-y-3">
-            {father && renderMemberChip(father)}
-            {mother && renderMemberChip(mother)}
-          </div>
-        </div>
-      )}
-
-      {/* Spouses */}
-      {spouses.length > 0 && (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
-          <h3 className="font-bold mb-4 flex items-center gap-2">
-            <span className="material-symbols-outlined text-pink-500">favorite</span>
-            {t('profile.spouses', 'Spouses')}
-          </h3>
-          <div className="space-y-3">
-            {spouses.map((s: any) => renderMemberChip(s))}
-          </div>
-        </div>
-      )}
-
-      {/* Children */}
-      {children.length > 0 && (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
-          <h3 className="font-bold mb-4 flex items-center gap-2">
-            <span className="material-symbols-outlined text-blue-500">child_care</span>
-            {t('profile.children', 'Children')} ({children.length})
-          </h3>
-          <div className="space-y-3">
-            {children.map((c: any) => renderMemberChip(c))}
-          </div>
-        </div>
-      )}
-
-      {/* Grandchildren */}
-      {grandchildren.length > 0 && (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
-          <h3 className="font-bold mb-4 flex items-center gap-2">
-            <span className="material-symbols-outlined text-emerald-500">groups</span>
-            {t('profile.grandchildren', 'Grandchildren')} ({grandchildren.length})
-          </h3>
-          <div className="space-y-3 max-h-64 overflow-y-auto">
-            {grandchildren.map((gc: any) => renderMemberChip(gc))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
 
 export default StitchMemberProfile;
