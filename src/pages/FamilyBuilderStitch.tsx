@@ -79,6 +79,7 @@ const FamilyBuilderStitch: React.FC = () => {
   const [maxFamilyMembers, setMaxFamilyMembers] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showStatistics, setShowStatistics] = useState(false);
   const [pendingSuggestionsCount, setPendingSuggestionsCount] = useState(0);
 
   // Fetch package limits
@@ -231,10 +232,17 @@ const FamilyBuilderStitch: React.FC = () => {
   const handleTabChange = (tab: string) => {
     if (tab === 'suggestions') {
       setShowSuggestions(true);
+      setShowStatistics(false);
+      setSelectedMemberId(undefined);
+      setShowAddMemberForm(false);
+    } else if (tab === 'statistics') {
+      setShowStatistics(true);
+      setShowSuggestions(false);
       setSelectedMemberId(undefined);
       setShowAddMemberForm(false);
     } else if (tab === 'dashboard') {
       setShowSuggestions(false);
+      setShowStatistics(false);
       setSelectedMemberId(undefined);
       setShowAddMemberForm(false);
     }
@@ -320,6 +328,7 @@ const FamilyBuilderStitch: React.FC = () => {
           familyId={searchParams.get('family') || ''}
           familyData={familyData}
           showSuggestions={showSuggestions}
+          showStatistics={showStatistics}
           editingMember={editingMember}
           formMode={formMode}
           onMemberSaved={handleMemberSaved}
@@ -337,7 +346,7 @@ const FamilyBuilderStitch: React.FC = () => {
         />
 
         {/* Right Panel - Stats (hidden when adding member, viewing profile, or suggestions) */}
-        {!showAddMemberForm && !selectedMember && !showSuggestions && (
+        {!showAddMemberForm && !selectedMember && !showSuggestions && !showStatistics && (
           <StitchRightPanel
             completenessPercentage={stats.completeness}
             generationsCount={stats.generations}
