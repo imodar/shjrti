@@ -125,6 +125,39 @@ const FamilyBuilderStitch: React.FC = () => {
     };
   }, [familyMembers]);
 
+  // Calculate upcoming birthdays (nearest 3)
+  const upcomingBirthdays = useMemo(() => {
+    const today = new Date();
+    const todayMonth = today.getMonth();
+    const todayDate = today.getDate();
+
+    return familyMembers
+      .filter(m => m.birth_date && m.is_alive !== false)
+      .map(m => {
+        const [year, month, day] = m.birth_date!.split('-').map(Number);
+        const nextBirthday = new Date(today.getFullYear(), month - 1, day);
+        // If birthday already passed this year, use next year
+        if (nextBirthday < today && !(nextBirthday.getMonth() === todayMonth && nextBirthday.getDate() === todayDate)) {
+          nextBirthday.setFullYear(today.getFullYear() + 1);
+        }
+        const diffTime = nextBirthday.getTime() - today.getTime();
+        const daysUntil = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const age = nextBirthday.getFullYear() - year;
+        const initials = (m.first_name?.[0] || m.name?.[0] || '?').toUpperCase();
+        return {
+          id: m.id,
+          title: m.name || `${m.first_name || ''} ${m.last_name || ''}`.trim(),
+          date: `${day}/${month}`,
+          daysUntil: daysUntil === 0 ? 0 : daysUntil,
+          image: m.image_url || undefined,
+          initials,
+          age,
+        };
+      })
+      .sort((a, b) => a.daysUntil - b.daysUntil)
+      .slice(0, 3);
+  }, [familyMembers]);
+
   // Mock activities (replace with real data)
   const recentActivities = useMemo(() => {
     // TODO: Fetch from activity log
@@ -247,7 +280,7 @@ const FamilyBuilderStitch: React.FC = () => {
         <StitchMainContent
           userName={userName}
           activities={recentActivities}
-          milestones={[]}
+          milestones={upcomingBirthdays}
           onExportTree={() => {/* TODO */}}
           onImportGedcom={() => {/* TODO */}}
           onFamilyStory={() => {/* TODO */}}
