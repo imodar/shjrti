@@ -249,15 +249,40 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                   <span className="material-symbols-outlined text-primary text-lg">groups</span>
                   {t('is_twin', 'Twins')}
                 </label>
-                <StyledDropdown
-                  options={[
-                    { value: 'no', label: t('common.no', 'No'), icon: 'person' },
-                    { value: 'yes', label: t('common.yes', 'Yes'), icon: 'group' }
-                  ]}
-                  value={formData.is_twin ? 'yes' : 'no'}
-                  onChange={(value) => setFormData(prev => ({ ...prev, is_twin: value === 'yes' }))}
-                  accentColor="primary"
-                />
+                {currentSiblings.length > 0 ? (
+                  <StyledDropdown
+                    options={[
+                      { value: 'no', label: t('common.no', 'No'), icon: 'person' },
+                      ...currentSiblings.map((sibling: any) => ({
+                        value: sibling.id,
+                        label: sibling.first_name || sibling.name || t('member.unknown', 'Unknown'),
+                        icon: 'group'
+                      }))
+                    ]}
+                    value={formData.is_twin && formData.selected_twins.length > 0 ? formData.selected_twins[0] : 'no'}
+                    onChange={(value) => {
+                      if (value === 'no') {
+                        setFormData(prev => ({ ...prev, is_twin: false, selected_twins: [], twin_group_id: null }));
+                      } else {
+                        // Find if the selected sibling already has a twin_group_id
+                        const selectedSibling = currentSiblings.find((s: any) => s.id === value);
+                        const existingGroupId = selectedSibling?.twin_group_id || formData.twin_group_id || null;
+                        setFormData(prev => ({ ...prev, is_twin: true, selected_twins: [value], twin_group_id: existingGroupId }));
+                      }
+                    }}
+                    accentColor="primary"
+                  />
+                ) : (
+                  <StyledDropdown
+                    options={[
+                      { value: 'no', label: t('common.no', 'No'), icon: 'person' },
+                    ]}
+                    value="no"
+                    onChange={() => {}}
+                    disabled={true}
+                    accentColor="primary"
+                  />
+                )}
               </div>
 
               {/* Birth Date - 1/4 */}
