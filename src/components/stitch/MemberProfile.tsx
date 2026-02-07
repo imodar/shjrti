@@ -224,7 +224,7 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
                   className="px-5 py-2.5 bg-primary text-white text-xs font-bold rounded-xl flex items-center gap-2 shadow-lg shadow-primary/20 hover:opacity-90 transition-all"
                 >
                   <span className="material-symbols-outlined text-sm">edit</span>
-                  {t('profile.edit_profile', 'Edit Profile')}
+                  {t('profile.edit', 'Edit Profile')}
                 </button>
               )}
             </div>
