@@ -2,6 +2,7 @@ import React from 'react';
 import { AddMemberForm } from './AddMemberForm';
 import { StitchMemberProfile } from './MemberProfile';
 import { StitchSuggestionsView } from './SuggestionsView';
+import { StitchStatisticsView } from './StatisticsView';
 import { Member, Marriage } from '@/types/family.types';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getParentageInfo } from '@/lib/memberDisplayUtils';
@@ -49,6 +50,8 @@ interface StitchMainContentProps {
   onMemberClick?: (member: any) => void;
   // Suggestions view
   showSuggestions?: boolean;
+  // Statistics view
+  showStatistics?: boolean;
 }
 
 export const StitchMainContent: React.FC<StitchMainContentProps> = ({
@@ -74,6 +77,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   onBackFromProfile,
   onMemberClick,
   showSuggestions = false,
+  showStatistics = false,
 }) => {
   const { t } = useLanguage();
 
@@ -127,6 +131,16 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
       <StitchSuggestionsView
         familyId={familyId}
         familyMembers={familyMembers}
+      />
+    );
+  }
+
+  // Show Statistics View
+  if (showStatistics) {
+    return (
+      <StitchStatisticsView
+        familyMembers={familyMembers}
+        marriages={marriages}
       />
     );
   }

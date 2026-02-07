@@ -14,3 +14,4 @@ export * from './AddMemberFormTypes';
 export { StitchMemberProfile } from './MemberProfile';
 export { StitchFamilyTab } from './FamilyTab';
 export { StitchSuggestionsView } from './SuggestionsView';
+export { StitchStatisticsView } from './StatisticsView';
