@@ -1,6 +1,7 @@
 import React from 'react';
 import { AddMemberForm } from './AddMemberForm';
 import { StitchMemberProfile } from './MemberProfile';
+import { StitchSuggestionsView } from './SuggestionsView';
 import { Member, Marriage } from '@/types/family.types';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getParentageInfo } from '@/lib/memberDisplayUtils';
@@ -46,6 +47,8 @@ interface StitchMainContentProps {
   onDeleteMember?: () => void;
   onBackFromProfile?: () => void;
   onMemberClick?: (member: any) => void;
+  // Suggestions view
+  showSuggestions?: boolean;
 }
 
 export const StitchMainContent: React.FC<StitchMainContentProps> = ({
@@ -70,6 +73,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   onDeleteMember,
   onBackFromProfile,
   onMemberClick,
+  showSuggestions = false,
 }) => {
   const { t } = useLanguage();
 
@@ -116,6 +120,16 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
       onClick: onPrintPoster 
     }
   ];
+
+  // Show Suggestions View
+  if (showSuggestions && familyId) {
+    return (
+      <StitchSuggestionsView
+        familyId={familyId}
+        familyMembers={familyMembers}
+      />
+    );
+  }
 
   // Show Member Profile if a member is selected
   if (selectedMember && !showAddMemberForm) {

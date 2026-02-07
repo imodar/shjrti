@@ -77,6 +77,8 @@ const FamilyBuilderStitch: React.FC = () => {
   const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
   const [editingMember, setEditingMember] = useState<any>(null);
   const [maxFamilyMembers, setMaxFamilyMembers] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   // Fetch package limits
   useEffect(() => {
@@ -210,7 +212,16 @@ const FamilyBuilderStitch: React.FC = () => {
   };
 
   const handleTabChange = (tab: string) => {
-    // Navigation is handled in StitchHeader
+    if (tab === 'suggestions') {
+      setShowSuggestions(true);
+      setSelectedMemberId(undefined);
+      setShowAddMemberForm(false);
+    } else if (tab === 'dashboard') {
+      setShowSuggestions(false);
+      setSelectedMemberId(undefined);
+      setShowAddMemberForm(false);
+    }
+    setActiveTab(tab);
   };
 
   // Get selected member object
@@ -245,7 +256,7 @@ const FamilyBuilderStitch: React.FC = () => {
         familyName={familyData?.name || 'Shjrti'}
         userName={userName}
         packageName={packageName}
-        activeTab="dashboard"
+        activeTab={activeTab}
         onTabChange={handleTabChange}
         suggestionsCount={0}
       />
@@ -291,6 +302,7 @@ const FamilyBuilderStitch: React.FC = () => {
           marriages={marriages}
           familyId={searchParams.get('family') || ''}
           familyData={familyData}
+          showSuggestions={showSuggestions}
           editingMember={editingMember}
           formMode={formMode}
           onMemberSaved={handleMemberSaved}
@@ -307,8 +319,8 @@ const FamilyBuilderStitch: React.FC = () => {
           onMemberClick={handleMemberClick}
         />
 
-        {/* Right Panel - Stats (hidden when adding member or viewing profile) */}
-        {!showAddMemberForm && !selectedMember && (
+        {/* Right Panel - Stats (hidden when adding member, viewing profile, or suggestions) */}
+        {!showAddMemberForm && !selectedMember && !showSuggestions && (
           <StitchRightPanel
             completenessPercentage={stats.completeness}
             generationsCount={stats.generations}

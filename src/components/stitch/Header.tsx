@@ -48,9 +48,12 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
 
   // Preserve family ID in navigation
   const handleTabClick = (tab: (typeof tabs)[0]) => {
-    if (onTabChange) {
-      onTabChange(tab.id);
+    // For suggestions and dashboard, handle internally without navigation
+    if (tab.id === 'suggestions' || tab.id === 'dashboard') {
+      if (onTabChange) onTabChange(tab.id);
+      return;
     }
+    if (onTabChange) onTabChange(tab.id);
     // Append family query param if present in current URL
     const searchParams = new URLSearchParams(window.location.search);
     const familyId = searchParams.get('family');
