@@ -111,9 +111,9 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
 
   const getSpouseLabel = (spouse: any) => {
     if (spouse.marital_status === 'divorced') {
-      return member?.gender === 'male'
-        ? t('profile.ex_wife', 'Ex-Wife')
-        : t('profile.ex_husband', 'Ex-Husband');
+      return spouse.gender === 'male'
+        ? t('profile.divorced_male', 'مطلّق')
+        : t('profile.divorced_female', 'مطلّقة');
     }
     return member?.gender === 'male'
       ? t('profile.wife', 'Wife')
