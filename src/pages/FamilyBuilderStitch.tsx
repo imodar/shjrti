@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useFamilyData } from '@/contexts/FamilyDataContext';
-import { subscriptionsApi } from '@/lib/api';
+import { subscriptionsApi, suggestionsApi } from '@/lib/api';
 import { StitchHeader, StitchFamilyBar, StitchSidebar, StitchRightPanel, StitchMainContent } from '@/components/stitch';
 import { cn } from '@/lib/utils';
 
@@ -79,6 +79,7 @@ const FamilyBuilderStitch: React.FC = () => {
   const [maxFamilyMembers, setMaxFamilyMembers] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [pendingSuggestionsCount, setPendingSuggestionsCount] = useState(0);
 
   // Fetch package limits
   useEffect(() => {
@@ -95,6 +96,22 @@ const FamilyBuilderStitch: React.FC = () => {
     };
     if (user) fetchPackageLimits();
   }, [user]);
+
+  // Fetch pending suggestions count from API
+  const familyId = searchParams.get('family') || '';
+  useEffect(() => {
+    const fetchPendingSuggestions = async () => {
+      if (!familyId) return;
+      try {
+        const suggestions = await suggestionsApi.listByFamily(familyId);
+        const pending = suggestions.filter(s => s.status === 'pending').length;
+        setPendingSuggestionsCount(pending);
+      } catch (error) {
+        console.error('Error fetching suggestions count:', error);
+      }
+    };
+    fetchPendingSuggestions();
+  }, [familyId]);
 
   const canAddMember = maxFamilyMembers === null || familyMembers.length < maxFamilyMembers;
 
@@ -258,7 +275,7 @@ const FamilyBuilderStitch: React.FC = () => {
         packageName={packageName}
         activeTab={activeTab}
         onTabChange={handleTabChange}
-        suggestionsCount={0}
+        suggestionsCount={pendingSuggestionsCount}
       />
 
       {/* Family Bar - NEW */}
