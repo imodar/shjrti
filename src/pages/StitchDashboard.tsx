@@ -124,7 +124,7 @@ const StitchDashboard: React.FC = () => {
          hideNav={true}
        />
       
-      <main className="max-w-7xl mx-auto px-6 py-10">
+      <main className="max-w-7xl mx-auto px-6 py-5">
         {/* Hero Section */}
         <section className="hero-glass rounded-[2rem] p-6 mb-10 shadow-xl shadow-slate-200/50 relative overflow-hidden border border-white dark:border-border">
           <div className="absolute inset-0 flex items-center justify-center tree-silhouette">
