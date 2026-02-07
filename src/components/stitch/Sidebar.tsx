@@ -64,7 +64,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
   };
 
   // Get third line info (founder label, spouse info, or birth/death)
-  const getThirdLineInfo = (member: Member): { type: 'founder' | 'spouse' | 'birth' | 'death' | 'alive' | null; text: string } | null => {
+  const getThirdLineInfo = (member: Member): { type: 'founder' | 'spouse' | 'spouse-divorced' | 'birth' | 'death' | 'alive' | null; text: string } | null => {
     // Founders
     if (member.is_founder || (member as any).isFounder) {
       return { type: 'founder', text: t('member.founder', 'المؤسس') };
@@ -73,7 +73,10 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
     // Spouse info for external spouses
     const spouseInfo = getSpouseDisplayInfo(member, familyMembers, marriages);
     if (spouseInfo && spouseInfo.label) {
-      return { type: 'spouse', text: `${spouseInfo.label} ${spouseInfo.info}` };
+      // Check if divorced
+      const marriage = marriages?.find(m => m.husband_id === member.id || m.wife_id === member.id);
+      const isDivorced = (marriage as any)?.marital_status === 'divorced';
+      return { type: isDivorced ? 'spouse-divorced' : 'spouse', text: `${spouseInfo.label} ${spouseInfo.info}` };
     }
 
     // Birth/Death info
@@ -229,10 +232,17 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
                   ) : null}
 
                   {/* Line 3: Spouse Badge (for spouses only) */}
-                  {thirdLine?.type === 'spouse' && (
+                  {(thirdLine?.type === 'spouse' || thirdLine?.type === 'spouse-divorced') && (
                     <div className="mt-1.5">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 text-[10px] font-bold border border-pink-200 dark:border-pink-800/50">
-                        <span className="material-symbols-outlined text-[12px] mr-1">favorite</span>
+                      <span className={cn(
+                        "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border",
+                        thirdLine.type === 'spouse-divorced'
+                          ? "bg-slate-100 dark:bg-slate-800/30 text-slate-500 dark:text-slate-400 border-slate-300 dark:border-slate-600/50"
+                          : "bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-800/50"
+                      )}>
+                        <span className="material-symbols-outlined text-[12px] mr-1.5">
+                          {thirdLine.type === 'spouse-divorced' ? 'heart_broken' : 'favorite'}
+                        </span>
                         {thirdLine.text}
                       </span>
                     </div>
