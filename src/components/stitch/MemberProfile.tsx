@@ -125,10 +125,10 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
   if (!member) return null;
 
   const tabs = [
-    { id: 'overview', label: t('profile.overview', 'Overview'), icon: 'account_circle' },
-    { id: 'family', label: t('profile.family', 'Family'), icon: 'groups' },
-    { id: 'timeline', label: t('profile.timeline', 'Timeline'), icon: 'history' },
-    { id: 'media', label: t('profile.media', 'Media'), icon: 'photo_library' },
+    { id: 'overview', label: t('profile.tab_overview', 'Overview'), icon: 'account_circle' },
+    { id: 'family', label: t('profile.tab_family', 'Family'), icon: 'groups' },
+    { id: 'timeline', label: t('profile.tab_timeline', 'Timeline'), icon: 'history' },
+    { id: 'media', label: t('profile.tab_media', 'Media'), icon: 'photo_library' },
   ];
 
   const infoCards = [
