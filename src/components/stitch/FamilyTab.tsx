@@ -180,7 +180,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
         {/* Spouses & Children */}
         {(spouseGroups.length > 0 || unassignedChildren.length > 0) && (
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
-            <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-6">
+            <h3 className="text-base font-bold text-slate-800 dark:text-white mb-6">
               {t('profile.spouses_and_children', 'Spouses & Children')}
             </h3>
             <div className="space-y-4">
@@ -202,24 +202,24 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h4 className="font-bold text-slate-800 dark:text-white">
+                          <h4 className="font-bold text-sm text-slate-800 dark:text-white">
                             {spouse.first_name ? `${spouse.first_name} ${spouse.last_name || ''}` : spouse.name}
                           </h4>
-                          <span className="px-2 py-0.5 bg-primary/10 text-primary text-[9px] font-bold rounded-md uppercase">
+                          <span className="px-2 py-0.5 bg-primary/10 text-primary text-[11px] font-bold rounded-md uppercase">
                             {getSpouseLabel(spouse)}
                           </span>
                         </div>
                         {getSpouseSubtitle(spouse) && (
-                          <p className="text-[10px] text-slate-500">{getSpouseSubtitle(spouse)}</p>
+                          <p className="text-xs text-slate-500">{getSpouseSubtitle(spouse)}</p>
                         )}
                       </div>
                     </button>
                     <div className="flex gap-2">
-                      <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-full text-[10px] font-bold border border-blue-100 dark:border-blue-800 flex items-center gap-1">
-                        <span className="material-symbols-outlined text-xs">male</span> {sons.length} {t('son', 'Sons')}
+                      <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-full text-xs font-bold border border-blue-100 dark:border-blue-800 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-sm">male</span> {sons.length} {t('son', 'Sons')}
                       </span>
-                      <span className="px-3 py-1 bg-pink-50 dark:bg-pink-900/20 text-pink-500 rounded-full text-[10px] font-bold border border-pink-100 dark:border-pink-800 flex items-center gap-1">
-                        <span className="material-symbols-outlined text-xs">female</span> {daughters.length} {t('daughter', 'Daughters')}
+                      <span className="px-3 py-1 bg-pink-50 dark:bg-pink-900/20 text-pink-500 rounded-full text-xs font-bold border border-pink-100 dark:border-pink-800 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-sm">female</span> {daughters.length} {t('daughter', 'Daughters')}
                       </span>
                     </div>
                   </div>
@@ -277,14 +277,14 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
         {grandchildGroups.length > 0 && (
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-sm font-bold text-slate-800 dark:text-white">
+              <h3 className="text-base font-bold text-slate-800 dark:text-white">
                 {t('profile.grandchildren', 'Grandchildren')}
               </h3>
               <div className="flex gap-2">
-                <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[9px] font-bold rounded border border-blue-100 dark:border-blue-800">
+                <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[11px] font-bold rounded border border-blue-100 dark:border-blue-800">
                   {totalGrandSons} {t('son', 'Sons')}
                 </span>
-                <span className="px-2 py-0.5 bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 text-[9px] font-bold rounded border border-pink-100 dark:border-pink-800">
+                <span className="px-2 py-0.5 bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 text-[11px] font-bold rounded border border-pink-100 dark:border-pink-800">
                   {totalGrandDaughters} {t('daughter', 'Daughters')}
                 </span>
               </div>
@@ -298,14 +298,14 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                       className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                     >
                       <span className="material-symbols-outlined text-slate-400 text-lg">person</span>
-                      <p className="text-xs font-bold">
+                      <p className="text-sm font-bold">
                         {t('family_word', 'Family')} {parent.first_name || parent.name} {parent.last_name || ''}
                       </p>
                     </button>
                     {spouse && (
                       <button
                         onClick={() => onMemberClick?.(spouse)}
-                        className="text-[10px] text-slate-400 font-medium hover:text-primary transition-colors"
+                        className="text-xs text-slate-400 font-medium hover:text-primary transition-colors"
                       >
                         {t('profile.spouse', 'Spouse')}: {spouse.first_name || spouse.name} {spouse.last_name || ''}
                       </button>
