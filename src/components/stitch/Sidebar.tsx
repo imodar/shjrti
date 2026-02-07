@@ -244,15 +244,15 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
                         <span className="material-symbols-outlined text-[12px] mr-1">cake</span>
                         {thirdLine.text}
                       </span>
-                    ) : thirdLine?.type === 'death' || isDeceased ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-600 text-[10px] font-bold border border-amber-500/20">
-                        <span className="material-symbols-outlined text-[12px] mr-1">history</span>
-                        {thirdLine?.text || t('member.deceased', 'Deceased')}
-                      </span>
                     ) : thirdLine?.type === 'spouse' ? (
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 text-[10px] font-bold border border-pink-200 dark:border-pink-800/50">
                         <span className="material-symbols-outlined text-[12px] mr-1">favorite</span>
                         {thirdLine.text}
+                      </span>
+                    ) : thirdLine?.type === 'death' || isDeceased ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-900/20 text-amber-600 text-[10px] font-bold border border-amber-500/20">
+                        <span className="material-symbols-outlined text-[12px] mr-1">history</span>
+                        {thirdLine?.text || t('member.deceased', 'Deceased')}
                       </span>
                     ) : thirdLine?.type === 'birth' ? (
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold border border-emerald-200 dark:border-emerald-800/50">
