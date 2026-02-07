@@ -737,8 +737,8 @@ export const useAddMemberForm = ({
     const currentId = formMode === 'edit' ? editingMember?.id : null;
     return familyMembers.filter(member => 
       member.id !== currentId && 
-      member.fatherId === fatherId && 
-      member.motherId === motherId
+      (member.father_id || (member as any).fatherId) === fatherId && 
+      (member.mother_id || (member as any).motherId) === motherId
     );
   }, [formMode, editingMember, formData.selectedParent, marriages, familyMembers]);
 
