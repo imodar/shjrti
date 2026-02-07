@@ -259,11 +259,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
                         <span className="material-symbols-outlined text-[12px] mr-1">cake</span>
                         {thirdLine.text}
                       </span>
-                    ) : (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800/50 text-slate-400 text-[10px] font-medium italic border border-slate-200 dark:border-slate-700">
-                        {t('member.no_birth_date', 'No birth date available')}
-                      </span>
-                    )}
+                    ) : null}
                   </div>
                 </div>
 
