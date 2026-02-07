@@ -303,7 +303,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                     >
                       <span className="material-symbols-outlined text-slate-400 text-lg">person</span>
                       <p className="text-xs font-bold">
-                        {t('profile.family_of', 'Family of')} {parent.first_name || parent.name} {parent.last_name || ''}
+                        {t('family_word', 'Family')} {parent.first_name || parent.name} {parent.last_name || ''}
                       </p>
                     </button>
                     {spouse && (
