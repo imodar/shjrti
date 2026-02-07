@@ -243,68 +243,61 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
                     </div>
                   )}
 
-                  {/* Line 4: Vitality/Date Badge (separate from spouse) */}
-                  {thirdLine?.type !== 'spouse' && (
-                    <div className="mt-1.5">
-                      {(() => {
-                        const isMemberDeceased = isDeceased;
-                        const birthYear = member.birth_date?.split('-')[0];
-                        const deathYear = (member as any).death_date?.split('-')[0];
-                        const hasBirth = !!member.birth_date;
-                        const hasDeath = !!(member as any).death_date;
-                        const isFemale = member.gender === 'female';
-                        const yearsText = t('member.years', 'سنة');
+                  {/* Line 4: Vitality/Date Badge (always shown) */}
+                  <div className="mt-1">
+                    {(() => {
+                      const isMemberDeceased = isDeceased;
+                      const birthYear = member.birth_date?.split('-')[0];
+                      const deathYear = (member as any).death_date?.split('-')[0];
+                      const hasBirth = !!member.birth_date;
+                      const hasDeath = !!(member as any).death_date;
+                      const isFemale = member.gender === 'female';
+                      const yearsText = t('member.years', 'سنة');
 
-                        if (isMemberDeceased) {
-                          // Deceased + both dates → "birthYear - deathYear (age سنة)"
-                          if (hasBirth && hasDeath) {
-                            const age = Number(deathYear) - Number(birthYear);
-                            return (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-black dark:text-slate-200 text-[10px] font-bold border border-slate-300 dark:border-slate-600">
-                                <span className="material-symbols-outlined text-[12px] mr-1">history</span>
-                                {birthYear} - {deathYear} ({age} {yearsText})
-                              </span>
-                            );
-                          }
-                          // Deceased + death date only → "توفي/توفيت [year]"
-                          if (!hasBirth && hasDeath) {
-                            const deathText = isFemale ? t('member.died_female', 'توفيت') : t('member.died_male', 'توفي');
-                            return (
-                              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-black dark:text-slate-200 text-[10px] font-bold border border-slate-300 dark:border-slate-600">
-                                {deathText} {deathYear}
-                              </span>
-                            );
-                          }
-                          // Deceased + no dates OR birth only → "متوفى/متوفية"
-                          const deceasedText = isFemale ? t('member.deceased_female', 'متوفية') : t('member.deceased', 'متوفى');
+                      if (isMemberDeceased) {
+                        if (hasBirth && hasDeath) {
+                          const age = Number(deathYear) - Number(birthYear);
                           return (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-black dark:text-slate-200 text-[10px] font-bold border border-slate-300 dark:border-slate-600">
-                              {deceasedText}
+                              <span className="material-symbols-outlined text-[12px] mr-1">history</span>
+                              {birthYear} - {deathYear} ({age} {yearsText})
                             </span>
                           );
                         }
-
-                        // Alive + has birth date → green with cake + year + age
-                        if (hasBirth) {
-                          const now = new Date();
-                          const age = now.getFullYear() - Number(birthYear);
+                        if (!hasBirth && hasDeath) {
+                          const deathText = isFemale ? t('member.died_female', 'توفيت') : t('member.died_male', 'توفي');
                           return (
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold border border-emerald-200 dark:border-emerald-800/50">
-                              <span className="material-symbols-outlined text-[12px] mr-1">cake</span>
-                              {birthYear} - {age} {yearsText}
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-black dark:text-slate-200 text-[10px] font-bold border border-slate-300 dark:border-slate-600">
+                              {deathText} {deathYear}
                             </span>
                           );
                         }
-
-                        // Alive + no birth date → green "على قيد الحياة"
+                        const deceasedText = isFemale ? t('member.deceased_female', 'متوفية') : t('member.deceased', 'متوفى');
                         return (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold border border-emerald-200 dark:border-emerald-800/50">
-                            {t('member.alive', 'على قيد الحياة')}
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-black dark:text-slate-200 text-[10px] font-bold border border-slate-300 dark:border-slate-600">
+                            {deceasedText}
                           </span>
                         );
-                      })()}
-                    </div>
-                  )}
+                      }
+
+                      if (hasBirth) {
+                        const now = new Date();
+                        const age = now.getFullYear() - Number(birthYear);
+                        return (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold border border-emerald-200 dark:border-emerald-800/50">
+                            <span className="material-symbols-outlined text-[12px] mr-1">cake</span>
+                            {birthYear} - {age} {yearsText}
+                          </span>
+                        );
+                      }
+
+                      return (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold border border-emerald-200 dark:border-emerald-800/50">
+                          {t('member.alive', 'على قيد الحياة')}
+                        </span>
+                      );
+                    })()}
+                  </div>
                 </div>
 
                 {/* Founder Crown Badge */}
