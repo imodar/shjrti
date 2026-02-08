@@ -429,17 +429,18 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                   const memberName = getMemberName(memory.linked_member_id);
 
                   return (
-                    <div
-                      key={memory.id}
-                      className={`${metroClass} group relative overflow-hidden rounded-3xl ${isLarge ? 'shadow-lg' : 'shadow-md'} cursor-zoom-in gallery-card`}
-                      onClick={() => openMemory(memory, index)}
-                    >
-                      <img
-                        alt={memory.caption || memory.original_filename}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        src={memory.imageUrl}
-                        loading="lazy"
-                      />
+                      <div
+                        key={memory.id}
+                        className={`${metroClass} group relative overflow-hidden rounded-3xl ${isLarge ? 'shadow-lg' : 'shadow-md'} cursor-zoom-in gallery-card`}
+                        style={{ maxHeight: metroClass.includes('tall') || metroClass.includes('large') ? '456px' : '220px' }}
+                        onClick={() => openMemory(memory, index)}
+                      >
+                        <img
+                          alt={memory.caption || memory.original_filename}
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          src={memory.imageUrl}
+                          loading="lazy"
+                        />
                       <div className={`absolute bottom-0 inset-x-0 ${isLarge ? 'h-1/2' : 'h-1/2'} bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none z-10`} />
                       <div className={`absolute bottom-0 inset-x-0 ${isLarge ? 'p-6' : 'p-4'} z-20 text-white`}>
                         <h3 className={`font-bold ${isLarge ? 'text-base leading-tight tracking-tight' : 'text-xs'} truncate drop-shadow-md`}>
