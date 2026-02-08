@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StitchHeader } from '@/components/stitch';
+import DashboardLoader from '@/components/stitch/DashboardLoader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
@@ -30,6 +31,18 @@ const StitchDashboard: React.FC = () => {
   const [families, setFamilies] = useState<FamilyWithCount[]>([]);
   const [packageData, setPackageData] = useState<PackageData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loaderDone, setLoaderDone] = useState(false);
+
+  // Loading steps tracking
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  const [familiesLoaded, setFamiliesLoaded] = useState(false);
+  const [packageLoaded, setPackageLoaded] = useState(false);
+
+  const loadingSteps = [
+    { id: 'profile', labelAr: 'جاري التحقق من بيانات الحساب...', labelEn: 'Verifying account data...', completed: profileLoaded },
+    { id: 'families', labelAr: 'جاري تحميل أشجار العائلة...', labelEn: 'Loading family trees...', completed: familiesLoaded },
+    { id: 'package', labelAr: 'جاري التحقق من الاشتراك...', labelEn: 'Checking subscription...', completed: packageLoaded },
+  ];
 
   const [displayName, setDisplayName] = useState(user?.email?.split('@')[0] || 'User');
   const totalMembers = families.reduce((acc, f) => acc + (f.memberCount || 0), 0);
@@ -44,61 +57,60 @@ const StitchDashboard: React.FC = () => {
       if (!user?.id) return;
       
       try {
-        // Parallel fetch: families with aggregation + profile via REST API + package data
-        const [familiesResult, profileResult, subResult] = await Promise.allSettled([
-          supabase
+        // Step 1: Profile
+        try {
+          const profile = await profilesApi.get();
+          setDisplayName(profile.first_name || user?.email?.split('@')[0] || 'User');
+        } catch (e) { console.error('Profile error:', e); }
+        setProfileLoaded(true);
+
+        // Step 2: Families
+        try {
+          const { data: familiesData, error } = await supabase
             .from('families')
-            .select(`
-              id,
-              name,
-              updated_at,
-              family_tree_members(count)
-            `)
+            .select(`id, name, updated_at, family_tree_members(count)`)
             .eq('creator_id', user.id)
             .eq('is_archived', false)
-            .order('updated_at', { ascending: false }),
-          profilesApi.get(),
-          supabase
+            .order('updated_at', { ascending: false });
+
+          if (!error && familiesData) {
+            setFamilies(
+              familiesData.map(family => ({
+                id: family.id,
+                name: family.name,
+                updated_at: family.updated_at,
+                memberCount: (family as any).family_tree_members?.[0]?.count || 0
+              }))
+            );
+          }
+        } catch (e) { console.error('Families error:', e); }
+        setFamiliesLoaded(true);
+
+        // Step 3: Package/Subscription
+        try {
+          const { data: subData } = await supabase
             .from('user_subscriptions')
             .select('package_id')
             .eq('user_id', user.id)
             .eq('status', 'active')
-            .maybeSingle()
-        ]);
+            .maybeSingle();
 
-        // Handle families with aggregated member count
-        if (familiesResult.status === 'fulfilled' && !familiesResult.value.error) {
-          const familiesData = familiesResult.value.data;
-          setFamilies(
-            (familiesData || []).map(family => ({
-              id: family.id,
-              name: family.name,
-              updated_at: family.updated_at,
-              memberCount: (family as any).family_tree_members?.[0]?.count || 0
-            }))
-          );
-        }
-
-        // Handle profile from REST API
-        if (profileResult.status === 'fulfilled') {
-          const profile = profileResult.value;
-          setDisplayName(profile.first_name || user?.email?.split('@')[0] || 'User');
-        }
-
-        // Handle package data
-        if (subResult.status === 'fulfilled' && !subResult.value.error && subResult.value.data?.package_id) {
-          const { data: pkgData } = await supabase
-            .from('packages')
-            .select('name, max_family_trees, max_family_members')
-            .eq('id', subResult.value.data.package_id)
-            .single();
-
-          if (pkgData) {
-            setPackageData(pkgData as PackageData);
+          if (subData?.package_id) {
+            const { data: pkgData } = await supabase
+              .from('packages')
+              .select('name, max_family_trees, max_family_members')
+              .eq('id', subData.package_id)
+              .single();
+            if (pkgData) setPackageData(pkgData as PackageData);
           }
-        }
+        } catch (e) { console.error('Package error:', e); }
+        setPackageLoaded(true);
+
       } catch (error) {
         console.error('Error fetching data:', error);
+        setProfileLoaded(true);
+        setFamiliesLoaded(true);
+        setPackageLoaded(true);
       } finally {
         setLoading(false);
       }
@@ -115,8 +127,17 @@ const StitchDashboard: React.FC = () => {
     navigate(`/family-builder-stitch?family=${familyId}`);
   };
 
+  if (loading || !loaderDone) {
+    return (
+      <DashboardLoader
+        steps={loadingSteps}
+        onComplete={() => setLoaderDone(true)}
+      />
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-background">
+    <div className="min-h-screen bg-slate-50 dark:bg-background animate-in fade-in duration-500">
        <StitchHeader 
          activeTab="dashboard" 
          userName={displayName}
