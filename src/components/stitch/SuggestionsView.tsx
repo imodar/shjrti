@@ -231,7 +231,7 @@ export const StitchSuggestionsView: React.FC<StitchSuggestionsViewProps> = ({
         </div>
 
         {/* Suggestions List */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           {filteredSuggestions.length === 0 ? (
             <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm p-12 text-center">
               <span className="material-symbols-outlined text-5xl text-slate-300 dark:text-slate-600 mb-4 block">lightbulb</span>
@@ -245,10 +245,10 @@ export const StitchSuggestionsView: React.FC<StitchSuggestionsViewProps> = ({
               return (
                 <div
                   key={suggestion.id}
-                  className={`bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden border-l-4 ${statusConfig.borderColor} ${suggestion.status !== 'pending' ? 'opacity-80' : ''}`}
+                  className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden border-l-4 ${statusConfig.borderColor} ${suggestion.status !== 'pending' ? 'opacity-80' : ''}`}
                 >
                   {/* Card Header */}
-                  <div className="p-6 border-b border-slate-50 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="px-5 py-3 border-b border-slate-50 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center gap-3">
                       <span className={`px-3 py-1 ${statusConfig.badgeBg} text-[10px] font-bold rounded-full uppercase tracking-wider`}>
                         {statusConfig.label}
@@ -266,10 +266,10 @@ export const StitchSuggestionsView: React.FC<StitchSuggestionsViewProps> = ({
                   </div>
 
                   {/* Card Body */}
-                  <div className="p-6">
-                    <div className="flex gap-4 items-start mb-6">
-                      <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 shrink-0">
-                        <span className="material-symbols-outlined text-2xl">person_outline</span>
+                  <div className="px-5 py-4">
+                    <div className="flex gap-3 items-start mb-4">
+                      <div className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 shrink-0">
+                        <span className="material-symbols-outlined text-xl">person_outline</span>
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
@@ -281,11 +281,11 @@ export const StitchSuggestionsView: React.FC<StitchSuggestionsViewProps> = ({
                             })}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-500 mb-3">
+                        <p className="text-[11px] text-slate-500 mb-2">
                           {suggestion.submitter_email}
                         </p>
-                        <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
-                          <p className="text-sm text-slate-700 dark:text-slate-300">
+                        <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
+                          <p className="text-sm text-slate-700 dark:text-slate-300 line-clamp-3">
                             {suggestion.suggestion_text}
                           </p>
                         </div>
