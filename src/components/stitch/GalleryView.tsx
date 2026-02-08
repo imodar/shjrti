@@ -499,18 +499,6 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                   );
                 })}
 
-                {/* Add New Memory Card */}
-                <div
-                  className="metro-item-square group relative overflow-hidden rounded-3xl cursor-pointer gallery-card"
-                  onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
-                >
-                  <div className="w-full h-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700">
-                    <span className="material-symbols-outlined text-4xl text-slate-400 group-hover:text-primary transition-colors">add_circle</span>
-                  </div>
-                  <div className="card-overlay absolute inset-0 bg-primary/20 opacity-0 transition-opacity duration-300 flex items-center justify-center z-30">
-                    <span className="text-white font-bold text-xs">{t('gallery.add_new', 'Add New Memory')}</span>
-                  </div>
-                </div>
               </div>
             )}
           </div>
