@@ -78,17 +78,21 @@ const FamilyBuilderStitch: React.FC = () => {
   const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
   const [editingMember, setEditingMember] = useState<any>(null);
   const [maxFamilyMembers, setMaxFamilyMembers] = useState<number | null>(null);
+  const familyId = searchParams.get('family') || '';
   const initialTab = searchParams.get('tab') || 'dashboard';
   const [activeTab, setActiveTab] = useState(initialTab);
   const [showSuggestions, setShowSuggestions] = useState(initialTab === 'suggestions');
   const [showStatistics, setShowStatistics] = useState(initialTab === 'statistics');
   const [showGallery, setShowGallery] = useState(initialTab === 'gallery');
   const [pendingSuggestionsCount, setPendingSuggestionsCount] = useState(0);
-  const [packageLoaded, setPackageLoaded] = useState(false);
-  const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
+  // Default to true so loader is skipped when data is cached; useEffects set false only when fetching
+  const [packageLoaded, setPackageLoaded] = useState(true);
+  const [suggestionsLoaded, setSuggestionsLoaded] = useState(true);
 
   // Fetch package limits
   useEffect(() => {
+    if (!user) return;
+    setPackageLoaded(false);
     const fetchPackageLimits = async () => {
       try {
         const sub = await subscriptionsApi.get();
@@ -102,15 +106,14 @@ const FamilyBuilderStitch: React.FC = () => {
         setPackageLoaded(true);
       }
     };
-    if (user) fetchPackageLimits();
-    else setPackageLoaded(true);
+    fetchPackageLimits();
   }, [user]);
 
   // Fetch pending suggestions count from API
-  const familyId = searchParams.get('family') || '';
   useEffect(() => {
+    if (!familyId) return;
+    setSuggestionsLoaded(false);
     const fetchPendingSuggestions = async () => {
-      if (!familyId) { setSuggestionsLoaded(true); return; }
       try {
         const suggestions = await suggestionsApi.listByFamily(familyId);
         const pending = suggestions.filter(s => s.status === 'pending').length;
