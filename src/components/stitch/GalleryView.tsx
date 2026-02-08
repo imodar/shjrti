@@ -278,23 +278,23 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
     <>
       <section className="flex-1 overflow-hidden flex">
         {/* Sidebar - Upload & Members */}
-        <aside className="w-72 bg-white dark:bg-slate-900 border-e border-slate-200 dark:border-slate-800 flex flex-col shrink-0">
+        <aside className="w-80 bg-white dark:bg-slate-900 border-e border-slate-200 dark:border-slate-800 flex flex-col shrink-0">
           {/* Upload Zone */}
-          <div className="p-5 border-b border-slate-100 dark:border-slate-800">
-            <h2 className="font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2 text-sm">
+          <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+            <h2 className="font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">cloud_upload</span>
               {t('gallery.quick_upload', 'Quick Upload')}
             </h2>
             <div
               {...getRootProps()}
-              className={`border-2 border-dashed rounded-2xl p-5 flex flex-col items-center justify-center text-center group cursor-pointer transition-colors ${
+              className={`border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center text-center group cursor-pointer transition-colors ${
                 isDragActive
                   ? 'border-primary bg-primary/5'
                   : 'border-slate-200 dark:border-slate-700 hover:border-primary/50 bg-slate-50/50 dark:bg-slate-800/20'
               }`}
             >
               <input {...getInputProps()} />
-              <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                 {uploading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
                 ) : (
@@ -306,11 +306,23 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
               </p>
               <p className="text-[10px] text-slate-400 mt-1">PNG, JPG up to 10MB</p>
             </div>
+            {/* Storage Capacity */}
+            <div className="mt-8">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t('gallery.storage_capacity', 'Storage Capacity')}</span>
+                <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300">
+                  {(memories.reduce((acc, m) => acc + (m.file_size || 0), 0) / (1024 * 1024 * 1024)).toFixed(1)} GB
+                </span>
+              </div>
+              <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                <div className="bg-primary h-full rounded-full shadow-[0_0_8px_rgba(69,179,143,0.4)]" style={{ width: `${Math.min(memories.reduce((acc, m) => acc + (m.file_size || 0), 0) / (10 * 1024 * 1024 * 1024) * 100, 100)}%` }} />
+              </div>
+            </div>
           </div>
 
           {/* Members Filter */}
           <div className="flex-1 flex flex-col min-h-0">
-            <div className="p-4 pb-2">
+            <div className="p-6 pb-2">
               <div className="relative">
                 <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
                 <input
@@ -322,7 +334,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                 />
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto p-3 pt-1 space-y-1 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto p-4 pt-2 space-y-2 custom-scrollbar">
               {/* All Photos */}
               <button
                 onClick={() => setFilterMemberId(null)}
@@ -368,18 +380,18 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
         <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0F171A] custom-scrollbar">
           <div className="p-8">
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
               <div>
                 <div className="flex items-center gap-3 mb-2">
                   <span className="px-2 py-0.5 bg-secondary/10 text-secondary text-[10px] font-bold rounded uppercase tracking-widest border border-secondary/20">
                     {t('gallery.archive_badge', 'Archive')}
                   </span>
-                  <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    {t('gallery.title', 'Family Gallery')}
+                  <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    {t('gallery.title', 'Metro Grid Family Gallery')}
                   </h2>
                 </div>
-                <p className="text-slate-500 dark:text-slate-400 text-sm max-w-lg">
-                  {t('gallery.description', "A dynamic mosaic of our family's most precious memories.")}
+                <p className="text-slate-500 dark:text-slate-400 max-w-lg">
+                  {t('gallery.description', "A dynamic mosaic of our family's most precious memories, curated across generations.")}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -387,7 +399,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                   <span className="material-symbols-outlined text-primary">photo_library</span>
                   <div>
                     <p className="text-[10px] text-slate-400 uppercase font-bold leading-none">{t('gallery.total_items', 'Total Items')}</p>
-                    <p className="text-lg font-bold leading-tight">{filteredMemories.length}</p>
+                    <p className="text-lg font-bold leading-tight">{filteredMemories.length.toLocaleString()}</p>
                   </div>
                 </div>
               </div>
@@ -410,11 +422,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                 {filteredMemories.map((memory, index) => {
                   const metroClass = getMetroClass(index);
                   const isLarge = metroClass === 'metro-item-large' || metroClass === 'metro-item-wide';
+                  const memberName = getMemberName(memory.linked_member_id);
 
                   return (
                     <div
                       key={memory.id}
-                      className={`${metroClass} group relative overflow-hidden rounded-3xl shadow-md cursor-zoom-in gallery-card`}
+                      className={`${metroClass} group relative overflow-hidden rounded-3xl ${isLarge ? 'shadow-lg' : 'shadow-md'} cursor-zoom-in gallery-card`}
                       onClick={() => openMemory(memory, index)}
                     >
                       <img
@@ -423,18 +436,32 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                         src={memory.imageUrl}
                         loading="lazy"
                       />
-                      <div className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none z-10" />
-                      <div className="absolute bottom-0 inset-x-0 p-4 z-20 text-white">
-                        <h3 className={`font-bold truncate ${isLarge ? 'text-sm' : 'text-[10px]'}`}>
+                      <div className={`absolute bottom-0 inset-x-0 ${isLarge ? 'h-1/2' : 'h-1/2'} bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none z-10`} />
+                      <div className={`absolute bottom-0 inset-x-0 ${isLarge ? 'p-6' : 'p-4'} z-20 text-white`}>
+                        <h3 className={`font-bold ${isLarge ? 'text-base leading-tight tracking-tight' : 'text-xs'} truncate drop-shadow-md`}>
                           {memory.caption || memory.original_filename}
-                          {memory.photo_date && (
-                            <span className="opacity-80"> • {new Date(memory.photo_date).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</span>
-                          )}
                         </h3>
+                        {memory.photo_date && (
+                          <p className={`${isLarge ? 'text-[11px] font-medium mt-1 flex items-center gap-2' : 'text-[10px] mt-0.5'} opacity-90`}>
+                            {isLarge && memberName && (
+                              <>
+                                <span>{memberName}</span>
+                                <span className="w-1 h-1 bg-white/50 rounded-full" />
+                              </>
+                            )}
+                            <span>{new Date(memory.photo_date).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}</span>
+                          </p>
+                        )}
                       </div>
                       {/* Hover overlay with actions */}
-                      <div className="card-overlay absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 flex flex-col justify-start p-3 z-30">
+                      <div className={`card-overlay absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 flex flex-col justify-start ${isLarge ? 'p-6' : 'p-3'} z-30`}>
                         <div className="flex justify-end gap-2">
+                          <button
+                            className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md hover:bg-primary transition-colors flex items-center justify-center text-white"
+                            onClick={e => { e.stopPropagation(); openEditPopup(memory); }}
+                          >
+                            <span className="material-symbols-outlined text-lg">edit</span>
+                          </button>
                           <button
                             className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md hover:bg-red-500 transition-colors flex items-center justify-center text-white"
                             onClick={e => { e.stopPropagation(); handleDelete(memory.id); }}
