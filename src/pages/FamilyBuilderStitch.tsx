@@ -77,10 +77,11 @@ const FamilyBuilderStitch: React.FC = () => {
   const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
   const [editingMember, setEditingMember] = useState<any>(null);
   const [maxFamilyMembers, setMaxFamilyMembers] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [showStatistics, setShowStatistics] = useState(false);
-  const [showGallery, setShowGallery] = useState(false);
+  const initialTab = searchParams.get('tab') || 'dashboard';
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [showSuggestions, setShowSuggestions] = useState(initialTab === 'suggestions');
+  const [showStatistics, setShowStatistics] = useState(initialTab === 'statistics');
+  const [showGallery, setShowGallery] = useState(initialTab === 'gallery');
   const [pendingSuggestionsCount, setPendingSuggestionsCount] = useState(0);
 
   // Fetch package limits
