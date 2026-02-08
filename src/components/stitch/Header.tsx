@@ -50,12 +50,18 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   // Preserve family ID in navigation
   const handleTabClick = (tab: (typeof tabs)[0]) => {
     if (onTabChange) onTabChange(tab.id);
-    // For tabs that navigate to different pages, use navigate
     if (tab.path) {
       const searchParams = new URLSearchParams(window.location.search);
       const familyId = searchParams.get('family');
-      const targetPath = familyId ? `${tab.path}?family=${familyId}` : tab.path;
-      navigate(targetPath);
+      let targetPath = tab.path;
+      const params = new URLSearchParams();
+      if (familyId) params.set('family', familyId);
+      // For tabs that share the same path, pass the tab id
+      if (tab.id !== 'home' && tab.id !== 'tree' && tab.path === '/family-builder-stitch') {
+        params.set('tab', tab.id);
+      }
+      const qs = params.toString();
+      navigate(qs ? `${targetPath}?${qs}` : targetPath);
     }
   };
 
