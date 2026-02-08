@@ -48,16 +48,14 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
 
   // Preserve family ID in navigation
   const handleTabClick = (tab: (typeof tabs)[0]) => {
-    if (tab.id === 'suggestions' || tab.id === 'dashboard' || tab.id === 'statistics' || tab.id === 'gallery') {
-      if (onTabChange) onTabChange(tab.id);
-      return;
-    }
     if (onTabChange) onTabChange(tab.id);
-    // Append family query param if present in current URL
-    const searchParams = new URLSearchParams(window.location.search);
-    const familyId = searchParams.get('family');
-    const targetPath = familyId ? `${tab.path}?family=${familyId}` : tab.path;
-    navigate(targetPath);
+    // For tabs that navigate to different pages, use navigate
+    if (tab.path) {
+      const searchParams = new URLSearchParams(window.location.search);
+      const familyId = searchParams.get('family');
+      const targetPath = familyId ? `${tab.path}?family=${familyId}` : tab.path;
+      navigate(targetPath);
+    }
   };
 
 
