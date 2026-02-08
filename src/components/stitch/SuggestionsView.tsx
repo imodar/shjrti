@@ -219,7 +219,7 @@ export const StitchSuggestionsView: React.FC<StitchSuggestionsViewProps> = ({
             />
           </div>
           <select
-            className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm px-6 py-3 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary min-w-[200px] outline-none"
+            className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl text-sm px-6 py-3 shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary min-w-[200px] outline-none appearance-none bg-[length:16px_16px] bg-no-repeat bg-[position:left_16px_center] rtl:bg-[position:left_16px_center] ltr:bg-[position:right_16px_center] bg-[url('data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394a3b8%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m6%209%206%206%206-6%22%2F%3E%3C%2Fsvg%3E')]"
             value={filterStatus}
             onChange={e => setFilterStatus(e.target.value)}
           >
