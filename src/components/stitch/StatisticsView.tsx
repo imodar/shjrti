@@ -174,20 +174,20 @@ export const StitchStatisticsView: React.FC<StatisticsViewProps> = ({
   return (
     <section className="flex-1 overflow-y-auto bg-slate-50 dark:bg-background custom-scrollbar p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Title + Core Stats Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Title on the right (in RTL) */}
-          <div className="lg:col-span-1 flex flex-col justify-center">
+        {/* Title */}
+        <div className="flex items-end justify-between">
+          <div>
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white">
               {t('stats.title', 'Advanced Family Analytics Hub')}
             </h2>
-            <p className="text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-slate-500 dark:text-slate-400">
               {t('stats.subtitle', "Deep insights into your family's history, demographics, and activities.")}
             </p>
           </div>
+        </div>
 
-          {/* 4 Stat cards on the left (in RTL) */}
-          <div className="lg:col-span-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Row 1: Core Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <StatCard
             icon="groups"
             iconColor="text-primary"
@@ -216,7 +216,6 @@ export const StitchStatisticsView: React.FC<StatisticsViewProps> = ({
             value={stats.deceasedCount}
             sub={t('stats.ancestors_recorded', 'Ancestors recorded')}
           />
-          </div>
         </div>
 
         {/* Row 2: Extended Stats */}
