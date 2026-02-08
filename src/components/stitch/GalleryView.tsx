@@ -40,7 +40,11 @@ const getImageUrl = (filePath: string): string => {
 };
 
 // Assign metro grid classes based on index for visual variety
-const getMetroClass = (index: number): string => {
+const getMetroClass = (index: number, totalItems: number): string => {
+  // When few items, avoid large/wide spans that dominate the grid
+  if (totalItems <= 4) {
+    return 'metro-item-square';
+  }
   const pattern = [
     'metro-item-large',
     'metro-item-square',
@@ -420,7 +424,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
             ) : (
               <div className="metro-grid">
                 {filteredMemories.map((memory, index) => {
-                  const metroClass = getMetroClass(index);
+                  const metroClass = getMetroClass(index, filteredMemories.length);
                   const isLarge = metroClass === 'metro-item-large' || metroClass === 'metro-item-wide';
                   const memberName = getMemberName(memory.linked_member_id);
 
