@@ -7,6 +7,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useFamilyData } from '@/contexts/FamilyDataContext';
 import { subscriptionsApi, suggestionsApi } from '@/lib/api';
 import { StitchHeader, StitchFamilyBar, StitchSidebar, StitchRightPanel, StitchMainContent } from '@/components/stitch';
+import DashboardLoader from '@/components/stitch/DashboardLoader';
 import { cn } from '@/lib/utils';
 
 /**
@@ -83,6 +84,9 @@ const FamilyBuilderStitch: React.FC = () => {
   const [showStatistics, setShowStatistics] = useState(initialTab === 'statistics');
   const [showGallery, setShowGallery] = useState(initialTab === 'gallery');
   const [pendingSuggestionsCount, setPendingSuggestionsCount] = useState(0);
+  const [loaderDone, setLoaderDone] = useState(false);
+  const [packageLoaded, setPackageLoaded] = useState(false);
+  const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
 
   // Fetch package limits
   useEffect(() => {
@@ -95,26 +99,32 @@ const FamilyBuilderStitch: React.FC = () => {
         }
       } catch (error) {
         console.error('Error fetching package limits:', error);
+      } finally {
+        setPackageLoaded(true);
       }
     };
     if (user) fetchPackageLimits();
+    else setPackageLoaded(true);
   }, [user]);
 
   // Fetch pending suggestions count from API
   const familyId = searchParams.get('family') || '';
   useEffect(() => {
     const fetchPendingSuggestions = async () => {
-      if (!familyId) return;
+      if (!familyId) { setSuggestionsLoaded(true); return; }
       try {
         const suggestions = await suggestionsApi.listByFamily(familyId);
         const pending = suggestions.filter(s => s.status === 'pending').length;
         setPendingSuggestionsCount(pending);
       } catch (error) {
         console.error('Error fetching suggestions count:', error);
+      } finally {
+        setSuggestionsLoaded(true);
       }
     };
     fetchPendingSuggestions();
   }, [familyId]);
+
 
   const canAddMember = maxFamilyMembers === null || familyMembers.length < maxFamilyMembers;
 
@@ -274,11 +284,21 @@ const FamilyBuilderStitch: React.FC = () => {
   // Get package name - pass the full object for localization in Header
   const packageName = subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
 
-  if (loading) {
+  // Dynamic loading steps
+  const loadingSteps = [
+    { id: 'family', labelAr: 'جاري تحميل بيانات العائلة...', labelEn: 'Loading family data...', completed: !loading },
+    { id: 'package', labelAr: 'جاري التحقق من الاشتراك...', labelEn: 'Checking subscription...', completed: packageLoaded },
+    { id: 'suggestions', labelAr: 'جاري تحميل الاقتراحات...', labelEn: 'Loading suggestions...', completed: suggestionsLoaded },
+  ];
+
+  const isFullyLoaded = !loading && packageLoaded && suggestionsLoaded;
+
+  if (!isFullyLoaded || !loaderDone) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
-      </div>
+      <DashboardLoader
+        steps={loadingSteps}
+        onComplete={() => setLoaderDone(true)}
+      />
     );
   }
 

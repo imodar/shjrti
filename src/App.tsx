@@ -34,6 +34,7 @@ import FamilyBuilder from "./pages/FamilyBuilder";
 import FamilyBuilderNewWithContext from "./pages/FamilyBuilderNew/FamilyBuilderNewWithContext";
 import FamilyBuilderStitch from "./pages/FamilyBuilderStitch";
 import StitchTreeView from "./pages/StitchTreeView";
+import StitchLoadingFallback from "./components/stitch/StitchLoadingFallback";
 
 import FamilyTreeView from "./pages/FamilyTreeView/FamilyTreeViewWithContext";
 import FamilyStatistics from "./pages/FamilyStatistics";
@@ -189,14 +190,14 @@ const App = () => {
           } />
           <Route path="/family-builder-stitch" element={
             <ProtectedRoute>
-              <ProtectedFamilyRoute loadingFallback={<SkeletonLayoutForBuilder />}>
+              <ProtectedFamilyRoute loadingFallback={<StitchLoadingFallback />}>
                 <FamilyBuilderStitchWithProvider />
               </ProtectedFamilyRoute>
             </ProtectedRoute>
           } />
           <Route path="/stitch-tree-view" element={
             <ProtectedRoute>
-              <ProtectedFamilyRoute loadingFallback={<SkeletonLayoutForBuilder />}>
+              <ProtectedFamilyRoute loadingFallback={<StitchLoadingFallback />}>
                 <StitchTreeViewWithProvider />
               </ProtectedFamilyRoute>
             </ProtectedRoute>
