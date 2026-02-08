@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { memoriesApi } from '@/lib/api';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,6 +9,21 @@ import type { FamilyMemory } from '@/lib/api/types';
 import { useDropzone } from 'react-dropzone';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';
+
+// Types for the review/edit popup
+interface ReviewPopupState {
+  open: boolean;
+  mode: 'create' | 'edit';
+  imageUrl: string;
+  filePath: string;
+  originalFilename: string;
+  contentType: string;
+  fileSize: number;
+  memoryId?: string; // only for edit mode
+  caption: string;
+  photoDate: string;
+  file?: File; // only for create mode, to allow "Change Photo"
+}
 
 interface StitchGalleryViewProps {
   familyId: string;
@@ -49,7 +64,21 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterMemberId, setFilterMemberId] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Review popup state
+  const [reviewPopup, setReviewPopup] = useState<ReviewPopupState>({
+    open: false,
+    mode: 'create',
+    imageUrl: '',
+    filePath: '',
+    originalFilename: '',
+    contentType: '',
+    fileSize: 0,
+    caption: '',
+    photoDate: '',
+  });
+  const [reviewSaving, setReviewSaving] = useState(false);
   const loadMemories = useCallback(async () => {
     if (!familyId) return;
     try {
@@ -101,38 +130,100 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
     return result;
   }, [memories, filterMemberId, searchQuery]);
 
-  // Upload handler
+  // Upload handler - uploads file to storage then opens review popup
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (!familyId || acceptedFiles.length === 0) return;
+    const file = acceptedFiles[0]; // Handle one file at a time for review
     setUploading(true);
     try {
-      for (const file of acceptedFiles) {
-        const fileExt = file.name.split('.').pop();
-        const filePath = `${familyId}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${familyId}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
 
-        const { error: uploadError } = await supabase.storage
-          .from('family-memories')
-          .upload(filePath, file);
+      const { error: uploadError } = await supabase.storage
+        .from('family-memories')
+        .upload(filePath, file);
 
-        if (uploadError) throw uploadError;
+      if (uploadError) throw uploadError;
 
-        await memoriesApi.createFamilyMemory({
-          family_id: familyId,
-          file_path: filePath,
-          original_filename: file.name,
-          content_type: file.type,
-          file_size: file.size,
-        });
-      }
-      sonnerToast.success(t('gallery.upload_success', 'Photos uploaded successfully'));
-      loadMemories();
+      const imageUrl = getImageUrl(filePath);
+
+      // Open review popup instead of creating immediately
+      setReviewPopup({
+        open: true,
+        mode: 'create',
+        imageUrl,
+        filePath,
+        originalFilename: file.name,
+        contentType: file.type,
+        fileSize: file.size,
+        caption: '',
+        photoDate: '',
+        file,
+      });
     } catch (error) {
       console.error('Upload error:', error);
       sonnerToast.error(t('gallery.upload_error', 'Failed to upload photos'));
     } finally {
       setUploading(false);
     }
-  }, [familyId, loadMemories, t]);
+  }, [familyId, t]);
+
+  // Save from review popup (create or edit)
+  const handleReviewSave = async () => {
+    setReviewSaving(true);
+    try {
+      if (reviewPopup.mode === 'create') {
+        await memoriesApi.createFamilyMemory({
+          family_id: familyId,
+          file_path: reviewPopup.filePath,
+          original_filename: reviewPopup.originalFilename,
+          content_type: reviewPopup.contentType,
+          file_size: reviewPopup.fileSize,
+          caption: reviewPopup.caption || undefined,
+          photo_date: reviewPopup.photoDate || undefined,
+        });
+        sonnerToast.success(t('gallery.upload_success', 'Photo uploaded successfully'));
+      } else if (reviewPopup.mode === 'edit' && reviewPopup.memoryId) {
+        await memoriesApi.updateFamilyMemory(reviewPopup.memoryId, {
+          caption: reviewPopup.caption || undefined,
+          photo_date: reviewPopup.photoDate || undefined,
+        });
+        sonnerToast.success(t('gallery.update_success', 'Memory updated successfully'));
+      }
+      setReviewPopup(prev => ({ ...prev, open: false }));
+      loadMemories();
+    } catch (error) {
+      console.error('Review save error:', error);
+      sonnerToast.error(t('gallery.save_error', 'Failed to save'));
+    } finally {
+      setReviewSaving(false);
+    }
+  };
+
+  // Discard from review popup (delete uploaded file if create mode)
+  const handleReviewDiscard = async () => {
+    if (reviewPopup.mode === 'create' && reviewPopup.filePath) {
+      // Clean up the uploaded file from storage
+      await supabase.storage.from('family-memories').remove([reviewPopup.filePath]);
+    }
+    setReviewPopup(prev => ({ ...prev, open: false }));
+  };
+
+  // Open edit popup for an existing memory
+  const openEditPopup = (memory: MemoryWithUrl) => {
+    setReviewPopup({
+      open: true,
+      mode: 'edit',
+      imageUrl: memory.imageUrl,
+      filePath: memory.file_path,
+      originalFilename: memory.original_filename,
+      contentType: memory.content_type,
+      fileSize: memory.file_size,
+      memoryId: memory.id,
+      caption: memory.caption || '',
+      photoDate: memory.photo_date ? memory.photo_date.split('T')[0] : '',
+    });
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -513,7 +604,10 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                     <span className="material-symbols-outlined text-lg">download</span>
                     {t('gallery.download', 'Download')}
                   </a>
-                  <button className="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                  <button
+                    onClick={() => { setSelectedMemory(null); openEditPopup(selectedMemory); }}
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
+                  >
                     <span className="material-symbols-outlined text-lg">edit_note</span>
                     {t('gallery.edit_details', 'Edit Details')}
                   </button>
@@ -526,6 +620,103 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                   {t('gallery.delete_permanently', 'Delete Permanently')}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Review Memory Details Popup */}
+      {reviewPopup.open && (
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-900 w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+            {/* Header */}
+            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                  <span className="material-symbols-outlined text-xl">image_search</span>
+                </div>
+                <h3 className="font-bold text-slate-900 dark:text-white">
+                  {reviewPopup.mode === 'create'
+                    ? t('gallery.review_details', 'Review Memory Details')
+                    : t('gallery.edit_memory', 'Edit Memory Details')}
+                </h3>
+              </div>
+              <button
+                onClick={handleReviewDiscard}
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition-colors"
+              >
+                <span className="material-symbols-outlined text-xl">close</span>
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-6">
+              {/* Image Preview */}
+              <div className="relative group rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 shadow-inner border border-slate-200 dark:border-slate-700">
+                <img
+                  alt="Memory Preview"
+                  className="w-full aspect-[4/3] object-cover"
+                  src={reviewPopup.imageUrl}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+              </div>
+
+              {/* Description */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">
+                  {t('gallery.description', 'Description')}
+                </label>
+                <textarea
+                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-slate-400 resize-none outline-none"
+                  placeholder={t('gallery.description_placeholder', 'Tell the story behind this photo... Who is in it? What happened that day?')}
+                  rows={5}
+                  value={reviewPopup.caption}
+                  onChange={e => setReviewPopup(prev => ({ ...prev, caption: e.target.value }))}
+                />
+              </div>
+
+              {/* Date */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">
+                  {t('gallery.date_of_event', 'Date of Event')}
+                </label>
+                <div className="relative">
+                  <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">calendar_today</span>
+                  <input
+                    className="w-full ps-10 pe-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                    type="date"
+                    value={reviewPopup.photoDate}
+                    onChange={e => setReviewPopup(prev => ({ ...prev, photoDate: e.target.value }))}
+                  />
+                </div>
+                <p className="text-[10px] text-slate-400 px-1 mt-1">
+                  {t('gallery.date_hint', 'Leave blank if the exact date is unknown.')}
+                </p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-end gap-3">
+              <button
+                onClick={handleReviewDiscard}
+                className="px-6 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+              >
+                {t('gallery.discard', 'Discard')}
+              </button>
+              <button
+                onClick={handleReviewSave}
+                disabled={reviewSaving}
+                className="px-8 py-2.5 bg-primary text-white font-bold text-sm rounded-xl shadow-lg shadow-primary/20 hover:opacity-90 transition-all flex items-center gap-2 disabled:opacity-50"
+              >
+                {reviewSaving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <span className="material-symbols-outlined text-lg">check_circle</span>
+                )}
+                {reviewPopup.mode === 'create'
+                  ? t('gallery.upload_to_gallery', 'Upload to Gallery')
+                  : t('gallery.save_changes', 'Save Changes')}
+              </button>
             </div>
           </div>
         </div>
