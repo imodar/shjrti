@@ -1,0 +1,537 @@
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { memoriesApi } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
+import { toast as sonnerToast } from 'sonner';
+import { Loader2 } from 'lucide-react';
+import { Member } from '@/types/family.types';
+import type { FamilyMemory } from '@/lib/api/types';
+import { useDropzone } from 'react-dropzone';
+import { formatDistanceToNow } from 'date-fns';
+import { ar } from 'date-fns/locale';
+
+interface StitchGalleryViewProps {
+  familyId: string;
+  familyMembers: Member[];
+}
+
+interface MemoryWithUrl extends FamilyMemory {
+  imageUrl: string;
+}
+
+const getImageUrl = (filePath: string): string => {
+  const { data } = supabase.storage.from('family-memories').getPublicUrl(filePath);
+  return data.publicUrl;
+};
+
+// Assign metro grid classes based on index for visual variety
+const getMetroClass = (index: number): string => {
+  const pattern = [
+    'metro-item-large',
+    'metro-item-square',
+    'metro-item-tall',
+    'metro-item-wide',
+    'metro-item-square',
+    'metro-item-square',
+  ];
+  return pattern[index % pattern.length];
+};
+
+export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
+  familyId,
+  familyMembers,
+}) => {
+  const { t, currentLanguage } = useLanguage();
+  const [memories, setMemories] = useState<MemoryWithUrl[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [selectedMemory, setSelectedMemory] = useState<MemoryWithUrl | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterMemberId, setFilterMemberId] = useState<string | null>(null);
+
+  const loadMemories = useCallback(async () => {
+    if (!familyId) return;
+    try {
+      const data = await memoriesApi.getFamilyMemories(familyId);
+      const withUrls: MemoryWithUrl[] = (data || []).map(m => ({
+        ...m,
+        imageUrl: getImageUrl(m.file_path),
+      }));
+      setMemories(withUrls);
+    } catch (error) {
+      console.error('Error loading gallery:', error);
+      sonnerToast.error(t('gallery.load_error', 'Failed to load gallery'));
+    } finally {
+      setLoading(false);
+    }
+  }, [familyId, t]);
+
+  useEffect(() => {
+    loadMemories();
+  }, [loadMemories]);
+
+  // Members with memory count for sidebar
+  const membersWithCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    memories.forEach(m => {
+      if (m.linked_member_id) {
+        counts[m.linked_member_id] = (counts[m.linked_member_id] || 0) + 1;
+      }
+    });
+    return familyMembers
+      .filter(m => counts[m.id])
+      .map(m => ({ ...m, memoryCount: counts[m.id] || 0 }))
+      .sort((a, b) => b.memoryCount - a.memoryCount);
+  }, [familyMembers, memories]);
+
+  // Filter memories
+  const filteredMemories = useMemo(() => {
+    let result = memories;
+    if (filterMemberId) {
+      result = result.filter(m => m.linked_member_id === filterMemberId);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(m =>
+        (m.caption || '').toLowerCase().includes(q) ||
+        (m.original_filename || '').toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [memories, filterMemberId, searchQuery]);
+
+  // Upload handler
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    if (!familyId || acceptedFiles.length === 0) return;
+    setUploading(true);
+    try {
+      for (const file of acceptedFiles) {
+        const fileExt = file.name.split('.').pop();
+        const filePath = `${familyId}/${Date.now()}-${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('family-memories')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        await memoriesApi.createFamilyMemory({
+          family_id: familyId,
+          file_path: filePath,
+          original_filename: file.name,
+          content_type: file.type,
+          file_size: file.size,
+        });
+      }
+      sonnerToast.success(t('gallery.upload_success', 'Photos uploaded successfully'));
+      loadMemories();
+    } catch (error) {
+      console.error('Upload error:', error);
+      sonnerToast.error(t('gallery.upload_error', 'Failed to upload photos'));
+    } finally {
+      setUploading(false);
+    }
+  }, [familyId, loadMemories, t]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'] },
+    maxSize: 10 * 1024 * 1024,
+  });
+
+  // Delete handler
+  const handleDelete = async (id: string) => {
+    if (!confirm(t('gallery.delete_confirm', 'Are you sure you want to delete this photo?'))) return;
+    try {
+      await memoriesApi.deleteFamilyMemory(id);
+      sonnerToast.success(t('gallery.deleted', 'Photo deleted'));
+      setSelectedMemory(null);
+      loadMemories();
+    } catch (error) {
+      console.error('Delete error:', error);
+      sonnerToast.error(t('gallery.delete_error', 'Failed to delete photo'));
+    }
+  };
+
+  // Navigation in popup
+  const navigateMemory = (direction: 'prev' | 'next') => {
+    if (selectedIndex < 0) return;
+    const newIndex = direction === 'next'
+      ? Math.min(selectedIndex + 1, filteredMemories.length - 1)
+      : Math.max(selectedIndex - 1, 0);
+    setSelectedIndex(newIndex);
+    setSelectedMemory(filteredMemories[newIndex]);
+  };
+
+  const openMemory = (memory: MemoryWithUrl, index: number) => {
+    setSelectedMemory(memory);
+    setSelectedIndex(index);
+  };
+
+  const getMemberName = (memberId: string | null) => {
+    if (!memberId) return null;
+    const member = familyMembers.find(m => m.id === memberId);
+    return member?.name || null;
+  };
+
+  if (loading) {
+    return (
+      <section className="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0F171A] flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+      </section>
+    );
+  }
+
+  return (
+    <>
+      <section className="flex-1 overflow-hidden flex">
+        {/* Sidebar - Upload & Members */}
+        <aside className="w-72 bg-white dark:bg-slate-900 border-e border-slate-200 dark:border-slate-800 flex flex-col shrink-0">
+          {/* Upload Zone */}
+          <div className="p-5 border-b border-slate-100 dark:border-slate-800">
+            <h2 className="font-bold text-slate-800 dark:text-slate-100 mb-3 flex items-center gap-2 text-sm">
+              <span className="material-symbols-outlined text-primary">cloud_upload</span>
+              {t('gallery.quick_upload', 'Quick Upload')}
+            </h2>
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-2xl p-5 flex flex-col items-center justify-center text-center group cursor-pointer transition-colors ${
+                isDragActive
+                  ? 'border-primary bg-primary/5'
+                  : 'border-slate-200 dark:border-slate-700 hover:border-primary/50 bg-slate-50/50 dark:bg-slate-800/20'
+              }`}
+            >
+              <input {...getInputProps()} />
+              <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                {uploading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <span className="material-symbols-outlined">add_a_photo</span>
+                )}
+              </div>
+              <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                {t('gallery.drop_here', 'Drop memories here')}
+              </p>
+              <p className="text-[10px] text-slate-400 mt-1">PNG, JPG up to 10MB</p>
+            </div>
+          </div>
+
+          {/* Members Filter */}
+          <div className="flex-1 flex flex-col min-h-0">
+            <div className="p-4 pb-2">
+              <div className="relative">
+                <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+                <input
+                  className="w-full ps-10 pe-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs focus:ring-2 focus:ring-primary/20 outline-none"
+                  placeholder={t('gallery.filter_member', 'Filter by family member...')}
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3 pt-1 space-y-1 custom-scrollbar">
+              {/* All Photos */}
+              <button
+                onClick={() => setFilterMemberId(null)}
+                className={`w-full p-2 rounded-xl transition-colors text-start flex items-center gap-3 ${
+                  !filterMemberId ? 'bg-primary/5 dark:bg-primary/10 border border-primary/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800'
+                }`}
+              >
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <span className="material-symbols-outlined text-lg">photo_library</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-xs font-bold truncate">{t('gallery.all_photos', 'All Photos')}</h4>
+                  <p className="text-[9px] text-slate-500 uppercase font-bold">{memories.length} {t('gallery.memories', 'Memories')}</p>
+                </div>
+              </button>
+
+              {membersWithCounts.map(member => (
+                <button
+                  key={member.id}
+                  onClick={() => setFilterMemberId(member.id)}
+                  className={`w-full p-2 rounded-xl transition-colors text-start flex items-center gap-3 ${
+                    filterMemberId === member.id ? 'bg-primary/5 dark:bg-primary/10 border border-primary/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center">
+                    {member.image_url ? (
+                      <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-slate-400 font-bold text-xs">{(member.name || '?')[0]}</span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-xs font-bold truncate">{member.name}</h4>
+                    <p className="text-[9px] text-slate-500 uppercase font-bold">{member.memoryCount} {t('gallery.memories', 'Memories')}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        {/* Main Gallery Content */}
+        <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0F171A] custom-scrollbar">
+          <div className="p-8">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="px-2 py-0.5 bg-secondary/10 text-secondary text-[10px] font-bold rounded uppercase tracking-widest border border-secondary/20">
+                    {t('gallery.archive_badge', 'Archive')}
+                  </span>
+                  <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    {t('gallery.title', 'Family Gallery')}
+                  </h2>
+                </div>
+                <p className="text-slate-500 dark:text-slate-400 text-sm max-w-lg">
+                  {t('gallery.description', "A dynamic mosaic of our family's most precious memories.")}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <div className="bg-white dark:bg-slate-900 px-4 py-2 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+                  <span className="material-symbols-outlined text-primary">photo_library</span>
+                  <div>
+                    <p className="text-[10px] text-slate-400 uppercase font-bold leading-none">{t('gallery.total_items', 'Total Items')}</p>
+                    <p className="text-lg font-bold leading-tight">{filteredMemories.length}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Metro Grid */}
+            {filteredMemories.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <span className="material-symbols-outlined text-5xl text-slate-300 dark:text-slate-600 mb-4">photo_library</span>
+                <p className="text-slate-500 mb-4">{t('gallery.no_photos', 'No photos yet')}</p>
+                <button
+                  onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
+                  className="px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20"
+                >
+                  {t('gallery.upload_first', 'Upload Your First Memory')}
+                </button>
+              </div>
+            ) : (
+              <div className="metro-grid">
+                {filteredMemories.map((memory, index) => {
+                  const metroClass = getMetroClass(index);
+                  const isLarge = metroClass === 'metro-item-large' || metroClass === 'metro-item-wide';
+
+                  return (
+                    <div
+                      key={memory.id}
+                      className={`${metroClass} group relative overflow-hidden rounded-3xl shadow-md cursor-zoom-in gallery-card`}
+                      onClick={() => openMemory(memory, index)}
+                    >
+                      <img
+                        alt={memory.caption || memory.original_filename}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        src={memory.imageUrl}
+                        loading="lazy"
+                      />
+                      <div className="absolute bottom-0 inset-x-0 h-1/2 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none z-10" />
+                      <div className="absolute bottom-0 inset-x-0 p-4 z-20 text-white">
+                        <h3 className={`font-bold truncate ${isLarge ? 'text-sm' : 'text-[10px]'}`}>
+                          {memory.caption || memory.original_filename}
+                          {memory.photo_date && (
+                            <span className="opacity-80"> • {new Date(memory.photo_date).toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</span>
+                          )}
+                        </h3>
+                      </div>
+                      {/* Hover overlay with actions */}
+                      <div className="card-overlay absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 flex flex-col justify-start p-3 z-30">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md hover:bg-red-500 transition-colors flex items-center justify-center text-white"
+                            onClick={e => { e.stopPropagation(); handleDelete(memory.id); }}
+                          >
+                            <span className="material-symbols-outlined text-lg">delete</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {/* Add New Memory Card */}
+                <div
+                  className="metro-item-square group relative overflow-hidden rounded-3xl cursor-pointer gallery-card"
+                  onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
+                >
+                  <div className="w-full h-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700">
+                    <span className="material-symbols-outlined text-4xl text-slate-400 group-hover:text-primary transition-colors">add_circle</span>
+                  </div>
+                  <div className="card-overlay absolute inset-0 bg-primary/20 opacity-0 transition-opacity duration-300 flex items-center justify-center z-30">
+                    <span className="text-white font-bold text-xs">{t('gallery.add_new', 'Add New Memory')}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Image Detail Popup */}
+      {selectedMemory && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-8 bg-slate-900/40 backdrop-blur-xl">
+          {/* Close button */}
+          <button
+            className="absolute top-6 end-6 w-12 h-12 rounded-full bg-black/20 hover:bg-black/40 text-white backdrop-blur-md transition-all flex items-center justify-center z-[210]"
+            onClick={() => setSelectedMemory(null)}
+          >
+            <span className="material-symbols-outlined">close</span>
+          </button>
+
+          <div className="relative w-full max-w-7xl h-[85vh] bg-white dark:bg-slate-900 rounded-[32px] shadow-2xl overflow-hidden flex flex-row">
+            {/* Image Area */}
+            <div className="relative w-[68%] bg-slate-100 dark:bg-black/20 flex items-center justify-center group overflow-hidden">
+              <img
+                alt={selectedMemory.caption || selectedMemory.original_filename}
+                className="w-full h-full object-contain"
+                src={selectedMemory.imageUrl}
+              />
+              {/* Prev / Next Arrows */}
+              {selectedIndex > 0 && (
+                <button
+                  className="absolute start-6 w-12 h-12 rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-lg flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                  onClick={() => navigateMemory('prev')}
+                >
+                  <span className="material-symbols-outlined text-3xl">chevron_left</span>
+                </button>
+              )}
+              {selectedIndex < filteredMemories.length - 1 && (
+                <button
+                  className="absolute end-6 w-12 h-12 rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-lg flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                  onClick={() => navigateMemory('next')}
+                >
+                  <span className="material-symbols-outlined text-3xl">chevron_right</span>
+                </button>
+              )}
+            </div>
+
+            {/* Details Panel */}
+            <div className="w-[32%] border-s border-slate-100 dark:border-slate-800 flex flex-col h-full">
+              <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
+                {/* Title & Caption */}
+                <div className="mb-8">
+                  <span className="inline-block px-2 py-1 rounded bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider mb-3">
+                    {t('gallery.family_history', 'Family History')}
+                  </span>
+                  <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white leading-tight mb-3">
+                    {selectedMemory.caption || selectedMemory.original_filename}
+                  </h2>
+                </div>
+
+                {/* Metadata */}
+                <div className="space-y-6 mb-8">
+                  {selectedMemory.photo_date && (
+                    <div className="flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-slate-400">calendar_today</span>
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-slate-400 uppercase font-bold mb-0.5">{t('gallery.captured_on', 'Captured On')}</p>
+                        <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                          {new Date(selectedMemory.photo_date).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-slate-400">person_add</span>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-slate-400 uppercase font-bold mb-0.5">{t('gallery.uploaded_at', 'Uploaded')}</p>
+                      <p className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                        {formatDistanceToNow(new Date(selectedMemory.uploaded_at), {
+                          addSuffix: true,
+                          locale: currentLanguage === 'ar' ? ar : undefined,
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Linked Member */}
+                {selectedMemory.linked_member_id && (
+                  <div>
+                    <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">
+                      {t('gallery.associated_member', 'Associated Member')}
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {(() => {
+                        const member = familyMembers.find(m => m.id === selectedMemory.linked_member_id);
+                        if (!member) return null;
+                        return (
+                          <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50 pe-3 ps-1 py-1 rounded-full border border-slate-100 dark:border-slate-800">
+                            <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center">
+                              {member.image_url ? (
+                                <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="text-[10px] font-bold text-slate-400">{(member.name || '?')[0]}</span>
+                              )}
+                            </div>
+                            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{member.name}</span>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tags */}
+                {selectedMemory.tags && selectedMemory.tags.length > 0 && (
+                  <div className="mt-6">
+                    <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+                      {t('gallery.tags', 'Tags')}
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedMemory.tags.map((tag, i) => (
+                        <span key={i} className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Actions Footer */}
+              <div className="p-6 pt-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <a
+                    href={selectedMemory.imageUrl}
+                    download={selectedMemory.original_filename}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-lg">download</span>
+                    {t('gallery.download', 'Download')}
+                  </a>
+                  <button className="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                    <span className="material-symbols-outlined text-lg">edit_note</span>
+                    {t('gallery.edit_details', 'Edit Details')}
+                  </button>
+                </div>
+                <button
+                  onClick={() => handleDelete(selectedMemory.id)}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/10 dark:text-red-400 dark:hover:bg-red-900/20 rounded-xl text-sm font-bold transition-all"
+                >
+                  <span className="material-symbols-outlined text-lg">delete</span>
+                  {t('gallery.delete_permanently', 'Delete Permanently')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default StitchGalleryView;
