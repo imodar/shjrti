@@ -84,7 +84,6 @@ const FamilyBuilderStitch: React.FC = () => {
   const [showStatistics, setShowStatistics] = useState(initialTab === 'statistics');
   const [showGallery, setShowGallery] = useState(initialTab === 'gallery');
   const [pendingSuggestionsCount, setPendingSuggestionsCount] = useState(0);
-  const [loaderDone, setLoaderDone] = useState(false);
   const [packageLoaded, setPackageLoaded] = useState(false);
   const [suggestionsLoaded, setSuggestionsLoaded] = useState(false);
 
@@ -284,20 +283,17 @@ const FamilyBuilderStitch: React.FC = () => {
   // Get package name - pass the full object for localization in Header
   const packageName = subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
 
-  // Dynamic loading steps
-  const loadingSteps = [
-    { id: 'family', labelAr: 'جاري تحميل بيانات العائلة...', labelEn: 'Loading family data...', completed: !loading },
-    { id: 'package', labelAr: 'جاري التحقق من الاشتراك...', labelEn: 'Checking subscription...', completed: packageLoaded },
-    { id: 'suggestions', labelAr: 'جاري تحميل الاقتراحات...', labelEn: 'Loading suggestions...', completed: suggestionsLoaded },
-  ];
-
+  // Only show loader if data is genuinely still loading (skip if cached)
   const isFullyLoaded = !loading && packageLoaded && suggestionsLoaded;
 
-  if (!isFullyLoaded || !loaderDone) {
+  if (!isFullyLoaded) {
     return (
       <DashboardLoader
-        steps={loadingSteps}
-        onComplete={() => setLoaderDone(true)}
+        steps={[
+          { id: 'family', labelAr: 'جاري تحميل بيانات العائلة...', labelEn: 'Loading family data...', completed: !loading },
+          { id: 'package', labelAr: 'جاري التحقق من الاشتراك...', labelEn: 'Checking subscription...', completed: packageLoaded },
+          { id: 'suggestions', labelAr: 'جاري تحميل الاقتراحات...', labelEn: 'Loading suggestions...', completed: suggestionsLoaded },
+        ]}
       />
     );
   }
