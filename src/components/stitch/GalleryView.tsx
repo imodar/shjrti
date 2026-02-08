@@ -41,17 +41,37 @@ const getImageUrl = (filePath: string): string => {
 
 // Assign metro grid styles based on index for visual variety
 const getMetroStyle = (index: number, totalItems: number): { className: string; style: React.CSSProperties } => {
-  // When few items, use simple square layout
-  if (totalItems <= 4) {
-    return { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } };
+  if (totalItems <= 2) {
+    const small = [
+      { className: 'shadow-lg', style: { gridColumn: 'span 2', gridRow: 'span 2' } },
+      { className: '', style: { gridColumn: 'span 1', gridRow: 'span 2' } },
+    ];
+    return small[index] || { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } };
+  }
+  if (totalItems === 3) {
+    const p = [
+      { className: 'shadow-lg', style: { gridColumn: 'span 2', gridRow: 'span 2' } },
+      { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } },
+      { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } },
+    ];
+    return p[index];
+  }
+  if (totalItems === 4) {
+    const p = [
+      { className: 'shadow-lg', style: { gridColumn: 'span 2', gridRow: 'span 2' } },
+      { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } },
+      { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } },
+      { className: '', style: { gridColumn: 'span 3', gridRow: 'span 1' } },
+    ];
+    return p[index];
   }
   const patterns: Array<{ className: string; style: React.CSSProperties }> = [
-    { className: 'shadow-lg', style: { gridColumn: 'span 2', gridRow: 'span 2' } }, // large
-    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } }, // square
-    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 2' } }, // tall
-    { className: '', style: { gridColumn: 'span 2', gridRow: 'span 1' } }, // wide
-    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } }, // square
-    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } }, // square
+    { className: 'shadow-lg', style: { gridColumn: 'span 2', gridRow: 'span 2' } },
+    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } },
+    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 2' } },
+    { className: '', style: { gridColumn: 'span 2', gridRow: 'span 1' } },
+    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } },
+    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } },
   ];
   return patterns[index % patterns.length];
 };
