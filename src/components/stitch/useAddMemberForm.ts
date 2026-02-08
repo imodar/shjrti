@@ -81,18 +81,19 @@ export const useAddMemberForm = ({
   // Load signed URL for editing member's image
   useEffect(() => {
     const loadEditingMemberImage = async () => {
-      if (editingMember?.image && !editingMember.image.startsWith('data:image/') && !editingMember.image.startsWith('blob:')) {
-        const signedUrl = await getMemberImageUrl(editingMember.image);
+      const imgPath = editingMember?.image_url || editingMember?.image || null;
+      if (imgPath && !imgPath.startsWith('data:image/') && !imgPath.startsWith('blob:')) {
+        const signedUrl = await getMemberImageUrl(imgPath);
         setEditingMemberImageUrl(signedUrl);
       } else {
-        setEditingMemberImageUrl(editingMember?.image || null);
+        setEditingMemberImageUrl(imgPath);
       }
     };
     
     if (editingMember) {
       loadEditingMemberImage();
     }
-  }, [editingMember?.image]);
+  }, [editingMember?.image_url, editingMember?.image]);
 
   // Sync croppedImage with formData
   useEffect(() => {
@@ -171,7 +172,7 @@ export const useAddMemberForm = ({
 
   const handleDeleteImage = async () => {
     try {
-      let currentPath: string | null = editingMember?.image || null;
+      let currentPath: string | null = editingMember?.image_url || editingMember?.image || null;
       if (!currentPath && editingMember?.id) {
         try {
           const memberData = await membersApi.get(editingMember.id);
@@ -239,60 +240,83 @@ export const useAddMemberForm = ({
     }
   }, []);
 
-  // Populate form for editing
+  // Populate form for editing (supports both snake_case API fields and camelCase legacy)
   const populateFormData = useCallback((member: any) => {
+    const birthDate = member.birth_date || member.birthDate || null;
+    const deathDate = member.death_date || member.deathDate || null;
+    const isAlive = member.is_alive !== undefined ? member.is_alive : (member.isAlive !== undefined ? member.isAlive : true);
+    const imageUrl = member.image_url || member.image || '';
+    const isFounder = member.is_founder ?? member.isFounder ?? false;
+    const relatedPersonId = member.related_person_id || member.relatedPersonId || null;
+    const biography = member.biography || member.bio || '';
+
     setFormData({
       name: member.name || '',
       first_name: member.first_name || member.firstName || '',
       relation: '',
-      relatedPersonId: member.relatedPersonId || null,
+      relatedPersonId,
       selectedParent: null,
       gender: member.gender || 'male',
-      birthDate: member.birthDate ? new Date(member.birthDate) : null,
-      isAlive: member.isAlive !== false,
-      deathDate: member.deathDate ? new Date(member.deathDate) : null,
-      bio: member.bio || member.biography || '',
-      imageUrl: member.image || '',
+      birthDate: birthDate ? new Date(birthDate) : null,
+      isAlive: isAlive !== false,
+      deathDate: deathDate ? new Date(deathDate) : null,
+      bio: biography,
+      imageUrl,
       croppedImage: null,
-      isFounder: member.isFounder || false,
+      isFounder,
       is_twin: member.is_twin || false,
       twin_group_id: member.twin_group_id || null,
       selected_twins: []
     });
 
     // Lock parents if member has children or is married
-    const hasChildren = familyMembers.some(m => m.fatherId === member.id || m.motherId === member.id);
-    const isMarried = marriages.some(m => m.husband_id === member.id || m.wife_id === member.id);
+    const memberId = member.id;
+    const hasChildren = familyMembers.some(m => 
+      (m.father_id || (m as any).fatherId) === memberId || 
+      (m.mother_id || (m as any).motherId) === memberId
+    );
+    const isMarried = marriages.some(m => m.husband_id === memberId || m.wife_id === memberId);
     setParentsLocked(hasChildren || isMarried);
 
     // Load existing spouses
     loadExistingSpouses(member);
   }, [familyMembers, marriages]);
 
-  // Load existing spouses for a member
+  // Load existing spouses for a member (supports snake_case API fields)
   const loadExistingSpouses = useCallback((member: any) => {
+    const extractSpouseData = (spouseMember: any, marriage: any): SpouseData => {
+      const fatherId = spouseMember?.father_id || spouseMember?.fatherId || null;
+      const isFounder = spouseMember?.is_founder ?? spouseMember?.isFounder ?? false;
+      const isExternalSpouse = spouseMember ? (!fatherId && !isFounder) : true;
+      const birthDate = spouseMember?.birth_date || spouseMember?.birthDate || null;
+      const deathDate = spouseMember?.death_date || spouseMember?.deathDate || null;
+      const isAlive = spouseMember?.is_alive !== undefined ? spouseMember.is_alive : (spouseMember?.isAlive !== undefined ? spouseMember.isAlive : true);
+      const imageUrl = spouseMember?.image_url || spouseMember?.image || null;
+      const biography = spouseMember?.biography || spouseMember?.bio || '';
+
+      return {
+        id: spouseMember?.id || '',
+        firstName: spouseMember?.first_name || '',
+        lastName: spouseMember?.last_name || '',
+        name: spouseMember?.name || '',
+        birthDate: birthDate ? new Date(birthDate) : null,
+        maritalStatus: marriage.marital_status || 'married',
+        isAlive: isAlive !== false,
+        deathDate: deathDate ? new Date(deathDate) : null,
+        croppedImage: imageUrl,
+        biography,
+        isFamilyMember: !isExternalSpouse,
+        existingFamilyMemberId: spouseMember ? spouseMember.id : '',
+        isSaved: true
+      } as SpouseData;
+    };
+
     if (member.gender === 'male') {
       const memberMarriages = marriages.filter(m => m.husband_id === member.id);
       if (memberMarriages.length > 0) {
         const memberWives = memberMarriages.map(marriage => {
           const wifeMember = familyMembers.find(m => m.id === marriage.wife_id);
-          const isExternalSpouse = wifeMember ? (!wifeMember.fatherId && !wifeMember.isFounder) : true;
-          
-          return {
-            id: marriage.wife_id || '',
-            firstName: wifeMember?.first_name || '',
-            lastName: wifeMember?.last_name || '',
-            name: wifeMember?.name || '',
-            birthDate: wifeMember?.birthDate ? new Date(wifeMember.birthDate) : null,
-            maritalStatus: marriage.marital_status || 'married',
-            isAlive: wifeMember?.isAlive !== false,
-            deathDate: wifeMember?.deathDate ? new Date(wifeMember.deathDate) : null,
-            croppedImage: wifeMember?.image || null,
-            biography: wifeMember?.bio || '',
-            isFamilyMember: !isExternalSpouse,
-            existingFamilyMemberId: wifeMember ? wifeMember.id : '',
-            isSaved: true
-          } as SpouseData;
+          return extractSpouseData(wifeMember, marriage);
         }).filter(wife => wife.id);
 
         setWives(memberWives);
@@ -306,23 +330,7 @@ export const useAddMemberForm = ({
       if (memberMarriages.length > 0) {
         const marriage = memberMarriages[0];
         const husbandMember = familyMembers.find(m => m.id === marriage.husband_id);
-        const isExternalSpouse = husbandMember ? (!husbandMember.fatherId && !husbandMember.isFounder) : true;
-        
-        const husbandData: SpouseData = {
-          id: marriage.husband_id || '',
-          firstName: husbandMember?.first_name || '',
-          lastName: husbandMember?.last_name || '',
-          name: husbandMember?.name || '',
-          birthDate: husbandMember?.birthDate ? new Date(husbandMember.birthDate) : null,
-          maritalStatus: 'married',
-          isAlive: husbandMember?.isAlive !== false,
-          deathDate: husbandMember?.deathDate ? new Date(husbandMember.deathDate) : null,
-          croppedImage: husbandMember?.image || null,
-          biography: husbandMember?.bio || '',
-          isFamilyMember: !isExternalSpouse,
-          existingFamilyMemberId: husbandMember ? husbandMember.id : '',
-          isSaved: true
-        };
+        const husbandData = extractSpouseData(husbandMember, marriage);
         setHusbands([husbandData]);
         setOriginalHusbandData({ ...husbandData });
       } else {
@@ -498,10 +506,12 @@ export const useAddMemberForm = ({
       let finalImageUrl: string | null = null;
       let oldImagePath: string | null = null;
 
+      const memberImagePath = editingMember?.image_url || editingMember?.image || null;
+
       if (formMode === 'edit' && editingMember) {
         if (imageChanged) {
-          if (editingMember.image && !editingMember.image.startsWith('data:image/') && !editingMember.image.startsWith('blob:')) {
-            oldImagePath = editingMember.image;
+          if (memberImagePath && !memberImagePath.startsWith('data:image/') && !memberImagePath.startsWith('blob:')) {
+            oldImagePath = memberImagePath;
           }
           
           const croppedBlob = (window as any).__croppedImageBlob;
@@ -514,17 +524,17 @@ export const useAddMemberForm = ({
                 description: t('member.image_upload_failed', 'فشل رفع الصورة'),
                 variant: 'destructive'
               });
-              finalImageUrl = editingMember.image || null;
+              finalImageUrl = memberImagePath;
               oldImagePath = null;
             }
           } else if (croppedImage === null) {
             finalImageUrl = null;
           } else {
-            finalImageUrl = editingMember.image || null;
+            finalImageUrl = memberImagePath;
             oldImagePath = null;
           }
         } else {
-          finalImageUrl = editingMember.image || null;
+          finalImageUrl = memberImagePath;
         }
       } else {
         const croppedBlob = (window as any).__croppedImageBlob;
@@ -722,8 +732,8 @@ export const useAddMemberForm = ({
     let motherId = null;
     
     if (formMode === 'edit') {
-      fatherId = editingMember?.fatherId;
-      motherId = editingMember?.motherId;
+      fatherId = editingMember?.father_id || editingMember?.fatherId || null;
+      motherId = editingMember?.mother_id || editingMember?.motherId || null;
     } else if (formData.selectedParent && formData.selectedParent !== 'none') {
       const selectedMarriage = marriages.find(m => m.id === formData.selectedParent);
       if (selectedMarriage) {
