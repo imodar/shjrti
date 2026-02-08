@@ -48,7 +48,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
 
   // Preserve family ID in navigation
   const handleTabClick = (tab: (typeof tabs)[0]) => {
-    if (tab.id === 'suggestions' || tab.id === 'dashboard' || tab.id === 'statistics') {
+    if (tab.id === 'suggestions' || tab.id === 'dashboard' || tab.id === 'statistics' || tab.id === 'gallery') {
       if (onTabChange) onTabChange(tab.id);
       return;
     }

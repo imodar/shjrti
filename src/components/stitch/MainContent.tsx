@@ -3,6 +3,7 @@ import { AddMemberForm } from './AddMemberForm';
 import { StitchMemberProfile } from './MemberProfile';
 import { StitchSuggestionsView } from './SuggestionsView';
 import { StitchStatisticsView } from './StatisticsView';
+import { StitchGalleryView } from './GalleryView';
 import { Member, Marriage } from '@/types/family.types';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getParentageInfo } from '@/lib/memberDisplayUtils';
@@ -52,6 +53,8 @@ interface StitchMainContentProps {
   showSuggestions?: boolean;
   // Statistics view
   showStatistics?: boolean;
+  // Gallery view
+  showGallery?: boolean;
 }
 
 export const StitchMainContent: React.FC<StitchMainContentProps> = ({
@@ -78,6 +81,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   onMemberClick,
   showSuggestions = false,
   showStatistics = false,
+  showGallery = false,
 }) => {
   const { t } = useLanguage();
 
@@ -129,6 +133,16 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   if (showSuggestions && familyId) {
     return (
       <StitchSuggestionsView
+        familyId={familyId}
+        familyMembers={familyMembers}
+      />
+    );
+  }
+
+  // Show Gallery View
+  if (showGallery && familyId) {
+    return (
+      <StitchGalleryView
         familyId={familyId}
         familyMembers={familyMembers}
       />

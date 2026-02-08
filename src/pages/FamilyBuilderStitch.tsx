@@ -80,6 +80,7 @@ const FamilyBuilderStitch: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [showStatistics, setShowStatistics] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
   const [pendingSuggestionsCount, setPendingSuggestionsCount] = useState(0);
 
   // Fetch package limits
@@ -233,16 +234,25 @@ const FamilyBuilderStitch: React.FC = () => {
     if (tab === 'suggestions') {
       setShowSuggestions(true);
       setShowStatistics(false);
+      setShowGallery(false);
       setSelectedMemberId(undefined);
       setShowAddMemberForm(false);
     } else if (tab === 'statistics') {
       setShowStatistics(true);
       setShowSuggestions(false);
+      setShowGallery(false);
+      setSelectedMemberId(undefined);
+      setShowAddMemberForm(false);
+    } else if (tab === 'gallery') {
+      setShowGallery(true);
+      setShowSuggestions(false);
+      setShowStatistics(false);
       setSelectedMemberId(undefined);
       setShowAddMemberForm(false);
     } else if (tab === 'dashboard') {
       setShowSuggestions(false);
       setShowStatistics(false);
+      setShowGallery(false);
       setSelectedMemberId(undefined);
       setShowAddMemberForm(false);
     }
@@ -295,22 +305,24 @@ const FamilyBuilderStitch: React.FC = () => {
 
       {/* Main Layout */}
       <main className="flex h-[calc(100vh-120px)]">
-        {/* Left Sidebar - Members List */}
-        <StitchSidebar
-          members={filteredMembers}
-          totalCount={stats.totalMembers}
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          onMemberClick={handleMemberClick}
-          onAddMember={handleAddMember}
-          selectedMemberId={selectedMemberId}
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
-          familyMembers={familyMembers}
-          marriages={marriages}
-          canAddMember={canAddMember}
-          maxFamilyMembers={maxFamilyMembers}
-        />
+        {/* Left Sidebar - Members List (hidden in gallery view which has its own sidebar) */}
+        {!showGallery && (
+          <StitchSidebar
+            members={filteredMembers}
+            totalCount={stats.totalMembers}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            onMemberClick={handleMemberClick}
+            onAddMember={handleAddMember}
+            selectedMemberId={selectedMemberId}
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+            familyMembers={familyMembers}
+            marriages={marriages}
+            canAddMember={canAddMember}
+            maxFamilyMembers={maxFamilyMembers}
+          />
+        )}
 
         {/* Main Content */}
         <StitchMainContent
@@ -329,6 +341,7 @@ const FamilyBuilderStitch: React.FC = () => {
           familyData={familyData}
           showSuggestions={showSuggestions}
           showStatistics={showStatistics}
+          showGallery={showGallery}
           editingMember={editingMember}
           formMode={formMode}
           onMemberSaved={handleMemberSaved}
@@ -346,7 +359,7 @@ const FamilyBuilderStitch: React.FC = () => {
         />
 
         {/* Right Panel - Stats (hidden when adding member, viewing profile, or suggestions) */}
-        {!showAddMemberForm && !selectedMember && !showSuggestions && !showStatistics && (
+        {!showAddMemberForm && !selectedMember && !showSuggestions && !showStatistics && !showGallery && (
           <StitchRightPanel
             completenessPercentage={stats.completeness}
             generationsCount={stats.generations}
