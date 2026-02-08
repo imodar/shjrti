@@ -242,7 +242,7 @@ export const StitchStatisticsView: React.FC<StatisticsViewProps> = ({
             sub={t('stats.active_elders', 'Active elders')}
           />
           <div className="bg-primary/10 border-primary/20 p-6 rounded-3xl border shadow-sm relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:scale-110 transition-transform text-primary">
+            <div className="absolute top-0 end-0 p-4 opacity-20 group-hover:scale-110 transition-transform text-primary">
               <span className="material-symbols-outlined text-6xl">bolt</span>
             </div>
             <p className="text-sm font-bold text-primary mb-1">{t('stats.family_vitality', 'Family Vitality')}</p>
@@ -413,7 +413,7 @@ const StatCard: React.FC<{
   sub?: string;
 }> = ({ icon, iconColor, label, value, sub }) => (
   <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden group">
-    <div className={`absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform ${iconColor}`}>
+    <div className={`absolute top-0 end-0 p-4 opacity-10 group-hover:scale-110 transition-transform ${iconColor}`}>
       <span className="material-symbols-outlined text-6xl">{icon}</span>
     </div>
     <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">{label}</p>
