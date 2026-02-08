@@ -286,10 +286,10 @@ const FamilyBuilderStitch: React.FC = () => {
   // Get package name - pass the full object for localization in Header
   const packageName = subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
 
-  // Only show loader if data is genuinely still loading (skip if cached)
+  // Only show loader on dashboard tab and only when data is genuinely loading
   const isFullyLoaded = !loading && packageLoaded && suggestionsLoaded;
 
-  if (!isFullyLoaded) {
+  if (!isFullyLoaded && activeTab === 'dashboard') {
     return (
       <DashboardLoader
         steps={[
