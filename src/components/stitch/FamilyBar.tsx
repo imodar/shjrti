@@ -64,16 +64,7 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
   return (
     <div className="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 z-40 relative">
       <div className="flex items-center gap-4">
-        {/* Back to Dashboard - First on the right in RTL */}
-        <button 
-          onClick={() => navigate('/dashboard?theme=stitch')}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400 group"
-        >
-          <span className={`material-icons-round text-lg ${direction === 'rtl' ? 'rotate-180' : ''}`}>arrow_back</span>
-          <span className="text-xs font-semibold uppercase tracking-wider">{t('stitch.back_to_dashboard', 'عودة للحساب')}</span>
-        </button>
-
-        <div className="h-4 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2"></div>
+        
 
         <div className="flex items-center gap-2">
           <span className="material-symbols-outlined text-primary text-xl">account_tree</span>
