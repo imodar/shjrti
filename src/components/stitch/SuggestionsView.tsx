@@ -170,36 +170,36 @@ export const StitchSuggestionsView: React.FC<StitchSuggestionsViewProps> = ({
     <section className="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0F171A] custom-scrollbar">
       <div className="max-w-5xl mx-auto p-8 space-y-8">
         {/* Hero + Stats Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-4">
           {/* Hero Header - Right in RTL */}
-          <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden lg:w-80">
-            <div className="absolute top-0 end-0 w-64 h-64 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm relative overflow-hidden lg:w-64">
+            <div className="absolute top-0 end-0 w-40 h-40 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
             <div className="relative z-10 flex flex-col items-center text-center justify-center h-full">
-              <div className="w-14 h-14 bg-amber-500/10 text-amber-600 rounded-2xl flex items-center justify-center mb-4">
-                <span className="material-symbols-outlined text-3xl">lightbulb</span>
+              <div className="w-10 h-10 bg-amber-500/10 text-amber-600 rounded-xl flex items-center justify-center mb-3">
+                <span className="material-symbols-outlined text-2xl">lightbulb</span>
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
                 {t('suggestions.page_title', 'Edit Suggestions')}
               </h2>
-              <p className="text-slate-500 dark:text-slate-400 max-w-md text-sm">
+              <p className="text-slate-500 dark:text-slate-400 text-xs">
                 {t('suggestions.page_description', 'Manage and review information updates suggested by family members and contributors.')}
               </p>
             </div>
           </div>
 
           {/* Stats Grid - Left in RTL */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             {[
               { icon: 'forum', value: stats.total, label: t('suggestions.stats.total', 'Total Suggestions'), color: 'text-slate-400', borderClass: 'border border-slate-100 dark:border-slate-800' },
               { icon: 'schedule', value: stats.pending, label: t('suggestions.stats.pending', 'Pending'), color: 'text-amber-500', borderClass: 'border-b-2 border-amber-500' },
               { icon: 'check_circle', value: stats.accepted, label: t('suggestions.stats.accepted', 'Accepted'), color: 'text-emerald-500', borderClass: 'border border-slate-100 dark:border-slate-800' },
               { icon: 'cancel', value: stats.rejected, label: t('suggestions.stats.rejected', 'Rejected'), color: 'text-red-500', borderClass: 'border border-slate-100 dark:border-slate-800' },
             ].map((stat, i) => (
-              <div key={i} className={`bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm flex flex-col items-center ${stat.borderClass}`}>
-                <div className={`${stat.color} mb-2`}>
-                  <span className="material-symbols-outlined">{stat.icon}</span>
+              <div key={i} className={`bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm flex flex-col items-center ${stat.borderClass}`}>
+                <div className={`${stat.color} mb-1`}>
+                  <span className="material-symbols-outlined text-xl">{stat.icon}</span>
                 </div>
-                <div className="text-2xl font-bold">{stat.value}</div>
+                <div className="text-xl font-bold">{stat.value}</div>
                 <div className="text-[10px] uppercase tracking-wider font-bold text-slate-400">{stat.label}</div>
               </div>
             ))}
