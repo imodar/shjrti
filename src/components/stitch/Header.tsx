@@ -39,11 +39,11 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   const localizedPackageName = getLocalizedText(packageName, currentLanguage, t('stitch.free_plan', 'باقة مجانية'));
 
   const tabs = [
-    { id: "dashboard", label: t('stitch.tab.dashboard', 'لوحة التحكم'), path: "/family-builder-stitch" },
+    { id: "dashboard", label: t('stitch.tab.dashboard', 'لوحة التحكم'), path: "/stitch-dashboard" },
     { id: "tree", label: t('stitch.tab.tree_view', 'عرض الشجرة'), path: "/stitch-tree-view" },
-    { id: "gallery", label: t('stitch.tab.gallery', 'المعرض'), path: "/family-gallery" },
-    { id: "statistics", label: t('stitch.tab.statistics', 'الإحصائيات'), path: "/family-statistics" },
-    { id: "suggestions", label: t('stitch.tab.suggestions', 'الاقتراحات'), path: "/family-suggestions", badge: suggestionsCount },
+    { id: "gallery", label: t('stitch.tab.gallery', 'المعرض'), path: "/family-builder-stitch" },
+    { id: "statistics", label: t('stitch.tab.statistics', 'الإحصائيات'), path: "/family-builder-stitch" },
+    { id: "suggestions", label: t('stitch.tab.suggestions', 'الاقتراحات'), path: "/family-builder-stitch", badge: suggestionsCount },
   ];
 
   // Preserve family ID in navigation
