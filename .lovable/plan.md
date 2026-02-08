@@ -1,34 +1,87 @@
 
 
-## Problem
+# Fix Metro Grid Gallery - True Metro Design
 
-When there are only a few images in the gallery, the `auto-fill` grid creates wide columns (since `1fr` expands to fill available space). A `metro-item-large` item spanning 2 columns and 2 rows then occupies most of the visible page -- far larger than the design shows.
+## Problem
+The current gallery shows all images as equal squares stacked in one column or as identical blocks. This is NOT a Metro design. The code forces `span 1` for all items when there are 4 or fewer images, removing all visual variety.
+
+## What is Metro Design?
+Metro design uses a fixed grid (e.g., 3 columns) where items span different numbers of columns and rows to create visual variety -- even with just 2-3 images. For example, with 3 images: one could be large (2x2), one tall (1x2), and one square (1x1).
 
 ## Solution
 
-1. **CSS Fix** (`src/styles/themes/stitch/components.css`):
-   - Match the design exactly: `minmax(240px, 1fr)` columns, `240px` row height, `16px` gap
-   - Add `max-width` constraints to prevent columns from growing too wide: use `repeat(auto-fill, minmax(240px, 280px))` so each column caps at ~280px instead of stretching to fill the entire width
-   - Keep responsive breakpoints with fixed column counts (3 cols at tablet, 2 cols at mobile)
-   - Keep `max-height` constraints on item types to prevent overflow
+### 1. Fix `getMetroStyle` in `GalleryView.tsx` (line 43-57)
 
-2. **Grid item overflow** (already handled in GalleryView.tsx with `overflow-hidden` on each item, no change needed)
+Remove the `totalItems <= 4` condition that forces everything to squares. Instead, define specific patterns for small counts:
+
+```text
+3 items:  [large 2x2] [square 1x1]
+                       [square 1x1]
+
+4 items:  [large 2x2] [square 1x1]
+                       [square 1x1]
+          [wide 2x1]
+
+5 items:  [large 2x2] [square 1x1]
+                       [square 1x1]
+          [square 1x1] [wide 2x1]
+```
+
+This ensures even with few images, the layout has Metro-style variety.
+
+### 2. Keep the grid container as `grid-cols-3` (line 425)
+
+The current inline Tailwind `grid grid-cols-3 gap-4` with `gridAutoRows: '220px'` and `gridAutoFlow: 'dense'` is correct. Keep this.
+
+### 3. Clean up unused CSS in `components.css` (lines 263-291)
+
+Since the grid is now fully inline via Tailwind/React styles, the `.metro-grid` and `.metro-item-*` CSS classes are no longer used. They can be removed or kept for reference but won't affect the layout.
 
 ## Technical Details
 
-```css
-.metro-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 280px));
-  grid-auto-rows: 240px;
-  grid-auto-flow: dense;
-  gap: 16px;
-}
-.metro-item-square { grid-column: span 1; grid-row: span 1; max-height: 240px; }
-.metro-item-wide   { grid-column: span 2; grid-row: span 1; max-height: 240px; }
-.metro-item-tall   { grid-column: span 1; grid-row: span 2; max-height: 496px; }
-.metro-item-large  { grid-column: span 2; grid-row: span 2; max-height: 496px; }
+### Updated `getMetroStyle` function:
+
+```typescript
+const getMetroStyle = (index: number, totalItems: number) => {
+  // Small count patterns for true metro variety
+  if (totalItems <= 2) {
+    const small = [
+      { style: { gridColumn: 'span 2', gridRow: 'span 2' } }, // large
+      { style: { gridColumn: 'span 1', gridRow: 'span 2' } }, // tall
+    ];
+    return { className: index === 0 ? 'shadow-lg' : '', style: small[index]?.style || { gridColumn: 'span 1', gridRow: 'span 1' } };
+  }
+  if (totalItems === 3) {
+    const p = [
+      { className: 'shadow-lg', style: { gridColumn: 'span 2', gridRow: 'span 2' } },
+      { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } },
+      { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } },
+    ];
+    return p[index];
+  }
+  if (totalItems === 4) {
+    const p = [
+      { className: 'shadow-lg', style: { gridColumn: 'span 2', gridRow: 'span 2' } },
+      { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } },
+      { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } },
+      { className: '', style: { gridColumn: 'span 3', gridRow: 'span 1' } },
+    ];
+    return p[index];
+  }
+  // 5+ items: repeating metro pattern
+  const patterns = [
+    { className: 'shadow-lg', style: { gridColumn: 'span 2', gridRow: 'span 2' } },
+    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } },
+    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 2' } },
+    { className: '', style: { gridColumn: 'span 2', gridRow: 'span 1' } },
+    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } },
+    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } },
+  ];
+  return patterns[index % patterns.length];
+};
 ```
 
-This caps each column at 280px width, so even with few images the grid cells remain compact and match the design proportions.
+### Files to edit:
+1. **`src/components/stitch/GalleryView.tsx`** - Replace `getMetroStyle` function (lines 43-57)
+2. **`src/styles/themes/stitch/components.css`** - Optionally clean up unused `.metro-grid` / `.metro-item-*` classes (lines 262-291)
 
