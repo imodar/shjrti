@@ -39,21 +39,21 @@ const getImageUrl = (filePath: string): string => {
   return data.publicUrl;
 };
 
-// Assign metro grid classes based on index for visual variety
-const getMetroClass = (index: number, totalItems: number): string => {
-  // When few items, avoid large/wide spans that dominate the grid
+// Assign metro grid styles based on index for visual variety
+const getMetroStyle = (index: number, totalItems: number): { className: string; style: React.CSSProperties } => {
+  // When few items, use simple square layout
   if (totalItems <= 4) {
-    return 'metro-item-square';
+    return { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } };
   }
-  const pattern = [
-    'metro-item-large',
-    'metro-item-square',
-    'metro-item-tall',
-    'metro-item-wide',
-    'metro-item-square',
-    'metro-item-square',
+  const patterns: Array<{ className: string; style: React.CSSProperties }> = [
+    { className: 'shadow-lg', style: { gridColumn: 'span 2', gridRow: 'span 2' } }, // large
+    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } }, // square
+    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 2' } }, // tall
+    { className: '', style: { gridColumn: 'span 2', gridRow: 'span 1' } }, // wide
+    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } }, // square
+    { className: '', style: { gridColumn: 'span 1', gridRow: 'span 1' } }, // square
   ];
-  return pattern[index % pattern.length];
+  return patterns[index % patterns.length];
 };
 
 export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
@@ -422,17 +422,17 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                 </button>
               </div>
             ) : (
-              <div className="metro-grid">
+              <div className="grid grid-cols-3 gap-4" style={{ gridAutoRows: '220px', gridAutoFlow: 'dense' }}>
                 {filteredMemories.map((memory, index) => {
-                  const metroClass = getMetroClass(index, filteredMemories.length);
-                  const isLarge = metroClass === 'metro-item-large' || metroClass === 'metro-item-wide';
+                  const metro = getMetroStyle(index, filteredMemories.length);
+                  const isLarge = (metro.style.gridColumn === 'span 2');
                   const memberName = getMemberName(memory.linked_member_id);
 
                   return (
                       <div
                         key={memory.id}
-                        className={`${metroClass} group relative overflow-hidden rounded-3xl ${isLarge ? 'shadow-lg' : 'shadow-md'} cursor-zoom-in gallery-card`}
-                        style={{ maxHeight: metroClass.includes('tall') || metroClass.includes('large') ? '456px' : '220px' }}
+                        className={`group relative overflow-hidden rounded-3xl ${metro.className || 'shadow-md'} cursor-zoom-in gallery-card`}
+                        style={metro.style}
                         onClick={() => openMemory(memory, index)}
                       >
                         <img
