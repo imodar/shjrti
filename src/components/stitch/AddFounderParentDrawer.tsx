@@ -113,7 +113,7 @@ export const AddFounderParentDrawer: React.FC<AddFounderParentDrawerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex justify-end">
+    <div className={cn("fixed inset-0 z-[60] flex", direction === 'rtl' ? 'justify-start' : 'justify-end')}>
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
@@ -123,7 +123,8 @@ export const AddFounderParentDrawer: React.FC<AddFounderParentDrawerProps> = ({
       {/* Drawer */}
       <div className={cn(
         "relative w-full max-w-[700px] h-full bg-slate-50 dark:bg-background shadow-2xl flex flex-col",
-        "animate-in slide-in-from-right duration-300"
+        "animate-in duration-300",
+        direction === 'rtl' ? 'slide-in-from-left' : 'slide-in-from-right'
       )}>
         {/* Header */}
         <div className="px-8 py-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
