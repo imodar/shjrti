@@ -26,7 +26,7 @@ const StitchDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { direction, currentLanguage, t } = useLanguage();
-  const { subscription } = useSubscription();
+  const { subscription, hasActiveSubscription } = useSubscription();
   
   const [families, setFamilies] = useState<FamilyWithCount[]>([]);
   const [packageData, setPackageData] = useState<PackageData | null>(null);
@@ -198,8 +198,8 @@ const StitchDashboard: React.FC = () => {
             </div>
             
             <div className="w-full lg:w-64 flex-shrink-0">
-              {/* Free Plan - Gold Upgrade CTA */}
-              {(!packageData || (packageData && !subscription?.expires_at)) ? (
+              {!hasActiveSubscription ? (
+                /* Free Plan - Gold Upgrade CTA */
                 <div className="rounded-2xl p-5 shadow-xl border-2 border-yellow-400/50 relative overflow-hidden group"
                   style={{ background: 'linear-gradient(135deg, hsl(45 100% 96%), hsl(40 80% 90%))' }}>
                   <div className="absolute top-0 right-0 w-28 h-28 rounded-full -mr-14 -mt-14 transition-transform group-hover:scale-110"
@@ -210,12 +210,10 @@ const StitchDashboard: React.FC = () => {
                       <span className="material-symbols-outlined text-3xl" style={{ color: 'hsl(37 60% 45%)' }}>workspace_premium</span>
                     </div>
                     <h3 className="text-base font-bold mb-1" style={{ color: 'hsl(37 60% 30%)' }}>
-                      {currentLanguage === 'ar' ? 'ترقية باقتك' : 'Upgrade Your Plan'}
+                      {t('dashboard.upgrade_plan', 'Upgrade Your Plan')}
                     </h3>
                     <p className="text-xs mb-4" style={{ color: 'hsl(37 40% 45%)' }}>
-                      {currentLanguage === 'ar' 
-                        ? 'احصل على ميزات أكثر وأشجار غير محدودة' 
-                        : 'Get more features and unlimited trees'}
+                      {t('dashboard.upgrade_description', 'Get more features and unlimited trees')}
                     </p>
                     <button
                       onClick={() => navigate('/plan-selection')}
@@ -224,26 +222,48 @@ const StitchDashboard: React.FC = () => {
                     >
                       <span className="flex items-center justify-center gap-2">
                         <span className="material-symbols-outlined text-lg">rocket_launch</span>
-                        {currentLanguage === 'ar' ? 'ترقية الآن' : 'Upgrade Now'}
+                        {t('dashboard.upgrade_now', 'Upgrade Now')}
                       </span>
                     </button>
                   </div>
                 </div>
               ) : (
-                /* Paid Plan - Normal Card */
-                <div className="bg-card rounded-2xl p-5 shadow-xl shadow-slate-200/60 dark:shadow-none border border-border relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-110" />
+                /* Paid Plan - Premium Card */
+                <div className="rounded-2xl p-5 shadow-xl border border-primary/20 relative overflow-hidden group"
+                  style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.05), hsl(var(--primary) / 0.12))' }}>
+                  <div className="absolute top-0 right-0 w-28 h-28 rounded-full -mr-14 -mt-14 bg-primary/10 transition-transform group-hover:scale-110" />
                   <div className="relative z-10 text-center">
-                    <div className="w-12 h-12 bg-primary/10 text-primary rounded-xl flex items-center justify-center mx-auto mb-4">
-                      <span className="material-symbols-outlined text-2xl">verified</span>
+                    <div className="w-14 h-14 bg-primary/15 text-primary rounded-xl flex items-center justify-center mx-auto mb-4">
+                      <span className="material-symbols-outlined text-3xl">verified</span>
                     </div>
-                    <h3 className="text-base font-bold text-foreground mb-0.5">{localizedPackageName}</h3>
-                    <p className="text-xs text-muted-foreground mb-4">{treesUsed} of {maxTrees} Trees Used</p>
+                    <h3 className="text-base font-bold text-primary mb-0.5">{localizedPackageName}</h3>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      {t('dashboard.trees_used', '{used} of {total} Trees Used')
+                        .replace('{used}', String(treesUsed))
+                        .replace('{total}', String(maxTrees))}
+                    </p>
+                    {/* Mini progress bar */}
+                    <div className="w-full h-1.5 bg-primary/10 rounded-full mb-3 overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all duration-500"
+                        style={{ width: `${Math.min((treesUsed / maxTrees) * 100, 100)}%` }}
+                      />
+                    </div>
                     {subscription?.expires_at && (
-                      <p className="text-[9px] text-muted-foreground font-medium italic">
-                        {currentLanguage === 'ar' ? 'يتجدد في' : 'Renews on'} {new Date(subscription.expires_at).toLocaleDateString()}
+                      <p className="text-[10px] text-muted-foreground font-medium">
+                        <span className="material-symbols-outlined text-xs align-middle mr-1">event</span>
+                        {t('dashboard.renews_on', 'Renews on')} {new Date(subscription.expires_at).toLocaleDateString()}
                       </p>
                     )}
+                    <button
+                      onClick={() => navigate('/payments')}
+                      className="w-full mt-3 text-primary font-semibold py-2 rounded-xl text-xs border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all"
+                    >
+                      <span className="flex items-center justify-center gap-1.5">
+                        <span className="material-symbols-outlined text-sm">settings</span>
+                        {t('dashboard.manage_subscription', 'Manage Subscription')}
+                      </span>
+                    </button>
                   </div>
                 </div>
               )}
