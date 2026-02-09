@@ -275,25 +275,25 @@ export const StitchStatisticsView: React.FC<StatisticsViewProps> = ({
                 </div>
               </div>
             </div>
-            <div className="h-48 flex items-end justify-between gap-4 px-4">
+            <div className="flex items-end gap-4 px-4" style={{ height: '12rem' }}>
               {(() => {
                 const maxCount = Math.max(...stats.genderByGen.flatMap(g => [g.males, g.females]), 1);
                 return stats.genderByGen.map(({ gen, males, females }) => {
-                  const maleH = (males / maxCount) * 100;
-                  const femaleH = (females / maxCount) * 100;
+                  const maleH = Math.round((males / maxCount) * 160);
+                  const femaleH = Math.round((females / maxCount) * 160);
                   return (
-                    <div key={gen} className="flex-1 flex flex-col items-center gap-1">
-                      <div className="w-full flex items-end justify-center gap-1 h-[calc(100%-2rem)]">
+                    <div key={gen} className="flex-1 flex flex-col items-center justify-end h-full">
+                      <div className="w-full flex items-end justify-center gap-1 flex-1">
                         <div className="flex-1 flex flex-col items-center justify-end h-full">
                           <span className="text-[9px] font-bold text-primary mb-0.5">{males}</span>
-                          <div className="w-full bg-primary rounded-t-md" style={{ height: `${maleH}%`, minHeight: males > 0 ? '4px' : '0' }} />
+                          <div className="w-full bg-primary rounded-t-md" style={{ height: `${maleH}px` }} />
                         </div>
                         <div className="flex-1 flex flex-col items-center justify-end h-full">
                           <span className="text-[9px] font-bold text-secondary mb-0.5">{females}</span>
-                          <div className="w-full bg-secondary rounded-t-md" style={{ height: `${femaleH}%`, minHeight: females > 0 ? '4px' : '0' }} />
+                          <div className="w-full bg-secondary rounded-t-md" style={{ height: `${femaleH}px` }} />
                         </div>
                       </div>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-1">
                         {t('stats.gen', 'Gen')} {gen}
                       </span>
                     </div>
