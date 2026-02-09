@@ -62,3 +62,13 @@
 .theme-stitch .family-title {
   font-family: 'Playfair Display', serif;
 }
+
+@keyframes slide-in-from-left-full {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slide-in-from-right-full {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
