@@ -301,26 +301,6 @@ export const AddFounderParentDrawer: React.FC<AddFounderParentDrawerProps> = ({
           </div>
         </div>
 
-        {/* Current Tree Placement Visualization */}
-        <div className="p-6 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">
-            {t('founder.current_tree_placement', 'الموقع الحالي في الشجرة')}
-          </p>
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-12 h-12 rounded-full border-2 border-slate-200 border-dashed" />
-            <div className="w-px h-6 bg-slate-200" />
-            <div className="w-16 h-16 rounded-full border-4 border-primary p-0.5 bg-white dark:bg-slate-900 shadow-md overflow-hidden">
-              {founderImageSrc ? (
-                <img src={founderImageSrc} alt={currentFounderName} className="w-full h-full rounded-full object-cover" />
-              ) : (
-                <div className="w-full h-full rounded-full bg-slate-100 flex items-center justify-center text-lg font-bold text-slate-400">
-                  {currentFounderName.charAt(0)}
-                </div>
-              )}
-            </div>
-            <span className="text-xs font-bold text-primary uppercase">{currentFounderName}</span>
-          </div>
-        </div>
       </div>
     );
   }
