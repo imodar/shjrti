@@ -9,6 +9,9 @@ import { DateDisplay, LifespanDisplay } from '@/components/DateDisplay';
 import { cn } from '@/lib/utils';
 import { getParentageInfo } from '@/lib/memberDisplayUtils';
 import { StitchFamilyTab } from './FamilyTab';
+import { AddFounderParentDrawer } from './AddFounderParentDrawer';
+import { useAddFounderParentMutation } from '@/hooks/mutations/useFamilyMutations';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface StitchMemberProfileProps {
   member: any;
@@ -38,6 +41,9 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
   const [activeTab, setActiveTab] = useState('overview');
   const [showImageUploadModal, setShowImageUploadModal] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [showAddParentsDrawer, setShowAddParentsDrawer] = useState(false);
+  const { user } = useAuth();
+  const addFounderParent = useAddFounderParentMutation();
 
   const memberImageSrc = useResolvedImageUrl(member?.image_url || null);
 
@@ -343,7 +349,10 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
                         <p className="text-[10px] text-slate-500 leading-tight">
                           {t('profile.add_parents_desc', 'Add parents to the founder to extend the tree upwards.')}
                         </p>
-                        <button className="w-full py-2.5 bg-amber-500 text-white text-[11px] font-bold rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-colors">
+                        <button
+                          onClick={() => setShowAddParentsDrawer(true)}
+                          className="w-full py-2.5 bg-amber-500 text-white text-[11px] font-bold rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-colors"
+                        >
                           <span className="material-symbols-outlined text-sm">person_add</span>
                           {t('profile.add_parents', 'Add Parents')}
                         </button>
@@ -417,6 +426,22 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
         isOpen={showImageUploadModal}
         onClose={() => setShowImageUploadModal(false)}
         onSave={handleImageSave}
+      />
+
+      {/* Add Parents Drawer */}
+      <AddFounderParentDrawer
+        isOpen={showAddParentsDrawer}
+        onClose={() => setShowAddParentsDrawer(false)}
+        currentFounder={member}
+        familyName={member?.last_name || member?.name || ''}
+        onConfirm={async (data) => {
+          await addFounderParent.mutateAsync({
+            familyId: member.family_id,
+            parentData: data,
+            userId: user?.id || '',
+          });
+        }}
+        isLoading={addFounderParent.isPending}
       />
     </section>
   );
