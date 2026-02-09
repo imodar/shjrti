@@ -34,6 +34,7 @@ export const StitchAddFounderParentModal: React.FC<StitchAddFounderParentModalPr
   isLoading = false,
 }) => {
   const { t, direction } = useLanguage();
+  console.log('StitchAddFounderParentModal render, isOpen:', isOpen);
   const [currentStep, setCurrentStep] = useState<Step>('warning');
 
   // Father form data

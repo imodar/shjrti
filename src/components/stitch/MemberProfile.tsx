@@ -353,7 +353,7 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
                         <p className="text-[10px] text-slate-500 leading-tight">
                           {t('profile.add_parents_desc', 'Add parents to the founder to extend the tree upwards.')}
                         </p>
-                        <button onClick={() => setShowAddParentModal(true)} className="w-full py-2.5 bg-amber-500 text-white text-[11px] font-bold rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-colors">
+                        <button onClick={() => { console.log('ADD PARENT CLICKED, setting showAddParentModal to true'); setShowAddParentModal(true); }} className="w-full py-2.5 bg-amber-500 text-white text-[11px] font-bold rounded-lg flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 hover:bg-amber-600 transition-colors">
                           <span className="material-symbols-outlined text-sm">person_add</span>
                           {t('profile.add_parents', 'Add Parents')}
                         </button>
