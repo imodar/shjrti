@@ -275,26 +275,27 @@ export const StitchStatisticsView: React.FC<StatisticsViewProps> = ({
                 </div>
               </div>
             </div>
-            <div className="h-48 flex items-end justify-between gap-6 px-4">
+            <div className="h-48 flex items-end justify-between gap-4 px-4">
               {(() => {
-                const maxTotal = Math.max(...stats.genderByGen.map(g => g.males + g.females), 1);
+                const maxCount = Math.max(...stats.genderByGen.flatMap(g => [g.males, g.females]), 1);
                 return stats.genderByGen.map(({ gen, males, females }) => {
-                  const total = males + females;
-                  const barHeight = total > 0 ? (total / maxTotal) * 100 : 0;
-                  const malePct = total > 0 ? (males / total) * 100 : 0;
-                  const femalePct = total > 0 ? (females / total) * 100 : 0;
+                  const maleH = (males / maxCount) * 100;
+                  const femaleH = (females / maxCount) * 100;
                   return (
-                    <div key={gen} className="flex-1 flex flex-col items-center gap-2">
-                      <div className="w-full flex flex-col-reverse items-center h-full justify-end">
-                        <div className="w-full rounded-lg overflow-hidden border border-slate-100 dark:border-slate-800 flex flex-col-reverse" style={{ height: `${barHeight}%` }}>
-                          <div className="w-full bg-primary" style={{ height: `${malePct}%` }} />
-                          <div className="w-full bg-secondary" style={{ height: `${femalePct}%` }} />
+                    <div key={gen} className="flex-1 flex flex-col items-center gap-1">
+                      <div className="w-full flex items-end justify-center gap-1 h-[calc(100%-2rem)]">
+                        <div className="flex-1 flex flex-col items-center justify-end h-full">
+                          <span className="text-[9px] font-bold text-primary mb-0.5">{males}</span>
+                          <div className="w-full bg-primary rounded-t-md" style={{ height: `${maleH}%`, minHeight: males > 0 ? '4px' : '0' }} />
+                        </div>
+                        <div className="flex-1 flex flex-col items-center justify-end h-full">
+                          <span className="text-[9px] font-bold text-secondary mb-0.5">{females}</span>
+                          <div className="w-full bg-secondary rounded-t-md" style={{ height: `${femaleH}%`, minHeight: females > 0 ? '4px' : '0' }} />
                         </div>
                       </div>
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
                         {t('stats.gen', 'Gen')} {gen}
                       </span>
-                      <span className="text-[10px] text-slate-400">{total}</span>
                     </div>
                   );
                 });
