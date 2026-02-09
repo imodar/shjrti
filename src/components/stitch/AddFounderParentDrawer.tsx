@@ -125,8 +125,8 @@ export const AddFounderParentDrawer: React.FC<AddFounderParentDrawerProps> = ({
         className="relative w-full max-w-[700px] h-full bg-slate-50 dark:bg-background shadow-2xl flex flex-col"
         style={{
           animation: direction === 'rtl'
-            ? 'slide-in-from-right-full 0.3s ease-out forwards'
-            : 'slide-in-from-left-full 0.3s ease-out forwards'
+            ? 'slide-in-from-left-full 0.3s ease-out forwards'
+            : 'slide-in-from-right-full 0.3s ease-out forwards'
         }}
       >
         {/* Header */}
