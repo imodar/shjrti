@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useFamilyData } from '@/contexts/FamilyDataContext';
 import { subscriptionsApi, suggestionsApi } from '@/lib/api';
-import { StitchHeader, StitchFamilyBar, StitchSidebar, StitchRightPanel, StitchMainContent } from '@/components/stitch';
+import { StitchHeader, StitchFamilyBar, StitchSidebar, StitchRightPanel, StitchMainContent, StitchSettingsView } from '@/components/stitch';
 import DashboardLoader from '@/components/stitch/DashboardLoader';
 import { MemberDeleteModal } from '@/components/stitch/MemberDeleteModal';
 import { cn } from '@/lib/utils';
@@ -85,6 +85,7 @@ const FamilyBuilderStitch: React.FC = () => {
   const [showSuggestions, setShowSuggestions] = useState(initialTab === 'suggestions');
   const [showStatistics, setShowStatistics] = useState(initialTab === 'statistics');
   const [showGallery, setShowGallery] = useState(initialTab === 'gallery');
+  const [showSettings, setShowSettings] = useState(initialTab === 'settings');
   const [pendingSuggestionsCount, setPendingSuggestionsCount] = useState(0);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   // Default to true so loader is skipped when data is cached; useEffects set false only when fetching
@@ -248,31 +249,19 @@ const FamilyBuilderStitch: React.FC = () => {
   };
 
   const handleTabChange = (tab: string) => {
-    if (tab === 'suggestions') {
-      setShowSuggestions(true);
-      setShowStatistics(false);
-      setShowGallery(false);
-      setSelectedMemberId(undefined);
-      setShowAddMemberForm(false);
-    } else if (tab === 'statistics') {
-      setShowStatistics(true);
-      setShowSuggestions(false);
-      setShowGallery(false);
-      setSelectedMemberId(undefined);
-      setShowAddMemberForm(false);
-    } else if (tab === 'gallery') {
-      setShowGallery(true);
-      setShowSuggestions(false);
-      setShowStatistics(false);
-      setSelectedMemberId(undefined);
-      setShowAddMemberForm(false);
-    } else if (tab === 'dashboard') {
-      setShowSuggestions(false);
-      setShowStatistics(false);
-      setShowGallery(false);
-      setSelectedMemberId(undefined);
-      setShowAddMemberForm(false);
-    }
+    // Reset all views
+    setShowSuggestions(false);
+    setShowStatistics(false);
+    setShowGallery(false);
+    setShowSettings(false);
+    setSelectedMemberId(undefined);
+    setShowAddMemberForm(false);
+
+    if (tab === 'suggestions') setShowSuggestions(true);
+    else if (tab === 'statistics') setShowStatistics(true);
+    else if (tab === 'gallery') setShowGallery(true);
+    else if (tab === 'settings') setShowSettings(true);
+
     setActiveTab(tab);
   };
 
@@ -334,7 +323,7 @@ const FamilyBuilderStitch: React.FC = () => {
       {/* Main Layout */}
       <main className="flex h-[calc(100vh-120px)]">
         {/* Left Sidebar - Members List (hidden in gallery view which has its own sidebar) */}
-        {!showGallery && (
+        {!showGallery && !showSettings && (
           <StitchSidebar
             members={filteredMembers}
             totalCount={stats.totalMembers}
@@ -353,41 +342,49 @@ const FamilyBuilderStitch: React.FC = () => {
         )}
 
         {/* Main Content */}
-        <StitchMainContent
-          userName={userName}
-          activities={recentActivities}
-          milestones={upcomingBirthdays}
-          onExportTree={() => {/* TODO */}}
-          onImportGedcom={() => {/* TODO */}}
-          onFamilyStory={() => {/* TODO */}}
-          onPrintPoster={() => {/* TODO */}}
-          showAddMemberForm={showAddMemberForm}
-          onCloseForm={handleCloseForm}
-          familyMembers={familyMembers}
-          marriages={marriages}
-          familyId={searchParams.get('family') || ''}
-          familyData={familyData}
-          showSuggestions={showSuggestions}
-          showStatistics={showStatistics}
-          showGallery={showGallery}
-          editingMember={editingMember}
-          formMode={formMode}
-          onMemberSaved={handleMemberSaved}
-          selectedMember={selectedMember}
-          onEditMember={() => {
-            if (selectedMember) {
-              setEditingMember(selectedMember);
-              setFormMode('edit');
-              setShowAddMemberForm(true);
-            }
-          }}
-          onDeleteMember={() => setShowDeleteModal(true)}
-          onBackFromProfile={handleBackFromProfile}
-          onMemberClick={handleMemberClick}
-        />
+        {showSettings ? (
+          <StitchSettingsView
+            familyId={familyId}
+            familyData={familyData}
+            onFamilyUpdated={refetch}
+          />
+        ) : (
+          <StitchMainContent
+            userName={userName}
+            activities={recentActivities}
+            milestones={upcomingBirthdays}
+            onExportTree={() => {/* TODO */}}
+            onImportGedcom={() => {/* TODO */}}
+            onFamilyStory={() => {/* TODO */}}
+            onPrintPoster={() => {/* TODO */}}
+            showAddMemberForm={showAddMemberForm}
+            onCloseForm={handleCloseForm}
+            familyMembers={familyMembers}
+            marriages={marriages}
+            familyId={searchParams.get('family') || ''}
+            familyData={familyData}
+            showSuggestions={showSuggestions}
+            showStatistics={showStatistics}
+            showGallery={showGallery}
+            editingMember={editingMember}
+            formMode={formMode}
+            onMemberSaved={handleMemberSaved}
+            selectedMember={selectedMember}
+            onEditMember={() => {
+              if (selectedMember) {
+                setEditingMember(selectedMember);
+                setFormMode('edit');
+                setShowAddMemberForm(true);
+              }
+            }}
+            onDeleteMember={() => setShowDeleteModal(true)}
+            onBackFromProfile={handleBackFromProfile}
+            onMemberClick={handleMemberClick}
+          />
+        )}
 
-        {/* Right Panel - Stats (hidden when adding member, viewing profile, or suggestions) */}
-        {!showAddMemberForm && !selectedMember && !showSuggestions && !showStatistics && !showGallery && (
+        {/* Right Panel - Stats (hidden when adding member, viewing profile, or suggestions/settings) */}
+        {!showAddMemberForm && !selectedMember && !showSuggestions && !showStatistics && !showGallery && !showSettings && (
           <StitchRightPanel
             completenessPercentage={stats.completeness}
             generationsCount={stats.generations}
