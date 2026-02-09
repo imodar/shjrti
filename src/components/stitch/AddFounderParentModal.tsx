@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -602,7 +603,10 @@ export const StitchAddFounderParentModal: React.FC<StitchAddFounderParentModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-2xl data-[state=open]:max-w-4xl p-0 rounded-[2rem] overflow-hidden flex flex-col max-h-[95vh] border-0 gap-0">
+      <DialogContent className="max-w-4xl p-0 rounded-[2rem] overflow-hidden flex flex-col max-h-[95vh] border-0 gap-0">
+        <VisuallyHidden>
+          <DialogTitle>{t('founder.add_parents_to_founder', 'إضافة والدين للمؤسس')}</DialogTitle>
+        </VisuallyHidden>
         {/* Header with Steps */}
         <div className="p-6 text-center border-b border-slate-100 dark:border-slate-800 relative">
           {currentStep !== 'warning' && (
