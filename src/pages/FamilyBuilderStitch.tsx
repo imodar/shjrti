@@ -8,6 +8,7 @@ import { useFamilyData } from '@/contexts/FamilyDataContext';
 import { subscriptionsApi, suggestionsApi } from '@/lib/api';
 import { StitchHeader, StitchFamilyBar, StitchSidebar, StitchRightPanel, StitchMainContent } from '@/components/stitch';
 import DashboardLoader from '@/components/stitch/DashboardLoader';
+import { MemberDeleteModal } from '@/components/stitch/MemberDeleteModal';
 import { cn } from '@/lib/utils';
 
 /**
@@ -85,6 +86,7 @@ const FamilyBuilderStitch: React.FC = () => {
   const [showStatistics, setShowStatistics] = useState(initialTab === 'statistics');
   const [showGallery, setShowGallery] = useState(initialTab === 'gallery');
   const [pendingSuggestionsCount, setPendingSuggestionsCount] = useState(0);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   // Default to true so loader is skipped when data is cached; useEffects set false only when fetching
   const [packageLoaded, setPackageLoaded] = useState(true);
   const [suggestionsLoaded, setSuggestionsLoaded] = useState(true);
@@ -379,7 +381,7 @@ const FamilyBuilderStitch: React.FC = () => {
               setShowAddMemberForm(true);
             }
           }}
-          onDeleteMember={() => {/* TODO: implement delete */}}
+          onDeleteMember={() => setShowDeleteModal(true)}
           onBackFromProfile={handleBackFromProfile}
           onMemberClick={handleMemberClick}
         />
@@ -415,6 +417,20 @@ const FamilyBuilderStitch: React.FC = () => {
           Continue Anyway
         </button>
       </div>
+
+      {/* Member Delete Confirmation Modal */}
+      <MemberDeleteModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onSuccess={() => {
+          setShowDeleteModal(false);
+          setSelectedMemberId(undefined);
+          refetch();
+        }}
+        member={selectedMember}
+        familyMembers={familyMembers}
+        marriages={marriages}
+      />
     </div>
   );
 };
