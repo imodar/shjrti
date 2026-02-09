@@ -9,6 +9,8 @@ import TreeDeleteModal from '@/components/TreeDeleteModal';
 import { ShareLinkModal } from '@/pages/FamilyBuilderNew/components/TreeSettings/ShareLinkModal';
 import { CustomDomainModal } from '@/pages/FamilyBuilderNew/components/TreeSettings/CustomDomainModal';
 import DOMPurify from 'dompurify';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 interface StitchSettingsViewProps {
   familyId: string;
@@ -200,12 +202,21 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
 
           <div className="bg-muted rounded-xl p-6 border border-border mb-6">
             {isEditingDescription ? (
-              <textarea
+              <ReactQuill
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-transparent text-foreground leading-relaxed text-sm resize-none min-h-[100px] outline-none"
-                dir="rtl"
+                onChange={(value) => setDescription(value)}
                 placeholder={t('tree_settings.description_placeholder', 'اكتب وصفاً عن عائلتك...')}
+                theme="snow"
+                modules={{
+                  toolbar: [
+                    [{ 'header': [1, 2, 3, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'direction': 'rtl' }],
+                    [{ 'align': [] }],
+                    ['clean']
+                  ]
+                }}
               />
             ) : (
               <p
