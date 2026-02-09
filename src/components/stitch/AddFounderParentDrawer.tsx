@@ -116,16 +116,19 @@ export const AddFounderParentDrawer: React.FC<AddFounderParentDrawerProps> = ({
     <div className={cn("fixed inset-0 z-[60] flex", direction === 'rtl' ? 'justify-end' : 'justify-start')}>
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-fade-in"
         onClick={handleClose}
       />
 
       {/* Drawer */}
-      <div className={cn(
-        "relative w-full max-w-[700px] h-full bg-slate-50 dark:bg-background shadow-2xl flex flex-col",
-        "animate-in duration-300",
-        direction === 'rtl' ? 'slide-in-from-right' : 'slide-in-from-left'
-      )}>
+      <div
+        className="relative w-full max-w-[700px] h-full bg-slate-50 dark:bg-background shadow-2xl flex flex-col"
+        style={{
+          animation: direction === 'rtl'
+            ? 'slide-in-from-right-full 0.3s ease-out forwards'
+            : 'slide-in-from-left-full 0.3s ease-out forwards'
+        }}
+      >
         {/* Header */}
         <div className="px-8 py-6 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-4">
