@@ -94,11 +94,11 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
           <button
             key={tab.id}
             onClick={() => handleTabClick(tab)}
-            className={
+            className={`relative px-4 py-2 text-sm font-medium transition-colors ${
               activeTab === tab.id
-                ? "px-4 py-2 text-sm font-bold bg-white dark:bg-slate-700 text-primary rounded-lg shadow-sm"
-                : "px-4 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-primary transition-colors relative"
-            }
+                ? "font-bold bg-white dark:bg-slate-700 text-primary rounded-lg shadow-sm"
+                : "text-slate-500 dark:text-slate-400 hover:text-primary"
+            }`}
           >
             {tab.label}
             {tab.badge != null && tab.badge > 0 && (
