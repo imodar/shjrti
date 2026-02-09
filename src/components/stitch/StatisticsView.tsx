@@ -122,7 +122,12 @@ export const StitchStatisticsView: React.FC<StatisticsViewProps> = ({
         monthlyBirthdays[month]++;
       }
     });
-    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthNames = [
+      t('stats.month_jan', 'Jan'), t('stats.month_feb', 'Feb'), t('stats.month_mar', 'Mar'),
+      t('stats.month_apr', 'Apr'), t('stats.month_may', 'May'), t('stats.month_jun', 'Jun'),
+      t('stats.month_jul', 'Jul'), t('stats.month_aug', 'Aug'), t('stats.month_sep', 'Sep'),
+      t('stats.month_oct', 'Oct'), t('stats.month_nov', 'Nov'), t('stats.month_dec', 'Dec'),
+    ];
     const currentMonth = today.getMonth();
     const maxMonthly = Math.max(...monthlyBirthdays, 1);
 
