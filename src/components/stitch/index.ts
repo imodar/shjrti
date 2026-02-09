@@ -17,3 +17,4 @@ export { StitchSuggestionsView } from './SuggestionsView';
 export { StitchStatisticsView } from './StatisticsView';
 export { StitchGalleryView } from './GalleryView';
 export { AddFounderParentDrawer } from './AddFounderParentDrawer';
+export { StitchSettingsView } from './SettingsView';
