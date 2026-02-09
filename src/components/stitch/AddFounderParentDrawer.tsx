@@ -113,7 +113,7 @@ export const AddFounderParentDrawer: React.FC<AddFounderParentDrawerProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className={cn("fixed inset-0 z-[60] flex", direction === 'rtl' ? 'justify-start' : 'justify-end')}>
+    <div className="fixed inset-0 z-[60] flex justify-end">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-fade-in"
