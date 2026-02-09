@@ -16,3 +16,4 @@ export { StitchFamilyTab } from './FamilyTab';
 export { StitchSuggestionsView } from './SuggestionsView';
 export { StitchStatisticsView } from './StatisticsView';
 export { StitchGalleryView } from './GalleryView';
+export { AddFounderParentDrawer } from './AddFounderParentDrawer';
