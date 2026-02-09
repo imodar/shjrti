@@ -166,7 +166,6 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
         member={selectedMember}
         familyMembers={familyMembers as any[]}
         marriages={marriages as any[]}
-        familyData={familyData}
         onEdit={onEditMember}
         onDelete={onDeleteMember}
         onBack={onBackFromProfile}
