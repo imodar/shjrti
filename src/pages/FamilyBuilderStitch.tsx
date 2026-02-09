@@ -88,6 +88,8 @@ const FamilyBuilderStitch: React.FC = () => {
   // Default to true so loader is skipped when data is cached; useEffects set false only when fetching
   const [packageLoaded, setPackageLoaded] = useState(true);
   const [suggestionsLoaded, setSuggestionsLoaded] = useState(true);
+  // Track if initial load completed — prevents loader on tab re-focus
+  const loaderDoneRef = useRef(false);
 
   // Fetch package limits
   useEffect(() => {
@@ -286,10 +288,14 @@ const FamilyBuilderStitch: React.FC = () => {
   // Get package name - pass the full object for localization in Header
   const packageName = subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
 
-  // Only show loader on dashboard tab and only when data is genuinely loading
+  // Only show loader on dashboard tab and only on FIRST load
   const isFullyLoaded = !loading && packageLoaded && suggestionsLoaded;
 
-  if (!isFullyLoaded && activeTab === 'dashboard') {
+  if (isFullyLoaded) {
+    loaderDoneRef.current = true;
+  }
+
+  if (!isFullyLoaded && activeTab === 'dashboard' && !loaderDoneRef.current) {
     return (
       <DashboardLoader
         steps={[
