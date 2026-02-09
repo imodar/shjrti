@@ -236,34 +236,19 @@ const StitchDashboard: React.FC = () => {
                     <div className="w-14 h-14 bg-primary/15 text-primary rounded-xl flex items-center justify-center mx-auto mb-4">
                       <span className="material-symbols-outlined text-3xl">verified</span>
                     </div>
-                    <h3 className="text-base font-bold text-primary mb-0.5">{localizedPackageName}</h3>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      {t('dashboard.trees_used', '{used} of {total} Trees Used')
-                        .replace('{used}', String(treesUsed))
-                        .replace('{total}', String(maxTrees))}
-                    </p>
-                    {/* Mini progress bar */}
-                    <div className="w-full h-1.5 bg-primary/10 rounded-full mb-3 overflow-hidden">
-                      <div
-                        className="h-full rounded-full bg-primary transition-all duration-500"
-                        style={{ width: `${Math.min((treesUsed / maxTrees) * 100, 100)}%` }}
-                      />
-                    </div>
-                    {subscription?.expires_at && (
-                      <p className="text-[10px] text-muted-foreground font-medium">
-                        <span className="material-symbols-outlined text-xs align-middle mr-1">event</span>
-                        {t('dashboard.renews_on', 'Renews on')} {new Date(subscription.expires_at).toLocaleDateString()}
+                    <h3 className="text-base font-bold text-primary mb-1">{localizedPackageName}</h3>
+                    {subscription?.expires_at ? (
+                      <p className="text-xs text-muted-foreground font-medium mt-2">
+                        <span className="material-symbols-outlined text-sm align-middle mr-1">event</span>
+                        {t('dashboard.valid_until', 'Valid until {date}')
+                          .replace('{date}', new Date(subscription.expires_at).toLocaleDateString())}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground font-medium mt-2">
+                        <span className="material-symbols-outlined text-sm align-middle mr-1">all_inclusive</span>
+                        {t('dashboard.active_subscription', 'Active Subscription')}
                       </p>
                     )}
-                    <button
-                      onClick={() => navigate('/payments')}
-                      className="w-full mt-3 text-primary font-semibold py-2 rounded-xl text-xs border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all"
-                    >
-                      <span className="flex items-center justify-center gap-1.5">
-                        <span className="material-symbols-outlined text-sm">settings</span>
-                        {t('dashboard.manage_subscription', 'Manage Subscription')}
-                      </span>
-                    </button>
                   </div>
                 </div>
               )}
