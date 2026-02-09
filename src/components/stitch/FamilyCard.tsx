@@ -125,15 +125,15 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
      primary: 'bg-blue-600 text-white'
    };
  
-   const labels = {
-     husband: t('tree_view.husband', 'HUSBAND'),
-     wife: t('tree_view.wife', 'WIFE'),
-     spouse: t('tree_view.spouse', 'Spouse'),
-     'ex-spouse': t('tree_view.ex_spouse', 'Ex-Spouse'),
-    'ex-wife': t('tree_view.ex_wife', 'Ex-Wife'),
-     single: t('tree_view.single', 'Single'),
-     primary: t('tree_view.primary_member', 'Primary Member')
-   };
+    const labels = {
+      husband: t('husband', 'Husband'),
+      wife: t('wife', 'Wife'),
+      spouse: t('wife', 'Wife'),
+      'ex-spouse': t('profile.divorced_female', 'Ex-Spouse'),
+      'ex-wife': t('profile.divorced_female', 'Ex-Wife'),
+      single: t('tree_view.single', 'Single'),
+      primary: t('tree_view.primary_member', 'Primary Member')
+    };
  
    return (
      <span className={cn(
