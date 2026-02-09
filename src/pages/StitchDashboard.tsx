@@ -198,7 +198,7 @@ const StitchDashboard: React.FC = () => {
             </div>
             
             <div className="w-full lg:w-64 flex-shrink-0">
-              {!hasActiveSubscription ? (
+              {(!packageData && !hasActiveSubscription) ? (
                 /* Free Plan - Gold Upgrade CTA */
                 <div className="rounded-2xl p-5 shadow-xl border-2 border-yellow-400/50 relative overflow-hidden group"
                   style={{ background: 'linear-gradient(135deg, hsl(45 100% 96%), hsl(40 80% 90%))' }}>
