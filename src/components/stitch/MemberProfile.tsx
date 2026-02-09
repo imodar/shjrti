@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { uploadMemberImage } from '@/utils/imageUpload';
@@ -39,6 +39,15 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
   const { t, direction } = useLanguage();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState('overview');
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // Reset tab and scroll to top when member changes
+  useEffect(() => {
+    setActiveTab('overview');
+    if (sectionRef.current) {
+      sectionRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [member?.id]);
   const [showImageUploadModal, setShowImageUploadModal] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [showAddParentsDrawer, setShowAddParentsDrawer] = useState(false);
@@ -166,7 +175,7 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
   ];
 
   return (
-    <section className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-50 dark:bg-background-dark">
+    <section ref={sectionRef} className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-50 dark:bg-background-dark">
       <div className="max-w-6xl mx-auto space-y-6">
 
         {/* Hero Card */}
