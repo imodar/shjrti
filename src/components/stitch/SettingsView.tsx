@@ -173,9 +173,9 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
 
   // Privacy option labels
   const privacyOptions = [
-    { value: 'full', label: t('tree_settings.name_full_example', 'الاسم الكامل (مثال: فاطمة محمد)') },
-    { value: 'family_only', label: t('tree_settings.name_family_only_example', 'الاسم الأول فقط (مثال: فاطمة)') },
-    { value: 'hidden', label: t('tree_settings.name_hidden_example', 'مخفي تماماً (عرض: "أنثى")') },
+    { value: 'full', label: t('tree_settings.name_full', 'الاسم الكامل'), locked: false },
+    { value: 'family_only', label: t('tree_settings.name_first_hidden', 'إخفاء الاسم الأول (إظهار النسب فقط)'), locked: true },
+    { value: 'hidden', label: t('tree_settings.name_hidden_full', 'إخفاء الاسم بالكامل'), locked: true },
   ];
 
   const currentPrivacyLabel = privacyOptions.find(o => o.value === femaleNamePrivacy)?.label || '';
@@ -396,26 +396,32 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Female Name Visibility */}
             <div className="p-6 bg-muted rounded-2xl border border-border">
-              <div className="flex items-center justify-between mb-3">
-                <label className="text-sm font-bold text-foreground">{t('tree_settings.female_name_display', 'عرض أسماء الإناث')}</label>
-                <span className="text-[11px] text-muted-foreground italic">Female Name Visibility</span>
-              </div>
-              <div className="relative group">
-                <select
-                  value={femaleNamePrivacy}
-                  onChange={(e) => handleFemaleNamePrivacyChange(e.target.value)}
-                  disabled={isUpdatingPrivacy}
-                  className="w-full px-4 py-3 bg-card border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary appearance-none transition-all hover:bg-card pe-10 disabled:opacity-50"
-                  dir="rtl"
-                >
-                  {privacyOptions.map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
-                <span className="material-symbols-outlined absolute start-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">expand_more</span>
-                <div className="mt-2 text-[11px] text-muted-foreground bg-card p-2 rounded-lg border border-border">
-                  <span className="font-semibold text-primary">{t('settings.preview', 'معاينة:')}</span> {getPreviewText()}
-                </div>
+              <label className="text-sm font-bold text-foreground mb-3 block">{t('tree_settings.female_name_display', 'عرض أسماء الإناث')}</label>
+              <div className="space-y-2">
+                {privacyOptions.map(opt => {
+                  const isSelected = femaleNamePrivacy === opt.value;
+                  return (
+                    <button
+                      key={opt.value}
+                      onClick={() => handleFemaleNamePrivacyChange(opt.value)}
+                      disabled={isUpdatingPrivacy}
+                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-sm transition-all text-start disabled:opacity-50 ${
+                        isSelected
+                          ? 'border-primary bg-primary/5 text-primary font-semibold'
+                          : 'border-border bg-card text-foreground hover:border-primary/30'
+                      }`}
+                    >
+                      {isSelected ? (
+                        <span className="material-symbols-outlined text-primary text-lg">check_circle</span>
+                      ) : opt.locked ? (
+                        <span className="material-symbols-outlined text-destructive text-lg">lock</span>
+                      ) : (
+                        <span className="material-symbols-outlined text-primary text-lg">radio_button_unchecked</span>
+                      )}
+                      <span>{opt.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
