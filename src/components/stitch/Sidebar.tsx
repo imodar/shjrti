@@ -151,26 +151,26 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
           </button>
         </div>
 
-        {/* Search */}
-        <div className="relative mb-4">
-          <span className="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
-          <input
-            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20"
-            placeholder={t('family_builder.search_placeholder', 'Search by name...')}
-            type="text"
-            value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
-          />
-        </div>
-
-        {/* Filters */}
+        {/* Search & Filter in one row */}
         <div className="flex gap-2">
-          <select className="text-xs border-none bg-slate-50 dark:bg-slate-800/50 rounded-lg focus:ring-primary/20 py-1.5 flex-1">
-            <option>{t('stitch.all_branches', 'All Branches')}</option>
-          </select>
-          <button className="p-1.5 bg-slate-50 dark:bg-slate-800/50 rounded-lg text-slate-400">
-            <span className="material-icons-round text-lg">filter_list</span>
-          </button>
+          <div className="relative flex-1">
+            <span className="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+            <input
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20"
+              placeholder={t('family_builder.search_placeholder', 'Search by name...')}
+              type="text"
+              value={searchTerm}
+              onChange={(e) => onSearchChange(e.target.value)}
+            />
+          </div>
+          <div className="flex-1 flex gap-2">
+            <select className="text-xs border-none bg-slate-50 dark:bg-slate-800/50 rounded-lg focus:ring-primary/20 py-1.5 flex-1">
+              <option>{t('stitch.all_branches', 'All Branches')}</option>
+            </select>
+            <button className="p-1.5 bg-slate-50 dark:bg-slate-800/50 rounded-lg text-slate-400">
+              <span className="material-icons-round text-lg">filter_list</span>
+            </button>
+          </div>
         </div>
       </div>
 
