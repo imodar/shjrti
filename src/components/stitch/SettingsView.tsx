@@ -59,6 +59,17 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
     ? `${window.location.origin}/share?token=${shareToken}`
     : '';
 
+  // Sync familyData props to local state when data loads
+  useEffect(() => {
+    if (familyData) {
+      setDescription(familyData.description || '');
+      setFemaleNamePrivacy(familyData.female_name_privacy || 'full');
+      setFemalePhotoHidden(familyData.female_photo_hidden || false);
+      setShareToken(familyData.share_token || null);
+      setTokenExpiresAt(familyData.share_token_expires_at || null);
+    }
+  }, [familyData]);
+
   // Check package features via REST API
   useEffect(() => {
     const checkFeatures = async () => {
