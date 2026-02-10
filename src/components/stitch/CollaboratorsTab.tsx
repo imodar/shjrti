@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
-import { familyInvitationsApi } from '@/lib/api';
+import { familyInvitationsApi, subscriptionsApi } from '@/lib/api';
 import type { Collaborator, Invitation } from '@/lib/api/endpoints/familyInvitations';
 
 interface CollaboratorsTabProps {
@@ -10,6 +11,7 @@ interface CollaboratorsTabProps {
 }
 
 const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner = true }) => {
+  const navigate = useNavigate();
   const { t } = useLanguage();
   const { toast } = useToast();
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
@@ -18,6 +20,23 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
   const [inviteEmail, setInviteEmail] = useState('');
   const [sending, setSending] = useState(false);
   const [showInviteForm, setShowInviteForm] = useState(false);
+  const [hasPlusPlan, setHasPlusPlan] = useState(false);
+  const [checkingPlan, setCheckingPlan] = useState(true);
+
+  // Check if user has Plus plan
+  useEffect(() => {
+    const checkPlan = async () => {
+      try {
+        const sub = await subscriptionsApi.get();
+        setHasPlusPlan(!!(sub?.packages as any)?.custom_domains_enabled);
+      } catch (e) {
+        console.error('Error checking plan:', e);
+      } finally {
+        setCheckingPlan(false);
+      }
+    };
+    checkPlan();
+  }, []);
 
   const fetchData = async () => {
     if (!isOwner) { setLoading(false); return; }
@@ -84,6 +103,49 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
 
   return (
     <div className="space-y-6">
+      {/* Upgrade prompt for non-Plus users */}
+      {!checkingPlan && !hasPlusPlan && (
+        <div className="bg-card rounded-2xl p-8 shadow-sm border border-border relative overflow-hidden">
+          <div className="mt-2 p-6 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-[hsl(var(--accent-gold))] opacity-10 blur-3xl -mr-16 -mt-16 rounded-full" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary opacity-10 blur-2xl -ml-12 -mb-12 rounded-full" />
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="px-2 py-0.5 bg-[hsl(37,60%,60%)]/20 text-[hsl(37,60%,60%)] text-[10px] font-bold rounded uppercase tracking-widest border border-[hsl(37,60%,60%)]/30">
+                    {t('settings.pro_advantage', 'Pro Advantage')}
+                  </span>
+                </div>
+                <h4 className="text-lg font-bold mb-2">{t('settings.unlock_collaborators', 'أضف مشرفين لإدارة شجرتك')}</h4>
+                <ul className="space-y-1.5">
+                  <li className="flex items-center gap-2 text-xs text-slate-300">
+                    <span className="material-symbols-outlined text-[hsl(37,60%,60%)] text-sm">verified</span>
+                    {t('settings.collab_feature_1', 'دعوة مشرفين عبر البريد الإلكتروني')}
+                  </li>
+                  <li className="flex items-center gap-2 text-xs text-slate-300">
+                    <span className="material-symbols-outlined text-[hsl(37,60%,60%)] text-sm">verified</span>
+                    {t('settings.collab_feature_2', 'تعاون مشترك في تحرير بيانات الشجرة')}
+                  </li>
+                </ul>
+              </div>
+              <div className="flex-shrink-0 w-full md:w-auto">
+                <button
+                  onClick={() => navigate('/plan-selection')}
+                  className="w-full md:w-auto px-8 py-4 font-bold rounded-xl transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap text-slate-900"
+                  style={{ background: 'hsl(37 60% 60%)', boxShadow: '0 0 15px hsla(37, 60%, 60%, 0.3)' }}
+                >
+                  <span className="material-symbols-outlined">workspace_premium</span>
+                  {t('settings.upgrade_to_premium', 'ترقية إلى المميزة')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Show collaborators content only for Plus plan users */}
+      {(hasPlusPlan || checkingPlan) && (
+      <>
       {/* Current Collaborators */}
       <div className="bg-card rounded-2xl p-8 shadow-sm border border-border">
         <div className="flex items-center justify-between mb-6">
@@ -194,6 +256,8 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
           </div>
         )}
       </div>
+      </>
+      )}
     </div>
   );
 };
