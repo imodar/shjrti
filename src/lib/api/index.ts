@@ -37,6 +37,7 @@ export { invoicesApi } from './endpoints/invoices';
 export { packagesApi } from './endpoints/packages';
 export { scheduledChangesApi } from './endpoints/scheduledChanges';
 export { contactApi } from './endpoints/contact';
+export { familyInvitationsApi } from './endpoints/familyInvitations';
 
 export type { 
   MemberMemoryCreateInput, 
@@ -76,6 +77,14 @@ export type {
   ContactSubmissionResponse,
 } from './endpoints/contact';
 
+export type {
+  Collaborator,
+  Invitation,
+  CollaboratorsListResponse,
+  TokenValidationResponse,
+  AcceptResponse,
+} from './endpoints/familyInvitations';
+
 // Convenience re-export as a single API object
 import { familiesApi } from './endpoints/families';
 import { membersApi } from './endpoints/members';
@@ -88,6 +97,7 @@ import { invoicesApi } from './endpoints/invoices';
 import { packagesApi } from './endpoints/packages';
 import { scheduledChangesApi } from './endpoints/scheduledChanges';
 import { contactApi } from './endpoints/contact';
+import { familyInvitationsApi } from './endpoints/familyInvitations';
 
 export const api = {
   families: familiesApi,
@@ -101,6 +111,7 @@ export const api = {
   packages: packagesApi,
   scheduledChanges: scheduledChangesApi,
   contact: contactApi,
+  familyInvitations: familyInvitationsApi,
 };
 
 export default api;

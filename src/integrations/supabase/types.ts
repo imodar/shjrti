@@ -347,6 +347,88 @@ export type Database = {
         }
         Relationships: []
       }
+      family_collaborators: {
+        Row: {
+          created_at: string
+          family_id: string
+          id: string
+          invited_by: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          family_id: string
+          id?: string
+          invited_by: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          family_id?: string
+          id?: string
+          invited_by?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_collaborators_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      family_invitations: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          expires_at: string
+          family_id: string
+          id: string
+          invited_by: string
+          invited_email: string
+          role: string
+          status: string
+          token: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          expires_at?: string
+          family_id: string
+          id?: string
+          invited_by: string
+          invited_email: string
+          role?: string
+          status?: string
+          token: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          expires_at?: string
+          family_id?: string
+          id?: string
+          invited_by?: string
+          invited_email?: string
+          role?: string
+          status?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_invitations_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       family_members: {
         Row: {
           family_id: string | null
@@ -1809,9 +1891,21 @@ export type Database = {
           subscription_id: string
         }[]
       }
+      has_family_access: {
+        Args: { _family_id: string; _user_id: string }
+        Returns: boolean
+      }
       hash_share_password: { Args: { plain_password: string }; Returns: string }
       is_admin: { Args: { user_uuid: string }; Returns: boolean }
       is_admin_secure: { Args: { user_uuid: string }; Returns: boolean }
+      is_family_collaborator: {
+        Args: { _family_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_family_owner: {
+        Args: { _family_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_maintenance_mode_enabled: { Args: never; Returns: boolean }
       is_subscription_expired: { Args: { user_uuid: string }; Returns: boolean }
       log_login_attempt: {
