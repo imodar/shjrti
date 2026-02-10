@@ -7,7 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getLocalizedText } from '@/lib/packageUtils';
 import { supabase } from '@/integrations/supabase/client';
-import { profilesApi } from '@/lib/api';
+import { profilesApi, familyInvitationsApi } from '@/lib/api';
 
 interface FamilyWithCount {
   id: string;
@@ -30,6 +30,7 @@ const StitchDashboard: React.FC = () => {
   const { subscription, hasActiveSubscription } = useSubscription();
   
   const [families, setFamilies] = useState<FamilyWithCount[]>([]);
+  const [sharedFamilies, setSharedFamilies] = useState<FamilyWithCount[]>([]);
   const [packageData, setPackageData] = useState<PackageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [loaderDone, setLoaderDone] = useState(false);
@@ -86,6 +87,34 @@ const StitchDashboard: React.FC = () => {
           }
         } catch (e) { console.error('Families error:', e); }
         setFamiliesLoaded(true);
+
+        // Step 2b: Shared Families (collaborator)
+        try {
+          const { data: collabs } = await supabase
+            .from('family_collaborators')
+            .select('family_id')
+            .eq('user_id', user.id);
+
+          if (collabs && collabs.length > 0) {
+            const sharedIds = collabs.map(c => (c as any).family_id);
+            const { data: sharedData } = await supabase
+              .from('families')
+              .select('id, name, updated_at, family_tree_members(count)')
+              .in('id', sharedIds)
+              .eq('is_archived', false);
+
+            if (sharedData) {
+              setSharedFamilies(
+                sharedData.map(family => ({
+                  id: family.id,
+                  name: family.name,
+                  updated_at: family.updated_at,
+                  memberCount: (family as any).family_tree_members?.[0]?.count || 0
+                }))
+              );
+            }
+          }
+        } catch (e) { console.error('Shared families error:', e); }
 
         // Step 3: Package/Subscription
         try {
@@ -361,6 +390,61 @@ const StitchDashboard: React.FC = () => {
             )}
           </div>
         </div>
+
+        {/* Shared Families Section */}
+        {sharedFamilies.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <h3 className="text-2xl font-bold text-foreground">{t('dashboard.shared_trees', 'Trees I Manage')}</h3>
+                <p className="text-muted-foreground mt-1">{t('dashboard.shared_trees_subtitle', 'Family trees shared with you as a collaborator')}</p>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {sharedFamilies.map((family) => (
+                <div 
+                  key={family.id}
+                  className="bg-card border border-border rounded-3xl p-8 shadow-sm hover:shadow-md transition-all flex flex-col"
+                >
+                  <div className="flex justify-between items-start mb-8">
+                    <div className="w-14 h-14 bg-blue-500/5 text-blue-500 rounded-2xl flex items-center justify-center">
+                      <span className="material-symbols-outlined text-3xl">group</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-full">
+                      <span className="material-symbols-outlined text-blue-500 text-sm">edit</span>
+                      <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wide">{t('dashboard.editor_role', 'Editor')}</span>
+                    </div>
+                  </div>
+                  <h4 className="text-2xl font-bold text-foreground mb-1">{family.name}</h4>
+                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mb-6">
+                    ID: {family.id.substring(0, 8).toUpperCase()}
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                    <div className="bg-muted rounded-xl p-3">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">{t('dashboard.members', 'Members')}</p>
+                      <p className="text-lg font-bold text-foreground">{family.memberCount || 0}</p>
+                    </div>
+                    <div className="bg-muted rounded-xl p-3">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">{t('dashboard.updated', 'Updated')}</p>
+                      <p className="text-lg font-bold text-primary">
+                        {family.updated_at ? new Date(family.updated_at).toLocaleDateString() : t('dashboard.not_available', 'N/A')}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-auto">
+                    <button 
+                      onClick={() => handleManageTree(family.id)}
+                      className="w-full bg-primary text-primary-foreground font-bold py-3 rounded-xl text-sm hover:bg-primary/90 transition-all"
+                    >
+                      {t('dashboard.manage', 'Manage')}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Features Section */}
         <div className="mt-20 pt-12 border-t border-border grid grid-cols-1 md:grid-cols-3 gap-10">

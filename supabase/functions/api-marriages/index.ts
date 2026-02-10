@@ -77,16 +77,25 @@ async function authenticateRequest(req: Request) {
   return { user, supabase };
 }
 
-// Check family ownership
-async function checkFamilyOwnership(userId: string, familyId: string): Promise<boolean> {
+// Check family access (owner or collaborator)
+async function checkAccess(userId: string, familyId: string): Promise<boolean> {
   const supabase = createServiceClient();
-  const { data } = await supabase
+  // Check owner
+  const { data: family } = await supabase
     .from('families')
     .select('id')
     .eq('id', familyId)
     .eq('creator_id', userId)
     .maybeSingle();
-  return !!data;
+  if (family) return true;
+  // Check collaborator
+  const { data: collab } = await supabase
+    .from('family_collaborators')
+    .select('id')
+    .eq('family_id', familyId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  return !!collab;
 }
 
 // Get marriage's family ID
@@ -109,7 +118,7 @@ async function handleGet(userId: string, marriageId: string) {
     return errorResponse('NOT_FOUND', 'Marriage not found', 404);
   }
   
-  if (!await checkFamilyOwnership(userId, familyId)) {
+   if (!await checkAccess(userId, familyId)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this marriage', 403);
   }
   
@@ -145,7 +154,7 @@ async function handleCreate(userId: string, payload: Record<string, unknown>) {
     return errorResponse('VALIDATION_ERROR', 'Wife ID is required', 400);
   }
   
-  if (!await checkFamilyOwnership(userId, family_id as string)) {
+  if (!await checkAccess(userId, family_id as string)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
   }
   
@@ -205,7 +214,7 @@ async function handleUpsert(userId: string, payload: Record<string, unknown>): P
     return errorResponse('VALIDATION_ERROR', 'family_id, husband_id, and wife_id are required', 400);
   }
   
-  if (!await checkFamilyOwnership(userId, family_id as string)) {
+  if (!await checkAccess(userId, family_id as string)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
   }
   
@@ -243,7 +252,7 @@ async function handleUpdate(userId: string, marriageId: string, payload: Record<
     return errorResponse('NOT_FOUND', 'Marriage not found', 404);
   }
   
-  if (!await checkFamilyOwnership(userId, familyId)) {
+  if (!await checkAccess(userId, familyId)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this marriage', 403);
   }
   
@@ -291,7 +300,7 @@ async function handleUpdateBySpouse(
   
   // Verify ownership
   for (const marriage of marriages) {
-    if (!await checkFamilyOwnership(userId, marriage.family_id)) {
+    if (!await checkAccess(userId, marriage.family_id)) {
       return errorResponse('FORBIDDEN', 'You do not have access to one or more marriages', 403);
     }
   }
@@ -330,7 +339,7 @@ async function handleDelete(userId: string, marriageId: string) {
     return errorResponse('NOT_FOUND', 'Marriage not found', 404);
   }
   
-  if (!await checkFamilyOwnership(userId, marriage.family_id)) {
+  if (!await checkAccess(userId, marriage.family_id)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this marriage', 403);
   }
   
@@ -376,7 +385,7 @@ async function handleBatchDelete(userId: string, ids: string[]): Promise<Respons
     const familyId = await getMarriageFamilyId(id);
     if (!familyId) continue;
     
-    if (!await checkFamilyOwnership(userId, familyId)) {
+    if (!await checkAccess(userId, familyId)) {
       return errorResponse('FORBIDDEN', `Access denied for marriage ${id}`, 403);
     }
   }
@@ -412,7 +421,7 @@ async function handleDeleteBySpouses(userId: string, husbandId: string, wifeId: 
     return errorResponse('NOT_FOUND', 'Marriage not found', 404);
   }
   
-  if (!await checkFamilyOwnership(userId, marriage.family_id)) {
+  if (!await checkAccess(userId, marriage.family_id)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this marriage', 403);
   }
   

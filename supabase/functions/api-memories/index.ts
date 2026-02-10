@@ -18,15 +18,22 @@ import { authenticateRequest, createServiceClient } from '../_shared/authHelpers
 
 // ============= Helper Functions =============
 
-async function checkFamilyOwnership(userId: string, familyId: string): Promise<boolean> {
+async function checkAccess(userId: string, familyId: string): Promise<boolean> {
   const supabase = createServiceClient();
-  const { data } = await supabase
+  const { data: family } = await supabase
     .from('families')
     .select('id')
     .eq('id', familyId)
     .eq('creator_id', userId)
-    .single();
-  return !!data;
+    .maybeSingle();
+  if (family) return true;
+  const { data: collab } = await supabase
+    .from('family_collaborators')
+    .select('id')
+    .eq('family_id', familyId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  return !!collab;
 }
 
 async function getMemberFamilyId(memberId: string): Promise<string | null> {
@@ -74,8 +81,8 @@ async function handleGetMemberMemories(userId: string, memberId: string): Promis
     return errorResponse('NOT_FOUND', 'Member not found', HttpStatus.NOT_FOUND);
   }
 
-  const isOwner = await checkFamilyOwnership(userId, familyId);
-  if (!isOwner) {
+  const hasAccess = await checkAccess(userId, familyId);
+  if (!hasAccess) {
     return errorResponse('FORBIDDEN', 'Unauthorized', HttpStatus.FORBIDDEN);
   }
 
@@ -96,8 +103,8 @@ async function handleGetMemberMemories(userId: string, memberId: string): Promis
 async function handleGetFamilyMemories(userId: string, familyId: string): Promise<Response> {
   console.log(`[API] GET - Getting memories for family: ${familyId}`);
   
-  const isOwner = await checkFamilyOwnership(userId, familyId);
-  if (!isOwner) {
+  const hasAccess = await checkAccess(userId, familyId);
+  if (!hasAccess) {
     return errorResponse('FORBIDDEN', 'Unauthorized', HttpStatus.FORBIDDEN);
   }
 
@@ -131,8 +138,8 @@ async function handleCreateMemberMemory(userId: string, payload: Record<string, 
     return errorResponse('NOT_FOUND', 'Member not found', HttpStatus.NOT_FOUND);
   }
 
-  const isOwner = await checkFamilyOwnership(userId, familyId);
-  if (!isOwner) {
+  const hasAccess = await checkAccess(userId, familyId);
+  if (!hasAccess) {
     return errorResponse('FORBIDDEN', 'Unauthorized', HttpStatus.FORBIDDEN);
   }
 
@@ -167,8 +174,8 @@ async function handleCreateFamilyMemory(userId: string, payload: Record<string, 
     return errorResponse('VALIDATION_ERROR', 'Missing required fields', HttpStatus.BAD_REQUEST);
   }
 
-  const isOwner = await checkFamilyOwnership(userId, family_id as string);
-  if (!isOwner) {
+  const hasAccess = await checkAccess(userId, family_id as string);
+  if (!hasAccess) {
     return errorResponse('FORBIDDEN', 'Unauthorized', HttpStatus.FORBIDDEN);
   }
 
@@ -207,8 +214,8 @@ async function handleUpdateMemberMemory(userId: string, memoryId: string, payloa
     return errorResponse('NOT_FOUND', 'Memory not found', HttpStatus.NOT_FOUND);
   }
 
-  const isOwner = await checkFamilyOwnership(userId, familyId);
-  if (!isOwner) {
+  const hasAccess = await checkAccess(userId, familyId);
+  if (!hasAccess) {
     return errorResponse('FORBIDDEN', 'Unauthorized', HttpStatus.FORBIDDEN);
   }
 
@@ -237,8 +244,8 @@ async function handleUpdateFamilyMemory(userId: string, memoryId: string, payloa
     return errorResponse('NOT_FOUND', 'Memory not found', HttpStatus.NOT_FOUND);
   }
 
-  const isOwner = await checkFamilyOwnership(userId, familyId);
-  if (!isOwner) {
+  const hasAccess = await checkAccess(userId, familyId);
+  if (!hasAccess) {
     return errorResponse('FORBIDDEN', 'Unauthorized', HttpStatus.FORBIDDEN);
   }
 
@@ -275,8 +282,8 @@ async function handleDeleteMemberMemory(userId: string, memoryId: string): Promi
     return errorResponse('NOT_FOUND', 'Memory not found', HttpStatus.NOT_FOUND);
   }
 
-  const isOwner = await checkFamilyOwnership(userId, familyId);
-  if (!isOwner) {
+  const hasAccess = await checkAccess(userId, familyId);
+  if (!hasAccess) {
     return errorResponse('FORBIDDEN', 'Unauthorized', HttpStatus.FORBIDDEN);
   }
 
@@ -315,8 +322,8 @@ async function handleDeleteFamilyMemory(userId: string, memoryId: string): Promi
     return errorResponse('NOT_FOUND', 'Memory not found', HttpStatus.NOT_FOUND);
   }
 
-  const isOwner = await checkFamilyOwnership(userId, familyId);
-  if (!isOwner) {
+  const hasAccess = await checkAccess(userId, familyId);
+  if (!hasAccess) {
     return errorResponse('FORBIDDEN', 'Unauthorized', HttpStatus.FORBIDDEN);
   }
 
