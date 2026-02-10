@@ -39,7 +39,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   const localizedPackageName = getLocalizedText(packageName, currentLanguage, t('stitch.free_plan', 'باقة مجانية'));
 
   const tabs = [
-    { id: "home", label: t('stitch.tab.home', 'الرئيسية'), path: "/stitch-dashboard" },
+    { id: "home", label: t('family_header.home', 'الرئيسية'), path: "/stitch-dashboard" },
     { id: "dashboard", label: t('stitch.tab.dashboard', 'لوحة التحكم'), path: "/family-builder-stitch" },
     { id: "tree", label: t('stitch.tab.tree_view', 'عرض الشجرة'), path: "/stitch-tree-view" },
     { id: "gallery", label: t('stitch.tab.gallery', 'المعرض'), path: "/family-builder-stitch" },
