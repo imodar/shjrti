@@ -395,10 +395,12 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Female Name Visibility */}
-            <div className="flex flex-col items-center text-center p-6 bg-muted rounded-2xl border border-border">
-              <label className="text-sm font-bold text-foreground mb-1">{t('tree_settings.female_name_display', 'عرض أسماء الإناث')}</label>
-              <span className="text-[11px] text-muted-foreground italic mb-3">Female Name Visibility</span>
-              <div className="relative w-full">
+            <div className="p-6 bg-muted rounded-2xl border border-border">
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-sm font-bold text-foreground">{t('tree_settings.female_name_display', 'عرض أسماء الإناث')}</label>
+                <span className="text-[11px] text-muted-foreground italic">Female Name Visibility</span>
+              </div>
+              <div className="relative group">
                 <select
                   value={femaleNamePrivacy}
                   onChange={(e) => handleFemaleNamePrivacyChange(e.target.value)}
@@ -411,9 +413,9 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
                   ))}
                 </select>
                 <span className="material-symbols-outlined absolute start-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">expand_more</span>
-              </div>
-              <div className="mt-2 text-[11px] text-muted-foreground bg-card p-2 rounded-lg border border-border w-full">
-                <span className="font-semibold text-primary">{t('settings.preview', 'معاينة:')}</span> {getPreviewText()}
+                <div className="mt-2 text-[11px] text-muted-foreground bg-card p-2 rounded-lg border border-border">
+                  <span className="font-semibold text-primary">{t('settings.preview', 'معاينة:')}</span> {getPreviewText()}
+                </div>
               </div>
             </div>
 
