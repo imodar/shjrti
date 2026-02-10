@@ -89,12 +89,26 @@ async function checkOwnership(userId: string, familyId: string): Promise<boolean
   return !!data;
 }
 
+// Check family access (owner OR collaborator)
+async function checkAccess(userId: string, familyId: string): Promise<boolean> {
+  if (await checkOwnership(userId, familyId)) return true;
+  const supabase = createServiceClient();
+  const { data } = await supabase
+    .from('family_collaborators')
+    .select('id')
+    .eq('family_id', familyId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  return !!data;
+}
+
 // GET handlers
 async function handleList(userId: string) {
   console.log(`[API] GET - Listing families for user: ${userId}`);
   const supabase = createServiceClient();
   
-  const { data, error } = await supabase
+  // Get owned families
+  const { data: owned, error } = await supabase
     .from('families')
     .select('*')
     .eq('creator_id', userId)
@@ -104,17 +118,34 @@ async function handleList(userId: string) {
     console.error('[API] List error:', error);
     return errorResponse('DATABASE_ERROR', error.message, 500);
   }
+
+  // Get collaborated families
+  const { data: collabs } = await supabase
+    .from('family_collaborators')
+    .select('family_id')
+    .eq('user_id', userId);
+
+  let collaborated: any[] = [];
+  if (collabs && collabs.length > 0) {
+    const familyIds = collabs.map(c => c.family_id);
+    const { data: collabFamilies } = await supabase
+      .from('families')
+      .select('*')
+      .in('id', familyIds)
+      .order('created_at', { ascending: false });
+    collaborated = (collabFamilies || []).map(f => ({ ...f, _role: 'editor' }));
+  }
   
-  return successResponse(data);
+  return successResponse([...(owned || []), ...collaborated]);
 }
 
 async function handleGet(userId: string, familyId: string, include?: string) {
   console.log(`[API] GET - Getting family: ${familyId}`);
   
-  if (!await checkOwnership(userId, familyId)) {
+  if (!await checkAccess(userId, familyId)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
   }
-  
+
   const supabase = createServiceClient();
   
   // Handle include parameter for nested resources
@@ -220,10 +251,10 @@ async function handleUpdate(userId: string, familyId: string, payload: Record<st
 async function handleDelete(userId: string, familyId: string) {
   console.log(`[API] DELETE - Deleting family: ${familyId}`);
   
-  if (!await checkOwnership(userId, familyId)) {
+  if (!await checkAccess(userId, familyId)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
   }
-  
+
   const supabase = createServiceClient();
   
   // Use the RPC function for complete deletion

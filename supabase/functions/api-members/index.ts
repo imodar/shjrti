@@ -89,6 +89,19 @@ async function checkFamilyOwnership(userId: string, familyId: string): Promise<b
   return !!data;
 }
 
+// Check family access (owner OR collaborator)
+async function checkFamilyAccess(userId: string, familyId: string): Promise<boolean> {
+  if (await checkFamilyOwnership(userId, familyId)) return true;
+  const supabase = createServiceClient();
+  const { data } = await supabase
+    .from('family_collaborators')
+    .select('id')
+    .eq('family_id', familyId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  return !!data;
+}
+
 // Get member's family ID
 async function getMemberFamilyId(memberId: string): Promise<string | null> {
   const supabase = createServiceClient();
@@ -109,7 +122,7 @@ async function handleGet(userId: string, memberId: string, include?: string) {
     return errorResponse('NOT_FOUND', 'Member not found', 404);
   }
   
-  if (!await checkFamilyOwnership(userId, familyId)) {
+  if (!await checkFamilyAccess(userId, familyId)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this member', 403);
   }
   
@@ -157,7 +170,7 @@ async function handleCreate(userId: string, payload: Record<string, unknown>) {
     return errorResponse('VALIDATION_ERROR', 'Member name is required', 400);
   }
   
-  if (!await checkFamilyOwnership(userId, family_id as string)) {
+  if (!await checkFamilyAccess(userId, family_id as string)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
   }
   
@@ -190,7 +203,7 @@ async function handleBatchCreate(userId: string, members: Record<string, unknown
   // Check ownership for all families
   const familyIds = [...new Set(members.map(m => m.family_id as string))];
   for (const familyId of familyIds) {
-    if (!await checkFamilyOwnership(userId, familyId)) {
+    if (!await checkFamilyAccess(userId, familyId)) {
       return errorResponse('FORBIDDEN', `You do not have access to family: ${familyId}`, 403);
     }
   }
@@ -220,7 +233,7 @@ async function handleUpdate(userId: string, memberId: string, payload: Record<st
     return errorResponse('NOT_FOUND', 'Member not found', 404);
   }
   
-  if (!await checkFamilyOwnership(userId, familyId)) {
+  if (!await checkFamilyAccess(userId, familyId)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this member', 403);
   }
   
@@ -252,7 +265,7 @@ async function handleClearParentReference(
   console.log(`[API] PUT - Clearing ${parentType} reference for parent: ${parentId}`);
   
   const familyId = await getMemberFamilyId(parentId);
-  if (familyId && !await checkFamilyOwnership(userId, familyId)) {
+  if (familyId && !await checkFamilyAccess(userId, familyId)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this member', 403);
   }
   
@@ -282,7 +295,7 @@ async function handleDelete(userId: string, memberId: string) {
     return errorResponse('NOT_FOUND', 'Member not found', 404);
   }
   
-  if (!await checkFamilyOwnership(userId, familyId)) {
+  if (!await checkFamilyAccess(userId, familyId)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this member', 403);
   }
   
@@ -345,7 +358,7 @@ async function handleBatchDelete(userId: string, ids: string[]): Promise<Respons
     const familyId = await getMemberFamilyId(id);
     if (!familyId) continue;
     
-    if (!await checkFamilyOwnership(userId, familyId)) {
+    if (!await checkFamilyAccess(userId, familyId)) {
       return errorResponse('FORBIDDEN', `Access denied for member ${id}`, 403);
     }
   }

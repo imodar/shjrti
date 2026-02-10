@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useToast } from '@/hooks/use-toast';
-import { familiesApi, subscriptionsApi } from '@/lib/api';
+import { familiesApi, subscriptionsApi, familyInvitationsApi } from '@/lib/api';
+import type { Collaborator, Invitation } from '@/lib/api/endpoints/familyInvitations';
 import { Family } from '@/lib/api/types';
 import TreeDeleteModal from '@/components/TreeDeleteModal';
 import { ShareLinkModal } from '@/pages/FamilyBuilderNew/components/TreeSettings/ShareLinkModal';
@@ -11,17 +12,20 @@ import { CustomDomainModal } from '@/pages/FamilyBuilderNew/components/TreeSetti
 import DOMPurify from 'dompurify';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import CollaboratorsTab from './CollaboratorsTab';
 
 interface StitchSettingsViewProps {
   familyId: string;
   familyData: Family | null;
   onFamilyUpdated?: () => void;
+  isOwner?: boolean;
 }
 
 export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
   familyId,
   familyData,
   onFamilyUpdated,
+  isOwner = true,
 }) => {
   const navigate = useNavigate();
   const { t, currentLanguage } = useLanguage();
@@ -490,17 +494,7 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
 
         {/* Tab 2: Admins & Permissions */}
         {activeSettingsTab === 'admins' && (
-          <div className="bg-card rounded-2xl p-8 shadow-sm border border-border">
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
-                <span className="material-symbols-outlined text-primary text-4xl">admin_panel_settings</span>
-              </div>
-              <h3 className="font-bold text-lg text-foreground mb-2">{t('settings.admins_coming_soon_title', 'قريباً')}</h3>
-              <p className="text-sm text-muted-foreground max-w-sm">
-                {t('settings.admins_coming_soon_desc', 'ستتمكن قريباً من إضافة مشرفين وتعيين صلاحيات مختلفة لإدارة شجرة العائلة.')}
-              </p>
-            </div>
-          </div>
+          <CollaboratorsTab familyId={familyId} isOwner={isOwner} />
         )}
 
         {/* Tab 3: Advanced Settings */}
