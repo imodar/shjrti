@@ -20,6 +20,7 @@ interface PackageData {
   max_family_trees: number | null;
   max_family_members: number | null;
   name: Record<string, string>;
+  price_sar: number | null;
 }
 
 const StitchDashboard: React.FC = () => {
@@ -98,7 +99,7 @@ const StitchDashboard: React.FC = () => {
           if (subData?.package_id) {
             const { data: pkgData } = await supabase
               .from('packages')
-              .select('name, max_family_trees, max_family_members')
+              .select('name, max_family_trees, max_family_members, price_sar')
               .eq('id', subData.package_id)
               .single();
             if (pkgData) setPackageData(pkgData as PackageData);
@@ -198,7 +199,7 @@ const StitchDashboard: React.FC = () => {
             </div>
             
             <div className="w-full lg:w-64 flex-shrink-0">
-              {(!packageData && !hasActiveSubscription) ? (
+              {(!packageData || !hasActiveSubscription || (packageData.price_sar != null && packageData.price_sar <= 0)) ? (
                 /* Free Plan - Gold Upgrade CTA */
                 <div className="rounded-2xl p-5 shadow-xl border-2 border-yellow-400/50 relative overflow-hidden group"
                   style={{ background: 'linear-gradient(135deg, hsl(45 100% 96%), hsl(40 80% 90%))' }}>
