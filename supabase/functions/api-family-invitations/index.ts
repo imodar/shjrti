@@ -457,6 +457,36 @@ async function handleLeave(userId: string, familyId: string) {
   return successResponse({ left: true });
 }
 
+// GET: Get current user's role for a family
+async function handleMyRole(userId: string, familyId: string) {
+  const supabase = createServiceClient();
+
+  // Check if owner
+  const { data: family } = await supabase
+    .from('families')
+    .select('creator_id')
+    .eq('id', familyId)
+    .maybeSingle();
+
+  if (family?.creator_id === userId) {
+    return successResponse({ role: 'owner' });
+  }
+
+  // Check if collaborator
+  const { data: collab } = await supabase
+    .from('family_collaborators')
+    .select('role')
+    .eq('family_id', familyId)
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (collab) {
+    return successResponse({ role: collab.role || 'editor' });
+  }
+
+  return successResponse({ role: 'none' });
+}
+
 // Main handler
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -489,6 +519,7 @@ Deno.serve(async (req) => {
     switch (req.method) {
       case 'GET':
         if (!familyId) return errorResponse('VALIDATION_ERROR', 'family_id is required');
+        if (action === 'my-role') return await handleMyRole(user!.id, familyId);
         return await handleList(user!.id, familyId);
 
       case 'POST':
