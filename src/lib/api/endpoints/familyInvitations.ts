@@ -42,7 +42,16 @@ export interface AcceptResponse {
   already_member?: boolean;
 }
 
+export interface MyRoleResponse {
+  role: 'owner' | 'editor' | 'none';
+}
+
 export const familyInvitationsApi = {
+  /** Get current user's role for a family */
+  getMyRole: async (familyId: string): Promise<MyRoleResponse> => {
+    return apiClient.get<MyRoleResponse>(FUNCTION_NAME, { family_id: familyId, action: 'my-role' });
+  },
+
   /** List collaborators and pending invitations for a family (owner only) */
   list: async (familyId: string): Promise<CollaboratorsListResponse> => {
     return apiClient.get<CollaboratorsListResponse>(FUNCTION_NAME, { family_id: familyId });
