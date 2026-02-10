@@ -507,7 +507,7 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
               </div>
               <p className="text-sm text-muted-foreground mb-8">{t('settings.advanced_desc', 'تصدير البيانات والإجراءات الدائمة')}</p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className={`grid grid-cols-1 ${isOwner ? 'md:grid-cols-2' : ''} gap-6`}>
                 {/* Download Tree Data */}
                 <div className="p-6 bg-muted rounded-2xl border border-border flex flex-col justify-between">
                   <div>
@@ -522,24 +522,26 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
                   </button>
                 </div>
 
-                {/* Delete Family Tree */}
-                <div className="p-6 bg-red-50/30 dark:bg-red-900/10 border border-red-100/50 dark:border-red-900/20 rounded-2xl flex flex-col justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="material-symbols-outlined text-red-500 text-lg">delete_forever</span>
-                      <h4 className="font-bold text-red-600 text-sm">{t('settings.delete_tree', 'حذف شجرة العائلة')}</h4>
+                {/* Delete Family Tree - Owner Only */}
+                {isOwner && (
+                  <div className="p-6 bg-red-50/30 dark:bg-red-900/10 border border-red-100/50 dark:border-red-900/20 rounded-2xl flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="material-symbols-outlined text-red-500 text-lg">delete_forever</span>
+                        <h4 className="font-bold text-red-600 text-sm">{t('settings.delete_tree', 'حذف شجرة العائلة')}</h4>
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed mb-6">{t('settings.delete_tree_desc', 'حذف هذه الشجرة وجميع بياناتها بشكل دائم.')}</p>
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-6">{t('settings.delete_tree_desc', 'حذف هذه الشجرة وجميع بياناتها بشكل دائم.')}</p>
+                    <button
+                      onClick={() => setIsDeleteModalOpen(true)}
+                      className="w-full py-3 bg-red-500 text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-500/10"
+                    >
+                      {t('settings.delete_permanently', 'حذف نهائي')}
+                    </button>
                   </div>
-                  <button
-                    onClick={() => setIsDeleteModalOpen(true)}
-                    className="w-full py-3 bg-red-500 text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-500/10"
-                  >
-                    {t('settings.delete_permanently', 'حذف نهائي')}
-                  </button>
-                </div>
+                )}
               </div>
-              <p className="text-[11px] text-muted-foreground text-center mt-6 italic">{t('settings.deletion_warning', 'تحذير: إجراءات الحذف لا يمكن التراجع عنها وستمسح جميع السجلات.')}</p>
+              {isOwner && <p className="text-[11px] text-muted-foreground text-center mt-6 italic">{t('settings.deletion_warning', 'تحذير: إجراءات الحذف لا يمكن التراجع عنها وستمسح جميع السجلات.')}</p>}
             </div>
           </>
         )}

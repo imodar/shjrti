@@ -19,6 +19,7 @@ interface StitchHeaderProps {
   onTabChange?: (tab: string) => void;
   suggestionsCount?: number;
   hideNav?: boolean;
+  isOwner?: boolean;
 }
 
 export const StitchHeader: React.FC<StitchHeaderProps> = ({
@@ -29,6 +30,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   onTabChange,
   suggestionsCount = 0,
   hideNav = false,
+  isOwner = true,
 }) => {
   const navigate = useNavigate();
   const { t, currentLanguage } = useLanguage();
@@ -169,31 +171,35 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
                 </div>
               </Link>
               
-              <Link 
-                to="/profile" 
-                className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
-              >
-                <div className="p-1.5 bg-amber-500/10 rounded-lg group-hover:bg-amber-500/20 transition-colors">
-                  <Settings className="h-4 w-4 text-amber-500" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">{t('nav.settings', 'Settings')}</p>
-                  <p className="text-[10px] text-slate-500">{t('nav.settings.desc', 'Customize account')}</p>
-                </div>
-              </Link>
+              {isOwner && (
+                <Link 
+                  to="/profile" 
+                  className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
+                >
+                  <div className="p-1.5 bg-amber-500/10 rounded-lg group-hover:bg-amber-500/20 transition-colors">
+                    <Settings className="h-4 w-4 text-amber-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">{t('nav.settings', 'Settings')}</p>
+                    <p className="text-[10px] text-slate-500">{t('nav.settings.desc', 'Customize account')}</p>
+                  </div>
+                </Link>
+              )}
               
-              <Link 
-                to="/payments" 
-                className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
-              >
-                <div className="p-1.5 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 transition-colors">
-                  <CreditCard className="h-4 w-4 text-blue-500" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">{t('nav.billing', 'Billing')}</p>
-                  <p className="text-[10px] text-slate-500">{t('nav.billing.desc', 'Manage subscriptions')}</p>
-                </div>
-              </Link>
+              {isOwner && (
+                <Link 
+                  to="/payments" 
+                  className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
+                >
+                  <div className="p-1.5 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 transition-colors">
+                    <CreditCard className="h-4 w-4 text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">{t('nav.billing', 'Billing')}</p>
+                    <p className="text-[10px] text-slate-500">{t('nav.billing.desc', 'Manage subscriptions')}</p>
+                  </div>
+                </Link>
+              )}
               
               <div className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group cursor-pointer">
                 <div className="p-1.5 bg-purple-500/10 rounded-lg group-hover:bg-purple-500/20 transition-colors">

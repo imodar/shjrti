@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useFamilyData } from '@/contexts/FamilyDataContext';
+import { useFamilyRole } from '@/hooks/useFamilyRole';
 import { subscriptionsApi, suggestionsApi } from '@/lib/api';
 import { StitchHeader, StitchFamilyBar, StitchSidebar, StitchRightPanel, StitchMainContent, StitchSettingsView } from '@/components/stitch';
 import DashboardLoader from '@/components/stitch/DashboardLoader';
@@ -80,6 +81,7 @@ const FamilyBuilderStitch: React.FC = () => {
   const [editingMember, setEditingMember] = useState<any>(null);
   const [maxFamilyMembers, setMaxFamilyMembers] = useState<number | null>(null);
   const familyId = searchParams.get('family') || '';
+  const { isOwner, isCollaborator, canEditMembers, canDelete, canInvite, loading: roleLoading } = useFamilyRole(familyId);
   const initialTab = searchParams.get('tab') || 'dashboard';
   const [activeTab, setActiveTab] = useState(initialTab);
   const [showSuggestions, setShowSuggestions] = useState(initialTab === 'suggestions');
@@ -311,6 +313,7 @@ const FamilyBuilderStitch: React.FC = () => {
         activeTab={activeTab}
         onTabChange={handleTabChange}
         suggestionsCount={pendingSuggestionsCount}
+        isOwner={isOwner}
       />
 
       {/* Family Bar - NEW */}
@@ -347,6 +350,7 @@ const FamilyBuilderStitch: React.FC = () => {
             familyId={familyId}
             familyData={familyData}
             onFamilyUpdated={refetch}
+            isOwner={isOwner}
           />
         ) : (
           <StitchMainContent
