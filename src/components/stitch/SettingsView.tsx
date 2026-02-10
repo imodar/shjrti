@@ -197,308 +197,358 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
     return t('settings.preview_hidden', 'سيظهر للزوار "أنثى"');
   };
 
+  const [activeSettingsTab, setActiveSettingsTab] = useState<'general' | 'admins' | 'advanced'>('general');
+
+  const settingsTabs = [
+    { id: 'general' as const, label: t('settings.tab_general', 'اعدادات عامة'), icon: 'tune' },
+    { id: 'admins' as const, label: t('settings.tab_admins', 'المشرفون والصلاحيات'), icon: 'admin_panel_settings' },
+    { id: 'advanced' as const, label: t('settings.tab_advanced', 'اعدادات متقدمة'), icon: 'settings' },
+  ];
+
   return (
     <section className="flex-1 overflow-y-auto bg-slate-50 dark:bg-background p-8 custom-scrollbar">
       <div className="max-w-4xl mx-auto space-y-6">
 
-        {/* Family Description */}
-        <div className="bg-card rounded-2xl p-8 shadow-sm border border-border">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="material-symbols-outlined text-primary text-2xl">description</span>
-            <div>
-              <h3 className="font-bold text-lg text-foreground">{t('tree_settings.family_description', 'وصف العائلة')}</h3>
-              <p className="text-sm text-muted-foreground">{t('tree_settings.family_description_desc', 'أضف وصفاً مختصراً عن تاريخ عائلتك')}</p>
-            </div>
-          </div>
-
-          <div className="bg-muted rounded-xl p-6 border border-border mb-6">
-            {isEditingDescription ? (
-              <ReactQuill
-                value={description}
-                onChange={(value) => setDescription(value)}
-                placeholder={t('tree_settings.description_placeholder', 'اكتب وصفاً عن عائلتك...')}
-                theme="snow"
-                modules={{
-                  toolbar: [
-                    [{ 'header': [1, 2, 3, false] }],
-                    ['bold', 'italic', 'underline'],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    [{ 'direction': 'rtl' }],
-                    [{ 'align': [] }],
-                    ['clean']
-                  ]
-                }}
-              />
-            ) : (
-              <p
-                className="text-muted-foreground leading-relaxed text-sm text-start"
-                dir="rtl"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(description || t('tree_settings.description_placeholder', 'لم يتم إضافة وصف بعد...'))
-                }}
-              />
-            )}
-          </div>
-
-          {isEditingDescription ? (
-            <div className="flex gap-3">
-              <button
-                onClick={handleSaveDescription}
-                disabled={isUpdatingDescription}
-                className="px-5 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
-              >
-                {isUpdatingDescription ? t('tree_settings.saving', 'جاري الحفظ...') : t('tree_settings.save', 'حفظ')}
-              </button>
-              <button
-                onClick={() => { setDescription(familyData?.description || ''); setIsEditingDescription(false); }}
-                className="px-5 py-2 border border-border rounded-xl text-sm font-semibold text-foreground hover:bg-muted transition-colors"
-              >
-                {t('tree_settings.cancel', 'إلغاء')}
-              </button>
-            </div>
-          ) : (
+        {/* Settings Tabs */}
+        <div className="flex gap-2 bg-muted/50 p-1.5 rounded-xl border border-border/50">
+          {settingsTabs.map(tab => (
             <button
-              onClick={() => setIsEditingDescription(true)}
-              className="px-5 py-2 border border-border rounded-xl text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+              key={tab.id}
+              onClick={() => setActiveSettingsTab(tab.id)}
+              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
+                activeSettingsTab === tab.id
+                  ? 'bg-background text-primary shadow-md shadow-primary/10'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+              }`}
             >
-              {t('tree_settings.edit_description', 'تعديل الوصف')}
+              <span className="material-symbols-outlined text-lg">{tab.icon}</span>
+              {tab.label}
             </button>
-          )}
+          ))}
         </div>
 
-        {/* Tree Accessibility */}
-        <div className="bg-card rounded-2xl p-8 shadow-sm border border-border relative overflow-hidden">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="material-symbols-outlined text-primary text-2xl">visibility</span>
-            <h3 className="font-bold text-lg text-foreground">{t('tree_settings.sharing_domain_title', 'إمكانية الوصول للشجرة')}</h3>
-          </div>
-          <p className="text-sm text-muted-foreground mb-8">{t('tree_settings.sharing_domain_desc', 'إدارة كيفية عرض ومشاركة بيانات شجرة عائلتك')}</p>
-
-          <div className="space-y-4">
-            {/* Public Tree Link */}
-            <div className="p-6 bg-primary/5 border border-primary/20 rounded-2xl">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-primary">link</span>
-                  <span className="font-bold text-foreground text-sm">{t('tree_settings.public_link_title', 'رابط الشجرة العام')}</span>
-                  {shareToken && <span className="material-symbols-outlined text-primary text-lg">check_circle</span>}
+        {/* Tab 1: General Settings */}
+        {activeSettingsTab === 'general' && (
+          <>
+            {/* Family Description */}
+            <div className="bg-card rounded-2xl p-8 shadow-sm border border-border">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="material-symbols-outlined text-primary text-2xl">description</span>
+                <div>
+                  <h3 className="font-bold text-lg text-foreground">{t('tree_settings.family_description', 'وصف العائلة')}</h3>
+                  <p className="text-sm text-muted-foreground">{t('tree_settings.family_description_desc', 'أضف وصفاً مختصراً عن تاريخ عائلتك')}</p>
                 </div>
-                <button
-                  onClick={generateShareToken}
-                  disabled={isGeneratingToken}
-                  className="text-[10px] font-bold text-muted-foreground flex items-center gap-1.5 px-3 py-1.5 bg-card rounded-lg shadow-sm border border-border hover:bg-muted transition-colors"
-                >
-                  <span className={`material-symbols-outlined text-sm ${isGeneratingToken ? 'animate-spin' : ''}`}>refresh</span>
-                  {t('tree_settings.generate_new_link', 'توليد جديد')}
-                </button>
               </div>
 
-              <div className="bg-card border border-border px-4 py-3 rounded-xl text-xs text-muted-foreground mb-4 font-mono break-all">
-                {publicShareableLink || t('settings.no_link_yet', 'لم يتم إنشاء رابط بعد - اضغط "توليد جديد"')}
+              <div className="bg-muted rounded-xl p-6 border border-border mb-6">
+                {isEditingDescription ? (
+                  <ReactQuill
+                    value={description}
+                    onChange={(value) => setDescription(value)}
+                    placeholder={t('tree_settings.description_placeholder', 'اكتب وصفاً عن عائلتك...')}
+                    theme="snow"
+                    modules={{
+                      toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'direction': 'rtl' }],
+                        [{ 'align': [] }],
+                        ['clean']
+                      ]
+                    }}
+                  />
+                ) : (
+                  <p
+                    className="text-muted-foreground leading-relaxed text-sm text-start"
+                    dir="rtl"
+                    dangerouslySetInnerHTML={{
+                      __html: DOMPurify.sanitize(description || t('tree_settings.description_placeholder', 'لم يتم إضافة وصف بعد...'))
+                    }}
+                  />
+                )}
               </div>
 
-              <div className="flex gap-2">
+              {isEditingDescription ? (
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleSaveDescription}
+                    disabled={isUpdatingDescription}
+                    className="px-5 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50"
+                  >
+                    {isUpdatingDescription ? t('tree_settings.saving', 'جاري الحفظ...') : t('tree_settings.save', 'حفظ')}
+                  </button>
+                  <button
+                    onClick={() => { setDescription(familyData?.description || ''); setIsEditingDescription(false); }}
+                    className="px-5 py-2 border border-border rounded-xl text-sm font-semibold text-foreground hover:bg-muted transition-colors"
+                  >
+                    {t('tree_settings.cancel', 'إلغاء')}
+                  </button>
+                </div>
+              ) : (
                 <button
-                  onClick={() => handleCopyLink(publicShareableLink)}
-                  disabled={!shareToken}
-                  className="px-4 py-2 bg-card border border-border rounded-xl text-xs font-bold text-foreground flex items-center gap-2 shadow-sm hover:bg-muted transition-colors disabled:opacity-50"
+                  onClick={() => setIsEditingDescription(true)}
+                  className="px-5 py-2 border border-border rounded-xl text-sm font-semibold text-foreground hover:bg-muted transition-colors"
                 >
-                  <span className="material-symbols-outlined text-base">content_copy</span>
-                  {t('tree_settings.copy_button', 'نسخ')}
+                  {t('tree_settings.edit_description', 'تعديل الوصف')}
                 </button>
-                <button
-                  onClick={() => setIsShareModalOpen(true)}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-bold flex items-center gap-2 shadow-md hover:bg-primary/90 transition-all"
-                >
-                  <span className="material-symbols-outlined text-base">share</span>
-                  {t('tree_settings.share_button', 'مشاركة')}
-                </button>
-              </div>
+              )}
             </div>
 
-            {/* Custom Link - Premium */}
-            <PremiumFeatureRow
-              icon="language"
-              title={t('tree_settings.custom_link_title', 'رابط مخصص')}
-              description={t('tree_settings.custom_link_premium_desc', 'عيّن رابط URL مخصص مثل shjrti.com/alsaeed')}
-              isAvailable={hasCustomDomainFeature}
-              isLoading={checkingFeatures}
-              currentValue={familyData?.custom_domain}
-              onUpgrade={() => navigate('/plan-selection')}
-              onConfigure={() => setIsDomainModalOpen(true)}
-            />
+            {/* Tree Accessibility */}
+            <div className="bg-card rounded-2xl p-8 shadow-sm border border-border relative overflow-hidden">
+              <div className="flex items-center gap-3 mb-2">
+                <span className="material-symbols-outlined text-primary text-2xl">visibility</span>
+                <h3 className="font-bold text-lg text-foreground">{t('tree_settings.sharing_domain_title', 'إمكانية الوصول للشجرة')}</h3>
+              </div>
+              <p className="text-sm text-muted-foreground mb-8">{t('tree_settings.sharing_domain_desc', 'إدارة كيفية عرض ومشاركة بيانات شجرة عائلتك')}</p>
 
-            {/* Password Protection - Premium */}
-            <PremiumFeatureRow
-              icon="lock_person"
-              title={t('tree_settings.password_protection', 'حماية بكلمة مرور')}
-              description={t('tree_settings.password_protection_desc', 'اطلب كلمة مرور للزوار للوصول إلى بيانات الشجرة')}
-              isAvailable={hasCustomDomainFeature}
-              isLoading={checkingFeatures}
-              onUpgrade={() => navigate('/plan-selection')}
-            />
-
-            {/* Public Photo Gallery - Premium */}
-            <PremiumFeatureRow
-              icon="collections"
-              title={t('tree_settings.gallery_sharing_title', 'معرض الصور العام')}
-              description={t('tree_settings.gallery_sharing_premium_desc', 'السماح للزوار بتصفح ألبومات صور العائلة')}
-              isAvailable={hasImageUploadFeature}
-              isLoading={checkingFeatures}
-              onUpgrade={() => navigate('/plan-selection')}
-            />
-
-            {/* Premium Upgrade CTA */}
-            {(!hasCustomDomainFeature || !hasImageUploadFeature) && !checkingFeatures && (
-              <div className="mt-6 p-6 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[hsl(var(--accent-gold))] opacity-10 blur-3xl -mr-16 -mt-16 rounded-full" />
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary opacity-10 blur-2xl -ml-12 -mb-12 rounded-full" />
-                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="px-2 py-0.5 bg-[hsl(37,60%,60%)]/20 text-[hsl(37,60%,60%)] text-[10px] font-bold rounded uppercase tracking-widest border border-[hsl(37,60%,60%)]/30">
-                        {t('settings.pro_advantage', 'Pro Advantage')}
-                      </span>
+              <div className="space-y-4">
+                {/* Public Tree Link */}
+                <div className="p-6 bg-primary/5 border border-primary/20 rounded-2xl">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="material-symbols-outlined text-primary">link</span>
+                      <span className="font-bold text-foreground text-sm">{t('tree_settings.public_link_title', 'رابط الشجرة العام')}</span>
+                      {shareToken && <span className="material-symbols-outlined text-primary text-lg">check_circle</span>}
                     </div>
-                    <h4 className="text-lg font-bold mb-2">{t('settings.unlock_premium', 'افتح الأمان والعلامة التجارية المميزة')}</h4>
-                    <ul className="space-y-1.5">
-                      <li className="flex items-center gap-2 text-xs text-slate-300">
-                        <span className="material-symbols-outlined text-[hsl(37,60%,60%)] text-sm">verified</span>
-                        {t('settings.premium_feature_1', 'روابط مخصصة ووصول محمي بكلمة مرور')}
-                      </li>
-                      <li className="flex items-center gap-2 text-xs text-slate-300">
-                        <span className="material-symbols-outlined text-[hsl(37,60%,60%)] text-sm">verified</span>
-                        {t('settings.premium_feature_2', 'ألبومات صور عامة لمشاركة الذكريات')}
-                      </li>
-                    </ul>
-                  </div>
-                  <div className="flex-shrink-0 w-full md:w-auto">
                     <button
-                      onClick={() => navigate('/plan-selection')}
-                      className="w-full md:w-auto px-8 py-4 font-bold rounded-xl transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap text-slate-900"
-                      style={{ background: 'hsl(37 60% 60%)', boxShadow: '0 0 15px hsla(37, 60%, 60%, 0.3)' }}
+                      onClick={generateShareToken}
+                      disabled={isGeneratingToken}
+                      className="text-[10px] font-bold text-muted-foreground flex items-center gap-1.5 px-3 py-1.5 bg-card rounded-lg shadow-sm border border-border hover:bg-muted transition-colors"
                     >
-                      <span className="material-symbols-outlined">workspace_premium</span>
-                      {t('settings.upgrade_to_premium', 'ترقية إلى المميزة')}
+                      <span className={`material-symbols-outlined text-sm ${isGeneratingToken ? 'animate-spin' : ''}`}>refresh</span>
+                      {t('tree_settings.generate_new_link', 'توليد جديد')}
+                    </button>
+                  </div>
+
+                  <div className="bg-card border border-border px-4 py-3 rounded-xl text-xs text-muted-foreground mb-4 font-mono break-all">
+                    {publicShareableLink || t('settings.no_link_yet', 'لم يتم إنشاء رابط بعد - اضغط "توليد جديد"')}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleCopyLink(publicShareableLink)}
+                      disabled={!shareToken}
+                      className="px-4 py-2 bg-card border border-border rounded-xl text-xs font-bold text-foreground flex items-center gap-2 shadow-sm hover:bg-muted transition-colors disabled:opacity-50"
+                    >
+                      <span className="material-symbols-outlined text-base">content_copy</span>
+                      {t('tree_settings.copy_button', 'نسخ')}
+                    </button>
+                    <button
+                      onClick={() => setIsShareModalOpen(true)}
+                      className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-bold flex items-center gap-2 shadow-md hover:bg-primary/90 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-base">share</span>
+                      {t('tree_settings.share_button', 'مشاركة')}
                     </button>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
 
-        {/* Privacy & Cultural Sensitivity */}
-        <div className="bg-card rounded-2xl p-8 shadow-sm border border-border">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="material-symbols-outlined text-primary text-2xl">security</span>
-            <h3 className="font-bold text-lg text-foreground">{t('tree_settings.female_privacy_title', 'الخصوصية والحساسية الثقافية')}</h3>
-          </div>
-          <p className="text-sm text-muted-foreground mb-6">{t('settings.privacy_subtitle', 'إدارة خصوصية البيانات بما يتماشى مع التقاليد العائلية')}</p>
-
-          {/* Info notice */}
-          <div className="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-4 mb-8 border border-blue-100 dark:border-blue-900/30 flex items-center gap-3">
-            <span className="material-symbols-outlined text-blue-500 text-xl">info</span>
-            <p className="text-sm text-muted-foreground">
-              {t('tree_settings.female_privacy_notice', 'تؤثر هذه الإعدادات على الزوار فقط. كمالك للشجرة، ستتمكن دائماً من رؤية جميع البيانات.')}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Female Name Visibility */}
-            <div className="p-6 bg-muted rounded-2xl border border-border">
-              <label className="text-sm font-bold text-foreground mb-3 block">{t('tree_settings.female_name_display', 'عرض أسماء الإناث')}</label>
-              <div className="space-y-2">
-                {privacyOptions.map(opt => {
-                  const isSelected = femaleNamePrivacy === opt.value;
-                  return (
-                    <button
-                      key={opt.value}
-                      onClick={() => handleFemaleNamePrivacyChange(opt.value)}
-                      disabled={isUpdatingPrivacy}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-sm transition-all text-start disabled:opacity-50 ${
-                        isSelected
-                          ? 'border-primary bg-primary/5 text-primary font-semibold'
-                          : 'border-border bg-card text-foreground hover:border-primary/30'
-                      }`}
-                    >
-                      {isSelected ? (
-                        <span className="material-symbols-outlined text-primary text-lg">check_circle</span>
-                      ) : opt.locked ? (
-                        <span className="material-symbols-outlined text-destructive text-lg">lock</span>
-                      ) : (
-                        <span className="material-symbols-outlined text-primary text-lg">radio_button_unchecked</span>
-                      )}
-                      <span>{opt.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Female Photo Hidden Toggle */}
-            <div className="flex flex-col items-center justify-center text-center p-6 bg-muted rounded-2xl border border-border group hover:border-primary/20 transition-colors">
-              <div className="w-12 h-12 bg-card rounded-xl flex items-center justify-center border border-border shadow-sm group-hover:bg-primary/5 transition-colors mb-3">
-                <span className="material-symbols-outlined text-muted-foreground group-hover:text-primary transition-colors">no_photography</span>
-              </div>
-              <p className="text-sm font-bold text-foreground">{t('tree_settings.female_photo_hidden', 'إخفاء صور الإناث')}</p>
-              <p className="text-xs text-muted-foreground mt-0.5 mb-4">{t('tree_settings.female_photo_hidden_desc', 'سيتم استبدال صور الإناث بأيقونة افتراضية للزوار')}</p>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={femalePhotoHidden}
-                  onChange={handleFemalePhotoToggle}
-                  disabled={isUpdatingPrivacy}
-                  className="sr-only peer"
+                {/* Custom Link - Premium */}
+                <PremiumFeatureRow
+                  icon="language"
+                  title={t('tree_settings.custom_link_title', 'رابط مخصص')}
+                  description={t('tree_settings.custom_link_premium_desc', 'عيّن رابط URL مخصص مثل shjrti.com/alsaeed')}
+                  isAvailable={hasCustomDomainFeature}
+                  isLoading={checkingFeatures}
+                  currentValue={familyData?.custom_domain}
+                  onUpgrade={() => navigate('/plan-selection')}
+                  onConfigure={() => setIsDomainModalOpen(true)}
                 />
-                <div className="w-12 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-6 rtl:peer-checked:after:-translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary" />
-              </label>
-            </div>
-          </div>
-        </div>
 
-        {/* Advanced Settings */}
-        <div className="bg-card rounded-2xl p-8 shadow-sm border border-border">
-          <div className="flex items-center gap-3 mb-2">
-            <span className="material-symbols-outlined text-primary text-2xl">settings</span>
-            <h3 className="font-bold text-lg text-foreground">{t('settings.advanced_settings', 'الإعدادات المتقدمة')}</h3>
-          </div>
-          <p className="text-sm text-muted-foreground mb-8">{t('settings.advanced_desc', 'تصدير البيانات والإجراءات الدائمة')}</p>
+                {/* Password Protection - Premium */}
+                <PremiumFeatureRow
+                  icon="lock_person"
+                  title={t('tree_settings.password_protection', 'حماية بكلمة مرور')}
+                  description={t('tree_settings.password_protection_desc', 'اطلب كلمة مرور للزوار للوصول إلى بيانات الشجرة')}
+                  isAvailable={hasCustomDomainFeature}
+                  isLoading={checkingFeatures}
+                  onUpgrade={() => navigate('/plan-selection')}
+                />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Download Tree Data */}
-            <div className="p-6 bg-muted rounded-2xl border border-border flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="material-symbols-outlined text-muted-foreground text-lg">download</span>
-                  <h4 className="font-bold text-foreground text-sm">{t('settings.download_tree_data', 'تحميل بيانات الشجرة')}</h4>
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed mb-6">{t('settings.export_gedcom_desc', 'تصدير جميع بيانات العائلة بتنسيق GEDCOM القياسي.')}</p>
+                {/* Public Photo Gallery - Premium */}
+                <PremiumFeatureRow
+                  icon="collections"
+                  title={t('tree_settings.gallery_sharing_title', 'معرض الصور العام')}
+                  description={t('tree_settings.gallery_sharing_premium_desc', 'السماح للزوار بتصفح ألبومات صور العائلة')}
+                  isAvailable={hasImageUploadFeature}
+                  isLoading={checkingFeatures}
+                  onUpgrade={() => navigate('/plan-selection')}
+                />
+
+                {/* Premium Upgrade CTA */}
+                {(!hasCustomDomainFeature || !hasImageUploadFeature) && !checkingFeatures && (
+                  <div className="mt-6 p-6 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[hsl(var(--accent-gold))] opacity-10 blur-3xl -mr-16 -mt-16 rounded-full" />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary opacity-10 blur-2xl -ml-12 -mb-12 rounded-full" />
+                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="px-2 py-0.5 bg-[hsl(37,60%,60%)]/20 text-[hsl(37,60%,60%)] text-[10px] font-bold rounded uppercase tracking-widest border border-[hsl(37,60%,60%)]/30">
+                            {t('settings.pro_advantage', 'Pro Advantage')}
+                          </span>
+                        </div>
+                        <h4 className="text-lg font-bold mb-2">{t('settings.unlock_premium', 'افتح الأمان والعلامة التجارية المميزة')}</h4>
+                        <ul className="space-y-1.5">
+                          <li className="flex items-center gap-2 text-xs text-slate-300">
+                            <span className="material-symbols-outlined text-[hsl(37,60%,60%)] text-sm">verified</span>
+                            {t('settings.premium_feature_1', 'روابط مخصصة ووصول محمي بكلمة مرور')}
+                          </li>
+                          <li className="flex items-center gap-2 text-xs text-slate-300">
+                            <span className="material-symbols-outlined text-[hsl(37,60%,60%)] text-sm">verified</span>
+                            {t('settings.premium_feature_2', 'ألبومات صور عامة لمشاركة الذكريات')}
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="flex-shrink-0 w-full md:w-auto">
+                        <button
+                          onClick={() => navigate('/plan-selection')}
+                          className="w-full md:w-auto px-8 py-4 font-bold rounded-xl transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap text-slate-900"
+                          style={{ background: 'hsl(37 60% 60%)', boxShadow: '0 0 15px hsla(37, 60%, 60%, 0.3)' }}
+                        >
+                          <span className="material-symbols-outlined">workspace_premium</span>
+                          {t('settings.upgrade_to_premium', 'ترقية إلى المميزة')}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-              <button className="w-full py-3 bg-card border border-border rounded-xl text-sm font-bold text-foreground hover:bg-muted transition-colors shadow-sm">
-                {t('settings.export_data', 'تصدير البيانات')}
-              </button>
             </div>
 
-            {/* Delete Family Tree */}
-            <div className="p-6 bg-red-50/30 dark:bg-red-900/10 border border-red-100/50 dark:border-red-900/20 rounded-2xl flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="material-symbols-outlined text-red-500 text-lg">delete_forever</span>
-                  <h4 className="font-bold text-red-600 text-sm">{t('settings.delete_tree', 'حذف شجرة العائلة')}</h4>
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed mb-6">{t('settings.delete_tree_desc', 'حذف هذه الشجرة وجميع بياناتها بشكل دائم.')}</p>
+            {/* Privacy & Cultural Sensitivity */}
+            <div className="bg-card rounded-2xl p-8 shadow-sm border border-border">
+              <div className="flex items-center gap-3 mb-2">
+                <span className="material-symbols-outlined text-primary text-2xl">security</span>
+                <h3 className="font-bold text-lg text-foreground">{t('tree_settings.female_privacy_title', 'الخصوصية والحساسية الثقافية')}</h3>
               </div>
-              <button
-                onClick={() => setIsDeleteModalOpen(true)}
-                className="w-full py-3 bg-red-500 text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-500/10"
-              >
-                {t('settings.delete_permanently', 'حذف نهائي')}
-              </button>
+              <p className="text-sm text-muted-foreground mb-6">{t('settings.privacy_subtitle', 'إدارة خصوصية البيانات بما يتماشى مع التقاليد العائلية')}</p>
+
+              {/* Info notice */}
+              <div className="bg-blue-50 dark:bg-blue-900/10 rounded-xl p-4 mb-8 border border-blue-100 dark:border-blue-900/30 flex items-center gap-3">
+                <span className="material-symbols-outlined text-blue-500 text-xl">info</span>
+                <p className="text-sm text-muted-foreground">
+                  {t('tree_settings.female_privacy_notice', 'تؤثر هذه الإعدادات على الزوار فقط. كمالك للشجرة، ستتمكن دائماً من رؤية جميع البيانات.')}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Female Name Visibility */}
+                <div className="p-6 bg-muted rounded-2xl border border-border">
+                  <label className="text-sm font-bold text-foreground mb-3 block">{t('tree_settings.female_name_display', 'عرض أسماء الإناث')}</label>
+                  <div className="space-y-2">
+                    {privacyOptions.map(opt => {
+                      const isSelected = femaleNamePrivacy === opt.value;
+                      return (
+                        <button
+                          key={opt.value}
+                          onClick={() => handleFemaleNamePrivacyChange(opt.value)}
+                          disabled={isUpdatingPrivacy}
+                          className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-sm transition-all text-start disabled:opacity-50 ${
+                            isSelected
+                              ? 'border-primary bg-primary/5 text-primary font-semibold'
+                              : 'border-border bg-card text-foreground hover:border-primary/30'
+                          }`}
+                        >
+                          {isSelected ? (
+                            <span className="material-symbols-outlined text-primary text-lg">check_circle</span>
+                          ) : opt.locked ? (
+                            <span className="material-symbols-outlined text-destructive text-lg">lock</span>
+                          ) : (
+                            <span className="material-symbols-outlined text-primary text-lg">radio_button_unchecked</span>
+                          )}
+                          <span>{opt.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Female Photo Hidden Toggle */}
+                <div className="flex flex-col items-center justify-center text-center p-6 bg-muted rounded-2xl border border-border group hover:border-primary/20 transition-colors">
+                  <div className="w-12 h-12 bg-card rounded-xl flex items-center justify-center border border-border shadow-sm group-hover:bg-primary/5 transition-colors mb-3">
+                    <span className="material-symbols-outlined text-muted-foreground group-hover:text-primary transition-colors">no_photography</span>
+                  </div>
+                  <p className="text-sm font-bold text-foreground">{t('tree_settings.female_photo_hidden', 'إخفاء صور الإناث')}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5 mb-4">{t('tree_settings.female_photo_hidden_desc', 'سيتم استبدال صور الإناث بأيقونة افتراضية للزوار')}</p>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={femalePhotoHidden}
+                      onChange={handleFemalePhotoToggle}
+                      disabled={isUpdatingPrivacy}
+                      className="sr-only peer"
+                    />
+                    <div className="w-12 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-6 rtl:peer-checked:after:-translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary" />
+                  </label>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Tab 2: Admins & Permissions */}
+        {activeSettingsTab === 'admins' && (
+          <div className="bg-card rounded-2xl p-8 shadow-sm border border-border">
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mb-6">
+                <span className="material-symbols-outlined text-primary text-4xl">admin_panel_settings</span>
+              </div>
+              <h3 className="font-bold text-lg text-foreground mb-2">{t('settings.admins_coming_soon_title', 'قريباً')}</h3>
+              <p className="text-sm text-muted-foreground max-w-sm">
+                {t('settings.admins_coming_soon_desc', 'ستتمكن قريباً من إضافة مشرفين وتعيين صلاحيات مختلفة لإدارة شجرة العائلة.')}
+              </p>
             </div>
           </div>
-          <p className="text-[11px] text-muted-foreground text-center mt-6 italic">{t('settings.deletion_warning', 'تحذير: إجراءات الحذف لا يمكن التراجع عنها وستمسح جميع السجلات.')}</p>
-        </div>
+        )}
+
+        {/* Tab 3: Advanced Settings */}
+        {activeSettingsTab === 'advanced' && (
+          <>
+            <div className="bg-card rounded-2xl p-8 shadow-sm border border-border">
+              <div className="flex items-center gap-3 mb-2">
+                <span className="material-symbols-outlined text-primary text-2xl">settings</span>
+                <h3 className="font-bold text-lg text-foreground">{t('settings.advanced_settings', 'الإعدادات المتقدمة')}</h3>
+              </div>
+              <p className="text-sm text-muted-foreground mb-8">{t('settings.advanced_desc', 'تصدير البيانات والإجراءات الدائمة')}</p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Download Tree Data */}
+                <div className="p-6 bg-muted rounded-2xl border border-border flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="material-symbols-outlined text-muted-foreground text-lg">download</span>
+                      <h4 className="font-bold text-foreground text-sm">{t('settings.download_tree_data', 'تحميل بيانات الشجرة')}</h4>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed mb-6">{t('settings.export_gedcom_desc', 'تصدير جميع بيانات العائلة بتنسيق GEDCOM القياسي.')}</p>
+                  </div>
+                  <button className="w-full py-3 bg-card border border-border rounded-xl text-sm font-bold text-foreground hover:bg-muted transition-colors shadow-sm">
+                    {t('settings.export_data', 'تصدير البيانات')}
+                  </button>
+                </div>
+
+                {/* Delete Family Tree */}
+                <div className="p-6 bg-red-50/30 dark:bg-red-900/10 border border-red-100/50 dark:border-red-900/20 rounded-2xl flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="material-symbols-outlined text-red-500 text-lg">delete_forever</span>
+                      <h4 className="font-bold text-red-600 text-sm">{t('settings.delete_tree', 'حذف شجرة العائلة')}</h4>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed mb-6">{t('settings.delete_tree_desc', 'حذف هذه الشجرة وجميع بياناتها بشكل دائم.')}</p>
+                  </div>
+                  <button
+                    onClick={() => setIsDeleteModalOpen(true)}
+                    className="w-full py-3 bg-red-500 text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-500/10"
+                  >
+                    {t('settings.delete_permanently', 'حذف نهائي')}
+                  </button>
+                </div>
+              </div>
+              <p className="text-[11px] text-muted-foreground text-center mt-6 italic">{t('settings.deletion_warning', 'تحذير: إجراءات الحذف لا يمكن التراجع عنها وستمسح جميع السجلات.')}</p>
+            </div>
+          </>
+        )}
 
         {/* Back to Dashboard */}
         <div className="flex justify-center pb-8">
