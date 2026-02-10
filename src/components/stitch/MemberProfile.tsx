@@ -12,6 +12,7 @@ import { StitchFamilyTab } from './FamilyTab';
 import { AddFounderParentDrawer } from './AddFounderParentDrawer';
 import { useAddFounderParentMutation } from '@/hooks/mutations/useFamilyMutations';
 import { useAuth } from '@/contexts/AuthContext';
+import { useImageUploadPermission } from '@/hooks/useImageUploadPermission';
 
 interface StitchMemberProfileProps {
   member: any;
@@ -53,6 +54,7 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
   const [showAddParentsDrawer, setShowAddParentsDrawer] = useState(false);
   const { user } = useAuth();
   const addFounderParent = useAddFounderParentMutation();
+  const { isImageUploadEnabled } = useImageUploadPermission();
 
   const memberImageSrc = useResolvedImageUrl(member?.image_url || null);
 
@@ -195,7 +197,7 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
                     )}
                   </div>
                 </div>
-                {!readOnly && (
+                {!readOnly && isImageUploadEnabled && (
                   <button
                     onClick={() => setShowImageUploadModal(true)}
                     className="absolute bottom-0 right-0 w-7 h-7 bg-primary text-white rounded-full border-2 border-white flex items-center justify-center shadow-md hover:scale-110 transition-transform"

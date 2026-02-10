@@ -370,7 +370,21 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                   <span className="material-symbols-outlined text-primary text-lg">image</span>
                   {t('family_builder.upload_image', 'Profile Picture')}
                 </label>
-                {displayImage ? (
+                {!isImageUploadEnabled ? (
+                  <div className="border-2 border-dashed border-amber-200 dark:border-amber-800 rounded-2xl p-4 h-28 flex flex-col items-center justify-center text-center bg-amber-50/50 dark:bg-amber-900/10">
+                    <span className="material-symbols-outlined text-xl text-amber-500 mb-1">lock</span>
+                    <p className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                      {t('upgrade.feature_locked', 'Premium Feature')}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => window.location.href = '/plan-selection'}
+                      className="mt-1 text-[9px] font-bold text-amber-700 underline hover:text-amber-800"
+                    >
+                      {t('upgrade.upgrade_now', 'Upgrade Now')}
+                    </button>
+                  </div>
+                ) : displayImage ? (
                   <div className="relative">
                     <img 
                       src={displayImage} 
@@ -397,7 +411,6 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                       accept="image/*"
                       className="hidden"
                       onChange={handleImageSelect}
-                      disabled={!isImageUploadEnabled}
                     />
                   </label>
                 )}
@@ -581,6 +594,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
         spouseFamilyStatus={spouseFamilyStatus}
         onFamilyStatusChange={setSpouseFamilyStatus}
         onSave={() => activeSpouseType && handleSpouseSave(activeSpouseType)}
+        isImageUploadEnabled={isImageUploadEnabled}
       />
 
       {/* Image Crop Dialog */}
