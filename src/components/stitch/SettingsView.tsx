@@ -393,19 +393,17 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
             </p>
           </div>
 
-          <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Female Name Visibility */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <label className="text-sm font-bold text-foreground">{t('tree_settings.female_name_display', 'عرض أسماء الإناث')}</label>
-                <span className="text-[11px] text-muted-foreground italic">Female Name Visibility</span>
-              </div>
-              <div className="relative group">
+            <div className="flex flex-col items-center text-center p-6 bg-muted rounded-2xl border border-border">
+              <label className="text-sm font-bold text-foreground mb-1">{t('tree_settings.female_name_display', 'عرض أسماء الإناث')}</label>
+              <span className="text-[11px] text-muted-foreground italic mb-3">Female Name Visibility</span>
+              <div className="relative w-full">
                 <select
                   value={femaleNamePrivacy}
                   onChange={(e) => handleFemaleNamePrivacyChange(e.target.value)}
                   disabled={isUpdatingPrivacy}
-                  className="w-full px-4 py-3 bg-muted border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary appearance-none transition-all hover:bg-card pe-10 disabled:opacity-50"
+                  className="w-full px-4 py-3 bg-card border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary appearance-none transition-all hover:bg-card pe-10 disabled:opacity-50"
                   dir="rtl"
                 >
                   {privacyOptions.map(opt => (
@@ -413,23 +411,19 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
                   ))}
                 </select>
                 <span className="material-symbols-outlined absolute start-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">expand_more</span>
-                <div className="mt-2 text-[11px] text-muted-foreground bg-muted p-2 rounded-lg border border-border">
-                  <span className="font-semibold text-primary">{t('settings.preview', 'معاينة:')}</span> {getPreviewText()}
-                </div>
+              </div>
+              <div className="mt-2 text-[11px] text-muted-foreground bg-card p-2 rounded-lg border border-border w-full">
+                <span className="font-semibold text-primary">{t('settings.preview', 'معاينة:')}</span> {getPreviewText()}
               </div>
             </div>
 
             {/* Female Photo Hidden Toggle */}
-            <div className="flex items-center justify-between p-6 bg-muted rounded-2xl border border-border group hover:border-primary/20 transition-colors">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-card rounded-xl flex items-center justify-center border border-border shadow-sm group-hover:bg-primary/5 transition-colors">
-                  <span className="material-symbols-outlined text-muted-foreground group-hover:text-primary transition-colors">no_photography</span>
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">{t('tree_settings.female_photo_hidden', 'إخفاء صور الإناث')}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{t('tree_settings.female_photo_hidden_desc', 'سيتم استبدال صور الإناث بأيقونة افتراضية للزوار')}</p>
-                </div>
+            <div className="flex flex-col items-center justify-center text-center p-6 bg-muted rounded-2xl border border-border group hover:border-primary/20 transition-colors">
+              <div className="w-12 h-12 bg-card rounded-xl flex items-center justify-center border border-border shadow-sm group-hover:bg-primary/5 transition-colors mb-3">
+                <span className="material-symbols-outlined text-muted-foreground group-hover:text-primary transition-colors">no_photography</span>
               </div>
+              <p className="text-sm font-bold text-foreground">{t('tree_settings.female_photo_hidden', 'إخفاء صور الإناث')}</p>
+              <p className="text-xs text-muted-foreground mt-0.5 mb-4">{t('tree_settings.female_photo_hidden_desc', 'سيتم استبدال صور الإناث بأيقونة افتراضية للزوار')}</p>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input
                   type="checkbox"
