@@ -163,13 +163,10 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
               onChange={(e) => onSearchChange(e.target.value)}
             />
           </div>
-          <div className="flex-1 flex gap-2">
-            <select className="text-xs border-none bg-slate-50 dark:bg-slate-800/50 rounded-lg focus:ring-primary/20 py-1.5 flex-1">
+          <div className="flex-1">
+            <select className="text-xs border-none bg-slate-50 dark:bg-slate-800/50 rounded-lg focus:ring-primary/20 py-1.5 w-full">
               <option>{t('stitch.all_branches', 'All Branches')}</option>
             </select>
-            <button className="p-1.5 bg-slate-50 dark:bg-slate-800/50 rounded-lg text-slate-400">
-              <span className="material-icons-round text-lg">filter_list</span>
-            </button>
           </div>
         </div>
       </div>
