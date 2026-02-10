@@ -45,7 +45,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
     { id: "gallery", label: t('stitch.tab.gallery', 'المعرض'), path: "/family-builder-stitch" },
     { id: "statistics", label: t('stitch.tab.statistics', 'الإحصائيات'), path: "/family-builder-stitch" },
     { id: "suggestions", label: t('stitch.tab.suggestions', 'الاقتراحات'), path: "/family-builder-stitch", badge: suggestionsCount },
-    { id: "settings", label: t('stitch.tab.settings', 'الإعدادات'), path: "/family-builder-stitch" },
+    { id: "settings", label: t('family_header.settings', 'الإعدادات'), path: "/family-builder-stitch" },
   ];
 
   // Preserve family ID in navigation
