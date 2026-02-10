@@ -210,10 +210,10 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">history</span>
-                Recent Activities
+                {t('stitch.recent_activities', 'Recent Activities')}
               </h3>
               <button className="text-xs text-primary font-bold hover:underline">
-                View All
+                {t('stitch.view_all', 'View All')}
               </button>
             </div>
             <div className="space-y-6">
@@ -234,7 +234,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
                 );
               }) : (
                 <p className="text-sm text-slate-500 text-center py-4">
-                  No recent activities
+                  {t('stitch.no_recent_activities', 'No recent activities')}
                 </p>
               )}
             </div>
@@ -301,7 +301,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
 
           {/* Quick Actions - Full Width */}
           <div className="md:col-span-2">
-            <h3 className="font-bold mb-4">Quick Actions</h3>
+            <h3 className="font-bold mb-4">{t('stitch.quick_actions', 'Quick Actions')}</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {quickActions.map((action) => (
                 <button
