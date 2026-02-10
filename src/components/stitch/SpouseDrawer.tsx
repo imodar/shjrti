@@ -23,6 +23,7 @@ interface SpouseDrawerProps {
   spouseFamilyStatus: 'yes' | 'no' | null;
   onFamilyStatusChange: (status: 'yes' | 'no') => void;
   onSave: () => void;
+  isImageUploadEnabled?: boolean;
 }
 
 export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
@@ -37,7 +38,8 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
   onCommandOpenChange,
   spouseFamilyStatus,
   onFamilyStatusChange,
-  onSave
+  onSave,
+  isImageUploadEnabled = false
 }) => {
   const { t, direction } = useLanguage();
   const isRTL = direction === 'rtl';
@@ -363,16 +365,32 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
 
             {/* Photo Upload (Optional) */}
             {spouseFamilyStatus !== 'yes' && (
-              <div className={`p-4 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${
-                spouseType === 'husband'
-                  ? 'border-blue-500/20 bg-blue-50/30 dark:bg-blue-900/5 hover:bg-blue-50/50'
-                  : 'border-pink-500/20 bg-pink-50/30 dark:bg-pink-900/5 hover:bg-pink-50/50'
-              }`}>
-                <span className={`material-symbols-outlined ${spouseType === 'husband' ? 'text-blue-500' : 'text-pink-500'}`}>upload_file</span>
-                <span className={`text-xs font-medium ${spouseType === 'husband' ? 'text-blue-600' : 'text-pink-600'}`}>
-                  {t('member.upload_photo_optional', 'Upload Photo (Optional)')}
-                </span>
-              </div>
+              isImageUploadEnabled ? (
+                <div className={`p-4 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${
+                  spouseType === 'husband'
+                    ? 'border-blue-500/20 bg-blue-50/30 dark:bg-blue-900/5 hover:bg-blue-50/50'
+                    : 'border-pink-500/20 bg-pink-50/30 dark:bg-pink-900/5 hover:bg-pink-50/50'
+                }`}>
+                  <span className={`material-symbols-outlined ${spouseType === 'husband' ? 'text-blue-500' : 'text-pink-500'}`}>upload_file</span>
+                  <span className={`text-xs font-medium ${spouseType === 'husband' ? 'text-blue-600' : 'text-pink-600'}`}>
+                    {t('member.upload_photo_optional', 'Upload Photo (Optional)')}
+                  </span>
+                </div>
+              ) : (
+                <div className="p-4 rounded-xl border-2 border-dashed border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10 flex flex-col items-center justify-center gap-1">
+                  <span className="material-symbols-outlined text-amber-500">lock</span>
+                  <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                    {t('upgrade.feature_locked', 'Premium Feature')}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => window.location.href = '/plan-selection'}
+                    className="text-[9px] font-bold text-amber-700 underline hover:text-amber-800"
+                  >
+                    {t('upgrade.upgrade_now', 'Upgrade Now')}
+                  </button>
+                </div>
+              )
             )}
           </div>
         </div>
