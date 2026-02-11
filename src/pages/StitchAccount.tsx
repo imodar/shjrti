@@ -711,6 +711,7 @@ const StitchAccount: React.FC = () => {
     <div className={cn('theme-stitch min-h-screen overflow-hidden', direction === 'rtl' && 'rtl')}>
       {/* Header */}
       <StitchHeader
+        variant="account"
         familyName={'Shjrti'}
         userName={userName}
         packageName={packageName}

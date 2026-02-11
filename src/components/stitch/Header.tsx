@@ -20,6 +20,7 @@ interface StitchHeaderProps {
   suggestionsCount?: number;
   hideNav?: boolean;
   isOwner?: boolean;
+  variant?: 'builder' | 'account';
 }
 
 export const StitchHeader: React.FC<StitchHeaderProps> = ({
@@ -31,6 +32,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   suggestionsCount = 0,
   hideNav = false,
   isOwner = true,
+  variant = 'builder',
 }) => {
   const navigate = useNavigate();
   const { t, currentLanguage } = useLanguage();
@@ -40,7 +42,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   const initials = displayName.charAt(0).toUpperCase();
   const localizedPackageName = getLocalizedText(packageName, currentLanguage, t('stitch.free_plan', 'باقة مجانية'));
 
-  const tabs = [
+  const builderTabs = [
     { id: "home", label: t('family_header.home', 'الرئيسية'), path: "/stitch-dashboard" },
     { id: "dashboard", label: t('stitch.tab.dashboard', 'لوحة التحكم'), path: "/stitch-family-builder" },
     { id: "tree", label: t('stitch.tab.tree_view', 'عرض الشجرة'), path: "/stitch-tree-view" },
@@ -49,6 +51,13 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
     { id: "suggestions", label: t('stitch.tab.suggestions', 'الاقتراحات'), path: "/stitch-family-builder", badge: suggestionsCount },
     { id: "settings", label: t('family_header.settings', 'الإعدادات'), path: "/stitch-family-builder" },
   ];
+
+  const accountTabs: { id: string; label: string; path: string; badge?: number }[] = [
+    { id: "home", label: t('family_header.home', 'الرئيسية'), path: "/stitch-dashboard" },
+    { id: "account", label: t('nav.account', 'الحساب'), path: "/stitch-account" },
+  ];
+
+  const tabs = variant === 'account' ? accountTabs : builderTabs;
 
   // Preserve family ID in navigation
   const handleTabClick = (tab: (typeof tabs)[0]) => {
