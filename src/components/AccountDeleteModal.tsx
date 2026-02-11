@@ -149,92 +149,56 @@ const AccountDeleteModal = ({ isOpen, onClose, userStats }: AccountDeleteModalPr
     <>
       {/* Delete Confirmation Modal */}
       <Dialog open={showConfirmModal} onOpenChange={(open) => { if (!open) handleClose(); }}>
-        <DialogContent className="max-w-md mx-auto overflow-hidden border-0 bg-gradient-to-br from-red-50 via-rose-50 to-orange-50 dark:from-red-950/20 dark:via-red-900/20 dark:to-orange-900/20 backdrop-blur-lg max-h-[85vh] overflow-y-auto">
-          {/* Animated Background Elements */}
-          <div className="absolute inset-0 opacity-20">
-            <div className="absolute top-4 left-4 w-16 h-16 bg-red-200/30 rounded-full animate-pulse"></div>
-            <div className="absolute bottom-8 right-6 w-24 h-24 bg-orange-200/20 rounded-full animate-bounce delay-300"></div>
-            <div className="absolute top-1/2 right-4 w-12 h-12 bg-rose-200/25 rounded-full animate-pulse delay-700"></div>
-          </div>
-          
+        <DialogContent className="max-w-md mx-auto overflow-hidden border-0 bg-gradient-to-br from-red-50 via-rose-50 to-orange-50 dark:from-red-950/20 dark:via-red-900/20 dark:to-orange-900/20 backdrop-blur-lg p-4">
           {/* Main Content */}
           <div className="relative z-10">
             <DialogHeader>
-              <DialogTitle className="text-center mb-6">
-                {/* Animated Icon Container */}
-                <div className="relative flex items-center justify-center mb-4">
-                  <div className="relative">
-                    {/* Outer glow ring */}
-                    <div className="absolute inset-0 w-24 h-24 bg-red-500/20 rounded-full animate-ping"></div>
-                    {/* Inner pulsing circle */}
-                    <div className="relative w-20 h-20 bg-gradient-to-r from-red-600 to-orange-600 rounded-full flex items-center justify-center shadow-xl shadow-red-500/40 animate-pulse">
-                      <AlertTriangle className="h-10 w-10 text-white" />
-                    </div>
+              <DialogTitle className="text-center mb-3">
+                <div className="flex items-center justify-center mb-2">
+                  <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
+                    <AlertTriangle className="h-6 w-6 text-white" />
                   </div>
                 </div>
-                
-                {/* Title with gradient text */}
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-red-600 via-rose-600 to-orange-600 bg-clip-text text-transparent">
+                <h2 className="text-lg font-bold bg-gradient-to-r from-red-600 via-rose-600 to-orange-600 bg-clip-text text-transparent">
                   ⚠️ تحذير: حذف الحساب نهائيًا
                 </h2>
               </DialogTitle>
             </DialogHeader>
             
-            <div className="space-y-6 px-2">
-              {/* Critical Warning Alert */}
-              <Alert className="border-red-400 dark:border-red-600 bg-red-50/80 dark:bg-red-950/40">
-                <AlertTriangle className="h-5 w-5 text-red-600" />
-                <AlertTitle className="text-red-800 dark:text-red-200 font-bold text-lg">
-                  هذا الإجراء لا يمكن التراجع عنه أبدًا!
-                </AlertTitle>
-                <AlertDescription className="text-red-700 dark:text-red-300 space-y-3 mt-2">
-                  <p className="font-semibold">
-                    حذف حسابك سيؤدي إلى إزالة <strong className="text-red-900 dark:text-red-100">جميع بياناتك نهائيًا</strong> من نظامنا:
-                  </p>
-                  <ul className="list-disc pr-6 space-y-2 text-sm">
-                    <li><strong>🌳 {userStats.familiesCreated} شجرة عائلة</strong> - بما فيها جميع العلاقات والبيانات</li>
-                    <li><strong>👥 {userStats.totalMembers} عضو</strong> - جميع معلومات الأعضاء المسجلة</li>
-                    <li><strong>🖼️ الصور والذكريات</strong> - جميع الملفات المرفوعة من الأشجار والأعضاء</li>
-                    <li><strong>💳 معلومات الاشتراك</strong> - حالة الاشتراك والفواتير</li>
-                    <li><strong>📧 الإشعارات والرسائل</strong> - جميع الإشعارات المخزنة</li>
-                    <li><strong>⚙️ الإعدادات والتفضيلات</strong> - جميع إعداداتك الشخصية</li>
-                    <li><strong>👤 الحساب الشخصي</strong> - لن تستطيع الدخول مرة أخرى بنفس البريد</li>
-                  </ul>
-                  <div className="bg-red-100 dark:bg-red-900/30 p-3 rounded-lg border border-red-300 dark:border-red-700 mt-4">
-                    <p className="font-bold text-red-900 dark:text-red-100 text-center">
-                      ⛔ لا يمكن استرجاع أي من هذه البيانات بعد الحذف!
-                    </p>
-                  </div>
-                </AlertDescription>
-              </Alert>
-
-              {/* Confirmation Text Display */}
-              <div className="bg-white/80 dark:bg-gray-800/60 rounded-2xl p-5 backdrop-blur-sm border-2 border-red-300/50 dark:border-red-700/50">
-                <p className="text-gray-700 dark:text-gray-300 mb-3 text-center font-medium">
-                  للتأكيد النهائي، اكتب كلمة <span className="font-bold text-red-600 dark:text-red-400 text-lg">"{confirmationWord}"</span> بالأحرف الكبيرة:
+            <div className="space-y-3 px-1">
+              {/* Compact Warning */}
+              <div className="bg-red-50/80 dark:bg-red-950/40 rounded-lg p-3 border border-red-300 dark:border-red-700">
+                <p className="text-xs font-semibold text-red-800 dark:text-red-200 mb-1.5">
+                  هذا الإجراء لا يمكن التراجع عنه! سيتم حذف:
                 </p>
-                <div className="text-2xl font-bold text-center bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent px-4 py-3 bg-red-100/50 dark:bg-red-900/30 rounded-xl border-2 border-red-300 dark:border-red-600">
-                  {confirmationWord}
+                <div className="grid grid-cols-2 gap-1 text-[11px] text-red-700 dark:text-red-300">
+                  <span>🌳 {userStats.familiesCreated} شجرة عائلة</span>
+                  <span>👥 {userStats.totalMembers} عضو</span>
+                  <span>🖼️ الصور والذكريات</span>
+                  <span>💳 الاشتراك والفواتير</span>
                 </div>
+                <p className="text-[10px] font-bold text-red-900 dark:text-red-100 text-center mt-2">
+                  ⛔ لا يمكن استرجاع البيانات بعد الحذف!
+                </p>
               </div>
 
-              {/* Input Field */}
-              <div className="space-y-3">
-                <Label htmlFor="confirmText" className="text-base font-semibold text-gray-700 dark:text-gray-300 block text-center">
-                  اكتب "{confirmationWord}" للتأكيد:
-                </Label>
+              {/* Confirmation Input */}
+              <div className="bg-white/80 dark:bg-gray-800/60 rounded-xl p-3 border border-red-300/50 dark:border-red-700/50">
+                <p className="text-xs text-gray-700 dark:text-gray-300 mb-2 text-center">
+                  اكتب <span className="font-bold text-red-600 dark:text-red-400">"{confirmationWord}"</span> للتأكيد:
+                </p>
                 <div className="relative">
                   <Input
                     id="confirmText"
                     value={deleteConfirmText}
                     onChange={(e) => setDeleteConfirmText(e.target.value)}
                     placeholder={confirmationWord}
-                    className="text-center text-xl font-bold bg-white/90 dark:bg-gray-800/70 border-2 border-red-300/50 dark:border-red-600/50 rounded-xl focus:border-red-500 dark:focus:border-red-400 focus:ring-4 focus:ring-red-200 dark:focus:ring-red-800/50 transition-all duration-300 h-14"
+                    className="text-center text-base font-bold bg-white/90 dark:bg-gray-800/70 border-2 border-red-300/50 dark:border-red-600/50 rounded-lg focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800/50 transition-all h-10"
                   />
                   {deleteConfirmText.trim().toUpperCase() === confirmationWord && (
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center animate-scale-in shadow-lg">
-                        <span className="text-white text-sm font-bold">✓</span>
+                    <div className="absolute left-2 top-1/2 -translate-y-1/2">
+                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow">
+                        <span className="text-white text-xs font-bold">✓</span>
                       </div>
                     </div>
                   )}
@@ -242,27 +206,26 @@ const AccountDeleteModal = ({ isOpen, onClose, userStats }: AccountDeleteModalPr
               </div>
 
               {/* Action Buttons */}
-              <div className="flex gap-4 mt-8">
+              <div className="flex gap-3 mt-4">
                 <Button 
                   variant="outline" 
                   onClick={resetConfirmation}
-                  className="flex-1 h-14 rounded-xl border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-300 font-semibold text-base"
+                  className="flex-1 h-10 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-semibold text-sm"
                 >
                   إلغاء
                 </Button>
                 <Button 
                   onClick={handleConfirmDelete}
                   disabled={deleteConfirmText.trim().toUpperCase() !== confirmationWord}
-                  className="flex-1 h-14 rounded-xl bg-gradient-to-r from-red-600 via-rose-600 to-orange-600 hover:from-red-700 hover:via-rose-700 hover:to-orange-700 text-white font-bold text-base shadow-lg shadow-red-500/40 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none transition-all duration-300 transform hover:scale-105 disabled:hover:scale-100"
+                  className="flex-1 h-10 rounded-lg bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold text-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
-                  <Trash2 className="h-5 w-5 ml-2" />
+                  <Trash2 className="h-4 w-4 ml-1.5" />
                   حذف حسابي نهائيًا
                 </Button>
               </div>
 
-              {/* GDPR Compliance Note */}
-              <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-4">
-                يتم تنفيذ هذا الإجراء للامتثال للوائح GDPR وCCPA وقوانين حماية البيانات
+              <p className="text-[10px] text-center text-gray-500 dark:text-gray-400 mt-2">
+                GDPR / CCPA
               </p>
             </div>
           </div>
