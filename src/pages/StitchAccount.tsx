@@ -804,8 +804,11 @@ const StitchAccount: React.FC = () => {
                 <div className="flex justify-between items-center text-xs">
                   <span className="text-muted-foreground">{t('billing.renewal_date', 'Renewal Date')}</span>
                   <span className="font-bold">
-                    {subscription?.expires_at ? new Date(subscription.expires_at).toLocaleDateString('en-GB') :
-                      currentPlan ? t('billing.not_specified', 'N/A') : t('billing.none', 'None')}
+                    {(!currentPlan || (currentPlanData?.price_usd === 0 && currentPlanData?.price_sar === 0))
+                      ? t('billing.free_forever', 'Free Forever')
+                      : subscription?.expires_at
+                        ? new Date(subscription.expires_at).toLocaleDateString('en-GB')
+                        : t('billing.not_specified', 'N/A')}
                   </span>
                 </div>
               </div>
