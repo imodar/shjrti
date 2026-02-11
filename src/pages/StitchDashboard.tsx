@@ -334,7 +334,10 @@ const StitchDashboard: React.FC = () => {
                   >
                      {t('dashboard.manage', 'Manage')}
                   </button>
-                  <button className="px-3 border border-border text-muted-foreground rounded-xl hover:bg-muted">
+                  <button 
+                    onClick={() => navigate(`/stitch-family-builder?family=${family.id}&tab=settings`)}
+                    className="px-3 border border-border text-muted-foreground rounded-xl hover:bg-muted flex items-center justify-center"
+                  >
                     <span className="material-symbols-outlined">share</span>
                   </button>
                 </div>
