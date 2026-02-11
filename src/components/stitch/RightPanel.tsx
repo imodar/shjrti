@@ -51,11 +51,11 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl text-center">
               <p className="text-lg font-bold">{generationsCount}</p>
-              <p className="text-[10px] text-slate-500 uppercase font-semibold">Generations</p>
+              <p className="text-[10px] text-slate-500 uppercase font-semibold">الأجيال</p>
             </div>
             <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl text-center">
               <p className="text-lg font-bold">{documentsCount}</p>
-              <p className="text-[10px] text-slate-500 uppercase font-semibold">Documents</p>
+              <p className="text-[10px] text-slate-500 uppercase font-semibold">الصور المرفوعة</p>
             </div>
           </div>
         </div>
