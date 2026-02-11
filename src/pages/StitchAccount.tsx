@@ -4,7 +4,6 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { useFamilyData } from '@/contexts/FamilyDataContext';
 import { profilesApi, subscriptionsApi } from '@/lib/api';
 import { familiesApi } from '@/lib/api/endpoints/families';
 import { StitchHeader, StitchFamilyBar } from '@/components/stitch';
@@ -20,7 +19,6 @@ const StitchAccount: React.FC = () => {
   const { user } = useAuth();
   const { t, direction } = useLanguage();
   const { subscription } = useSubscription();
-  const { familyData } = useFamilyData();
   const { toast } = useToast();
   const previousThemeRef = useRef(currentTheme);
 
@@ -195,7 +193,7 @@ const StitchAccount: React.FC = () => {
     <div className={cn('theme-stitch min-h-screen overflow-hidden', direction === 'rtl' && 'rtl')}>
       {/* Header */}
       <StitchHeader
-        familyName={familyData?.name || 'Shjrti'}
+        familyName={'Shjrti'}
         userName={userName}
         packageName={packageName}
         activeTab="account"
@@ -210,7 +208,7 @@ const StitchAccount: React.FC = () => {
 
       {/* Family Bar */}
       <StitchFamilyBar
-        familyName={familyData?.name || ''}
+        familyName={''}
         onSwitchTree={() => navigate('/stitch-dashboard')}
         lastUpdated=""
       />
