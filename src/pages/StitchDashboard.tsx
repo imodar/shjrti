@@ -377,10 +377,6 @@ const StitchDashboard: React.FC = () => {
                     <p className="text-sm max-w-[220px] leading-relaxed mb-4 text-muted-foreground">
                       {t('dashboard.reached_tree_limit', `You've reached your limit of ${maxTrees} trees. Upgrade to add more.`)}
                     </p>
-                    <span className="inline-flex items-center gap-2 text-primary-foreground font-bold py-2.5 px-6 rounded-xl text-sm shadow-lg bg-primary">
-                      <span className="material-symbols-outlined text-lg">rocket_launch</span>
-                      {t('dashboard.upgrade_package', 'Upgrade Plan')}
-                    </span>
                   </div>
                 </div>
               </button>
