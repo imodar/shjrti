@@ -860,21 +860,23 @@ const StitchAccount: React.FC = () => {
             </div>
           </div>
 
-          {/* Security Tips */}
-          <div className="mb-8">
-            <h3 className="font-bold mb-4">{t('account.security_tips', 'Security Tips')}</h3>
-            <div className="space-y-3">
-              <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-border">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="material-icons-round text-amber-500 text-sm">lightbulb</span>
-                  <h4 className="font-bold text-xs">{t('account.stronger_passwords', 'Stronger Passwords')}</h4>
+          {/* Security Tips - only show on security tab */}
+          {activeTab === 'security' && (
+            <div className="mb-8">
+              <h3 className="font-bold mb-4">{t('account.security_tips', 'Security Tips')}</h3>
+              <div className="space-y-3">
+                <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-border">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="material-icons-round text-amber-500 text-sm">lightbulb</span>
+                    <h4 className="font-bold text-xs">{t('account.stronger_passwords', 'Stronger Passwords')}</h4>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-relaxed">
+                    {t('account.stronger_passwords_desc', 'Use a mix of letters, numbers, and symbols for better security.')}
+                  </p>
                 </div>
-                <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  {t('account.stronger_passwords_desc', 'Use a mix of letters, numbers, and symbols for better security.')}
-                </p>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Need Help */}
           <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-5 text-white mt-auto">
