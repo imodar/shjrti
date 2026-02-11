@@ -382,9 +382,9 @@ const StitchAccount: React.FC = () => {
 
   // ==================== DERIVED ====================
   const userName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'User';
-  const packageName = subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
-  const familyId = searchParams.get('family') || '';
   const currentPlanData = packages.find((p: any) => p.id === currentPlan);
+  const packageName = currentPlanData?.name || subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
+  const familyId = searchParams.get('family') || '';
 
   const sidebarItems: { key: AccountTab; icon: string; label: string }[] = [
     { key: 'profile', icon: 'person', label: t('account.profile_info', 'Profile Information') },
