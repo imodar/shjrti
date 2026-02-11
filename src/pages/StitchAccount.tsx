@@ -7,7 +7,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { usePackageTransition } from '@/hooks/usePackageTransition';
 import { profilesApi, subscriptionsApi, invoicesApi, packagesApi, scheduledChangesApi } from '@/lib/api';
 import { familiesApi } from '@/lib/api/endpoints/families';
-import { StitchHeader, StitchFamilyBar } from '@/components/stitch';
+import { StitchHeader } from '@/components/stitch';
 import { useToast } from '@/hooks/use-toast';
 import AccountDeleteModal from '@/components/AccountDeleteModal';
 import { supabase } from '@/integrations/supabase/client';
@@ -745,15 +745,8 @@ const StitchAccount: React.FC = () => {
         isOwner={true}
       />
 
-      {/* Family Bar */}
-      <StitchFamilyBar
-        familyName={''}
-        onSwitchTree={() => navigate('/stitch-dashboard')}
-        lastUpdated=""
-      />
-
       {/* Main Content */}
-      <main className="flex h-[calc(100vh-120px)]">
+      <main className="flex h-[calc(100vh-56px)]">
         {/* Left Sidebar */}
         <aside className="w-80 bg-card border-r border-border flex flex-col z-30 hidden lg:flex">
           <div className="p-6">
