@@ -14,6 +14,7 @@
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { logActivity } from '../_shared/activityLogger.ts';
 
 // CORS Headers
 const corsHeaders = {
@@ -184,12 +185,21 @@ async function handleCreate(userId: string, payload: Record<string, unknown>) {
     .select()
     .single();
   
-  if (error) {
-    console.error('[API] Create error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
-  }
-  
-  return successResponse(data, 201);
+    if (error) {
+      console.error('[API] Create error:', error);
+      return errorResponse('DATABASE_ERROR', error.message, 500);
+    }
+    
+    // Log activity (non-blocking)
+    logActivity({
+      familyId: family_id as string,
+      userId,
+      actionType: 'member_added',
+      targetName: (payload.name as string) || (payload.first_name as string) || '',
+      metadata: { member_id: data.id, gender: payload.gender },
+    });
+    
+    return successResponse(data, 201);
 }
 
 // POST handler - Batch Create
@@ -248,12 +258,21 @@ async function handleUpdate(userId: string, memberId: string, payload: Record<st
     .select()
     .single();
   
-  if (error) {
-    console.error('[API] Update error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
-  }
-  
-  return successResponse(data);
+    if (error) {
+      console.error('[API] Update error:', error);
+      return errorResponse('DATABASE_ERROR', error.message, 500);
+    }
+    
+    // Log activity (non-blocking)
+    logActivity({
+      familyId,
+      userId,
+      actionType: 'member_updated',
+      targetName: data.name || data.first_name || '',
+      metadata: { member_id: memberId },
+    });
+    
+    return successResponse(data);
 }
 
 // PUT handler - Clear Parent Reference
@@ -335,12 +354,21 @@ async function handleDelete(userId: string, memberId: string) {
     .delete()
     .eq('id', memberId);
   
-  if (error) {
-    console.error('[API] Delete error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
-  }
-  
-  return successResponse({ deleted: true, id: memberId });
+    if (error) {
+      console.error('[API] Delete error:', error);
+      return errorResponse('DATABASE_ERROR', error.message, 500);
+    }
+    
+    // Log activity (non-blocking)
+    logActivity({
+      familyId,
+      userId,
+      actionType: 'member_deleted',
+      targetName: '',
+      metadata: { member_id: memberId },
+    });
+    
+    return successResponse({ deleted: true, id: memberId });
 }
 
 // DELETE handler - Batch

@@ -10,7 +10,7 @@ import { getParentageInfo } from '@/lib/memberDisplayUtils';
 
 interface Activity {
   id: string;
-  type: 'edit' | 'add' | 'photo';
+  type: 'edit' | 'add' | 'photo' | 'delete';
   title: string;
   highlight: string;
   timestamp: string;
@@ -93,6 +93,8 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
         return { icon: 'person_add', className: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-500' };
       case 'photo':
         return { icon: 'photo_library', className: 'bg-amber-50 dark:bg-amber-900/20 text-amber-500' };
+      case 'delete':
+        return { icon: 'delete', className: 'bg-red-50 dark:bg-red-900/20 text-red-500' };
       default:
         return { icon: 'history', className: 'bg-slate-50 dark:bg-slate-800/20 text-slate-500' };
     }

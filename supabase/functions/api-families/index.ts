@@ -14,6 +14,7 @@
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { logActivity } from '../_shared/activityLogger.ts';
 
 // CORS Headers
 const corsHeaders = {
@@ -148,31 +149,46 @@ async function handleGet(userId: string, familyId: string, include?: string) {
 
   const supabase = createServiceClient();
   
-  // Handle include parameter for nested resources
-  if (include === 'members') {
-    const { data, error } = await supabase
-      .from('family_tree_members')
-      .select('*')
-      .eq('family_id', familyId)
-      .order('created_at', { ascending: true });
-    
-    if (error) {
-      return errorResponse('DATABASE_ERROR', error.message, 500);
+    // Handle include parameter for nested resources
+    if (include === 'members') {
+      const { data, error } = await supabase
+        .from('family_tree_members')
+        .select('*')
+        .eq('family_id', familyId)
+        .order('created_at', { ascending: true });
+      
+      if (error) {
+        return errorResponse('DATABASE_ERROR', error.message, 500);
+      }
+      return successResponse(data);
     }
-    return successResponse(data);
-  }
-  
-  if (include === 'marriages') {
-    const { data, error } = await supabase
-      .from('marriages')
-      .select('*')
-      .eq('family_id', familyId);
     
-    if (error) {
-      return errorResponse('DATABASE_ERROR', error.message, 500);
+    if (include === 'marriages') {
+      const { data, error } = await supabase
+        .from('marriages')
+        .select('*')
+        .eq('family_id', familyId);
+      
+      if (error) {
+        return errorResponse('DATABASE_ERROR', error.message, 500);
+      }
+      return successResponse(data);
     }
-    return successResponse(data);
-  }
+
+    if (include === 'activity') {
+      const limit = 20;
+      const { data, error } = await supabase
+        .from('activity_log')
+        .select('*')
+        .eq('family_id', familyId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+      
+      if (error) {
+        return errorResponse('DATABASE_ERROR', error.message, 500);
+      }
+      return successResponse(data || []);
+    }
   
   // Default: return family
   const { data, error } = await supabase

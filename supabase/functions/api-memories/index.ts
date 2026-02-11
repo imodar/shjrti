@@ -15,6 +15,7 @@
 
 import { corsHeaders, successResponse, errorResponse, HttpStatus } from '../_shared/apiHelpers.ts';
 import { authenticateRequest, createServiceClient } from '../_shared/authHelpers.ts';
+import { logActivity } from '../_shared/activityLogger.ts';
 
 // ============= Helper Functions =============
 
@@ -158,11 +159,20 @@ async function handleCreateMemberMemory(userId: string, payload: Record<string, 
     .select()
     .single();
 
-  if (error) {
-    return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
-  }
+    if (error) {
+      return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
+    }
 
-  return successResponse(data, HttpStatus.CREATED);
+    // Log activity (non-blocking)
+    logActivity({
+      familyId,
+      userId,
+      actionType: 'photo_uploaded',
+      targetName: (original_filename as string) || '',
+      metadata: { memory_id: data.id, member_id, type: 'member' },
+    });
+
+    return successResponse(data, HttpStatus.CREATED);
 }
 
 async function handleCreateFamilyMemory(userId: string, payload: Record<string, unknown>): Promise<Response> {
@@ -197,11 +207,20 @@ async function handleCreateFamilyMemory(userId: string, payload: Record<string, 
     .select()
     .single();
 
-  if (error) {
-    return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
-  }
+    if (error) {
+      return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
+    }
 
-  return successResponse(data, HttpStatus.CREATED);
+    // Log activity (non-blocking)
+    logActivity({
+      familyId: family_id as string,
+      userId,
+      actionType: 'photo_uploaded',
+      targetName: (original_filename as string) || '',
+      metadata: { memory_id: data.id, type: 'family' },
+    });
+
+    return successResponse(data, HttpStatus.CREATED);
 }
 
 // ============= PUT Handlers =============
