@@ -684,7 +684,7 @@ const StitchAccount: React.FC = () => {
                       {invoice.payment_status === 'pending' && (
                         <>
                           <span className="text-xs text-amber-600 font-medium hidden md:block">{t('billing.click_to_pay', 'Click to pay')}</span>
-                          <button className="px-6 py-2.5 bg-[hsl(var(--stitch-accent))] text-white rounded-xl text-sm font-bold shadow-lg hover:opacity-90 transition-all flex items-center gap-2">
+                          <button className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-bold shadow-lg hover:bg-primary/90 transition-all flex items-center gap-2">
                             <span className="material-symbols-outlined text-lg">payment</span>
                             {t('billing.pay_now', 'Pay Now')}
                           </button>
