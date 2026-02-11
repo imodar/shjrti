@@ -447,22 +447,22 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
           {!isImageUploadEnabled && (
             <>
               <div className="absolute inset-0 z-10 flex items-center justify-center p-6">
-                <div className="max-w-md w-full bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-slate-200 dark:border-slate-800 overflow-hidden text-center p-10 relative">
+               <div className="max-w-sm w-full bg-white dark:bg-slate-900 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-slate-200 dark:border-slate-800 overflow-hidden text-center p-6 relative">
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-700 via-amber-500 to-yellow-400" />
-                  <div className="w-20 h-20 bg-gradient-to-br from-amber-700 via-amber-500 to-yellow-400 rounded-full flex items-center justify-center text-white mx-auto mb-6 shadow-xl shadow-amber-500/20">
-                    <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>crown</span>
+                  <div className="w-14 h-14 bg-gradient-to-br from-amber-700 via-amber-500 to-yellow-400 rounded-full flex items-center justify-center text-white mx-auto mb-4 shadow-xl shadow-amber-500/20">
+                    <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>crown</span>
                   </div>
-                  <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-3">
+                  <h3 className="text-lg font-extrabold text-slate-900 dark:text-white mb-2">
                     {t('gallery.unlock_title', 'Unlock Your Family Gallery')}
                   </h3>
-                  <p className="text-slate-600 dark:text-slate-400 mb-8 text-sm leading-relaxed">
+                  <p className="text-slate-600 dark:text-slate-400 mb-5 text-xs leading-relaxed">
                     {t('gallery.unlock_description', 'The Media Gallery is a premium feature. Upgrade to the Complete Plan to start uploading and preserving your family memories.')}
                   </p>
                   <button
                     onClick={() => navigate('/plan-selection')}
-                    className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-700 via-amber-500 to-yellow-400 text-white font-bold text-base shadow-lg shadow-amber-500/30 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
+                    className="w-full py-3 px-5 rounded-xl bg-gradient-to-r from-amber-700 via-amber-500 to-yellow-400 text-white font-bold text-sm shadow-lg shadow-amber-500/30 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
                   >
-                    <span className="material-symbols-outlined">workspace_premium</span>
+                    <span className="material-symbols-outlined text-lg">workspace_premium</span>
                     {t('gallery.upgrade_to_premium', 'Upgrade to Premium')}
                   </button>
                 </div>
