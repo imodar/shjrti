@@ -8,6 +8,7 @@ import { usePackageTransition } from '@/hooks/usePackageTransition';
 import { profilesApi, subscriptionsApi, invoicesApi, packagesApi, scheduledChangesApi } from '@/lib/api';
 import { familiesApi } from '@/lib/api/endpoints/families';
 import { StitchHeader } from '@/components/stitch';
+import DashboardLoader from '@/components/stitch/DashboardLoader';
 import { useToast } from '@/hooks/use-toast';
 import AccountDeleteModal from '@/components/AccountDeleteModal';
 import { supabase } from '@/integrations/supabase/client';
@@ -51,7 +52,10 @@ const StitchAccount: React.FC = () => {
   }, [setCurrentTheme]);
 
   // ==================== PROFILE STATE ====================
-  const [loading, setLoading] = useState(true);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  const [subLoaded, setSubLoaded] = useState(false);
+  const [statsLoaded, setStatsLoaded] = useState(false);
+  const loaderDoneRef = useRef(false);
   const [saving, setSaving] = useState(false);
   const [profileData, setProfileData] = useState({
     firstName: '', lastName: '', email: '', phone: '',
@@ -119,7 +123,6 @@ const StitchAccount: React.FC = () => {
   useEffect(() => {
     if (!user) return;
     const fetchProfile = async () => {
-      setLoading(true);
       try {
         const profile = await profilesApi.get();
         setProfileData({
@@ -129,7 +132,7 @@ const StitchAccount: React.FC = () => {
           phone: profile.phone || '',
         });
       } catch (err) { console.error('Error fetching profile:', err); }
-      finally { setLoading(false); }
+      finally { setProfileLoaded(true); }
     };
     fetchProfile();
   }, [user]);
@@ -149,6 +152,7 @@ const StitchAccount: React.FC = () => {
         }
         setPackageInfo({ name, expiresAt: sub?.expires_at, maxMembers: pkg?.max_family_members });
       } catch (err) { console.error('Error fetching subscription:', err); }
+      finally { setSubLoaded(true); }
     };
     fetchSub();
   }, [user, currentLanguage]);
@@ -161,6 +165,7 @@ const StitchAccount: React.FC = () => {
         const totalMembers = families.reduce((acc: number, f: any) => acc + (f.member_count || 0), 0);
         setStats({ familiesCreated: families.length, totalMembers });
       } catch (err) { console.error('Error fetching stats:', err); }
+      finally { setStatsLoaded(true); }
     };
     fetchStats();
   }, [user]);
@@ -378,11 +383,18 @@ const StitchAccount: React.FC = () => {
     { key: 'security', icon: 'security', label: t('account.security_access', 'Security & Access') },
   ];
 
-  if (loading) {
+  const isFullyLoaded = profileLoaded && subLoaded && statsLoaded;
+  if (isFullyLoaded) loaderDoneRef.current = true;
+
+  if (!isFullyLoaded && !loaderDoneRef.current) {
     return (
-      <div className="theme-stitch min-h-screen flex items-center justify-center bg-[hsl(var(--stitch-bg))]">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
+      <DashboardLoader
+        steps={[
+          { id: 'profile', labelAr: 'جاري تحميل الملف الشخصي...', labelEn: 'Loading profile...', completed: profileLoaded },
+          { id: 'subscription', labelAr: 'جاري التحقق من الاشتراك...', labelEn: 'Checking subscription...', completed: subLoaded },
+          { id: 'stats', labelAr: 'جاري تحميل الإحصائيات...', labelEn: 'Loading statistics...', completed: statsLoaded },
+        ]}
+      />
     );
   }
 
