@@ -567,10 +567,15 @@ const StitchAccount: React.FC = () => {
                         {isFree ? t('billing.free_forever', 'Free for Life') : `/ ${t('billing.year', 'Year')}`}
                       </span>
                     </div>
-                    {!isFree && pkg.price_sar > 0 && (
-                      <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-wider">
-                        {t('billing.approx', 'Approx.')} {pkg.price_sar} SAR
-                      </p>
+                    {!isFree && pkg.price_usd > 0 && (
+                      <div className="mt-1">
+                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">
+                          ({t('billing.approx', 'Approx.')} {Math.round((pkg.price_usd || 0) * 3.75)} {t('billing.sar', 'SAR')})
+                        </p>
+                        <p className="text-[9px] text-muted-foreground mt-0.5">
+                          *{t('billing.paypal_final_amount', 'Final amount is calculated by PayPal')}
+                        </p>
+                      </div>
                     )}
                   </div>
 
