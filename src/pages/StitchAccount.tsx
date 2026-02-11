@@ -774,7 +774,11 @@ const StitchAccount: React.FC = () => {
               <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
                 {t('profile.danger_zone_desc', 'Permanent deletion of all your family data and trees.')}
               </p>
-              <button onClick={() => setShowDeleteAccountModal(true)} className="text-xs font-bold text-red-600 dark:text-red-400 hover:underline">
+              <button 
+                onClick={() => setShowDeleteAccountModal(true)} 
+                className="w-full mt-1 px-4 py-2.5 rounded-lg text-xs font-bold text-white bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
+              >
+                <span className="material-symbols-outlined text-sm">delete_forever</span>
                 {t('profile.delete_account', 'Delete Account')}
               </button>
             </div>
