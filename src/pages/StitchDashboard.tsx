@@ -362,25 +362,22 @@ const StitchDashboard: React.FC = () => {
             ) : (
               <button 
                 onClick={() => navigate('/plan-selection')}
-                className="rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-6 min-h-[340px] group border-2 border-dashed border-yellow-400/50 relative overflow-hidden"
-                style={{ background: 'linear-gradient(135deg, hsl(45 100% 97%), hsl(40 80% 93%))' }}
+                className="rounded-3xl p-10 flex flex-col items-center justify-center text-center gap-6 min-h-[340px] group border-2 border-dashed border-border relative overflow-hidden bg-muted/40"
               >
                 <div className="absolute inset-0 opacity-10"
-                  style={{ background: 'radial-gradient(circle at 50% 0%, hsl(37 60% 60%), transparent 70%)' }} />
+                  style={{ background: 'radial-gradient(circle at 50% 0%, hsl(var(--muted-foreground)), transparent 70%)' }} />
                 <div className="relative z-10 flex flex-col items-center gap-4">
-                  <div className="w-20 h-20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform"
-                    style={{ background: 'hsla(37, 60%, 60%, 0.15)' }}>
-                    <span className="material-symbols-outlined text-5xl" style={{ color: 'hsl(37 60% 45%)' }}>lock</span>
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform bg-muted">
+                    <span className="material-symbols-outlined text-5xl text-muted-foreground">lock</span>
                   </div>
                   <div>
-                    <h4 className="text-xl font-bold mb-2" style={{ color: 'hsl(37 60% 30%)' }}>
+                    <h4 className="text-xl font-bold mb-2 text-foreground">
                       {t('dashboard.upgrade_required', 'Tree Limit Reached')}
                     </h4>
-                    <p className="text-sm max-w-[220px] leading-relaxed mb-4" style={{ color: 'hsl(37 40% 45%)' }}>
+                    <p className="text-sm max-w-[220px] leading-relaxed mb-4 text-muted-foreground">
                       {t('dashboard.reached_tree_limit', `You've reached your limit of ${maxTrees} trees. Upgrade to add more.`)}
                     </p>
-                    <span className="inline-flex items-center gap-2 text-white font-bold py-2.5 px-6 rounded-xl text-sm shadow-lg"
-                      style={{ background: 'linear-gradient(135deg, hsl(37 70% 55%), hsl(30 70% 45%))' }}>
+                    <span className="inline-flex items-center gap-2 text-primary-foreground font-bold py-2.5 px-6 rounded-xl text-sm shadow-lg bg-primary">
                       <span className="material-symbols-outlined text-lg">rocket_launch</span>
                       {t('dashboard.upgrade_package', 'Upgrade Plan')}
                     </span>
