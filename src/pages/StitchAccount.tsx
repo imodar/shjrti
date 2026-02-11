@@ -608,48 +608,6 @@ const StitchAccount: React.FC = () => {
           </div>
         </div>
 
-        {/* Current Status */}
-        <div className="flex-1 space-y-6">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('billing.current_status', 'Current Status')}</h3>
-          <div className="bg-card rounded-2xl p-6 border border-border shadow-sm sticky top-0">
-            <div className="flex flex-col items-center text-center mb-6">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-4">
-                <span className="material-symbols-outlined text-4xl">verified</span>
-              </div>
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">{t('billing.your_current_plan', 'Your Current Plan')}</p>
-              <h4 className="text-2xl font-bold text-slate-800 dark:text-white">
-                {currentPlan ? getLocalizedPackageField(currentPlanData, 'name') || t('billing.paid_plan', 'Paid Plan') : t('billing.free_plan', 'Free Plan')}
-              </h4>
-              <span className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
-                {subscription?.status === 'active' ? t('billing.active', 'Active') :
-                  subscription?.status === 'expired' ? t('billing.expired', 'Expired') : t('billing.active', 'Active')}
-              </span>
-            </div>
-            <div className="space-y-4 pt-6 border-t border-border">
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">{t('billing.max_trees', 'Max Trees')}</span>
-                <span className="font-bold">{currentPlanData?.max_family_trees || 1}</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">{t('billing.member_limit', 'Member Limit')}</span>
-                <span className="font-bold">{currentPlanData?.max_family_members || 50}</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">{t('billing.subscription_status', 'Subscription Status')}</span>
-                <span className="font-bold text-primary">
-                  {currentPlan ? t('billing.active', 'Active') : t('billing.lifetime_free', 'Lifetime Free')}
-                </span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">{t('billing.renewal_date', 'Renewal Date')}</span>
-                <span className="font-bold">
-                  {subscription?.expires_at ? new Date(subscription.expires_at).toLocaleDateString('en-GB') :
-                    currentPlan ? t('billing.not_specified', 'N/A') : t('billing.none', 'None')}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Invoice History */}
@@ -808,7 +766,43 @@ const StitchAccount: React.FC = () => {
 
         {/* Right Panel - Account Stats */}
         <aside className="w-80 bg-card border-l border-border flex-col p-6 overflow-y-auto hidden xl:flex custom-scrollbar">
-          {/* Subscription Status */}
+          {/* Current Plan Card */}
+          <div className="mb-8">
+            <div className="bg-slate-50 dark:bg-slate-800/40 rounded-2xl p-5 border border-border">
+              <div className="flex flex-col items-center text-center mb-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-3">
+                  <span className="material-symbols-outlined text-2xl">verified</span>
+                </div>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">{t('billing.your_current_plan', 'Your Current Plan')}</p>
+                <h4 className="text-lg font-bold text-slate-800 dark:text-white">
+                  {currentPlan ? getLocalizedPackageField(currentPlanData, 'name') || t('billing.paid_plan', 'Paid Plan') : t('billing.free_plan', 'Free Plan')}
+                </h4>
+                <span className="mt-1.5 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                  {subscription?.status === 'active' ? t('billing.active', 'Active') :
+                    subscription?.status === 'expired' ? t('billing.expired', 'Expired') : t('billing.active', 'Active')}
+                </span>
+              </div>
+              <div className="space-y-3 pt-4 border-t border-border">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-muted-foreground">{t('billing.max_trees', 'Max Trees')}</span>
+                  <span className="font-bold">{currentPlanData?.max_family_trees || 1}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-muted-foreground">{t('billing.member_limit', 'Member Limit')}</span>
+                  <span className="font-bold">{currentPlanData?.max_family_members || 50}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-muted-foreground">{t('billing.renewal_date', 'Renewal Date')}</span>
+                  <span className="font-bold">
+                    {subscription?.expires_at ? new Date(subscription.expires_at).toLocaleDateString('en-GB') :
+                      currentPlan ? t('billing.not_specified', 'N/A') : t('billing.none', 'None')}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Account Stats */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold">{t('account.account_stats', 'Account Stats')}</h3>
