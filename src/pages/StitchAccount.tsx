@@ -812,53 +812,55 @@ const StitchAccount: React.FC = () => {
             </div>
           </div>
 
-          {/* Account Stats */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-bold">{t('account.account_stats', 'Account Stats')}</h3>
-              <span className="material-symbols-outlined text-primary">analytics</span>
-            </div>
-
-            {/* Plan Usage */}
-            <div className="space-y-6">
-              {/* Plan Usage - Green */}
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{t('billing.plan_usage', 'Plan Usage')}</p>
-                  <p className="text-xs font-bold">
-                    {stats.totalMembers}{packageInfo?.maxMembers ? ` / ${packageInfo.maxMembers} ${t('billing.members', 'Members')}` : ''}
-                  </p>
-                </div>
-                <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                  <div
-                    className="bg-emerald-500 h-full rounded-full transition-all"
-                    style={{ width: `${packageInfo?.maxMembers ? Math.min(100, (stats.totalMembers / packageInfo.maxMembers) * 100) : 0}%` }}
-                  />
-                </div>
-                {packageInfo?.maxMembers && (
-                  <p className="text-[10px] text-muted-foreground mt-2">
-                    {Math.round((stats.totalMembers / packageInfo.maxMembers) * 100)}% {t('billing.of_limit_used', 'of your current plan limit used')}
-                  </p>
-                )}
+          {/* Account Stats - only show on billing tab */}
+          {activeTab === 'billing' && (
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-bold">{t('account.account_stats', 'Account Stats')}</h3>
+                <span className="material-symbols-outlined text-primary">analytics</span>
               </div>
 
-              {/* Families Created - Yellow */}
-              <div>
-                <div className="flex justify-between items-end mb-2">
-                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{t('profile.families_created', 'Families Created')}</p>
-                  <p className="text-xs font-bold">
-                    {stats.familiesCreated}{packageInfo?.maxTrees ? ` / ${packageInfo.maxTrees}` : ''}
-                  </p>
+              {/* Plan Usage */}
+              <div className="space-y-6">
+                {/* Plan Usage - Green */}
+                <div>
+                  <div className="flex justify-between items-end mb-2">
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{t('billing.plan_usage', 'Plan Usage')}</p>
+                    <p className="text-xs font-bold">
+                      {stats.totalMembers}{packageInfo?.maxMembers ? ` / ${packageInfo.maxMembers} ${t('billing.members', 'Members')}` : ''}
+                    </p>
+                  </div>
+                  <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div
+                      className="bg-emerald-500 h-full rounded-full transition-all"
+                      style={{ width: `${packageInfo?.maxMembers ? Math.min(100, (stats.totalMembers / packageInfo.maxMembers) * 100) : 0}%` }}
+                    />
+                  </div>
+                  {packageInfo?.maxMembers && (
+                    <p className="text-[10px] text-muted-foreground mt-2">
+                      {Math.round((stats.totalMembers / packageInfo.maxMembers) * 100)}% {t('billing.of_limit_used', 'of your current plan limit used')}
+                    </p>
+                  )}
                 </div>
-                <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
-                  <div
-                    className="bg-amber-400 h-full rounded-full transition-all"
-                    style={{ width: `${packageInfo?.maxTrees ? Math.min(100, (stats.familiesCreated / packageInfo.maxTrees) * 100) : 0}%` }}
-                  />
+
+                {/* Families Created - Yellow */}
+                <div>
+                  <div className="flex justify-between items-end mb-2">
+                    <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{t('profile.families_created', 'Families Created')}</p>
+                    <p className="text-xs font-bold">
+                      {stats.familiesCreated}{packageInfo?.maxTrees ? ` / ${packageInfo.maxTrees}` : ''}
+                    </p>
+                  </div>
+                  <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div
+                      className="bg-amber-400 h-full rounded-full transition-all"
+                      style={{ width: `${packageInfo?.maxTrees ? Math.min(100, (stats.familiesCreated / packageInfo.maxTrees) * 100) : 0}%` }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
 
           {/* Security Tips - only show on security tab */}
           {activeTab === 'security' && (
