@@ -150,19 +150,25 @@ const FamilyBuilderStitch: React.FC = () => {
 
   // Calculate stats
   const stats = useMemo(() => {
-    const generations = new Set<number>();
-    // Simple generation calculation
-    let maxGen = 1;
-    familyMembers.forEach(m => {
-      if (m.is_founder) maxGen = Math.max(maxGen, 1);
-      // This is simplified - actual logic would traverse the tree
-    });
+    // Calculate generations by finding max depth from founders
+    const getDepth = (memberId: string, visited = new Set<string>()): number => {
+      if (visited.has(memberId)) return 0;
+      visited.add(memberId);
+      const children = familyMembers.filter(m => m.father_id === memberId || m.mother_id === memberId);
+      if (children.length === 0) return 1;
+      return 1 + Math.max(...children.map(c => getDepth(c.id, visited)));
+    };
+
+    const founders = familyMembers.filter(m => m.is_founder);
+    const maxGen = founders.length > 0
+      ? Math.max(...founders.map(f => getDepth(f.id)))
+      : (familyMembers.length > 0 ? 1 : 0);
 
     return {
       totalMembers: familyMembers.length,
       generations: maxGen,
       completeness: Math.min(100, Math.round((familyMembers.length / 100) * 100)),
-      documents: 0 // Placeholder
+      documents: 0
     };
   }, [familyMembers]);
 
