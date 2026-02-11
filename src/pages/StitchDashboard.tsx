@@ -169,10 +169,10 @@ const StitchDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-background animate-in fade-in duration-500">
        <StitchHeader 
-         activeTab="dashboard" 
+         variant="account"
+         activeTab="home" 
          userName={displayName}
          packageName={packageName}
-         hideNav={true}
        />
       
       <main className="max-w-7xl mx-auto px-6 py-5">
