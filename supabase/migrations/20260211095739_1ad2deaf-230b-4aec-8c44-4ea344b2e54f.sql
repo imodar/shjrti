@@ -1,0 +1,2 @@
+INSERT INTO translations (key, language_code, value, category) VALUES ('current_password', 'ar', 'كلمة المرور الحالية', 'account'), ('current_password', 'en', 'Current Password', 'account')
+ON CONFLICT (key, language_code) DO NOTHING;
