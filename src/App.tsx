@@ -190,7 +190,7 @@ const App = () => {
               </ProtectedFamilyRoute>
             </ProtectedRoute>
           } />
-          <Route path="/family-builder-stitch" element={
+          <Route path="/stitch-family-builder" element={
             <ProtectedRoute>
               <ProtectedFamilyRoute loadingFallback={<StitchLoadingFallback />}>
                 <FamilyBuilderStitchWithProvider />

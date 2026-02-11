@@ -61,7 +61,7 @@ const AcceptInvitation: React.FC = () => {
         setAccepted(true);
         toast.success('تم قبول الدعوة بنجاح!');
         setTimeout(() => {
-          navigate(`/family-builder-stitch?family=${result.family_id}`);
+          navigate(`/stitch-family-builder?family=${result.family_id}`);
         }, 1500);
       } catch (err: any) {
         if (err?.code === 'EMAIL_MISMATCH') {

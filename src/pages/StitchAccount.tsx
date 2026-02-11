@@ -737,9 +737,9 @@ const StitchAccount: React.FC = () => {
         packageName={packageName}
         activeTab="account"
         onTabChange={(tab) => {
-          if (tab === 'dashboard') navigate(`/family-builder-stitch?family=${familyId}&tab=dashboard`);
+          if (tab === 'dashboard') navigate(`/stitch-family-builder?family=${familyId}&tab=dashboard`);
           else if (tab === 'account') return;
-          else navigate(`/family-builder-stitch?family=${familyId}&tab=${tab}`);
+          else navigate(`/stitch-family-builder?family=${familyId}&tab=${tab}`);
         }}
         suggestionsCount={0}
         isOwner={true}
