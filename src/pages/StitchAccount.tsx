@@ -67,7 +67,7 @@ const StitchAccount: React.FC = () => {
   const [stats, setStats] = useState({ familiesCreated: 0, totalMembers: 0 });
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
   const [packageInfo, setPackageInfo] = useState<{
-    name: string; expiresAt?: string | null; maxMembers?: number | null;
+    name: string; expiresAt?: string | null; maxMembers?: number | null; maxTrees?: number | null;
   } | null>(null);
 
   // ==================== BILLING STATE ====================
@@ -150,7 +150,7 @@ const StitchAccount: React.FC = () => {
             name = nameObj[currentLanguage] || nameObj.en || name;
           } catch { name = typeof pkg.name === 'string' ? pkg.name : name; }
         }
-        setPackageInfo({ name, expiresAt: sub?.expires_at, maxMembers: pkg?.max_family_members });
+        setPackageInfo({ name, expiresAt: sub?.expires_at, maxMembers: pkg?.max_family_members, maxTrees: pkg?.max_family_trees });
       } catch (err) { console.error('Error fetching subscription:', err); }
       finally { setSubLoaded(true); }
     };
@@ -811,6 +811,7 @@ const StitchAccount: React.FC = () => {
 
             {/* Plan Usage */}
             <div className="space-y-6">
+              {/* Plan Usage - Green */}
               <div>
                 <div className="flex justify-between items-end mb-2">
                   <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{t('billing.plan_usage', 'Plan Usage')}</p>
@@ -820,7 +821,7 @@ const StitchAccount: React.FC = () => {
                 </div>
                 <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
                   <div
-                    className="bg-primary h-full rounded-full transition-all"
+                    className="bg-emerald-500 h-full rounded-full transition-all"
                     style={{ width: `${packageInfo?.maxMembers ? Math.min(100, (stats.totalMembers / packageInfo.maxMembers) * 100) : 0}%` }}
                   />
                 </div>
@@ -831,10 +832,19 @@ const StitchAccount: React.FC = () => {
                 )}
               </div>
 
+              {/* Families Created - Yellow */}
               <div>
                 <div className="flex justify-between items-end mb-2">
                   <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{t('profile.families_created', 'Families Created')}</p>
-                  <p className="text-xs font-bold">{stats.familiesCreated}</p>
+                  <p className="text-xs font-bold">
+                    {stats.familiesCreated}{packageInfo?.maxTrees ? ` / ${packageInfo.maxTrees}` : ''}
+                  </p>
+                </div>
+                <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div
+                    className="bg-amber-400 h-full rounded-full transition-all"
+                    style={{ width: `${packageInfo?.maxTrees ? Math.min(100, (stats.familiesCreated / packageInfo.maxTrees) * 100) : 0}%` }}
+                  />
                 </div>
               </div>
             </div>
