@@ -162,7 +162,16 @@ const StitchAccount: React.FC = () => {
     const fetchStats = async () => {
       try {
         const families = await familiesApi.list();
-        const totalMembers = families.reduce((acc: number, f: any) => acc + (f.member_count || 0), 0);
+        // Fetch actual member counts per family
+        const memberCounts = await Promise.all(
+          families.map(async (f: any) => {
+            try {
+              const members = await familiesApi.getMembers(f.id);
+              return members.length;
+            } catch { return 0; }
+          })
+        );
+        const totalMembers = memberCounts.reduce((acc, count) => acc + count, 0);
         setStats({ familiesCreated: families.length, totalMembers });
       } catch (err) { console.error('Error fetching stats:', err); }
       finally { setStatsLoaded(true); }
