@@ -540,12 +540,12 @@ const StitchAccount: React.FC = () => {
                   )}>
                   {/* Featured badge */}
                   {isFeatured && (
-                    <div className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-widest">
+                    <div className="absolute -top-1 ltr:-right-1 rtl:-left-1 bg-primary text-primary-foreground text-[10px] font-bold px-3 py-1 ltr:rounded-bl-xl rtl:rounded-br-xl uppercase tracking-widest">
                       {t('billing.most_popular', 'Most Popular')}
                     </div>
                   )}
                   {!isFeatured && (
-                    <div className="absolute top-0 right-0 p-3">
+                    <div className="absolute top-0 ltr:right-0 rtl:left-0 p-3">
                       <span className="material-symbols-outlined text-slate-200 group-hover:text-primary/20 transition-colors text-4xl">star_outline</span>
                     </div>
                   )}
