@@ -154,7 +154,7 @@ const StitchDashboard: React.FC = () => {
   };
 
   const handleManageTree = (familyId: string) => {
-    navigate(`/family-builder-stitch?family=${familyId}`);
+    navigate(`/stitch-family-builder?family=${familyId}`);
   };
 
   if (loading || !loaderDone) {

@@ -42,12 +42,12 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
 
   const tabs = [
     { id: "home", label: t('family_header.home', 'الرئيسية'), path: "/stitch-dashboard" },
-    { id: "dashboard", label: t('stitch.tab.dashboard', 'لوحة التحكم'), path: "/family-builder-stitch" },
+    { id: "dashboard", label: t('stitch.tab.dashboard', 'لوحة التحكم'), path: "/stitch-family-builder" },
     { id: "tree", label: t('stitch.tab.tree_view', 'عرض الشجرة'), path: "/stitch-tree-view" },
-    { id: "gallery", label: t('stitch.tab.gallery', 'المعرض'), path: "/family-builder-stitch" },
-    { id: "statistics", label: t('stitch.tab.statistics', 'الإحصائيات'), path: "/family-builder-stitch" },
-    { id: "suggestions", label: t('stitch.tab.suggestions', 'الاقتراحات'), path: "/family-builder-stitch", badge: suggestionsCount },
-    { id: "settings", label: t('family_header.settings', 'الإعدادات'), path: "/family-builder-stitch" },
+    { id: "gallery", label: t('stitch.tab.gallery', 'المعرض'), path: "/stitch-family-builder" },
+    { id: "statistics", label: t('stitch.tab.statistics', 'الإحصائيات'), path: "/stitch-family-builder" },
+    { id: "suggestions", label: t('stitch.tab.suggestions', 'الاقتراحات'), path: "/stitch-family-builder", badge: suggestionsCount },
+    { id: "settings", label: t('family_header.settings', 'الإعدادات'), path: "/stitch-family-builder" },
   ];
 
   // Preserve family ID in navigation
@@ -60,7 +60,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
       const params = new URLSearchParams();
       if (familyId) params.set('family', familyId);
       // For tabs that share the same path, pass the tab id
-      if (tab.id !== 'home' && tab.id !== 'tree' && tab.path === '/family-builder-stitch') {
+      if (tab.id !== 'home' && tab.id !== 'tree' && tab.path === '/stitch-family-builder') {
         params.set('tab', tab.id);
       }
       const qs = params.toString();
