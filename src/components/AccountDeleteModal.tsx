@@ -149,7 +149,7 @@ const AccountDeleteModal = ({ isOpen, onClose, userStats }: AccountDeleteModalPr
     <>
       {/* Delete Confirmation Modal */}
       <Dialog open={showConfirmModal} onOpenChange={(open) => { if (!open) handleClose(); }}>
-        <DialogContent className="max-w-2xl mx-auto overflow-hidden border-0 bg-gradient-to-br from-red-50 via-rose-50 to-orange-50 dark:from-red-950/20 dark:via-red-900/20 dark:to-orange-900/20 backdrop-blur-lg">
+        <DialogContent className="max-w-md mx-auto overflow-hidden border-0 bg-gradient-to-br from-red-50 via-rose-50 to-orange-50 dark:from-red-950/20 dark:via-red-900/20 dark:to-orange-900/20 backdrop-blur-lg max-h-[85vh] overflow-y-auto">
           {/* Animated Background Elements */}
           <div className="absolute inset-0 opacity-20">
             <div className="absolute top-4 left-4 w-16 h-16 bg-red-200/30 rounded-full animate-pulse"></div>
