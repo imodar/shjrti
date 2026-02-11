@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { memoriesApi } from '@/lib/api';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,6 +10,7 @@ import type { FamilyMemory } from '@/lib/api/types';
 import { useDropzone } from 'react-dropzone';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';
+import { useImageUploadPermission } from '@/hooks/useImageUploadPermission';
 
 // Types for the review/edit popup
 interface ReviewPopupState {
@@ -81,6 +83,8 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   familyMembers,
 }) => {
   const { t, currentLanguage } = useLanguage();
+  const navigate = useNavigate();
+  const { isImageUploadEnabled, loading: permissionLoading } = useImageUploadPermission();
   const [memories, setMemories] = useState<MemoryWithUrl[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -309,27 +313,47 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
               <span className="material-symbols-outlined text-primary">cloud_upload</span>
               {t('gallery.quick_upload', 'Quick Upload')}
             </h2>
-            <div
-              {...getRootProps()}
-              className={`border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center text-center group cursor-pointer transition-colors ${
-                isDragActive
-                  ? 'border-primary bg-primary/5'
-                  : 'border-slate-200 dark:border-slate-700 hover:border-primary/50 bg-slate-50/50 dark:bg-slate-800/20'
-              }`}
-            >
-              <input {...getInputProps()} />
-              <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                {uploading ? (
-                  <Loader2 className="h-5 w-5 animate-spin" />
-                ) : (
-                  <span className="material-symbols-outlined">add_a_photo</span>
-                )}
+            {isImageUploadEnabled ? (
+              <div
+                {...getRootProps()}
+                className={`border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center text-center group cursor-pointer transition-colors ${
+                  isDragActive
+                    ? 'border-primary bg-primary/5'
+                    : 'border-slate-200 dark:border-slate-700 hover:border-primary/50 bg-slate-50/50 dark:bg-slate-800/20'
+                }`}
+              >
+                <input {...getInputProps()} />
+                <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                  {uploading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <span className="material-symbols-outlined">add_a_photo</span>
+                  )}
+                </div>
+                <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  {t('gallery.drop_here', 'Drop memories here')}
+                </p>
+                <p className="text-[10px] text-slate-400 mt-1">PNG, JPG up to 10MB</p>
               </div>
-              <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                {t('gallery.drop_here', 'Drop memories here')}
-              </p>
-              <p className="text-[10px] text-slate-400 mt-1">PNG, JPG up to 10MB</p>
-            </div>
+            ) : (
+              <div className="border-2 border-dashed border-border rounded-2xl p-6 flex flex-col items-center justify-center text-center bg-muted/30">
+                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                  <span className="material-symbols-outlined text-muted-foreground">lock</span>
+                </div>
+                <p className="text-xs font-semibold text-foreground mb-1">
+                  {t('gallery.premium_feature', 'Premium Feature')}
+                </p>
+                <p className="text-[10px] text-muted-foreground mb-3">
+                  {t('gallery.upgrade_to_upload', 'Upgrade your plan to upload photos')}
+                </p>
+                <button
+                  onClick={() => navigate('/plan-selection')}
+                  className="text-[11px] font-bold text-primary-foreground bg-primary px-4 py-1.5 rounded-lg hover:opacity-90 transition-opacity"
+                >
+                  {t('gallery.upgrade_now', 'Upgrade Now')}
+                </button>
+              </div>
+            )}
             {/* Storage Capacity */}
             <div className="mt-8">
               <div className="flex justify-between items-center mb-2">
