@@ -37,11 +37,11 @@ const AccountDeleteModal = ({ isOpen, onClose, userStats }: AccountDeleteModalPr
   const confirmationWord = "DELETE";
   
   const deletionSteps = [
-    'جاري حذف الأشجار والأعضاء...',
-    'جاري حذف الصور والذكريات...',
-    'جاري حذف الاشتراكات والفواتير...',
-    'جاري حذف الحساب نهائيًا...',
-    'تم الحذف بنجاح ✓'
+    t('delete_modal.step_trees', 'Deleting trees and members...'),
+    t('delete_modal.step_photos', 'Deleting photos and memories...'),
+    t('delete_modal.step_subscriptions', 'Deleting subscriptions and invoices...'),
+    t('delete_modal.step_account', 'Permanently deleting account...'),
+    t('delete_modal.step_done', 'Deleted successfully ✓')
   ];
 
   // Reset state when modal opens/closes
@@ -160,7 +160,7 @@ const AccountDeleteModal = ({ isOpen, onClose, userStats }: AccountDeleteModalPr
                   </div>
                 </div>
                 <h2 className="text-xl font-bold bg-gradient-to-r from-red-600 via-rose-600 to-orange-600 bg-clip-text text-transparent">
-                  ⚠️ تحذير: حذف الحساب نهائيًا
+                  ⚠️ {t('delete_modal.title', 'Warning: Permanently Delete Account')}
                 </h2>
               </DialogTitle>
             </DialogHeader>
@@ -169,23 +169,23 @@ const AccountDeleteModal = ({ isOpen, onClose, userStats }: AccountDeleteModalPr
               {/* Compact Warning */}
               <div className="bg-red-50/80 dark:bg-red-950/40 rounded-lg p-4 border border-red-300 dark:border-red-700">
                 <p className="text-sm font-semibold text-red-800 dark:text-red-200 mb-2">
-                  هذا الإجراء لا يمكن التراجع عنه! سيتم حذف:
+                  {t('delete_modal.irreversible', 'This action cannot be undone! The following will be deleted:')}
                 </p>
                 <div className="grid grid-cols-2 gap-1.5 text-xs text-red-700 dark:text-red-300">
-                  <span>🌳 {userStats.familiesCreated} شجرة عائلة</span>
-                  <span>👥 {userStats.totalMembers} عضو</span>
-                  <span>🖼️ الصور والذكريات</span>
-                  <span>💳 الاشتراك والفواتير</span>
+                  <span>🌳 {userStats.familiesCreated} {t('delete_modal.family_trees', 'family trees')}</span>
+                  <span>👥 {userStats.totalMembers} {t('delete_modal.members', 'members')}</span>
+                  <span>🖼️ {t('delete_modal.photos_memories', 'Photos & memories')}</span>
+                  <span>💳 {t('delete_modal.subscriptions_invoices', 'Subscriptions & invoices')}</span>
                 </div>
                 <p className="text-xs font-bold text-red-900 dark:text-red-100 text-center mt-2.5">
-                  ⛔ لا يمكن استرجاع البيانات بعد الحذف!
+                  ⛔ {t('delete_modal.no_recovery', 'Data cannot be recovered after deletion!')}
                 </p>
               </div>
 
               {/* Confirmation Input */}
               <div className="bg-white/80 dark:bg-gray-800/60 rounded-xl p-4 border border-red-300/50 dark:border-red-700/50">
                 <p className="text-sm text-gray-700 dark:text-gray-300 mb-2.5 text-center">
-                  اكتب <span className="font-bold text-red-600 dark:text-red-400">"{confirmationWord}"</span> للتأكيد:
+                  {t('delete_modal.type_to_confirm', 'Type')} <span className="font-bold text-red-600 dark:text-red-400">"{confirmationWord}"</span> {t('delete_modal.to_confirm', 'to confirm:')}
                 </p>
                 <div className="relative">
                   <Input
@@ -212,7 +212,7 @@ const AccountDeleteModal = ({ isOpen, onClose, userStats }: AccountDeleteModalPr
                   onClick={resetConfirmation}
                   className="flex-1 h-10 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all font-semibold text-sm"
                 >
-                  إلغاء
+                  {t('delete_modal.cancel', 'Cancel')}
                 </Button>
                 <Button 
                   onClick={handleConfirmDelete}
@@ -220,7 +220,7 @@ const AccountDeleteModal = ({ isOpen, onClose, userStats }: AccountDeleteModalPr
                   className="flex-1 h-10 rounded-lg bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold text-sm shadow-md disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   <Trash2 className="h-4 w-4 ml-1.5" />
-                  حذف حسابي نهائيًا
+                  {t('delete_modal.delete_permanently', 'Delete My Account Permanently')}
                 </Button>
               </div>
 
@@ -240,14 +240,14 @@ const AccountDeleteModal = ({ isOpen, onClose, userStats }: AccountDeleteModalPr
               {progress < 100 ? (
                 <>
                   <Loader2 className="h-6 w-6 text-red-600 animate-spin" />
-                  <span>جاري حذف الحساب...</span>
+                  <span>{t('delete_modal.deleting_account', 'Deleting account...')}</span>
                 </>
               ) : (
                 <>
                   <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                     <span className="text-white text-sm">✓</span>
                   </div>
-                  <span className="text-green-600">تم الحذف بنجاح</span>
+                  <span className="text-green-600">{t('delete_modal.deleted_success', 'Deleted Successfully')}</span>
                 </>
               )}
             </DialogTitle>
@@ -257,7 +257,7 @@ const AccountDeleteModal = ({ isOpen, onClose, userStats }: AccountDeleteModalPr
             {/* Progress bar */}
             <div className="space-y-3">
               <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {deletionSteps[currentStep] || 'جاري الإنهاء...'}
+                {deletionSteps[currentStep] || t('delete_modal.finishing', 'Finishing...')}
               </div>
               <Progress value={progress} className="h-3" />
               <div className="flex justify-between items-center text-sm">
@@ -315,7 +315,7 @@ const AccountDeleteModal = ({ isOpen, onClose, userStats }: AccountDeleteModalPr
             {progress === 100 && !deletionError && (
               <Alert className="border-green-400 bg-green-50 dark:bg-green-950/30">
                 <AlertDescription className="text-green-700 dark:text-green-300 text-sm text-center">
-                  سيتم توجيهك إلى الصفحة الرئيسية الآن...
+                  {t('delete_modal.redirecting', 'You will be redirected to the homepage now...')}
                 </AlertDescription>
               </Alert>
             )}
@@ -324,7 +324,7 @@ const AccountDeleteModal = ({ isOpen, onClose, userStats }: AccountDeleteModalPr
           <DialogFooter>
             {!isDeleting && deletionError && (
               <Button onClick={handleClose} variant="outline" className="w-full">
-                إغلاق
+                {t('delete_modal.close', 'Close')}
               </Button>
             )}
           </DialogFooter>
