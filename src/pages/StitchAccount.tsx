@@ -872,15 +872,6 @@ const StitchAccount: React.FC = () => {
                   {t('account.stronger_passwords_desc', 'Use a mix of letters, numbers, and symbols for better security.')}
                 </p>
               </div>
-              <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-border">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="material-icons-round text-primary text-sm">history</span>
-                  <h4 className="font-bold text-xs">{t('account.review_login', 'Review Login Activity')}</h4>
-                </div>
-                <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  {t('account.review_login_desc', 'Check for unrecognized devices in your active sessions periodically.')}
-                </p>
-              </div>
             </div>
           </div>
 
