@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useFamilyData } from '@/contexts/FamilyDataContext';
 import { useFamilyRole } from '@/hooks/useFamilyRole';
-import { subscriptionsApi, suggestionsApi } from '@/lib/api';
+import { subscriptionsApi, suggestionsApi, familiesApi } from '@/lib/api';
 import { StitchHeader, StitchFamilyBar, StitchSidebar, StitchRightPanel, StitchMainContent, StitchSettingsView } from '@/components/stitch';
 import DashboardLoader from '@/components/stitch/DashboardLoader';
 import { MemberDeleteModal } from '@/components/stitch/MemberDeleteModal';
@@ -205,26 +205,59 @@ const FamilyBuilderStitch: React.FC = () => {
       .slice(0, 3);
   }, [familyMembers]);
 
-  // Mock activities (replace with real data)
-  const recentActivities = useMemo(() => {
-    // TODO: Fetch from activity log
-    return [
-      {
-        id: '1',
-        type: 'edit' as const,
-        title: 'Modified',
-        highlight: `${familyMembers[0]?.name || 'Member'}'s biography`,
-        timestamp: '2 hours ago'
-      },
-      {
-        id: '2',
-        type: 'add' as const,
-        title: 'Added',
-        highlight: 'new family member',
-        timestamp: 'Yesterday'
-      }
-    ];
-  }, [familyMembers]);
+  // Real activities from activity_log
+  const [recentActivities, setRecentActivities] = useState<Array<{
+    id: string;
+    type: 'edit' | 'add' | 'photo' | 'delete';
+    title: string;
+    highlight: string;
+    timestamp: string;
+  }>>([]);
+
+  useEffect(() => {
+    if (!familyId) return;
+    familiesApi.getActivityLog(familyId).then((logs) => {
+      const actionTypeMap: Record<string, { type: 'edit' | 'add' | 'photo' | 'delete'; title: string }> = {
+        member_added: { type: 'add', title: t('activity.member_added', 'تمت إضافة') },
+        member_updated: { type: 'edit', title: t('activity.member_updated', 'تم تعديل') },
+        member_deleted: { type: 'delete', title: t('activity.member_deleted', 'تم حذف') },
+        photo_uploaded: { type: 'photo', title: t('activity.photo_uploaded', 'تم رفع صورة') },
+        marriage_added: { type: 'add', title: t('activity.marriage_added', 'تمت إضافة زواج') },
+        marriage_deleted: { type: 'delete', title: t('activity.marriage_deleted', 'تم حذف زواج') },
+        settings_changed: { type: 'edit', title: t('activity.settings_changed', 'تم تغيير الإعدادات') },
+        collaborator_invited: { type: 'add', title: t('activity.collaborator_invited', 'تمت دعوة متعاون') },
+      };
+
+      const mapped = logs.slice(0, 10).map((log) => {
+        const info = actionTypeMap[log.action_type] || { type: 'edit' as const, title: log.action_type };
+        const timeAgo = getTimeAgo(log.created_at);
+        return {
+          id: log.id,
+          type: info.type,
+          title: info.title,
+          highlight: log.target_name || '',
+          timestamp: timeAgo,
+        };
+      });
+      setRecentActivities(mapped);
+    }).catch(() => {
+      // Silently fail - no activities to show
+    });
+  }, [familyId, t]);
+
+  function getTimeAgo(dateStr: string): string {
+    const now = new Date();
+    const date = new Date(dateStr);
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 1) return t('time.just_now', 'الآن');
+    if (diffMins < 60) return `${t('time.ago', 'منذ')} ${diffMins} ${t('time.minutes', 'دقيقة')}`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${t('time.ago', 'منذ')} ${diffHours} ${t('time.hours', 'ساعة')}`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays < 7) return `${t('time.ago', 'منذ')} ${diffDays} ${t('time.days', 'يوم')}`;
+    return date.toLocaleDateString();
+  }
 
   // Handlers
   const handleMemberClick = (member: any) => {

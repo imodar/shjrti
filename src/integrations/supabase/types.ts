@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_log: {
+        Row: {
+          action_type: string
+          created_at: string
+          family_id: string
+          id: string
+          metadata: Json | null
+          target_name: string | null
+          user_id: string
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          family_id: string
+          id?: string
+          metadata?: Json | null
+          target_name?: string | null
+          user_id: string
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          family_id?: string
+          id?: string
+          metadata?: Json | null
+          target_name?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_log_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_audit_log: {
         Row: {
           action_type: string
@@ -1791,6 +1829,7 @@ export type Database = {
         }[]
       }
       cleanup_expired_otps: { Args: never; Returns: undefined }
+      cleanup_old_activity_logs: { Args: never; Returns: undefined }
       cleanup_old_login_attempts: { Args: never; Returns: undefined }
       complete_payment_and_upgrade: {
         Args: {

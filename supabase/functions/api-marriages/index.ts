@@ -14,6 +14,7 @@
  */
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { logActivity } from '../_shared/activityLogger.ts';
 
 // CORS Headers
 const corsHeaders = {
@@ -185,23 +186,31 @@ async function handleCreate(userId: string, payload: Record<string, unknown>) {
     .select()
     .single();
   
-  if (error) {
-    console.error('[API] Create error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
-  }
-  
-  // Update spouse_id on both members
-  await supabase
-    .from('family_tree_members')
-    .update({ spouse_id: wife_id, marital_status: payload.marital_status || 'married' })
-    .eq('id', husband_id);
-  
-  await supabase
-    .from('family_tree_members')
-    .update({ spouse_id: husband_id, marital_status: payload.marital_status || 'married' })
-    .eq('id', wife_id);
-  
-  return successResponse(data, 201);
+    if (error) {
+      console.error('[API] Create error:', error);
+      return errorResponse('DATABASE_ERROR', error.message, 500);
+    }
+    
+    // Update spouse_id on both members
+    await supabase
+      .from('family_tree_members')
+      .update({ spouse_id: wife_id, marital_status: payload.marital_status || 'married' })
+      .eq('id', husband_id);
+    
+    await supabase
+      .from('family_tree_members')
+      .update({ spouse_id: husband_id, marital_status: payload.marital_status || 'married' })
+      .eq('id', wife_id);
+    
+    // Log activity (non-blocking)
+    logActivity({
+      familyId: family_id as string,
+      userId,
+      actionType: 'marriage_added',
+      metadata: { marriage_id: data.id, husband_id, wife_id },
+    });
+    
+    return successResponse(data, 201);
 }
 
 // POST handler - Upsert

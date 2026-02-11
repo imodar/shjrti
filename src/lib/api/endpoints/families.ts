@@ -5,6 +5,16 @@
 import apiClient from '../client';
 import type { Family, FamilyCreateInput, FamilyUpdateInput, Member, Marriage, DeleteResponse } from '../types';
 
+export interface ActivityLogEntry {
+  id: string;
+  family_id: string;
+  user_id: string;
+  action_type: string;
+  target_name: string | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
+}
+
 const FUNCTION_NAME = 'api-families';
 
 export const familiesApi = {
@@ -46,6 +56,10 @@ export const familiesApi = {
 
   regenerateShareToken: async (id: string, expiresInHours: number = 2): Promise<{ share_token: string; expires_at: string }> => {
     return apiClient.post<{ share_token: string; expires_at: string }>(FUNCTION_NAME, undefined, { id, action: 'regenerateShareToken', expiresInHours });
+  },
+
+  getActivityLog: async (familyId: string): Promise<ActivityLogEntry[]> => {
+    return apiClient.get<ActivityLogEntry[]>(FUNCTION_NAME, { id: familyId, include: 'activity' });
   },
 };
 
