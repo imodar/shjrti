@@ -4,23 +4,31 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { profilesApi, subscriptionsApi } from '@/lib/api';
+import { usePackageTransition } from '@/hooks/usePackageTransition';
+import { profilesApi, subscriptionsApi, invoicesApi, packagesApi, scheduledChangesApi } from '@/lib/api';
 import { familiesApi } from '@/lib/api/endpoints/families';
 import { StitchHeader, StitchFamilyBar } from '@/components/stitch';
 import { useToast } from '@/hooks/use-toast';
 import AccountDeleteModal from '@/components/AccountDeleteModal';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
+
+type AccountTab = 'profile' | 'billing' | 'security';
 
 const StitchAccount: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { currentTheme, setCurrentTheme } = useTheme();
   const { user } = useAuth();
-  const { t, direction } = useLanguage();
-  const { subscription } = useSubscription();
+  const { t, direction, currentLanguage } = useLanguage();
+  const { subscription, refreshSubscription } = useSubscription();
+  const { processPackageTransition, loading: transitionLoading } = usePackageTransition();
   const { toast } = useToast();
   const previousThemeRef = useRef(currentTheme);
+
+  const initialTab = (searchParams.get('tab') as AccountTab) || 'profile';
+  const [activeTab, setActiveTab] = useState<AccountTab>(initialTab);
 
   // Apply stitch theme
   useEffect(() => {
@@ -42,36 +50,72 @@ const StitchAccount: React.FC = () => {
     };
   }, [setCurrentTheme]);
 
-  // Profile state
+  // ==================== PROFILE STATE ====================
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profileData, setProfileData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
+    firstName: '', lastName: '', email: '', phone: '',
   });
-
-  // Password state
   const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: '',
+    currentPassword: '', newPassword: '', confirmPassword: '',
   });
   const [passwordSaving, setPasswordSaving] = useState(false);
-
-  // Stats
   const [stats, setStats] = useState({ familiesCreated: 0, totalMembers: 0 });
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
-
-  // Subscription info
   const [packageInfo, setPackageInfo] = useState<{
-    name: string;
-    expiresAt?: string | null;
-    maxMembers?: number | null;
+    name: string; expiresAt?: string | null; maxMembers?: number | null;
   } | null>(null);
 
-  // Fetch profile via API
+  // ==================== BILLING STATE ====================
+  const [packages, setPackages] = useState<any[]>([]);
+  const [packagesLoading, setPackagesLoading] = useState(true);
+  const [invoices, setInvoices] = useState<any[]>([]);
+  const [invoicesLoading, setInvoicesLoading] = useState(true);
+  const [currentPlan, setCurrentPlan] = useState<string | null>(null);
+  const [processingInvoice, setProcessingInvoice] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [scheduledDowngrade, setScheduledDowngrade] = useState<any>(null);
+  const [cancellingDowngrade, setCancellingDowngrade] = useState(false);
+
+  // Query for scheduled package changes
+  const { data: scheduledChanges, refetch: refetchScheduledChanges } = useQuery({
+    queryKey: ['scheduled-package-changes', user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      return scheduledChangesApi.get();
+    },
+    enabled: !!user,
+  });
+
+  // ==================== HELPERS ====================
+  const getLocalizedValue = (value: string | object): string => {
+    if (typeof value === 'string') {
+      try {
+        const parsed = JSON.parse(value);
+        return parsed[currentLanguage] || parsed['en'] || value;
+      } catch { return value; }
+    }
+    if (typeof value === 'object' && value !== null) {
+      return (value as any)[currentLanguage] || (value as any)['en'] || '';
+    }
+    return String(value || '');
+  };
+
+  const getLocalizedPackageField = (pkg: any, field: string, fallbackLang = 'en') => {
+    if (!pkg || !pkg[field]) return '';
+    if (typeof pkg[field] === 'string') return pkg[field];
+    if (typeof pkg[field] === 'object') return pkg[field][currentLanguage] || pkg[field][fallbackLang] || '';
+    return '';
+  };
+
+  const getLocalizedFeatures = (pkg: any, language = currentLanguage) => {
+    if (!pkg || !pkg.features) return [];
+    if (Array.isArray(pkg.features)) return pkg.features;
+    if (typeof pkg.features === 'object') return pkg.features[language] || pkg.features['en'] || [];
+    return [];
+  };
+
+  // ==================== PROFILE API ====================
   useEffect(() => {
     if (!user) return;
     const fetchProfile = async () => {
@@ -84,44 +128,31 @@ const StitchAccount: React.FC = () => {
           email: profile.email || user.email || '',
           phone: profile.phone || '',
         });
-      } catch (err) {
-        console.error('Error fetching profile:', err);
-      } finally {
-        setLoading(false);
-      }
+      } catch (err) { console.error('Error fetching profile:', err); }
+      finally { setLoading(false); }
     };
     fetchProfile();
   }, [user]);
 
-  // Fetch subscription via API
   useEffect(() => {
     if (!user) return;
     const fetchSub = async () => {
       try {
         const sub = await subscriptionsApi.get();
         const pkg = sub?.packages;
-        let name = 'Free Plan';
+        let name = t('billing.free_plan', 'Free Plan');
         if (pkg?.name) {
           try {
             const nameObj = typeof pkg.name === 'string' ? JSON.parse(pkg.name) : pkg.name;
-            name = nameObj.ar || nameObj.en || 'Free Plan';
-          } catch {
-            name = typeof pkg.name === 'string' ? pkg.name : 'Free Plan';
-          }
+            name = nameObj[currentLanguage] || nameObj.en || name;
+          } catch { name = typeof pkg.name === 'string' ? pkg.name : name; }
         }
-        setPackageInfo({
-          name,
-          expiresAt: sub?.expires_at,
-          maxMembers: pkg?.max_family_members,
-        });
-      } catch (err) {
-        console.error('Error fetching subscription:', err);
-      }
+        setPackageInfo({ name, expiresAt: sub?.expires_at, maxMembers: pkg?.max_family_members });
+      } catch (err) { console.error('Error fetching subscription:', err); }
     };
     fetchSub();
-  }, [user]);
+  }, [user, currentLanguage]);
 
-  // Fetch stats via API
   useEffect(() => {
     if (!user) return;
     const fetchStats = async () => {
@@ -129,14 +160,11 @@ const StitchAccount: React.FC = () => {
         const families = await familiesApi.list();
         const totalMembers = families.reduce((acc: number, f: any) => acc + (f.member_count || 0), 0);
         setStats({ familiesCreated: families.length, totalMembers });
-      } catch (err) {
-        console.error('Error fetching stats:', err);
-      }
+      } catch (err) { console.error('Error fetching stats:', err); }
     };
     fetchStats();
   }, [user]);
 
-  // Save profile via API
   const handleSaveProfile = async () => {
     setSaving(true);
     try {
@@ -147,18 +175,15 @@ const StitchAccount: React.FC = () => {
         phone: profileData.phone,
       });
       toast({ title: t('profile.save', 'Saved'), description: t('profile.profile_updated', 'Profile updated successfully') });
-    } catch (err) {
+    } catch {
       toast({ title: t('profile.error', 'Error'), description: t('profile.profile_update_error', 'Failed to update profile'), variant: 'destructive' });
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
   };
 
-  // Change password (uses supabase.auth — this is auth SDK, not a direct DB query)
   const handleUpdatePassword = async () => {
     if (!passwordData.newPassword) return;
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast({ title: t('profile.error', 'Error'), description: 'كلمات المرور غير متطابقة', variant: 'destructive' });
+      toast({ title: t('profile.error', 'Error'), description: t('profile.passwords_mismatch', 'Passwords do not match'), variant: 'destructive' });
       return;
     }
     setPasswordSaving(true);
@@ -167,19 +192,191 @@ const StitchAccount: React.FC = () => {
       if (error) {
         toast({ title: t('profile.error', 'Error'), description: error.message, variant: 'destructive' });
       } else {
-        toast({ title: 'نجح', description: 'تم تغيير كلمة المرور بنجاح' });
+        toast({ title: t('profile.success', 'Success'), description: t('profile.password_changed', 'Password changed successfully') });
         setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
       }
     } catch {
-      toast({ title: t('profile.error', 'Error'), description: 'حدث خطأ غير متوقع', variant: 'destructive' });
+      toast({ title: t('profile.error', 'Error'), description: t('profile.unexpected_error', 'An unexpected error occurred'), variant: 'destructive' });
+    } finally { setPasswordSaving(false); }
+  };
+
+  // ==================== BILLING API ====================
+  const loadPackages = async () => {
+    try {
+      setPackagesLoading(true);
+      const data = await packagesApi.list();
+      const transformed = data.map((pkg: any) => ({
+        ...pkg,
+        price_sar: pkg.price_sar || 0,
+        price_usd: pkg.price_usd || 0,
+      }));
+      setPackages(transformed);
+    } catch (error) {
+      console.error('Error loading packages:', error);
+    } finally { setPackagesLoading(false); }
+  };
+
+  const loadInvoices = async () => {
+    if (!user) return;
+    try {
+      setInvoicesLoading(true);
+      await invoicesApi.cleanupOldInvoices().catch(() => {});
+      const data = await invoicesApi.list();
+      setInvoices(data || []);
+    } catch (error) {
+      console.error('Error loading invoices:', error);
+    } finally { setInvoicesLoading(false); }
+  };
+
+  const loadUserSubscription = async () => {
+    if (!user) return;
+    try {
+      const subscriptionData = await subscriptionsApi.get();
+      if (subscriptionData?.package_id) {
+        setCurrentPlan(subscriptionData.package_id);
+      } else {
+        setCurrentPlan(null);
+      }
+    } catch { setCurrentPlan(null); }
+  };
+
+  const loadScheduledDowngrade = async () => {
+    if (!user) return;
+    try {
+      const data = await scheduledChangesApi.get();
+      setScheduledDowngrade(data || null);
+    } catch { setScheduledDowngrade(null); }
+  };
+
+  const cancelScheduledDowngrade = async () => {
+    if (!user || !scheduledDowngrade || cancellingDowngrade) return;
+    setCancellingDowngrade(true);
+    try {
+      await scheduledChangesApi.cancel();
+      setScheduledDowngrade(null);
+      toast({
+        title: t('billing.cancelled', 'Cancelled'),
+        description: t('billing.scheduled_change_cancelled', 'Scheduled change has been cancelled. You will stay on your current plan.'),
+      });
+    } catch {
+      toast({
+        title: t('profile.error', 'Error'),
+        description: t('billing.cancel_error', 'An error occurred while cancelling the scheduled change'),
+        variant: 'destructive',
+      });
+    } finally { setCancellingDowngrade(false); }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'billing' && user) {
+      loadPackages();
+      loadUserSubscription();
+      loadInvoices();
+      loadScheduledDowngrade();
+    }
+  }, [activeTab, user, currentLanguage]);
+
+  const getPlanIndex = (planId: string | null) => {
+    if (!planId) return -1;
+    return packages.findIndex((p: any) => p.id === planId);
+  };
+
+  const handlePlanSelect = async (planId: string) => {
+    if (!user) {
+      toast({ title: t('auth.login_required', 'Login Required'), description: t('billing.login_to_select', 'Please login first to select a plan'), variant: 'destructive' });
+      return;
+    }
+    const selectedPackage = packages.find((pkg: any) => pkg.id === planId);
+    if (!selectedPackage) return;
+
+    const currentPlanIndex = getPlanIndex(currentPlan);
+    const selectedPlanIndex = getPlanIndex(planId);
+
+    // Check for downgrade
+    if (currentPlan && selectedPlanIndex < currentPlanIndex) {
+      // Proceed with downgrade analysis
+    }
+
+    const currentSubscription = currentPlan ? {
+      id: 'current', package_id: currentPlan, status: 'active',
+      expires_at: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+    } : null;
+
+    const transitionResult = await processPackageTransition(selectedPackage, currentSubscription, packages);
+
+    if (!transitionResult.canProceed) {
+      toast({
+        title: t('billing.warning', 'Warning'),
+        description: transitionResult.message + (transitionResult.requirements ? '\n' + transitionResult.requirements.join('\n') : ''),
+        variant: transitionResult.action === 'same' ? 'default' : 'destructive',
+      });
+      return;
+    }
+
+    if (transitionResult.message) {
+      toast({ title: t('billing.important_notice', 'Important Notice'), description: transitionResult.message });
+    }
+
+    if (transitionResult.action === 'schedule_downgrade') {
+      await loadScheduledDowngrade();
+      setTimeout(() => loadScheduledDowngrade(), 1000);
+      toast({
+        title: t('billing.scheduled', 'Scheduled'),
+        description: t('billing.change_scheduled', 'Package change has been scheduled successfully.'),
+      });
+      return;
+    }
+
+    // Continue with payment for upgrades
+    setSelectedPlan(planId);
+    setProcessingInvoice(true);
+    try {
+      const amount = selectedPackage.price_usd || 0;
+      const currency = 'USD';
+
+      const { invoice_id: invoiceId } = await invoicesApi.create({
+        package_id: planId, amount, currency,
+      });
+
+      if (amount === 0) {
+        const { success } = await invoicesApi.completeFreeUpgrade(invoiceId);
+        if (!success) throw new Error('Failed to complete free upgrade');
+        toast({ title: t('billing.free_activated', 'Free plan activated'), description: t('billing.free_activated_desc', 'Free plan activated successfully') });
+        loadUserSubscription();
+        loadInvoices();
+        refreshSubscription();
+        return;
+      }
+
+      navigate('/payment', { state: { planId, invoiceId, amount, currency } });
+    } catch (error: any) {
+      toast({ title: t('billing.payment_error', 'Payment Error'), description: error?.message || 'Unknown error', variant: 'destructive' });
     } finally {
-      setPasswordSaving(false);
+      setProcessingInvoice(false);
+      setSelectedPlan(null);
     }
   };
 
+  const getInvoiceStatusInfo = (status: string) => {
+    switch (status) {
+      case 'paid': return { label: t('billing.paid', 'Paid'), bgClass: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600', borderClass: 'border-slate-100 dark:border-slate-800' };
+      case 'pending': return { label: t('billing.pending', 'Pending Payment'), bgClass: 'bg-amber-100 dark:bg-amber-900/30 text-amber-600', borderClass: 'border-amber-100 bg-amber-50/20 dark:border-amber-900/20' };
+      case 'cancelled': return { label: t('billing.cancelled_status', 'Cancelled'), bgClass: 'bg-slate-100 dark:bg-slate-800 text-slate-500', borderClass: 'border-slate-100 dark:border-slate-800' };
+      default: return { label: status, bgClass: 'bg-slate-100 dark:bg-slate-800 text-slate-500', borderClass: 'border-slate-100 dark:border-slate-800' };
+    }
+  };
+
+  // ==================== DERIVED ====================
   const userName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'User';
   const packageName = subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
   const familyId = searchParams.get('family') || '';
+  const currentPlanData = packages.find((p: any) => p.id === currentPlan);
+
+  const sidebarItems: { key: AccountTab; icon: string; label: string }[] = [
+    { key: 'profile', icon: 'person', label: t('account.profile_info', 'Profile Information') },
+    { key: 'billing', icon: 'payments', label: t('account.subscriptions_billing', 'Subscriptions & Billing') },
+    { key: 'security', icon: 'security', label: t('account.security_access', 'Security & Access') },
+  ];
 
   if (loading) {
     return (
@@ -188,6 +385,348 @@ const StitchAccount: React.FC = () => {
       </div>
     );
   }
+
+  // ==================== RENDER TABS ====================
+  const renderProfileTab = () => (
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">{t('profile.page_title', 'User Profile Settings')}</h2>
+        <p className="text-sm text-muted-foreground">{t('profile.welcome_back', 'Manage your personal information and account security preferences.')}</p>
+      </div>
+
+      {/* Personal Information */}
+      <div className="bg-card p-8 rounded-2xl shadow-sm border border-border">
+        <div className="flex items-center gap-2 mb-8">
+          <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+            <span className="material-symbols-outlined text-primary text-xl">person</span>
+          </div>
+          <h3 className="font-bold text-lg">{t('profile.personal_information', 'Personal Information')}</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">{t('profile.first_name', 'First Name')}</label>
+            <input type="text" value={profileData.firstName} onChange={(e) => setProfileData(prev => ({ ...prev, firstName: e.target.value }))}
+              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary" />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">{t('profile.last_name', 'Last Name')}</label>
+            <input type="text" value={profileData.lastName} onChange={(e) => setProfileData(prev => ({ ...prev, lastName: e.target.value }))}
+              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary" />
+          </div>
+          <div className="space-y-2 md:col-span-2">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">{t('profile.email', 'Email Address')}</label>
+            <input type="email" value={profileData.email} onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
+              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary" />
+          </div>
+          <div className="space-y-2 md:col-span-2">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">{t('profile.phone', 'Phone Number')}</label>
+            <input type="tel" value={profileData.phone} onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
+              className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary" />
+          </div>
+        </div>
+        <div className="mt-8 flex justify-end">
+          <button onClick={handleSaveProfile} disabled={saving}
+            className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-all disabled:opacity-50">
+            {saving ? (
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                {t('profile.saving', 'Saving...')}
+              </span>
+            ) : t('profile.save', 'Save Changes')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderSecurityTab = () => (
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">{t('account.security_access', 'Security & Access')}</h2>
+        <p className="text-sm text-muted-foreground">{t('account.security_desc', 'Manage your password and account security settings.')}</p>
+      </div>
+
+      {/* Password Card */}
+      <div className="bg-card p-8 rounded-2xl shadow-sm border border-border">
+        <div className="flex items-center gap-2 mb-8">
+          <div className="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center">
+            <span className="material-symbols-outlined text-xl">shield</span>
+          </div>
+          <h3 className="font-bold text-lg">{t('profile.change_password', 'Security & Password')}</h3>
+        </div>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">{t('profile.current_password', 'Current Password')}</label>
+            <input type="password" value={passwordData.currentPassword} onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
+              placeholder="••••••••" className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">{t('profile.new_password', 'New Password')}</label>
+              <input type="password" value={passwordData.newPassword} onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">{t('profile.confirm_password', 'Confirm New Password')}</label>
+              <input type="password" value={passwordData.confirmPassword} onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary" />
+            </div>
+          </div>
+        </div>
+        <div className="mt-8 flex justify-end">
+          <button onClick={handleUpdatePassword} disabled={passwordSaving || !passwordData.newPassword}
+            className="px-6 py-2.5 border-2 border-border text-muted-foreground rounded-xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all disabled:opacity-50">
+            {passwordSaving ? (
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                ...
+              </span>
+            ) : t('profile.update_password', 'Update Password')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderBillingTab = () => (
+    <div className="max-w-6xl mx-auto space-y-8">
+      {/* Plans + Current Status side-by-side */}
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Plans Section */}
+        <div className="flex-[1.5] space-y-6">
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('billing.choose_plan', 'Choose Your Plan')}</h2>
+            <p className="text-sm text-muted-foreground">{t('billing.choose_plan_desc', 'Pick the plan that best fits your family history needs.')}</p>
+          </div>
+
+          {/* Plan Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {packagesLoading ? (
+              Array(2).fill(0).map((_, i) => (
+                <div key={i} className="bg-card rounded-2xl p-6 border border-border animate-pulse h-80" />
+              ))
+            ) : packages.map((pkg: any) => {
+              const isActive = currentPlan === pkg.id;
+              const isFeatured = pkg.is_featured;
+              const priceUsd = pkg.price_usd || 0;
+              const isFree = priceUsd === 0;
+
+              return (
+                <div key={pkg.id}
+                  className={cn(
+                    'bg-card rounded-2xl p-6 flex flex-col relative overflow-hidden group transition-all',
+                    isFeatured ? 'border-2 border-primary shadow-xl shadow-primary/10' : 'border border-border',
+                  )}>
+                  {/* Featured badge */}
+                  {isFeatured && (
+                    <div className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-widest">
+                      {t('billing.most_popular', 'Most Popular')}
+                    </div>
+                  )}
+                  {!isFeatured && (
+                    <div className="absolute top-0 right-0 p-3">
+                      <span className="material-symbols-outlined text-slate-200 group-hover:text-primary/20 transition-colors text-4xl">star_outline</span>
+                    </div>
+                  )}
+
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold mb-1">{getLocalizedPackageField(pkg, 'name')}</h3>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-bold text-primary">${priceUsd}</span>
+                      <span className="text-xs text-muted-foreground font-medium">
+                        {isFree ? t('billing.free_forever', 'Free for Life') : `/ ${t('billing.year', 'Year')}`}
+                      </span>
+                    </div>
+                    {!isFree && pkg.price_sar > 0 && (
+                      <p className="text-[10px] text-muted-foreground mt-1 uppercase font-bold tracking-wider">
+                        {t('billing.approx', 'Approx.')} {pkg.price_sar} SAR
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Features */}
+                  <ul className="space-y-4 mb-8 flex-1">
+                    {getLocalizedFeatures(pkg).map((feature: string, idx: number) => (
+                      <li key={idx} className="flex items-center gap-3 text-sm text-muted-foreground">
+                        <span className="material-symbols-outlined text-primary text-lg">check_circle</span>
+                        {feature}
+                      </li>
+                    ))}
+                    {/* Fallback limits */}
+                    {getLocalizedFeatures(pkg).length === 0 && (
+                      <>
+                        <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                          <span className="material-symbols-outlined text-primary text-lg">check_circle</span>
+                          {pkg.max_family_trees || 1} {t('billing.family_trees', 'Family Trees')}
+                        </li>
+                        <li className="flex items-center gap-3 text-sm text-muted-foreground">
+                          <span className="material-symbols-outlined text-primary text-lg">check_circle</span>
+                          {t('billing.up_to', 'Up to')} {pkg.max_family_members || 50} {t('billing.members', 'Members')}
+                        </li>
+                      </>
+                    )}
+                  </ul>
+
+                  {/* CTA Button */}
+                  <button
+                    onClick={() => !isActive && handlePlanSelect(pkg.id)}
+                    disabled={isActive || (processingInvoice && selectedPlan === pkg.id)}
+                    className={cn(
+                      'w-full py-3 px-4 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2',
+                      isActive
+                        ? 'border-2 border-border text-muted-foreground cursor-not-allowed'
+                        : 'bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90'
+                    )}>
+                    {isActive ? t('billing.active_plan', 'Active Plan') :
+                      processingInvoice && selectedPlan === pkg.id ? (
+                        <span className="flex items-center gap-2">
+                          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          {t('billing.processing', 'Processing...')}
+                        </span>
+                      ) : (
+                        <>
+                          <span className="material-symbols-outlined text-lg">rocket_launch</span>
+                          {t('billing.subscribe_now', 'Subscribe Now')}
+                        </>
+                      )}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Current Status */}
+        <div className="flex-1 space-y-6">
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('billing.current_status', 'Current Status')}</h3>
+          <div className="bg-card rounded-2xl p-6 border border-border shadow-sm sticky top-0">
+            <div className="flex flex-col items-center text-center mb-6">
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary mb-4">
+                <span className="material-symbols-outlined text-4xl">verified</span>
+              </div>
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1">{t('billing.your_current_plan', 'Your Current Plan')}</p>
+              <h4 className="text-2xl font-bold text-slate-800 dark:text-white">
+                {currentPlan ? getLocalizedPackageField(currentPlanData, 'name') || t('billing.paid_plan', 'Paid Plan') : t('billing.free_plan', 'Free Plan')}
+              </h4>
+              <span className="mt-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400">
+                {subscription?.status === 'active' ? t('billing.active', 'Active') :
+                  subscription?.status === 'expired' ? t('billing.expired', 'Expired') : t('billing.active', 'Active')}
+              </span>
+            </div>
+            <div className="space-y-4 pt-6 border-t border-border">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">{t('billing.max_trees', 'Max Trees')}</span>
+                <span className="font-bold">{currentPlanData?.max_family_trees || 1}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">{t('billing.member_limit', 'Member Limit')}</span>
+                <span className="font-bold">{currentPlanData?.max_family_members || 50}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">{t('billing.subscription_status', 'Subscription Status')}</span>
+                <span className="font-bold text-primary">
+                  {currentPlan ? t('billing.active', 'Active') : t('billing.lifetime_free', 'Lifetime Free')}
+                </span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">{t('billing.renewal_date', 'Renewal Date')}</span>
+                <span className="font-bold">
+                  {subscription?.expires_at ? new Date(subscription.expires_at).toLocaleDateString('en-GB') :
+                    currentPlan ? t('billing.not_specified', 'N/A') : t('billing.none', 'None')}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Invoice History */}
+      <div className="bg-card rounded-2xl p-8 border border-border shadow-sm">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-muted-foreground">
+              <span className="material-symbols-outlined">receipt_long</span>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold">{t('billing.invoice_history', 'Invoice History')}</h3>
+              <p className="text-sm text-muted-foreground">{t('billing.invoice_history_desc', 'View and download your billing history')}</p>
+            </div>
+          </div>
+        </div>
+
+        {invoicesLoading ? (
+          <div className="text-center py-8">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-muted-foreground mt-2">{t('billing.loading_invoices', 'Loading invoices...')}</p>
+          </div>
+        ) : invoices.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <span className="material-symbols-outlined text-4xl mb-3 block opacity-50">receipt_long</span>
+            <p>{t('billing.no_invoices', 'No invoices yet')}</p>
+            <p className="text-sm">{t('billing.invoices_appear', 'Your invoices will appear here after upgrading to a paid plan')}</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {invoices.map((invoice: any) => {
+              const statusInfo = getInvoiceStatusInfo(invoice.payment_status);
+              return (
+                <div key={invoice.id}
+                  className={cn(
+                    'group border rounded-2xl p-6 transition-all hover:shadow-md bg-card',
+                    statusInfo.borderClass,
+                    invoice.payment_status === 'pending' && 'cursor-pointer'
+                  )}
+                  onClick={() => {
+                    if (invoice.payment_status === 'pending') {
+                      navigate('/payment', {
+                        state: { planId: invoice.package_id, invoiceId: invoice.id, amount: invoice.amount, currency: invoice.currency },
+                      });
+                    }
+                  }}>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="flex items-center gap-6">
+                      <div className="text-center md:pr-6 md:border-r border-border">
+                        <p className="text-2xl font-bold text-slate-900 dark:text-white">${invoice.amount}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase">{invoice.currency || 'USD'}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-slate-800 dark:text-slate-200">{invoice.invoice_number || 'N/A'}</h4>
+                          <span className={cn('px-2 py-0.5 text-[10px] font-bold rounded uppercase', statusInfo.bgClass)}>
+                            {statusInfo.label}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {t('billing.plan', 'Plan')}: {getLocalizedPackageField(invoice.packages, 'name') || t('billing.unknown', 'Unknown')} • {new Date(invoice.created_at).toLocaleDateString('en-GB')}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      {invoice.payment_status === 'pending' && (
+                        <>
+                          <span className="text-xs text-amber-600 font-medium hidden md:block">{t('billing.click_to_pay', 'Click to pay')}</span>
+                          <button className="px-6 py-2.5 bg-[hsl(var(--stitch-accent))] text-white rounded-xl text-sm font-bold shadow-lg hover:opacity-90 transition-all flex items-center gap-2">
+                            <span className="material-symbols-outlined text-lg">payment</span>
+                            {t('billing.pay_now', 'Pay Now')}
+                          </button>
+                        </>
+                      )}
+                      {invoice.payment_status !== 'pending' && invoice.amount > 0 && (
+                        <button className="px-4 py-2 border border-border text-muted-foreground rounded-xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center gap-2">
+                          <span className="material-symbols-outlined text-lg">download</span>
+                          {t('billing.download', 'Download')}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div className={cn('theme-stitch min-h-screen overflow-hidden', direction === 'rtl' && 'rtl')}>
@@ -215,223 +754,69 @@ const StitchAccount: React.FC = () => {
 
       {/* Main Content */}
       <main className="flex h-[calc(100vh-120px)]">
-        {/* Content Area */}
-        <section className="flex-1 overflow-y-auto bg-slate-50 dark:bg-background p-8 custom-scrollbar">
-          <div className="max-w-3xl mx-auto">
-            {/* Page Header */}
-            <header className="mb-8">
-              <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-                {t('profile.page_title', 'User Profile Settings')}
-              </h2>
-              <p className="text-muted-foreground">
-                {t('profile.welcome_back', 'Manage your personal information and account security preferences.')}
-              </p>
-            </header>
-
-            <div className="space-y-6">
-              {/* Personal Information Card */}
-              <div className="bg-card p-8 rounded-2xl shadow-sm border border-border">
-                <div className="flex items-center gap-2 mb-8">
-                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <span className="material-symbols-outlined text-primary text-xl">person</span>
-                  </div>
-                  <h3 className="font-bold text-lg">{t('profile.personal_information', 'Personal Information')}</h3>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
-                      {t('profile.first_name', 'First Name')}
-                    </label>
-                    <input
-                      type="text"
-                      value={profileData.firstName}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, firstName: e.target.value }))}
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
-                      {t('profile.last_name', 'Last Name')}
-                    </label>
-                    <input
-                      type="text"
-                      value={profileData.lastName}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, lastName: e.target.value }))}
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary"
-                    />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
-                      {t('profile.email', 'Email Address')}
-                    </label>
-                    <input
-                      type="email"
-                      value={profileData.email}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary"
-                    />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
-                      {t('profile.phone', 'Phone Number')}
-                    </label>
-                    <input
-                      type="tel"
-                      value={profileData.phone}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, phone: e.target.value }))}
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary"
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-8 flex justify-end">
-                  <button
-                    onClick={handleSaveProfile}
-                    disabled={saving}
-                    className="px-6 py-2.5 bg-primary text-primary-foreground rounded-xl text-sm font-bold shadow-lg shadow-primary/20 hover:opacity-90 transition-all disabled:opacity-50"
-                  >
-                    {saving ? (
-                      <span className="flex items-center gap-2">
-                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        {t('profile.saving', 'Saving...')}
-                      </span>
-                    ) : (
-                      t('profile.save', 'Save Changes')
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Security & Password Card */}
-              <div className="bg-card p-8 rounded-2xl shadow-sm border border-border">
-                <div className="flex items-center gap-2 mb-8">
-                  <div className="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center">
-                    <span className="material-symbols-outlined text-xl">shield</span>
-                  </div>
-                  <h3 className="font-bold text-lg">{t('profile.change_password', 'Security & Password')}</h3>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
-                      {t('profile.current_password', 'Current Password')}
-                    </label>
-                    <input
-                      type="password"
-                      value={passwordData.currentPassword}
-                      onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                      placeholder="••••••••"
-                      className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary"
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
-                        {t('profile.new_password', 'New Password')}
-                      </label>
-                      <input
-                        type="password"
-                        value={passwordData.newPassword}
-                        onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">
-                        {t('profile.confirm_password', 'Confirm New Password')}
-                      </label>
-                      <input
-                        type="password"
-                        value={passwordData.confirmPassword}
-                        onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                        className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-8 flex justify-end">
-                  <button
-                    onClick={handleUpdatePassword}
-                    disabled={passwordSaving || !passwordData.newPassword}
-                    className="px-6 py-2.5 border-2 border-border text-muted-foreground rounded-xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all disabled:opacity-50"
-                  >
-                    {passwordSaving ? (
-                      <span className="flex items-center gap-2">
-                        <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                        ...
-                      </span>
-                    ) : (
-                      t('profile.update_password', 'Update Password')
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* Danger Zone */}
-              <div className="bg-red-50 dark:bg-red-950/20 p-8 rounded-2xl shadow-sm border border-red-200 dark:border-red-800">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 bg-red-100 text-red-600 rounded-lg flex items-center justify-center">
-                    <span className="material-symbols-outlined text-xl">warning</span>
-                  </div>
-                  <h3 className="font-bold text-lg text-red-700 dark:text-red-400">
-                    {t('profile.danger_zone', 'Danger Zone')}
-                  </h3>
-                </div>
-                <p className="text-sm text-red-600 dark:text-red-400 mb-4">
-                  حذف حسابك سيؤدي إلى إزالة جميع بياناتك نهائيًا.
-                </p>
-                <button
-                  onClick={() => setShowDeleteAccountModal(true)}
-                  className="px-6 py-2.5 bg-red-600 text-white rounded-xl text-sm font-bold hover:bg-red-700 transition-all"
-                >
-                  {t('profile.delete_account', 'Delete Account')}
+        {/* Left Sidebar */}
+        <aside className="w-80 bg-card border-r border-border flex flex-col z-30 hidden lg:flex">
+          <div className="p-6">
+            <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6">
+              {t('account.settings', 'Account Settings')}
+            </h2>
+            <nav className="space-y-1">
+              {sidebarItems.map((item) => (
+                <button key={item.key}
+                  onClick={() => setActiveTab(item.key)}
+                  className={cn(
+                    'w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all',
+                    activeTab === item.key
+                      ? 'font-bold text-primary bg-primary/5'
+                      : 'text-muted-foreground hover:bg-slate-50 dark:hover:bg-slate-800/50'
+                  )}>
+                  <span className="material-symbols-outlined text-xl">{item.icon}</span>
+                  {item.label}
                 </button>
+              ))}
+            </nav>
+          </div>
+
+          {/* Danger Zone */}
+          <div className="mt-auto p-6 border-t border-border">
+            <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded-xl border border-red-100 dark:border-red-900/30">
+              <div className="flex items-center gap-2 mb-2 text-red-600 dark:text-red-400">
+                <span className="material-symbols-outlined text-lg">report</span>
+                <span className="text-xs font-bold uppercase tracking-wider">{t('profile.danger_zone', 'Danger Zone')}</span>
               </div>
+              <p className="text-[11px] text-muted-foreground leading-relaxed mb-3">
+                {t('profile.danger_zone_desc', 'Permanent deletion of all your family data and trees.')}
+              </p>
+              <button onClick={() => setShowDeleteAccountModal(true)} className="text-xs font-bold text-red-600 dark:text-red-400 hover:underline">
+                {t('profile.delete_account', 'Delete Account')}
+              </button>
             </div>
           </div>
+        </aside>
+
+        {/* Content Area */}
+        <section className="flex-1 overflow-y-auto bg-slate-50 dark:bg-background p-8 custom-scrollbar">
+          {activeTab === 'profile' && renderProfileTab()}
+          {activeTab === 'billing' && renderBillingTab()}
+          {activeTab === 'security' && renderSecurityTab()}
         </section>
 
-        {/* Right Panel - Subscription Status */}
+        {/* Right Panel - Account Stats */}
         <aside className="w-80 bg-card border-l border-border flex-col p-6 overflow-y-auto hidden xl:flex custom-scrollbar">
           {/* Subscription Status */}
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-bold">{t('dashboard.active_subscription', 'Subscription Status')}</h3>
-              <span className="material-symbols-outlined text-primary">verified_user</span>
-            </div>
-            <div className="p-5 bg-gradient-to-br from-primary to-emerald-600 rounded-2xl text-white shadow-lg shadow-primary/20 mb-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest opacity-80">
-                    {t('profile.current_plan', 'Current Plan')}
-                  </p>
-                  <h4 className="text-xl font-bold">{packageInfo?.name || 'Free'}</h4>
-                </div>
-              </div>
-              {packageInfo?.expiresAt && (
-                <p className="text-xs opacity-90 leading-relaxed mb-4">
-                  {t('dashboard.valid_until', 'Renewing on')} {new Date(packageInfo.expiresAt).toLocaleDateString()}
-                </p>
-              )}
-              <button
-                onClick={() => navigate('/payments')}
-                className="w-full py-2 bg-white text-primary text-xs font-bold rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                {t('profile.manage_subscription', 'Manage Subscription')}
-              </button>
+              <h3 className="font-bold">{t('account.account_stats', 'Account Stats')}</h3>
+              <span className="material-symbols-outlined text-primary">analytics</span>
             </div>
 
-            {/* Stats */}
-            <div className="space-y-5">
+            {/* Plan Usage */}
+            <div className="space-y-6">
               <div>
                 <div className="flex justify-between items-end mb-2">
-                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
-                    {t('profile.total_members', 'Total Members')}
-                  </p>
+                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{t('billing.plan_usage', 'Plan Usage')}</p>
                   <p className="text-xs font-bold">
-                    {stats.totalMembers}{packageInfo?.maxMembers ? ` / ${packageInfo.maxMembers}` : ''}
+                    {stats.totalMembers}{packageInfo?.maxMembers ? ` / ${packageInfo.maxMembers} ${t('billing.members', 'Members')}` : ''}
                   </p>
                 </div>
                 <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full overflow-hidden">
@@ -440,12 +825,16 @@ const StitchAccount: React.FC = () => {
                     style={{ width: `${packageInfo?.maxMembers ? Math.min(100, (stats.totalMembers / packageInfo.maxMembers) * 100) : 0}%` }}
                   />
                 </div>
+                {packageInfo?.maxMembers && (
+                  <p className="text-[10px] text-muted-foreground mt-2">
+                    {Math.round((stats.totalMembers / packageInfo.maxMembers) * 100)}% {t('billing.of_limit_used', 'of your current plan limit used')}
+                  </p>
+                )}
               </div>
+
               <div>
                 <div className="flex justify-between items-end mb-2">
-                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
-                    {t('profile.families_created', 'Families Created')}
-                  </p>
+                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{t('profile.families_created', 'Families Created')}</p>
                   <p className="text-xs font-bold">{stats.familiesCreated}</p>
                 </div>
               </div>
@@ -453,28 +842,37 @@ const StitchAccount: React.FC = () => {
           </div>
 
           {/* Security Tips */}
-          <div>
-            <h3 className="font-bold mb-4">Security Tips</h3>
+          <div className="mb-8">
+            <h3 className="font-bold mb-4">{t('account.security_tips', 'Security Tips')}</h3>
             <div className="space-y-3">
               <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-border">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="material-icons-round text-amber-500 text-sm">lightbulb</span>
-                  <h4 className="font-bold text-xs">Stronger Passwords</h4>
+                  <h4 className="font-bold text-xs">{t('account.stronger_passwords', 'Stronger Passwords')}</h4>
                 </div>
                 <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  Use a mix of letters, numbers, and symbols for better security.
+                  {t('account.stronger_passwords_desc', 'Use a mix of letters, numbers, and symbols for better security.')}
                 </p>
               </div>
               <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-border">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="material-icons-round text-primary text-sm">history</span>
-                  <h4 className="font-bold text-xs">Review Login Activity</h4>
+                  <h4 className="font-bold text-xs">{t('account.review_login', 'Review Login Activity')}</h4>
                 </div>
                 <p className="text-[11px] text-muted-foreground leading-relaxed">
-                  Check for unrecognized devices in your active sessions periodically.
+                  {t('account.review_login_desc', 'Check for unrecognized devices in your active sessions periodically.')}
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Need Help */}
+          <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-5 text-white mt-auto">
+            <h4 className="text-sm font-bold mb-2">{t('account.need_help', 'Need help?')}</h4>
+            <p className="text-[10px] opacity-70 mb-4">{t('account.support_desc', 'Our support team is available 24/7 for account related inquiries.')}</p>
+            <button onClick={() => navigate('/contact')} className="w-full py-2 bg-white/10 hover:bg-white/20 rounded-lg text-xs font-bold transition-all border border-white/10">
+              {t('account.contact_support', 'Contact Support')}
+            </button>
           </div>
         </aside>
       </main>
@@ -486,16 +884,15 @@ const StitchAccount: React.FC = () => {
         </div>
         <h2 className="text-2xl font-bold mb-2">Desktop Optimized</h2>
         <p className="text-muted-foreground mb-8 max-w-xs">
-          Shjrti Settings is best experienced on a desktop or tablet.
+          {t('account.desktop_message', 'Shjrti Settings is best experienced on a desktop or tablet.')}
         </p>
         <button
           onClick={() => {
             const overlay = document.querySelector('.lg\\:hidden.fixed.inset-0');
             if (overlay) overlay.classList.add('hidden');
           }}
-          className="px-6 py-3 bg-primary text-primary-foreground font-bold rounded-xl"
-        >
-          Continue Anyway
+          className="px-6 py-3 bg-primary text-primary-foreground font-bold rounded-xl">
+          {t('account.continue_anyway', 'Continue Anyway')}
         </button>
       </div>
 
