@@ -149,42 +149,42 @@ const AccountDeleteModal = ({ isOpen, onClose, userStats }: AccountDeleteModalPr
     <>
       {/* Delete Confirmation Modal */}
       <Dialog open={showConfirmModal} onOpenChange={(open) => { if (!open) handleClose(); }}>
-        <DialogContent className="max-w-md mx-auto overflow-hidden border-0 bg-gradient-to-br from-red-50 via-rose-50 to-orange-50 dark:from-red-950/20 dark:via-red-900/20 dark:to-orange-900/20 backdrop-blur-lg p-4">
+        <DialogContent className="max-w-lg mx-auto overflow-hidden border-0 bg-gradient-to-br from-red-50 via-rose-50 to-orange-50 dark:from-red-950/20 dark:via-red-900/20 dark:to-orange-900/20 backdrop-blur-lg p-6">
           {/* Main Content */}
           <div className="relative z-10">
             <DialogHeader>
-              <DialogTitle className="text-center mb-3">
-                <div className="flex items-center justify-center mb-2">
-                  <div className="w-12 h-12 bg-gradient-to-r from-red-600 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
-                    <AlertTriangle className="h-6 w-6 text-white" />
+              <DialogTitle className="text-center mb-4">
+                <div className="flex items-center justify-center mb-3">
+                  <div className="w-14 h-14 bg-gradient-to-r from-red-600 to-orange-600 rounded-full flex items-center justify-center shadow-lg">
+                    <AlertTriangle className="h-7 w-7 text-white" />
                   </div>
                 </div>
-                <h2 className="text-lg font-bold bg-gradient-to-r from-red-600 via-rose-600 to-orange-600 bg-clip-text text-transparent">
+                <h2 className="text-xl font-bold bg-gradient-to-r from-red-600 via-rose-600 to-orange-600 bg-clip-text text-transparent">
                   ⚠️ تحذير: حذف الحساب نهائيًا
                 </h2>
               </DialogTitle>
             </DialogHeader>
             
-            <div className="space-y-3 px-1">
+            <div className="space-y-4 px-1">
               {/* Compact Warning */}
-              <div className="bg-red-50/80 dark:bg-red-950/40 rounded-lg p-3 border border-red-300 dark:border-red-700">
-                <p className="text-xs font-semibold text-red-800 dark:text-red-200 mb-1.5">
+              <div className="bg-red-50/80 dark:bg-red-950/40 rounded-lg p-4 border border-red-300 dark:border-red-700">
+                <p className="text-sm font-semibold text-red-800 dark:text-red-200 mb-2">
                   هذا الإجراء لا يمكن التراجع عنه! سيتم حذف:
                 </p>
-                <div className="grid grid-cols-2 gap-1 text-[11px] text-red-700 dark:text-red-300">
+                <div className="grid grid-cols-2 gap-1.5 text-xs text-red-700 dark:text-red-300">
                   <span>🌳 {userStats.familiesCreated} شجرة عائلة</span>
                   <span>👥 {userStats.totalMembers} عضو</span>
                   <span>🖼️ الصور والذكريات</span>
                   <span>💳 الاشتراك والفواتير</span>
                 </div>
-                <p className="text-[10px] font-bold text-red-900 dark:text-red-100 text-center mt-2">
+                <p className="text-xs font-bold text-red-900 dark:text-red-100 text-center mt-2.5">
                   ⛔ لا يمكن استرجاع البيانات بعد الحذف!
                 </p>
               </div>
 
               {/* Confirmation Input */}
-              <div className="bg-white/80 dark:bg-gray-800/60 rounded-xl p-3 border border-red-300/50 dark:border-red-700/50">
-                <p className="text-xs text-gray-700 dark:text-gray-300 mb-2 text-center">
+              <div className="bg-white/80 dark:bg-gray-800/60 rounded-xl p-4 border border-red-300/50 dark:border-red-700/50">
+                <p className="text-sm text-gray-700 dark:text-gray-300 mb-2.5 text-center">
                   اكتب <span className="font-bold text-red-600 dark:text-red-400">"{confirmationWord}"</span> للتأكيد:
                 </p>
                 <div className="relative">
@@ -193,7 +193,7 @@ const AccountDeleteModal = ({ isOpen, onClose, userStats }: AccountDeleteModalPr
                     value={deleteConfirmText}
                     onChange={(e) => setDeleteConfirmText(e.target.value)}
                     placeholder={confirmationWord}
-                    className="text-center text-base font-bold bg-white/90 dark:bg-gray-800/70 border-2 border-red-300/50 dark:border-red-600/50 rounded-lg focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800/50 transition-all h-10"
+                    className="text-center text-lg font-bold bg-white/90 dark:bg-gray-800/70 border-2 border-red-300/50 dark:border-red-600/50 rounded-lg focus:border-red-500 dark:focus:border-red-400 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-800/50 transition-all h-11"
                   />
                   {deleteConfirmText.trim().toUpperCase() === confirmationWord && (
                     <div className="absolute left-2 top-1/2 -translate-y-1/2">
