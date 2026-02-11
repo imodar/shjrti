@@ -281,6 +281,14 @@ const StitchAccount: React.FC = () => {
     } finally { setCancellingDowngrade(false); }
   };
 
+  // Load packages and subscription on mount for header package name
+  useEffect(() => {
+    if (user) {
+      loadPackages();
+      loadUserSubscription();
+    }
+  }, [user]);
+
   useEffect(() => {
     if (activeTab === 'billing' && user) {
       loadPackages();
@@ -383,7 +391,8 @@ const StitchAccount: React.FC = () => {
   // ==================== DERIVED ====================
   const userName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'User';
   const currentPlanData = packages.find((p: any) => p.id === currentPlan);
-  const packageName = currentPlanData?.name || subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
+  const freePlanData = packages.find((p: any) => (p.price_usd === 0 || p.price_usd === null) && (p.price_sar === 0 || p.price_sar === null));
+  const packageName = currentPlanData?.name || subscription?.package_name || freePlanData?.name || { en: 'Free Plan', ar: 'باقة مجانية' };
   const familyId = searchParams.get('family') || '';
 
   const sidebarItems: { key: AccountTab; icon: string; label: string }[] = [
