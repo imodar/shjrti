@@ -358,27 +358,44 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
             <div className="mt-8">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t('gallery.storage_capacity', 'Storage Capacity')}</span>
-                <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300">
-                  {(memories.reduce((acc, m) => acc + (m.file_size || 0), 0) / (1024 * 1024 * 1024)).toFixed(1)} GB
-                </span>
+                {isImageUploadEnabled ? (
+                  <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300">
+                    {(memories.reduce((acc, m) => acc + (m.file_size || 0), 0) / (1024 * 1024 * 1024)).toFixed(1)} GB
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[12px]">lock</span>
+                    {t('gallery.locked', 'LOCKED')}
+                  </span>
+                )}
               </div>
-              <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-                <div className="bg-primary h-full rounded-full shadow-[0_0_8px_rgba(69,179,143,0.4)]" style={{ width: `${Math.min(memories.reduce((acc, m) => acc + (m.file_size || 0), 0) / (10 * 1024 * 1024 * 1024) * 100, 100)}%` }} />
+              <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden relative">
+                {isImageUploadEnabled ? (
+                  <div className="bg-primary h-full rounded-full shadow-[0_0_8px_rgba(69,179,143,0.4)]" style={{ width: `${Math.min(memories.reduce((acc, m) => acc + (m.file_size || 0), 0) / (10 * 1024 * 1024 * 1024) * 100, 100)}%` }} />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-r from-slate-300 to-slate-400 dark:from-slate-700 dark:to-slate-600 opacity-50" />
+                )}
               </div>
+              {!isImageUploadEnabled && (
+                <p className="text-[9px] text-slate-400 mt-2 font-medium italic">
+                  {t('gallery.premium_storage', 'Premium plan required for media storage')}
+                </p>
+              )}
             </div>
           </div>
 
           {/* Members Filter */}
-          <div className="flex-1 flex flex-col min-h-0">
+          <div className={`flex-1 flex flex-col min-h-0 ${!isImageUploadEnabled ? 'opacity-40 select-none grayscale pointer-events-none' : ''}`}>
             <div className="p-6 pb-2">
               <div className="relative">
                 <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
                 <input
-                  className="w-full ps-10 pe-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs focus:ring-2 focus:ring-primary/20 outline-none"
-                  placeholder={t('gallery.filter_member', 'Filter by family member...')}
+                  className={`w-full ps-10 pe-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs focus:ring-2 focus:ring-primary/20 outline-none ${!isImageUploadEnabled ? 'cursor-not-allowed' : ''}`}
+                  placeholder={!isImageUploadEnabled ? t('gallery.filter_disabled', 'Filter disabled...') : t('gallery.filter_member', 'Filter by family member...')}
                   type="text"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
+                  disabled={!isImageUploadEnabled}
                 />
               </div>
             </div>
@@ -425,45 +442,110 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
         </aside>
 
         {/* Main Gallery Content */}
-        <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-[#0F171A] custom-scrollbar">
-          <div className="p-8">
+        <div className="flex-1 relative overflow-hidden bg-slate-50 dark:bg-[#0F171A]">
+          {/* Locked Overlay - when user doesn't have permission */}
+          {!isImageUploadEnabled && (
+            <>
+              <div className="absolute inset-0 z-10 flex items-center justify-center p-6">
+                <div className="max-w-md w-full bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-slate-200 dark:border-slate-800 overflow-hidden text-center p-10 relative">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-700 via-amber-500 to-yellow-400" />
+                  <div className="w-20 h-20 bg-gradient-to-br from-amber-700 via-amber-500 to-yellow-400 rounded-full flex items-center justify-center text-white mx-auto mb-6 shadow-xl shadow-amber-500/20">
+                    <span className="material-symbols-outlined text-4xl" style={{ fontVariationSettings: "'FILL' 1" }}>crown</span>
+                  </div>
+                  <h3 className="text-2xl font-extrabold text-slate-900 dark:text-white mb-3">
+                    {t('gallery.unlock_title', 'Unlock Your Family Gallery')}
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-400 mb-8 text-sm leading-relaxed">
+                    {t('gallery.unlock_description', 'The Media Gallery is a premium feature. Upgrade to the Complete Plan to start uploading and preserving your family memories.')}
+                  </p>
+                  <button
+                    onClick={() => navigate('/plan-selection')}
+                    className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-700 via-amber-500 to-yellow-400 text-white font-bold text-base shadow-lg shadow-amber-500/30 hover:scale-[1.02] transition-transform flex items-center justify-center gap-2"
+                  >
+                    <span className="material-symbols-outlined">workspace_premium</span>
+                    {t('gallery.upgrade_to_premium', 'Upgrade to Premium')}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+
+          <div className={`p-8 h-full overflow-y-auto custom-scrollbar ${!isImageUploadEnabled ? 'blur-[12px] pointer-events-none select-none' : ''}`}>
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <span className="px-2 py-0.5 bg-secondary/10 text-secondary text-[10px] font-bold rounded uppercase tracking-widest border border-secondary/20">
-                    {t('gallery.archive_badge', 'Archive')}
+                  <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-widest border ${isImageUploadEnabled ? 'bg-secondary/10 text-secondary border-secondary/20' : 'bg-slate-200 dark:bg-slate-800 text-slate-400 border-slate-300 dark:border-slate-700'}`}>
+                    {isImageUploadEnabled ? t('gallery.archive_badge', 'Archive') : t('gallery.preview_badge', 'Preview')}
                   </span>
                   <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    {t('gallery.title', 'Metro Grid Family Gallery')}
+                    {t('gallery.title', 'Family Gallery')}
                   </h2>
                 </div>
                 <p className="text-slate-500 dark:text-slate-400 max-w-lg">
                   {t('gallery.description', "A dynamic mosaic of our family's most precious memories, curated across generations.")}
                 </p>
               </div>
-              <div className="flex gap-2">
-                <div className="bg-white dark:bg-slate-900 px-4 py-2 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex items-center gap-3">
-                  <span className="material-symbols-outlined text-primary">photo_library</span>
-                  <div>
-                    <p className="text-[10px] text-slate-400 uppercase font-bold leading-none">{t('gallery.total_items', 'Total Items')}</p>
-                    <p className="text-lg font-bold leading-tight">{filteredMemories.length.toLocaleString()}</p>
+              {isImageUploadEnabled && (
+                <div className="flex gap-2">
+                  <div className="bg-white dark:bg-slate-900 px-4 py-2 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex items-center gap-3">
+                    <span className="material-symbols-outlined text-primary">photo_library</span>
+                    <div>
+                      <p className="text-[10px] text-slate-400 uppercase font-bold leading-none">{t('gallery.total_items', 'Total Items')}</p>
+                      <p className="text-lg font-bold leading-tight">{filteredMemories.length.toLocaleString()}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
 
-            {/* Metro Grid */}
-            {filteredMemories.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 text-center">
-                <span className="material-symbols-outlined text-5xl text-slate-300 dark:text-slate-600 mb-4">photo_library</span>
-                <p className="text-slate-500 mb-4">{t('gallery.no_photos', 'No photos yet')}</p>
-                <button
-                  onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
-                  className="px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20"
-                >
-                  {t('gallery.upload_first', 'Upload Your First Memory')}
-                </button>
+            {/* Metro Grid or Empty State */}
+            {!isImageUploadEnabled ? (
+              /* Blurred placeholder grid for locked state */
+              <div className="grid grid-cols-3 gap-4" style={{ gridAutoRows: '240px', gridAutoFlow: 'dense' }}>
+                <div className="rounded-3xl bg-slate-200 dark:bg-slate-800" style={{ gridColumn: 'span 2', gridRow: 'span 2' }} />
+                <div className="rounded-3xl bg-slate-200 dark:bg-slate-800" />
+                <div className="rounded-3xl bg-slate-200 dark:bg-slate-800" style={{ gridRow: 'span 2' }} />
+                <div className="rounded-3xl bg-slate-200 dark:bg-slate-800" style={{ gridColumn: 'span 2' }} />
+                <div className="rounded-3xl bg-slate-100 dark:bg-slate-800" />
+                <div className="rounded-3xl bg-slate-100 dark:bg-slate-800" />
+              </div>
+            ) : filteredMemories.length === 0 ? (
+              /* Beautiful empty state when user HAS permission but no photos */
+              <div className="flex-1 flex flex-col items-center justify-center py-20">
+                <div className="relative mb-8">
+                  <div className="absolute -inset-4 bg-primary/5 rounded-full blur-2xl" />
+                  <div className="relative w-64 h-64 flex items-center justify-center">
+                    <div className="relative flex flex-col items-center">
+                      <div className="w-48 h-48 bg-white dark:bg-slate-800 rounded-3xl shadow-2xl flex items-center justify-center border border-slate-100 dark:border-slate-700 rotate-3 transition-transform hover:rotate-0">
+                        <span className="material-symbols-outlined text-8xl text-slate-200 dark:text-slate-700">photo_library</span>
+                      </div>
+                      <div className="absolute -top-4 -right-4 w-32 h-32 bg-white dark:bg-slate-800 rounded-3xl shadow-2xl flex items-center justify-center border border-slate-100 dark:border-slate-700 -rotate-6 transition-transform hover:rotate-0">
+                        <span className="material-symbols-outlined text-6xl text-primary/30">family_history</span>
+                      </div>
+                      <div className="absolute -bottom-2 -left-6 w-24 h-24 bg-white dark:bg-slate-800 rounded-2xl shadow-xl flex items-center justify-center border border-slate-100 dark:border-slate-700 rotate-12 transition-transform hover:rotate-0">
+                        <span className="material-symbols-outlined text-4xl text-secondary/40">photo_camera</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-center max-w-md mx-auto space-y-4">
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+                    {t('gallery.empty_title', 'Your Family Gallery is Empty')}
+                  </h3>
+                  <p className="text-slate-500 dark:text-slate-400 text-lg">
+                    {t('gallery.empty_description', 'Start preserving your legacy by uploading your first memory.')}
+                  </p>
+                  <div className="pt-6">
+                    <button
+                      onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
+                      className="bg-primary text-white px-10 py-4 rounded-2xl shadow-xl shadow-primary/30 font-bold text-lg flex items-center gap-3 hover:scale-105 transition-all active:scale-95 mx-auto"
+                    >
+                      <span className="material-symbols-outlined text-2xl">add_a_photo</span>
+                      {t('gallery.upload_first', 'Upload First Memory')}
+                    </button>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-3 gap-4" style={{ gridAutoRows: '220px', gridAutoFlow: 'dense' }}>
