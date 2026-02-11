@@ -477,18 +477,18 @@ const StitchAccount: React.FC = () => {
         </div>
         <div className="space-y-4">
           <div className="space-y-2">
-            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">{t('profile.current_password', 'Current Password')}</label>
+            <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">{t('current_password', 'Current Password')}</label>
             <input type="password" value={passwordData.currentPassword} onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
               placeholder="••••••••" className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">{t('profile.new_password', 'New Password')}</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">{t('new_password', 'New Password')}</label>
               <input type="password" value={passwordData.newPassword} onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
                 className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary" />
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">{t('profile.confirm_password', 'Confirm New Password')}</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">{t('confirm_new_password', 'Confirm New Password')}</label>
               <input type="password" value={passwordData.confirmPassword} onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                 className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-border rounded-xl text-sm focus:ring-primary focus:border-primary" />
             </div>
