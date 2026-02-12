@@ -13,6 +13,7 @@ export interface ActivityLogEntry {
   target_name: string | null;
   metadata: Record<string, unknown>;
   created_at: string;
+  actor_name: string | null;
 }
 
 const FUNCTION_NAME = 'api-families';
