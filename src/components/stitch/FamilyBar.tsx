@@ -52,14 +52,9 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
     return option?.label || t('tree_view.select_root', 'Select Root');
   };
 
-  // Default collaborators if none provided
-  const displayCollaborators = collaborators.length > 0 ? collaborators : [
-    { id: '1', initial: 'S' },
-    { id: '2', initial: 'M', color: 'text-primary' },
-    { id: '3', initial: 'A', color: 'text-secondary' }
-  ];
-
-  const displayAdditionalCount = additionalCount > 0 ? additionalCount : 5;
+  // Use provided collaborators only (no fake defaults)
+  const displayCollaborators = collaborators;
+  const displayAdditionalCount = additionalCount;
 
   return (
     <div className="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 z-40 relative">
@@ -128,23 +123,25 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
       </div>
 
       <div className="flex items-center gap-6">
-        {/* Collaborators */}
-        <div className="flex -space-x-2">
-          {displayCollaborators.map((collab) => (
-            <div 
-              key={collab.id}
-              className={`w-7 h-7 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold ${collab.color || ''}`}
-            >
-              {collab.initial}
-            </div>
-          ))}
-          {displayAdditionalCount > 0 && (
-            <div className="w-7 h-7 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] font-bold">
-              +{displayAdditionalCount}
-            </div>
-          )}
-        </div>
-        <p className="text-[11px] text-slate-400 font-medium">{t('stitch.last_updated', 'Last updated')}: {lastUpdated}</p>
+        {/* Last editor avatar */}
+        {displayCollaborators.length > 0 && (
+          <div className="flex -space-x-2">
+            {displayCollaborators.map((collab) => (
+              <div 
+                key={collab.id}
+                className={`w-7 h-7 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold ${collab.color || ''}`}
+              >
+                {collab.initial}
+              </div>
+            ))}
+            {displayAdditionalCount > 0 && (
+              <div className="w-7 h-7 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] font-bold">
+                +{displayAdditionalCount}
+              </div>
+            )}
+          </div>
+        )}
+        {lastUpdated && <p className="text-[11px] text-slate-400 font-medium">{t('stitch.last_updated', 'Last updated')}: {lastUpdated}</p>}
       </div>
     </div>
   );

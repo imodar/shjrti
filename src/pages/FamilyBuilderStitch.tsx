@@ -361,7 +361,12 @@ const FamilyBuilderStitch: React.FC = () => {
       <StitchFamilyBar
         familyName={familyData?.name || 'Al-Saeed'}
         onSwitchTree={() => navigate('/dashboard')}
-        lastUpdated="2h ago"
+        lastUpdated={recentActivities.length > 0 ? recentActivities[0].timestamp : undefined}
+        collaborators={recentActivities.length > 0 && recentActivities[0].actorName ? [{
+          id: 'last-editor',
+          initial: recentActivities[0].actorName.charAt(0).toUpperCase(),
+          color: 'text-primary'
+        }] : undefined}
       />
 
       {/* Main Layout */}
