@@ -343,15 +343,15 @@ const ChildChip: React.FC<{ child: any; onClick: () => void; compact?: boolean }
   <button
     onClick={onClick}
     className={cn(
-      'flex items-center justify-between px-4 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-xl shadow-sm hover:border-primary/30 transition-colors text-start',
-      compact ? 'py-3' : 'py-3.5'
+      'flex items-center justify-between px-5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-xl shadow-sm hover:border-primary/30 transition-colors text-start',
+      compact ? 'py-3.5' : 'py-4'
     )}
   >
-    <span className={cn('font-bold', compact ? 'text-sm' : 'text-sm')}>
+    <span className={cn('font-bold', compact ? 'text-sm' : 'text-base')}>
       {child.first_name || child.name}
     </span>
     <span className={cn(
-      'material-symbols-outlined text-lg',
+      'material-symbols-outlined text-xl',
       child.gender === 'female' ? 'text-pink-400' : 'text-blue-400'
     )}>
       {child.gender === 'female' ? 'female' : 'male'}
