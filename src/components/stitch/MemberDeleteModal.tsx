@@ -156,7 +156,7 @@ export const MemberDeleteModal: React.FC<MemberDeleteModalProps> = ({
             <span className="material-symbols-outlined text-red-500 flex-shrink-0 mt-0.5">gavel</span>
             <div>
               <p className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">
-                Permanent Action • {t('profile.permanent_action', 'إجراء نهائي')}
+                {t('profile.permanent_action', 'Permanent Action')}
               </p>
               <p className="text-[11px] text-slate-300 dark:text-red-100 leading-relaxed font-medium">
                 {t('profile.delete_permanent_warning', 'هذا الإجراء لا يمكن التراجع عنه. سيتم حذف جميع البيانات المتعلقة والروابط العائلية لهذا العضو بشكل قطعي.')}

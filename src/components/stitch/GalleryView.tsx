@@ -333,7 +333,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                 <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   {t('gallery.drop_here', 'Drop memories here')}
                 </p>
-                <p className="text-[10px] text-slate-400 mt-1">PNG, JPG up to 10MB</p>
+                <p className="text-[10px] text-slate-400 mt-1">{t('gallery.file_format_hint', 'PNG, JPG up to 10MB')}</p>
               </div>
             ) : (
               <div className="border-2 border-dashed border-border rounded-2xl p-6 flex flex-col items-center justify-center text-center bg-muted/30">
