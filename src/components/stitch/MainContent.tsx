@@ -14,6 +14,7 @@ interface Activity {
   title: string;
   highlight: string;
   timestamp: string;
+  actorName?: string;
 }
 
 interface Milestone {
@@ -230,7 +231,12 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
                       <p className="text-sm font-medium">
                         {activity.title} <span className="font-bold">{activity.highlight}</span>
                       </p>
-                      <p className="text-[11px] text-slate-400 mt-0.5">{activity.timestamp}</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        {activity.timestamp}
+                        {activity.actorName && (
+                          <span className="text-slate-500"> • {t('activity.by', 'بواسطة')} {activity.actorName}</span>
+                        )}
+                      </p>
                     </div>
                   </div>
                 );

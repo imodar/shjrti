@@ -179,7 +179,7 @@ async function handleGet(userId: string, familyId: string, include?: string) {
       const limit = 20;
       const { data, error } = await supabase
         .from('activity_log')
-        .select('*')
+        .select('*, profiles:user_id(first_name, last_name)')
         .eq('family_id', familyId)
         .order('created_at', { ascending: false })
         .limit(limit);
@@ -187,7 +187,18 @@ async function handleGet(userId: string, familyId: string, include?: string) {
       if (error) {
         return errorResponse('DATABASE_ERROR', error.message, 500);
       }
-      return successResponse(data || []);
+
+      // Flatten profile info into each log entry
+      const enriched = (data || []).map((log: any) => {
+        const profile = log.profiles;
+        const actorName = profile
+          ? [profile.first_name, profile.last_name].filter(Boolean).join(' ')
+          : null;
+        const { profiles: _, ...rest } = log;
+        return { ...rest, actor_name: actorName };
+      });
+
+      return successResponse(enriched);
     }
   
   // Default: return family

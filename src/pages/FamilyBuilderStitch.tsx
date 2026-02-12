@@ -212,6 +212,7 @@ const FamilyBuilderStitch: React.FC = () => {
     title: string;
     highlight: string;
     timestamp: string;
+    actorName?: string;
   }>>([]);
 
   useEffect(() => {
@@ -237,6 +238,7 @@ const FamilyBuilderStitch: React.FC = () => {
           title: info.title,
           highlight: log.target_name || '',
           timestamp: timeAgo,
+          actorName: log.actor_name || undefined,
         };
       });
       setRecentActivities(mapped);
