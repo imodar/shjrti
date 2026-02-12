@@ -14,6 +14,7 @@ interface FamilyWithCount {
   name: string;
   updated_at: string;
   memberCount: number;
+  lastActivityAt?: string;
 }
 
 interface PackageData {
@@ -76,12 +77,30 @@ const StitchDashboard: React.FC = () => {
             .order('updated_at', { ascending: false });
 
           if (!error && familiesData) {
+            const familyIds = familiesData.map(f => f.id);
+            // Fetch last activity date for each family
+            let activityMap: Record<string, string> = {};
+            if (familyIds.length > 0) {
+              const { data: activityData } = await supabase
+                .from('activity_log')
+                .select('family_id, created_at')
+                .in('family_id', familyIds)
+                .order('created_at', { ascending: false });
+              if (activityData) {
+                for (const log of activityData) {
+                  if (!activityMap[log.family_id]) {
+                    activityMap[log.family_id] = log.created_at;
+                  }
+                }
+              }
+            }
             setFamilies(
               familiesData.map(family => ({
                 id: family.id,
                 name: family.name,
                 updated_at: family.updated_at,
-                memberCount: (family as any).family_tree_members?.[0]?.count || 0
+                memberCount: (family as any).family_tree_members?.[0]?.count || 0,
+                lastActivityAt: activityMap[family.id] || family.updated_at
               }))
             );
           }
@@ -341,7 +360,7 @@ const StitchDashboard: React.FC = () => {
                   <div className="bg-muted rounded-xl p-3">
                     <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">{t('dashboard.updated', 'Updated')}</p>
                     <p className="text-lg font-bold text-primary">
-                      {family.updated_at ? getTimeAgo(family.updated_at) : t('dashboard.not_available', 'N/A')}
+                      {(family.lastActivityAt || family.updated_at) ? new Date(family.lastActivityAt || family.updated_at).toLocaleDateString() : t('dashboard.not_available', 'N/A')}
                     </p>
                   </div>
                 </div>
