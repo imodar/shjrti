@@ -164,7 +164,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
             />
           </div>
           <div className="flex-1">
-            <select className="text-xs border-none bg-slate-50 dark:bg-slate-800/50 rounded-lg focus:ring-primary/20 py-1.5 w-full">
+            <select className="text-sm border-none bg-slate-50 dark:bg-slate-800/50 rounded-xl focus:ring-primary/20 py-2.5 w-full h-[42px]">
               <option>{t('stitch.all_branches', 'All Branches')}</option>
             </select>
           </div>
