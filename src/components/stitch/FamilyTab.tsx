@@ -298,7 +298,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                       className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                     >
                       <span className="material-symbols-outlined text-slate-400 text-lg">person</span>
-                      <p className="text-sm font-bold">
+                      <p className="text-base font-bold">
                         {t('family_word', 'Family')} {parent.first_name || parent.name} {parent.last_name || ''}
                       </p>
                     </button>
