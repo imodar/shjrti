@@ -281,11 +281,13 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                 {t('profile.grandchildren', 'Grandchildren')}
               </h3>
               <div className="flex gap-2">
-                <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[11px] font-bold rounded border border-blue-100 dark:border-blue-800">
-                  {totalGrandSons} {t('son', 'Sons')}
+                <span className="px-2 py-0.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-[11px] font-bold rounded border border-blue-100 dark:border-blue-800 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[13px]">male</span>
+                  {totalGrandSons} {t('profile.grandson', 'حفيد')}
                 </span>
-                <span className="px-2 py-0.5 bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 text-[11px] font-bold rounded border border-pink-100 dark:border-pink-800">
-                  {totalGrandDaughters} {t('daughter', 'Daughters')}
+                <span className="px-2 py-0.5 bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 text-[11px] font-bold rounded border border-pink-100 dark:border-pink-800 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-[13px]">female</span>
+                  {totalGrandDaughters} {t('profile.granddaughter', 'حفيدة')}
                 </span>
               </div>
             </div>
