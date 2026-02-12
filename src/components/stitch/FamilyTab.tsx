@@ -151,7 +151,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                   </div>
                   <div>
                     <p className="text-[10px] font-bold text-slate-400 uppercase">{t('profile.father', 'Father')}</p>
-                    <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                    <p className="text-base font-bold text-slate-700 dark:text-slate-200">
                       {father.first_name ? `${father.first_name} ${father.last_name || ''}` : father.name}
                     </p>
                   </div>
@@ -167,7 +167,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                   </div>
                   <div>
                     <p className="text-[10px] font-bold text-slate-400 uppercase">{t('profile.mother', 'Mother')}</p>
-                    <p className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                    <p className="text-base font-bold text-slate-700 dark:text-slate-200">
                       {mother.first_name ? `${mother.first_name} ${mother.last_name || ''}` : mother.name}
                     </p>
                   </div>
