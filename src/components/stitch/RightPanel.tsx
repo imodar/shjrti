@@ -74,6 +74,7 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
                 style={{ width: `${completenessPercentage}%` }}
               />
             </div>
+            <p className="text-[9px] text-slate-400 mt-1.5">{t('stats.completeness_desc', 'نسبة اكتمال البيانات من صور واسم وتاريخ ميلاد ووصف')}</p>
           </div>
 
           {/* Stats Grid */}
