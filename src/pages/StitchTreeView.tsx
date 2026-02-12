@@ -84,7 +84,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
                     'User';
  
    // Get package name
-   const packageName = subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
+   const packageName = subscription?.package_name;
  
   // Generate root options from marriages
   const rootOptions = useMemo(() => {

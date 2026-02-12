@@ -93,31 +93,44 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         user_uuid: user.id
       });
 
+      // Fetch the default (cheapest) package name for free users
+      const getDefaultPackageName = async () => {
+        const { data: pkgData } = await supabase
+          .from('packages')
+          .select('name')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true })
+          .limit(1)
+          .single();
+        return pkgData?.name || null;
+      };
+
       let subscriptionData: SubscriptionDetails;
 
       if (error) {
         console.error('Error fetching subscription details:', error);
-        // If there's an error, default to free plan (not expired) to avoid blocking access
+        const defaultName = await getDefaultPackageName();
         subscriptionData = {
           subscription_id: null,
-          package_name: null,
+          package_name: defaultName,
           status: 'free',
           expires_at: null,
           days_until_expiry: null,
-          is_expired: false, // Free plan is not expired
+          is_expired: false,
           ai_features_enabled: false
         };
       } else if (data && data.length > 0) {
         subscriptionData = data[0];
       } else {
         // No active subscription found - user is on free plan
+        const defaultName = await getDefaultPackageName();
         subscriptionData = {
           subscription_id: null,
-          package_name: null,
+          package_name: defaultName,
           status: 'free',
           expires_at: null,
           days_until_expiry: null,
-          is_expired: false, // Free plan is not expired
+          is_expired: false,
           ai_features_enabled: false
         };
       }
