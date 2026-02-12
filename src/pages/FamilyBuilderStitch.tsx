@@ -174,10 +174,23 @@ const FamilyBuilderStitch: React.FC = () => {
       ? Math.max(...founders.map(f => getDepth(f.id)))
       : (familyMembers.length > 0 ? 1 : 0);
 
+    // Calculate data completeness: % of members with birth_date, image_url, and biography
+    const completenessScore = familyMembers.length > 0
+      ? Math.round(
+          familyMembers.reduce((sum, m) => {
+            let fields = 0;
+            if (m.birth_date) fields++;
+            if (m.image_url) fields++;
+            if (m.biography) fields++;
+            return sum + (fields / 3);
+          }, 0) / familyMembers.length * 100
+        )
+      : 0;
+
     return {
       totalMembers: familyMembers.length,
       generations: maxGen,
-      completeness: Math.min(100, Math.round((familyMembers.length / 100) * 100)),
+      completeness: completenessScore,
       documents: 0
     };
   }, [familyMembers]);

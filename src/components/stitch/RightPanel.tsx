@@ -65,7 +65,7 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
           {/* Completeness */}
           <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl">
             <div className="flex justify-between items-end mb-2">
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Tree Completeness</p>
+              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">{t('stats.data_completeness', 'اكتمال البيانات')}</p>
               <p className="text-sm font-bold text-primary">{completenessPercentage}%</p>
             </div>
             <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden">
