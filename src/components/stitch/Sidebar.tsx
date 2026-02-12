@@ -232,12 +232,12 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
                   {(thirdLine?.type === 'spouse' || thirdLine?.type === 'spouse-divorced') && (
                     <div className="mt-1.5">
                       <span className={cn(
-                        "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border",
+                        "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold border",
                         thirdLine.type === 'spouse-divorced'
                           ? "bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-800/50"
                           : "bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-800/50"
                       )}>
-                        <span className="material-symbols-outlined text-[12px] me-1.5">
+                        <span className="material-symbols-outlined text-[12px]">
                           {thirdLine.type === 'spouse-divorced' ? 'heart_broken' : 'favorite'}
                         </span>
                         {thirdLine.text}
