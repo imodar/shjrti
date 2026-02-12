@@ -58,7 +58,7 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
       {/* Growth Statistics */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold">Growth Statistics</h3>
+          <h3 className="font-bold">{t('stats.growth_statistics', 'إحصائيات النمو')}</h3>
           <span className="material-symbols-outlined text-slate-400 text-sm">trending_up</span>
         </div>
         <div className="space-y-4">
@@ -81,11 +81,11 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
           <div className="grid grid-cols-2 gap-3">
             <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl text-center">
               <p className="text-lg font-bold">{generationsCount}</p>
-              <p className="text-[10px] text-slate-500 uppercase font-semibold">الأجيال</p>
+              <p className="text-[10px] text-slate-500 uppercase font-semibold">{t('stats.generations', 'الأجيال')}</p>
             </div>
             <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-2xl text-center">
               <p className="text-lg font-bold">{documentsCount}</p>
-              <p className="text-[10px] text-slate-500 uppercase font-semibold">الصور المرفوعة</p>
+              <p className="text-[10px] text-slate-500 uppercase font-semibold">{t('stats.uploaded_photos', 'الصور المرفوعة')}</p>
             </div>
           </div>
         </div>
@@ -138,7 +138,7 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
 
       {/* Family Distribution */}
       <div>
-        <h3 className="font-bold mb-4">Family Distribution</h3>
+        <h3 className="font-bold mb-4">{t('stats.family_distribution', 'توزيع العائلة')}</h3>
         <div className="space-y-4">
           {familyDistribution.map((item, index) => (
             <div key={index} className="flex items-center gap-3">
