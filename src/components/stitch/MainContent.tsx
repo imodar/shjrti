@@ -322,24 +322,6 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
             </div>
           </div>
 
-          {/* Quick Actions - Full Width */}
-          <div className="md:col-span-2">
-            <h3 className="font-bold mb-4">{t('stitch.quick_actions', 'Quick Actions')}</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {quickActions.map((action) => (
-                <button
-                  key={action.id}
-                  onClick={action.onClick}
-                  className="p-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 hover:border-primary/50 hover:shadow-lg transition-all text-center group"
-                >
-                  <div className={`w-12 h-12 ${action.iconBg} rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform`}>
-                    <span className="material-symbols-outlined">{action.icon}</span>
-                  </div>
-                  <span className="text-xs font-bold">{action.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </section>
