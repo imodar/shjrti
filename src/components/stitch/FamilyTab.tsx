@@ -111,13 +111,13 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
 
   const getSpouseLabel = (spouse: any) => {
     if (spouse.marital_status === 'divorced') {
-      return spouse.gender === 'male'
-        ? t('profile.divorced_male', 'مطلّق')
-        : t('profile.divorced_female', 'مطلّقة');
+      return member?.gender === 'male'
+        ? t('profile.divorced_female', 'زوجة سابقة')
+        : t('profile.divorced_male', 'زوج سابق');
     }
     return member?.gender === 'male'
-      ? t('profile.wife', 'Wife')
-      : t('profile.husband', 'Husband');
+      ? t('profile.wife', 'زوجة')
+      : t('profile.husband', 'زوج');
   };
 
   const getSpouseSubtitle = (spouse: any) => {
@@ -202,15 +202,15 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <h4 className="font-bold text-sm text-slate-800 dark:text-white">
+                          <h4 className="font-bold text-base text-slate-800 dark:text-white">
                             {spouse.first_name ? `${spouse.first_name} ${spouse.last_name || ''}` : spouse.name}
                           </h4>
-                          <span className="px-2 py-0.5 bg-primary/10 text-primary text-[11px] font-bold rounded-md uppercase">
+                          <span className="px-2.5 py-1 bg-primary/10 text-primary text-xs font-bold rounded-md">
                             {getSpouseLabel(spouse)}
                           </span>
                         </div>
                         {getSpouseSubtitle(spouse) && (
-                          <p className="text-xs text-slate-500">{getSpouseSubtitle(spouse)}</p>
+                          <p className="text-sm text-slate-500">{getSpouseSubtitle(spouse)}</p>
                         )}
                       </div>
                     </button>
