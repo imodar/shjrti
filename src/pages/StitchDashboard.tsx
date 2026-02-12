@@ -149,6 +149,24 @@ const StitchDashboard: React.FC = () => {
     fetchData();
   }, [user?.id]);
 
+  const getTimeAgo = (dateStr: string): string => {
+    const now = new Date();
+    const date = new Date(dateStr);
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 1) return t('time.just_now', 'الآن');
+    if (diffMins < 60) return `${t('time.ago', 'منذ')} ${diffMins} ${t('time.minutes', 'دقيقة')}`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${t('time.ago', 'منذ')} ${diffHours} ${t('time.hours', 'ساعة')}`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays < 7) return `${t('time.ago', 'منذ')} ${diffDays} ${t('time.days', 'يوم')}`;
+    const diffWeeks = Math.floor(diffDays / 7);
+    if (diffDays < 30) return `${t('time.ago', 'منذ')} ${diffWeeks} ${t('time.weeks', 'أسبوع')}`;
+    const diffMonths = Math.floor(diffDays / 30);
+    if (diffMonths < 12) return `${t('time.ago', 'منذ')} ${diffMonths} ${t('time.months', 'شهر')}`;
+    return date.toLocaleDateString();
+  };
+
   const handleCreateTree = () => {
     navigate('/family-creator');
   };
@@ -323,7 +341,7 @@ const StitchDashboard: React.FC = () => {
                   <div className="bg-muted rounded-xl p-3">
                     <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">{t('dashboard.updated', 'Updated')}</p>
                     <p className="text-lg font-bold text-primary">
-                      {family.updated_at ? new Date(family.updated_at).toLocaleDateString() : t('dashboard.not_available', 'N/A')}
+                      {family.updated_at ? getTimeAgo(family.updated_at) : t('dashboard.not_available', 'N/A')}
                     </p>
                   </div>
                 </div>
