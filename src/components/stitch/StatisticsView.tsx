@@ -102,11 +102,12 @@ export const StitchStatisticsView: React.FC<StatisticsViewProps> = ({
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);
 
-    // --- Common first names ---
+    // --- Common first names (exclude placeholder names like زوجة/زوج) ---
+    const placeholderNames = new Set(['زوجة', 'زوج', 'wife', 'husband', 'spouse']);
     const firstNameCount = new Map<string, number>();
     familyMembers.forEach(m => {
       const firstName = (m.first_name || m.name?.split(' ')[0])?.trim();
-      if (firstName) {
+      if (firstName && !placeholderNames.has(firstName.toLowerCase())) {
         firstNameCount.set(firstName, (firstNameCount.get(firstName) || 0) + 1);
       }
     });
