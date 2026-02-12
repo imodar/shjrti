@@ -258,6 +258,10 @@ const FamilyBuilderStitch: React.FC = () => {
     if (diffHours < 24) return `${t('time.ago', 'منذ')} ${diffHours} ${t('time.hours', 'ساعة')}`;
     const diffDays = Math.floor(diffHours / 24);
     if (diffDays < 7) return `${t('time.ago', 'منذ')} ${diffDays} ${t('time.days', 'يوم')}`;
+    const diffWeeks = Math.floor(diffDays / 7);
+    if (diffDays < 30) return `${t('time.ago', 'منذ')} ${diffWeeks} ${t('time.weeks', 'أسبوع')}`;
+    const diffMonths = Math.floor(diffDays / 30);
+    if (diffMonths < 12) return `${t('time.ago', 'منذ')} ${diffMonths} ${t('time.months', 'شهر')}`;
     return date.toLocaleDateString();
   }
 
