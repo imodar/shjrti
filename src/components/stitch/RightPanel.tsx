@@ -1,11 +1,21 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/contexts/LanguageContext';
+
+interface SuggestionPreview {
+  id: string;
+  submitter_name: string;
+  suggestion_text: string;
+  created_at: string;
+}
 
 interface StitchRightPanelProps {
   completenessPercentage?: number;
   generationsCount?: number;
   documentsCount?: number;
   pendingSuggestions?: number;
+  latestSuggestions?: SuggestionPreview[];
+  onReviewSuggestions?: () => void;
   familyDistribution?: {
     label: string;
     percentage: number;
@@ -17,13 +27,31 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
   completenessPercentage = 68,
   generationsCount = 14,
   documentsCount = 82,
-  pendingSuggestions = 3,
+  pendingSuggestions = 0,
+  latestSuggestions = [],
+  onReviewSuggestions,
   familyDistribution = [
     { label: 'Saudi Arabia', percentage: 65, color: 'bg-primary' },
     { label: 'United Arab Emirates', percentage: 20, color: 'bg-blue-400' },
     { label: 'Others', percentage: 15, color: 'bg-amber-400' }
   ]
 }) => {
+  const { t } = useLanguage();
+
+  const getTimeAgo = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 1) return t('time.just_now', 'الآن');
+    if (diffMins < 60) return `${t('time.ago', 'منذ')} ${diffMins} ${t('time.minutes', 'دقيقة')}`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${t('time.ago', 'منذ')} ${diffHours} ${t('time.hours', 'ساعة')}`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays < 7) return `${t('time.ago', 'منذ')} ${diffDays} ${t('time.days', 'يوم')}`;
+    return new Date(dateStr).toLocaleDateString();
+  };
+
   return (
     <aside className="w-80 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 flex-col p-6 overflow-y-auto hidden xl:flex custom-scrollbar">
       {/* Growth Statistics */}
@@ -64,28 +92,42 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
       {/* Pending Suggestions */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-bold">Pending Suggestions</h3>
-          <span className="px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded-full">{pendingSuggestions} New</span>
+          <h3 className="font-bold">{t('suggestions.pending', 'Pending Suggestions')}</h3>
+          {pendingSuggestions > 0 && (
+            <span className="px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-bold rounded-full">
+              {pendingSuggestions} {t('suggestions.new', 'New')}
+            </span>
+          )}
         </div>
         <div className="space-y-3">
-          <div className="p-4 bg-gradient-to-br from-primary/5 to-emerald-500/10 rounded-2xl border border-primary/20">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="material-icons-round text-primary text-sm">auto_awesome</span>
-              <h4 className="font-bold text-xs text-primary">Potential Match</h4>
+          {latestSuggestions.length > 0 ? (
+            latestSuggestions.map((suggestion) => (
+              <div key={suggestion.id} className="p-4 bg-gradient-to-br from-primary/5 to-emerald-500/10 rounded-2xl border border-primary/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="material-icons-round text-primary text-sm">edit_note</span>
+                  <h4 className="font-bold text-xs text-primary truncate">{suggestion.submitter_name}</h4>
+                </div>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">
+                  {suggestion.suggestion_text}
+                </p>
+                <p className="text-[10px] text-slate-400 mt-2">{getTimeAgo(suggestion.created_at)}</p>
+              </div>
+            ))
+          ) : (
+            <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl text-center">
+              <span className="material-icons-round text-slate-300 text-2xl mb-1">inbox</span>
+              <p className="text-[11px] text-slate-400">{t('suggestions.no_pending', 'لا توجد اقتراحات بانتظار المراجعة')}</p>
             </div>
-            <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed">
-              We found a match for <span className="font-bold">Abdullah Al-Saeed</span> in the Al-Rahman Public Tree.
-            </p>
-            <div className="flex gap-2 mt-3">
-              <button className="flex-1 py-1.5 bg-white dark:bg-slate-800 border border-primary/30 text-primary text-[10px] font-bold rounded-lg hover:bg-primary hover:text-white transition-all">
-                Compare
-              </button>
-              <button className="p-1.5 bg-slate-200/50 dark:bg-slate-700/50 rounded-lg text-slate-400">
-                <span className="material-icons-round text-sm">close</span>
-              </button>
-            </div>
-          </div>
+          )}
         </div>
+        {pendingSuggestions > 0 && (
+          <button
+            onClick={onReviewSuggestions}
+            className="w-full mt-3 py-2 bg-primary/10 text-primary text-xs font-bold rounded-xl hover:bg-primary hover:text-white transition-all"
+          >
+            {t('suggestions.review_all', 'مراجعة الاقتراحات')}
+          </button>
+        )}
       </div>
 
       {/* Family Distribution */}

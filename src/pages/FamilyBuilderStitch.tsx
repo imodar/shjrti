@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -89,6 +89,7 @@ const FamilyBuilderStitch: React.FC = () => {
   const [showGallery, setShowGallery] = useState(initialTab === 'gallery');
   const [showSettings, setShowSettings] = useState(initialTab === 'settings');
   const [pendingSuggestionsCount, setPendingSuggestionsCount] = useState(0);
+  const [latestSuggestions, setLatestSuggestions] = useState<Array<{ id: string; submitter_name: string; suggestion_text: string; created_at: string }>>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   // Default to true so loader is skipped when data is cached; useEffects set false only when fetching
   const [packageLoaded, setPackageLoaded] = useState(true);
@@ -123,8 +124,16 @@ const FamilyBuilderStitch: React.FC = () => {
     const fetchPendingSuggestions = async () => {
       try {
         const suggestions = await suggestionsApi.listByFamily(familyId);
-        const pending = suggestions.filter(s => s.status === 'pending').length;
-        setPendingSuggestionsCount(pending);
+        const pending = suggestions.filter(s => s.status === 'pending');
+        setPendingSuggestionsCount(pending.length);
+        // Keep last 2 pending suggestions sorted by newest first
+        const sorted = [...pending].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        setLatestSuggestions(sorted.slice(0, 2).map(s => ({
+          id: s.id,
+          submitter_name: s.submitter_name,
+          suggestion_text: s.suggestion_text,
+          created_at: s.created_at,
+        })));
       } catch (error) {
         console.error('Error fetching suggestions count:', error);
       } finally {
@@ -443,7 +452,9 @@ const FamilyBuilderStitch: React.FC = () => {
             completenessPercentage={stats.completeness}
             generationsCount={stats.generations}
             documentsCount={stats.documents}
-            pendingSuggestions={0}
+            pendingSuggestions={pendingSuggestionsCount}
+            latestSuggestions={latestSuggestions}
+            onReviewSuggestions={() => handleTabChange('suggestions')}
           />
         )}
       </main>
