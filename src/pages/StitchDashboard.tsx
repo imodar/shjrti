@@ -52,8 +52,8 @@ const StitchDashboard: React.FC = () => {
   const maxTrees = packageData?.max_family_trees || 3;
   const maxMembers = packageData?.max_family_members || 500;
   const treesUsed = families.length;
-  const packageName = packageData?.name || subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
-  const localizedPackageName = getLocalizedText(packageName, currentLanguage, currentLanguage === 'ar' ? 'باقة مجانية' : 'Free Plan');
+  const packageName = packageData?.name || subscription?.package_name;
+  const localizedPackageName = getLocalizedText(packageName, currentLanguage, '');
 
   useEffect(() => {
     const fetchData = async () => {

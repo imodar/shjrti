@@ -347,7 +347,7 @@ const FamilyBuilderStitch: React.FC = () => {
                    'User';
 
   // Get package name - pass the full object for localization in Header
-  const packageName = subscription?.package_name || { en: 'Free Plan', ar: 'باقة مجانية' };
+  const packageName = subscription?.package_name;
 
   // Only show loader on dashboard tab and only on FIRST load
   const isFullyLoaded = !loading && packageLoaded && suggestionsLoaded;
