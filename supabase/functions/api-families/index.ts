@@ -179,7 +179,7 @@ async function handleGet(userId: string, familyId: string, include?: string) {
       const limit = 20;
       const { data, error } = await supabase
         .from('activity_log')
-        .select('*, profiles:user_id(first_name, last_name)')
+        .select('*')
         .eq('family_id', familyId)
         .order('created_at', { ascending: false })
         .limit(limit);
@@ -188,15 +188,25 @@ async function handleGet(userId: string, familyId: string, include?: string) {
         return errorResponse('DATABASE_ERROR', error.message, 500);
       }
 
-      // Flatten profile info into each log entry
-      const enriched = (data || []).map((log: any) => {
-        const profile = log.profiles;
-        const actorName = profile
-          ? [profile.first_name, profile.last_name].filter(Boolean).join(' ')
-          : null;
-        const { profiles: _, ...rest } = log;
-        return { ...rest, actor_name: actorName };
-      });
+      // Fetch actor names from profiles
+      const userIds = [...new Set((data || []).map((l: any) => l.user_id).filter(Boolean))];
+      let profileMap: Record<string, string> = {};
+      if (userIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('user_id, first_name, last_name')
+          .in('user_id', userIds);
+        if (profiles) {
+          for (const p of profiles) {
+            profileMap[p.user_id] = [p.first_name, p.last_name].filter(Boolean).join(' ');
+          }
+        }
+      }
+
+      const enriched = (data || []).map((log: any) => ({
+        ...log,
+        actor_name: profileMap[log.user_id] || null,
+      }));
 
       return successResponse(enriched);
     }
