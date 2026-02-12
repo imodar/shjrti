@@ -237,7 +237,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
                           ? "bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-800/50"
                           : "bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400 border-pink-200 dark:border-pink-800/50"
                       )}>
-                        <span className="material-symbols-outlined text-[12px] mr-1.5">
+                        <span className="material-symbols-outlined text-[12px] me-1.5">
                           {thirdLine.type === 'spouse-divorced' ? 'heart_broken' : 'favorite'}
                         </span>
                         {thirdLine.text}
@@ -261,7 +261,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
                           const age = Number(deathYear) - Number(birthYear);
                           return (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-black dark:text-slate-200 text-[10px] font-bold border border-slate-300 dark:border-slate-600">
-                              <span className="material-symbols-outlined text-[12px] mr-1">history</span>
+                              <span className="material-symbols-outlined text-[12px] me-1">history</span>
                               {birthYear} - {deathYear} ({age} {yearsText})
                             </span>
                           );
@@ -287,7 +287,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
                         const age = now.getFullYear() - Number(birthYear);
                         return (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold border border-emerald-200 dark:border-emerald-800/50">
-                            <span className="material-symbols-outlined text-[12px] mr-1">cake</span>
+                            <span className="material-symbols-outlined text-[12px] me-1">cake</span>
                             {birthYear} - {age} {yearsText}
                           </span>
                         );
