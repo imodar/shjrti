@@ -89,7 +89,7 @@ const FamilyBuilderStitch: React.FC = () => {
   const [showGallery, setShowGallery] = useState(initialTab === 'gallery');
   const [showSettings, setShowSettings] = useState(initialTab === 'settings');
   const [pendingSuggestionsCount, setPendingSuggestionsCount] = useState(0);
-  const [latestSuggestions, setLatestSuggestions] = useState<Array<{ id: string; submitter_name: string; suggestion_text: string; created_at: string }>>([]);
+  const [latestSuggestions, setLatestSuggestions] = useState<Array<{ id: string; submitter_name: string; suggestion_text: string; created_at: string; member_name?: string }>>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   // Default to true so loader is skipped when data is cached; useEffects set false only when fetching
   const [packageLoaded, setPackageLoaded] = useState(true);
@@ -133,6 +133,7 @@ const FamilyBuilderStitch: React.FC = () => {
           submitter_name: s.submitter_name,
           suggestion_text: s.suggestion_text,
           created_at: s.created_at,
+          member_name: s.family_tree_members?.name || undefined,
         })));
       } catch (error) {
         console.error('Error fetching suggestions count:', error);

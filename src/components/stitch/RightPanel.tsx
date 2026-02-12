@@ -7,6 +7,7 @@ interface SuggestionPreview {
   submitter_name: string;
   suggestion_text: string;
   created_at: string;
+  member_name?: string;
 }
 
 interface StitchRightPanelProps {
@@ -105,7 +106,10 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
               <div key={suggestion.id} className="p-4 bg-gradient-to-br from-primary/5 to-emerald-500/10 rounded-2xl border border-primary/20">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="material-icons-round text-primary text-sm">edit_note</span>
-                  <h4 className="font-bold text-xs text-primary truncate">{suggestion.submitter_name}</h4>
+                  <h4 className="font-bold text-xs text-primary truncate">
+                    {t('suggestions.from', 'اقتراح من')}: {suggestion.submitter_name}
+                    {suggestion.member_name && <> - {t('suggestions.about_member', 'حول العضو')}: {suggestion.member_name}</>}
+                  </h4>
                 </div>
                 <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">
                   {suggestion.suggestion_text}
