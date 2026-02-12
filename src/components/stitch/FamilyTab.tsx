@@ -307,7 +307,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                         onClick={() => onMemberClick?.(spouse)}
                         className="text-sm text-slate-400 font-medium hover:text-primary transition-colors"
                       >
-                        {t('profile.spouse', 'Spouse')}: {spouse.first_name || spouse.name} {spouse.last_name || ''}
+                        {spouse.gender === 'male' ? t('profile.the_husband', 'الزوج') : t('profile.the_wife', 'الزوجة')}: {spouse.first_name || spouse.name} {spouse.last_name || ''}
                       </button>
                     )}
                   </div>
