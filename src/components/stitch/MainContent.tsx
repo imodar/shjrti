@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import DOMPurify from 'dompurify';
 import { AddMemberForm } from './AddMemberForm';
 import { StitchMemberProfile } from './MemberProfile';
 import { StitchSuggestionsView } from './SuggestionsView';
@@ -215,9 +216,10 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
                 <span className="material-symbols-outlined text-primary">info</span>
                 <h3 className="font-bold">{t('stitch.about_family', 'About the Family')}</h3>
               </div>
-              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
-                {familyData.description}
-              </p>
+              <div 
+                className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(familyData.description) }}
+              />
             </div>
           )}
 
