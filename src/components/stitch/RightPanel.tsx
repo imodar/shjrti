@@ -107,14 +107,15 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
                 <div className="flex items-center gap-2 mb-2">
                   <span className="material-icons-round text-primary text-sm">edit_note</span>
                   <h4 className="font-bold text-xs text-primary truncate">
-                    {t('suggestions.from', 'اقتراح من')}: {suggestion.submitter_name}
-                    {suggestion.member_name && <> - {t('suggestions.about_member', 'حول العضو')}: {suggestion.member_name}</>}
+                    {suggestion.member_name ? <>{t('suggestions.about_member', 'حول العضو')}: {suggestion.member_name}</> : t('suggestions.general', 'اقتراح عام')}
                   </h4>
                 </div>
                 <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">
                   {suggestion.suggestion_text}
                 </p>
-                <p className="text-[10px] text-slate-400 mt-2">{getTimeAgo(suggestion.created_at)}</p>
+                <p className="text-[10px] text-slate-400 mt-2">
+                  {t('suggestions.from_label', 'من')} {suggestion.submitter_name} · {t('suggestions.on_date', 'بتاريخ')} {new Date(suggestion.created_at).toLocaleDateString()}
+                </p>
               </div>
             ))
           ) : (
