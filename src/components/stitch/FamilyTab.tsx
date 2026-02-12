@@ -244,10 +244,10 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                     {!readOnly && (
                       <button
                         onClick={() => onAddChild?.(member, spouse.id)}
-                        className="flex items-center justify-center gap-2 px-3 py-2.5 border border-dashed border-slate-200 dark:border-slate-700 rounded-lg text-slate-400 hover:text-primary hover:border-primary/50 transition-colors text-xs font-medium"
+                        className="flex items-center justify-center gap-2 px-4 py-3.5 bg-violet-50 dark:bg-violet-900/10 border border-dashed border-violet-200 dark:border-violet-700 rounded-xl text-violet-500 hover:text-violet-700 hover:border-violet-400 hover:bg-violet-100/50 transition-colors text-sm font-medium"
                       >
-                        <span className="material-symbols-outlined text-base">person_add</span>
-                        {t('profile.add_child', 'Add Child')}
+                        <span className="material-symbols-outlined text-lg">person_add</span>
+                        {t('profile.add_child', 'إضافة ابن/ابنة')}
                       </button>
                     )}
                   </div>
