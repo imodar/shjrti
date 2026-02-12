@@ -130,7 +130,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
       <div className="p-6 border-b border-slate-100 dark:border-slate-800">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h2 className="font-bold text-slate-800 dark:text-slate-100">{t('stitch.family_members', 'Family Members')}</h2>
+            <h2 className="font-bold text-slate-800 dark:text-slate-100">{t('family_builder.members_title', 'Family Members')}</h2>
             <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
               <span className="material-icons-round text-[14px]">groups</span>
               {totalCount} {t('stitch.total_members', 'Total Members')}
