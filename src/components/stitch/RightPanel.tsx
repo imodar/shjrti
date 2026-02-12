@@ -136,19 +136,6 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
         )}
       </div>
 
-      {/* Family Distribution */}
-      <div>
-        <h3 className="font-bold mb-4">{t('stats.family_distribution', 'توزيع العائلة')}</h3>
-        <div className="space-y-4">
-          {familyDistribution.map((item, index) => (
-            <div key={index} className="flex items-center gap-3">
-              <div className={cn('w-2 h-2 rounded-full', item.color)} />
-              <div className="flex-1 text-xs font-medium">{item.label}</div>
-              <div className="text-xs font-bold">{item.percentage}%</div>
-            </div>
-          ))}
-        </div>
-      </div>
     </aside>
   );
 };
