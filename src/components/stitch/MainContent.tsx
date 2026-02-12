@@ -208,6 +208,19 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
 
         {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Family Description */}
+          {familyData?.description && (
+            <div className="md:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="material-symbols-outlined text-primary">info</span>
+                <h3 className="font-bold">{t('stitch.about_family', 'About the Family')}</h3>
+              </div>
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
+                {familyData.description}
+              </p>
+            </div>
+          )}
+
           {/* Recent Activities */}
           <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
             <div className="flex items-center justify-between mb-6">
