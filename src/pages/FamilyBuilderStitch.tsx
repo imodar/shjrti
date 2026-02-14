@@ -115,7 +115,7 @@ const FamilyBuilderStitch: React.FC = () => {
       }
     };
     fetchPackageLimits();
-  }, [user]);
+  }, [user?.id]);
 
   // Fetch pending suggestions count from API
   useEffect(() => {
