@@ -4,7 +4,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getLocalizedText } from "@/lib/packageUtils";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { TreePine, Settings, CreditCard, HelpCircle, LogOut } from "lucide-react";
+import { TreePine, Settings, HelpCircle, LogOut } from "lucide-react";
 import {
   HoverCard,
   HoverCardContent,
@@ -182,30 +182,15 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
               
               {isOwner && (
                 <Link 
-                  to="/profile" 
+                  to="/stitch-account" 
                   className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
                 >
                   <div className="p-1.5 bg-amber-500/10 rounded-lg group-hover:bg-amber-500/20 transition-colors">
                     <Settings className="h-4 w-4 text-amber-500" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{t('nav.settings', 'Settings')}</p>
-                    <p className="text-[10px] text-slate-500">{t('nav.settings.desc', 'Customize account')}</p>
-                  </div>
-                </Link>
-              )}
-              
-              {isOwner && (
-                <Link 
-                  to="/payments" 
-                  className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group"
-                >
-                  <div className="p-1.5 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 transition-colors">
-                    <CreditCard className="h-4 w-4 text-blue-500" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">{t('nav.billing', 'Billing')}</p>
-                    <p className="text-[10px] text-slate-500">{t('nav.billing.desc', 'Manage subscriptions')}</p>
+                    <p className="text-sm font-medium">{t('nav.account_management', 'إدارة الحساب')}</p>
+                    <p className="text-[10px] text-slate-500">{t('nav.account_management.desc', 'إدارة الملف والإشتراكات والفوترة')}</p>
                   </div>
                 </Link>
               )}
