@@ -135,7 +135,7 @@ const StitchAccount: React.FC = () => {
       finally { setProfileLoaded(true); }
     };
     fetchProfile();
-  }, [user]);
+  }, [user?.id]);
 
   useEffect(() => {
     if (!user) return;
@@ -155,7 +155,7 @@ const StitchAccount: React.FC = () => {
       finally { setSubLoaded(true); }
     };
     fetchSub();
-  }, [user, currentLanguage]);
+  }, [user?.id, currentLanguage]);
 
   useEffect(() => {
     if (!user) return;
@@ -177,7 +177,7 @@ const StitchAccount: React.FC = () => {
       finally { setStatsLoaded(true); }
     };
     fetchStats();
-  }, [user]);
+  }, [user?.id]);
 
   const handleSaveProfile = async () => {
     setSaving(true);
@@ -287,7 +287,7 @@ const StitchAccount: React.FC = () => {
       loadPackages();
       loadUserSubscription();
     }
-  }, [user]);
+  }, [user?.id]);
 
   useEffect(() => {
     if (activeTab === 'billing' && user) {
@@ -296,7 +296,7 @@ const StitchAccount: React.FC = () => {
       loadInvoices();
       loadScheduledDowngrade();
     }
-  }, [activeTab, user, currentLanguage]);
+  }, [activeTab, user?.id, currentLanguage]);
 
   const getPlanIndex = (planId: string | null) => {
     if (!planId) return -1;
