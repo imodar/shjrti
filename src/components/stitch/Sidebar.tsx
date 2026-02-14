@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { Member, Marriage } from '@/types/family.types';
+import { StyledDropdown } from './StyledDropdown';
 import { 
   getParentageInfo, 
   getSpouseDisplayInfo, 
@@ -41,6 +42,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
   maxFamilyMembers
 }) => {
   const { t, direction } = useLanguage();
+  const [filter, setFilter] = useState('all');
 
   const getInitials = (member: Member) => {
     if (member.first_name) {
@@ -164,16 +166,33 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
             />
           </div>
           <div className="flex-1">
-            <select className="text-sm border-none bg-slate-50 dark:bg-slate-800/50 rounded-xl focus:ring-primary/20 py-2.5 w-full h-[42px]">
-              <option>{t('stitch.all_branches', 'All Branches')}</option>
-            </select>
+            <StyledDropdown
+              value={filter}
+              onChange={setFilter}
+              accentColor="primary"
+              options={[
+                { value: 'all', label: t('stitch.all_members', 'الكل'), icon: 'groups' },
+                { value: 'male', label: t('stitch.males', 'الذكور'), icon: 'male' },
+                { value: 'female', label: t('stitch.females', 'الإناث'), icon: 'female' },
+                { value: 'alive', label: t('stitch.alive', 'الأحياء'), icon: 'favorite' },
+                { value: 'deceased', label: t('stitch.deceased', 'المتوفين'), icon: 'history' },
+                { value: 'founders', label: t('stitch.founders', 'المؤسسين'), icon: 'workspace_premium' },
+              ]}
+            />
           </div>
         </div>
       </div>
 
       {/* Members List */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-        {members.map((member) => {
+        {members.filter((member) => {
+          if (filter === 'male') return member.gender === 'male';
+          if (filter === 'female') return member.gender === 'female';
+          if (filter === 'alive') return member.is_alive !== false && !(member as any).death_date;
+          if (filter === 'deceased') return member.is_alive === false || !!(member as any).death_date;
+          if (filter === 'founders') return member.is_founder || (member as any).isFounder;
+          return true;
+        }).map((member) => {
           const parentageLine = getParentageLine(member);
           const thirdLine = getThirdLineInfo(member);
           const isFounder = member.is_founder || (member as any).isFounder;
