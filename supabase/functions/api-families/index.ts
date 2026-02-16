@@ -308,15 +308,15 @@ async function handleDelete(userId: string, familyId: string) {
 }
 
 // Special action: Regenerate share token
-async function handleRegenerateShareToken(userId: string, familyId: string, expiresInHours: number) {
+async function handleRegenerateShareToken(userId: string, familyId: string, expiresInHours: number, userSupabase: any) {
   console.log(`[API] POST - Regenerating share token for family: ${familyId}`);
   
   if (!await checkOwnership(userId, familyId)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
   }
   
-  const supabase = createServiceClient();
-  const { data, error } = await supabase.rpc('regenerate_share_token', {
+  // Use the user's client so auth.uid() works inside the DB function
+  const { data, error } = await userSupabase.rpc('regenerate_share_token', {
     p_family_id: familyId,
     p_expires_in_hours: expiresInHours,
   });
@@ -368,7 +368,7 @@ Deno.serve(async (req) => {
       case 'POST':
         // Special action for share token regeneration
         if (action === 'regenerateShareToken' && id) {
-          return await handleRegenerateShareToken(user!.id, id, expiresInHours);
+          return await handleRegenerateShareToken(user!.id, id, expiresInHours, auth.supabase);
         }
         return await handleCreate(user!.id, body);
         
