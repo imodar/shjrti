@@ -9,6 +9,7 @@ import { DateDisplay, LifespanDisplay } from '@/components/DateDisplay';
 import { cn } from '@/lib/utils';
 import { getParentageInfo } from '@/lib/memberDisplayUtils';
 import { StitchFamilyTab } from './FamilyTab';
+import { MemberTimeline } from './MemberTimeline';
 import { AddFounderParentDrawer } from './AddFounderParentDrawer';
 import { useAddFounderParentMutation } from '@/hooks/mutations/useFamilyMutations';
 import { useAuth } from '@/contexts/AuthContext';
@@ -405,10 +406,13 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
         )}
 
         {activeTab === 'timeline' && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 shadow-sm">
-            <h3 className="font-bold text-slate-800 dark:text-white mb-6">{t('profile.timeline', 'Timeline')}</h3>
-            <p className="text-sm text-slate-500">{t('profile.coming_soon', 'Coming soon...')}</p>
-          </div>
+          <MemberTimeline
+            member={member}
+            spouses={spouses}
+            children={children}
+            familyMembers={familyMembers}
+            marriages={marriages}
+          />
         )}
 
         {activeTab === 'media' && (
