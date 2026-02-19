@@ -24,6 +24,7 @@ interface SpouseDrawerProps {
   onFamilyStatusChange: (status: 'yes' | 'no') => void;
   onSave: () => void;
   isImageUploadEnabled?: boolean;
+  hideToggle?: boolean;
 }
 
 export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
@@ -39,7 +40,8 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
   spouseFamilyStatus,
   onFamilyStatusChange,
   onSave,
-  isImageUploadEnabled = false
+  isImageUploadEnabled = false,
+  hideToggle = false
 }) => {
   const { t, direction } = useLanguage();
   const isRTL = direction === 'rtl';
@@ -133,6 +135,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
           {/* Toggle: Create New / Link Existing */}
+          {!hideToggle && (
           <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
             <button
               type="button"
@@ -159,6 +162,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
               {t('member.link_existing', 'Link Existing Member')}
             </button>
           </div>
+          )}
 
           {/* Form Fields */}
           <div className="space-y-4">
