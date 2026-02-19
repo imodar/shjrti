@@ -364,103 +364,118 @@ const StitchFamilyCreator = () => {
         >
 
 
-          <div className="relative w-full max-w-4xl flex flex-col md:flex-row items-start justify-center gap-8 md:gap-12">
-            {/* Founder Node Card */}
-            <div className="w-full md:w-80 bg-card/70 backdrop-blur-xl border border-border/50 p-1 rounded-[2.5rem] shadow-2xl animate-fade-in">
-              <div className="bg-card rounded-[2.3rem] p-6 text-center border border-border/30">
-                {/* Avatar */}
-                <div className="w-24 h-24 mx-auto mb-6 relative group">
-                  <div className="w-full h-full rounded-full bg-primary/10 flex items-center justify-center border-4 border-card shadow-inner overflow-hidden">
-                    {founderData.croppedImage ? (
-                      <img src={founderData.croppedImage} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="material-icons-round text-5xl text-primary/30">person</span>
-                    )}
-                  </div>
-                  {isImageUploadEnabled && (
-                    <>
-                      <input type="file" accept="image/*" onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setFounderData({ ...founderData, image: file });
-                          const reader = new FileReader();
-                          reader.onload = (ev) => { setCropImage(ev.target?.result as string); setShowCropModal(true); };
-                          reader.readAsDataURL(file);
-                        }
-                      }} className="hidden" id="founder-image-journey" />
-                      <label htmlFor="founder-image-journey" className="absolute bottom-0 end-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center shadow-lg border-2 border-card cursor-pointer hover:scale-110 transition-transform">
-                        <span className="material-icons-round text-base">photo_camera</span>
-                      </label>
-                    </>
+          <div className="w-full max-w-2xl bg-card/70 backdrop-blur-xl border border-border/50 rounded-[2rem] p-6 md:p-8 shadow-xl shadow-muted/20">
+            {/* Founder Section Header */}
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                <Crown className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-bold text-xl text-foreground">{t('founders_legacy', 'إرث المؤسس')}</h3>
+                <p className="text-xs text-muted-foreground">{t('founder_subtitle', 'أضف جذر شجرة عائلتك — الأب أو الأم المؤسس')}</p>
+              </div>
+            </div>
+
+            {/* Founder Avatar + Name */}
+            <div className="flex items-center gap-4 mb-6">
+              <div className="w-20 h-20 relative group flex-shrink-0">
+                <div className="w-full h-full rounded-full bg-primary/10 flex items-center justify-center border-4 border-card shadow-inner overflow-hidden">
+                  {founderData.croppedImage ? (
+                    <img src={founderData.croppedImage} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="material-icons-round text-4xl text-primary/30">person</span>
                   )}
                 </div>
-
-                <div className="space-y-4">
-                  <Input
-                    value={founderData.name}
-                    onChange={(e) => setFounderData({ ...founderData, name: e.target.value })}
-                    placeholder={t('founders_name', 'اسم المؤسس')}
-                    className="text-center border-none bg-transparent focus:ring-0 text-xl font-bold placeholder:text-muted-foreground/40 h-auto py-1"
-                  />
-
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="px-3 py-1 bg-primary/10 rounded-full text-[10px] font-bold text-primary flex items-center gap-1.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                      {t('founder_badge', 'مؤسس')}
-                    </div>
-                  </div>
-
-                  <div className="pt-4 border-t border-border/50 space-y-3">
-                    <Select value={founderData.gender} onValueChange={(v) => setFounderData({ ...founderData, gender: v })}>
-                      <SelectTrigger className="h-10 rounded-lg border-border/50 text-sm"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="male">ذكر</SelectItem>
-                        <SelectItem value="female">أنثى</SelectItem>
-                      </SelectContent>
-                    </Select>
-
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="text-start">
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">{t('birth_date', 'تاريخ الميلاد')}</p>
-                        <EnhancedDatePicker value={founderData.birthDate} onChange={(d) => setFounderData({ ...founderData, birthDate: d })} placeholder="----" className="h-9 text-xs" />
-                      </div>
-                      <div className="text-start">
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">{t('status', 'الحالة')}</p>
-                        <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(v) => setFounderData({ ...founderData, isAlive: v === "alive" })}>
-                          <SelectTrigger className="h-9 rounded-lg border-border/50 text-xs"><SelectValue /></SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="alive">على قيد الحياة</SelectItem>
-                            <SelectItem value="deceased">متوفى</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-                    {!founderData.isAlive && (
-                      <div className="text-start">
-                        <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">تاريخ الوفاة</p>
-                        <EnhancedDatePicker value={founderData.deathDate} onChange={(d) => setFounderData({ ...founderData, deathDate: d })} placeholder="----" className="h-9 text-xs" disableFuture />
-                      </div>
-                    )}
-
-                    <Textarea
-                      value={founderData.bio}
-                      onChange={(e) => setFounderData({ ...founderData, bio: e.target.value })}
-                      placeholder={t('founder_bio_placeholder', 'سيرة مختصرة...')}
-                      rows={2}
-                      className="rounded-lg border-border/50 text-xs focus:border-primary"
-                    />
+                {isImageUploadEnabled && (
+                  <>
+                    <input type="file" accept="image/*" onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setFounderData({ ...founderData, image: file });
+                        const reader = new FileReader();
+                        reader.onload = (ev) => { setCropImage(ev.target?.result as string); setShowCropModal(true); };
+                        reader.readAsDataURL(file);
+                      }
+                    }} className="hidden" id="founder-image-journey" />
+                    <label htmlFor="founder-image-journey" className="absolute bottom-0 end-0 w-7 h-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center shadow-lg border-2 border-card cursor-pointer hover:scale-110 transition-transform">
+                      <span className="material-icons-round text-sm">photo_camera</span>
+                    </label>
+                  </>
+                )}
+              </div>
+              <div className="flex-1 space-y-2">
+                <Input
+                  value={founderData.name}
+                  onChange={(e) => setFounderData({ ...founderData, name: e.target.value })}
+                  placeholder={t('founders_name', 'اسم المؤسس')}
+                  className="h-12 rounded-xl border-border/50 bg-muted/30 text-lg font-bold focus:border-primary focus:ring-primary/20"
+                />
+                <div className="flex items-center gap-2">
+                  <div className="px-3 py-1 bg-primary/10 rounded-full text-[10px] font-bold text-primary flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    {t('founder_badge', 'مؤسس')}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Spouses Panel */}
-            <div className="flex-1 w-full bg-card/70 backdrop-blur-xl p-6 md:p-8 rounded-[2rem] border-2 border-dashed border-primary/30 animate-fade-in" style={{ animationDelay: '150ms' }}>
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h4 className="font-bold text-lg text-foreground">{t('spouses_partners', 'الزوجات')}</h4>
-                  <p className="text-xs text-muted-foreground">{t('add_spouses_desc', 'أضف زوجة أو أكثر للمؤسس')}</p>
+            {/* Founder Details */}
+            <div className="space-y-4 mb-8">
+              <Select value={founderData.gender} onValueChange={(v) => setFounderData({ ...founderData, gender: v })}>
+                <SelectTrigger className="h-10 rounded-xl border-border/50 bg-muted/30 text-sm"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">ذكر</SelectItem>
+                  <SelectItem value="female">أنثى</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="text-start">
+                  <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">{t('birth_date', 'تاريخ الميلاد')}</p>
+                  <EnhancedDatePicker value={founderData.birthDate} onChange={(d) => setFounderData({ ...founderData, birthDate: d })} placeholder="----" className="h-9 text-xs" />
+                </div>
+                <div className="text-start">
+                  <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">{t('status', 'الحالة')}</p>
+                  <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(v) => setFounderData({ ...founderData, isAlive: v === "alive" })}>
+                    <SelectTrigger className="h-9 rounded-xl border-border/50 text-xs"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="alive">على قيد الحياة</SelectItem>
+                      <SelectItem value="deceased">متوفى</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {!founderData.isAlive && (
+                <div className="text-start">
+                  <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">تاريخ الوفاة</p>
+                  <EnhancedDatePicker value={founderData.deathDate} onChange={(d) => setFounderData({ ...founderData, deathDate: d })} placeholder="----" className="h-9 text-xs" disableFuture />
+                </div>
+              )}
+
+              <Textarea
+                value={founderData.bio}
+                onChange={(e) => setFounderData({ ...founderData, bio: e.target.value })}
+                placeholder={t('founder_bio_placeholder', 'سيرة مختصرة...')}
+                rows={2}
+                className="rounded-xl border-border/50 bg-muted/30 text-xs focus:border-primary"
+              />
+            </div>
+
+            {/* Divider */}
+            <div className="border-t border-border/30 mb-6" />
+
+            {/* Spouses Section */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+                    <Heart className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-base text-foreground">{t('spouses_partners', 'الزوجات')}</h4>
+                    <p className="text-[10px] text-muted-foreground">{t('add_spouses_desc', 'أضف زوجة أو أكثر للمؤسس')}</p>
+                  </div>
                 </div>
                 <button
                   onClick={() => setIsAddingWife(true)}
@@ -472,7 +487,7 @@ const StitchFamilyCreator = () => {
 
               <div className="space-y-3">
                 {wives.length === 0 ? (
-                  <div className="bg-card/50 border border-border/50 rounded-2xl p-4 flex items-center gap-4">
+                  <div className="bg-muted/30 border border-border/50 rounded-2xl p-4 flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                       <span className="material-icons-round text-xl">person</span>
                     </div>
@@ -483,7 +498,7 @@ const StitchFamilyCreator = () => {
                   </div>
                 ) : (
                   wives.map((wife) => (
-                    <div key={wife.id} className="bg-card/50 border border-border/50 rounded-2xl p-4 flex items-center gap-4 group hover:bg-card transition-colors">
+                    <div key={wife.id} className="bg-muted/30 border border-border/50 rounded-2xl p-4 flex items-center gap-4 group hover:bg-muted/50 transition-colors">
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                         <span className="material-icons-round text-xl">person</span>
                       </div>
