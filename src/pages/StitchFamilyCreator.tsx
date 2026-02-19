@@ -19,6 +19,8 @@ import Cropper from "react-easy-crop";
 import { EnhancedDatePicker } from "@/components/ui/enhanced-date-picker";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useImageUploadPermission } from "@/hooks/useImageUploadPermission";
+import { SpouseDrawer } from "@/components/stitch/SpouseDrawer";
+import { SpouseData } from "@/components/SpouseForm";
 
 const StitchFamilyCreator = () => {
   const navigate = useNavigate();
@@ -33,6 +35,9 @@ const StitchFamilyCreator = () => {
   const [showCropModal, setShowCropModal] = useState(false);
   const [editingWife, setEditingWife] = useState<{ id: string; first_name: string; last_name: string; name: string; isAlive: boolean; birthDate: Date | null; deathDate: Date | null; maritalStatus?: string } | null>(null);
   const [isAddingWife, setIsAddingWife] = useState(false);
+  const [currentSpouse, setCurrentSpouse] = useState<SpouseData | null>(null);
+  const [spouseFamilyStatus, setSpouseFamilyStatus] = useState<'yes' | 'no' | null>('no');
+  const [spouseCommandOpen, setSpouseCommandOpen] = useState(false);
   const [cropImage, setCropImage] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -251,6 +256,43 @@ const StitchFamilyCreator = () => {
     toast({ title: "تم إنشاء الشجرة بنجاح", description: "تم إنشاء شجرة العائلة بنجاح، يمكنك إضافة أفراد آخرين لاحقاً" });
   };
 
+  const openSpouseDrawer = (wife?: typeof editingWife) => {
+    const initSpouse: SpouseData = {
+      id: wife?.id || crypto.randomUUID(),
+      firstName: wife?.first_name || '',
+      lastName: wife?.last_name || '',
+      name: wife?.name || '',
+      isAlive: wife?.isAlive ?? true,
+      birthDate: wife?.birthDate || null,
+      deathDate: wife?.deathDate || null,
+      maritalStatus: wife?.maritalStatus || 'married',
+      isFamilyMember: false,
+      existingFamilyMemberId: '',
+      croppedImage: null,
+      biography: '',
+      isSaved: false,
+    };
+    setCurrentSpouse(initSpouse);
+    setSpouseFamilyStatus('no');
+    if (wife) setEditingWife(wife);
+    setIsAddingWife(true);
+  };
+
+  const handleSpouseSave = () => {
+    if (!currentSpouse || !currentSpouse.firstName?.trim()) return;
+    const fullName = `${currentSpouse.firstName} ${currentSpouse.lastName || ''}`.trim();
+    if (editingWife) {
+      setWives(wives.map(w => w.id === editingWife.id ? { ...w, first_name: currentSpouse.firstName, last_name: currentSpouse.lastName, name: fullName, isAlive: currentSpouse.isAlive, birthDate: currentSpouse.birthDate, deathDate: currentSpouse.deathDate, maritalStatus: currentSpouse.maritalStatus || 'married' } : w));
+      toast({ title: t('wife_updated_success', 'تم تحديث بيانات الزوجة بنجاح'), description: `تم تحديث ${fullName}` });
+    } else {
+      setWives([...wives, { id: currentSpouse.id, first_name: currentSpouse.firstName, last_name: currentSpouse.lastName, name: fullName, isAlive: currentSpouse.isAlive, birthDate: currentSpouse.birthDate, deathDate: currentSpouse.deathDate, maritalStatus: currentSpouse.maritalStatus || 'married' }]);
+      toast({ title: t('wife_added_success', 'تم إضافة الزوجة بنجاح'), description: `تم إضافة ${fullName}` });
+    }
+    setIsAddingWife(false);
+    setEditingWife(null);
+    setCurrentSpouse(null);
+  };
+
   return (
     <div className="theme-stitch min-h-screen bg-slate-50 dark:bg-background">
       <StitchHeader hideNav variant="account" />
@@ -421,15 +463,7 @@ const StitchFamilyCreator = () => {
 
             {/* Founder Details */}
             <div className="space-y-4 mb-8">
-              <Select value={founderData.gender} onValueChange={(v) => setFounderData({ ...founderData, gender: v })}>
-                <SelectTrigger className="h-10 rounded-xl border-border/50 bg-muted/30 text-sm"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">ذكر</SelectItem>
-                  <SelectItem value="female">أنثى</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <div className="grid grid-cols-2 gap-3">
+              <div className={`grid gap-3 ${!founderData.isAlive ? 'grid-cols-3' : 'grid-cols-2'}`}>
                 <div className="text-start">
                   <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">{t('birth_date', 'تاريخ الميلاد')}</p>
                   <EnhancedDatePicker value={founderData.birthDate} onChange={(d) => setFounderData({ ...founderData, birthDate: d })} placeholder="----" className="h-9 text-xs" />
@@ -444,14 +478,13 @@ const StitchFamilyCreator = () => {
                     </SelectContent>
                   </Select>
                 </div>
+                {!founderData.isAlive && (
+                  <div className="text-start">
+                    <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">تاريخ الوفاة</p>
+                    <EnhancedDatePicker value={founderData.deathDate} onChange={(d) => setFounderData({ ...founderData, deathDate: d })} placeholder="----" className="h-9 text-xs" disableFuture />
+                  </div>
+                )}
               </div>
-
-              {!founderData.isAlive && (
-                <div className="text-start">
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">تاريخ الوفاة</p>
-                  <EnhancedDatePicker value={founderData.deathDate} onChange={(d) => setFounderData({ ...founderData, deathDate: d })} placeholder="----" className="h-9 text-xs" disableFuture />
-                </div>
-              )}
 
               <Textarea
                 value={founderData.bio}
@@ -478,7 +511,7 @@ const StitchFamilyCreator = () => {
                   </div>
                 </div>
                 <button
-                  onClick={() => setIsAddingWife(true)}
+                  onClick={() => openSpouseDrawer()}
                   className="bg-primary text-primary-foreground p-2.5 rounded-xl shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
                 >
                   <Plus className="w-5 h-5" />
@@ -518,7 +551,7 @@ const StitchFamilyCreator = () => {
                           <Button variant="ghost" size="sm" className="rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"><MoreVertical className="h-4 w-4" /></Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => { setEditingWife(wife); setIsAddingWife(true); }}>
+                          <DropdownMenuItem onClick={() => openSpouseDrawer(wife)}>
                             <Edit className="h-4 w-4 me-2" />{t('edit', 'تعديل')}
                           </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setWives(wives.filter(w => w.id !== wife.id))}>
@@ -597,51 +630,22 @@ const StitchFamilyCreator = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Add Wife Modal */}
-      <Dialog open={isAddingWife} onOpenChange={setIsAddingWife}>
-        <DialogContent className="w-[95vw] max-w-xl mx-4 sm:mx-auto bg-card border border-border shadow-xl">
-          <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
-          <DialogHeader className="text-center pb-4 flex flex-col items-center">
-            <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mb-3">
-              <Heart className="h-7 w-7 text-primary" />
-            </div>
-            <DialogTitle className="text-xl font-bold text-foreground">
-              {editingWife ? t('edit_wife', 'تعديل بيانات الزوجة') : t('add_new_wife', 'إضافة زوجة جديدة')}
-            </DialogTitle>
-            <DialogDescription className="text-muted-foreground mt-1">
-              {editingWife ? t('edit_wife_desc', 'عدل معلومات الزوجة') : t('add_wife_desc', 'أضف معلومات الزوجة لإدراجها في سجل العائلة')}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="p-4 bg-muted/30 rounded-xl border border-border">
-            <WifeForm
-              ref={wifeFormRef}
-              initialData={editingWife}
-              onAddWife={(wifeData) => {
-                const fullName = `${wifeData.first_name} ${wifeData.last_name}`.trim();
-                if (editingWife) {
-                  setWives(wives.map(w => w.id === editingWife.id ? { ...w, first_name: wifeData.first_name, last_name: wifeData.last_name, name: fullName, isAlive: wifeData.isAlive, birthDate: wifeData.birthDate, deathDate: wifeData.deathDate, maritalStatus: wifeData.maritalStatus } : w));
-                  toast({ title: t('wife_updated_success', 'تم تحديث بيانات الزوجة بنجاح'), description: `تم تحديث ${fullName}` });
-                } else {
-                  setWives([...wives, { id: crypto.randomUUID(), first_name: wifeData.first_name, last_name: wifeData.last_name, name: fullName, isAlive: wifeData.isAlive, birthDate: wifeData.birthDate, deathDate: wifeData.deathDate, maritalStatus: wifeData.maritalStatus }]);
-                  toast({ title: t('wife_added_success', 'تم إضافة الزوجة بنجاح'), description: `تم إضافة ${fullName}` });
-                }
-                setIsAddingWife(false); setEditingWife(null);
-              }}
-            />
-          </div>
-
-          <DialogFooter className="flex gap-3 pt-4">
-            <Button variant="outline" onClick={() => { setIsAddingWife(false); setEditingWife(null); }} className="flex-1">
-              {t('cancel', 'إلغاء')}
-            </Button>
-            <Button onClick={() => { if (wifeFormRef.current?.isValid()) wifeFormRef.current?.handleSubmit(); }} className="flex-1 bg-primary hover:bg-primary/90">
-              <Heart className="h-4 w-4 me-2" />
-              {editingWife ? t('update_wife', 'تحديث') : t('add_wife', 'إضافة الزوجة')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* SpouseDrawer */}
+      <SpouseDrawer
+        isOpen={isAddingWife}
+        onClose={() => { setIsAddingWife(false); setEditingWife(null); setCurrentSpouse(null); }}
+        spouseType="wife"
+        currentSpouse={currentSpouse}
+        onSpouseChange={setCurrentSpouse}
+        familyMembers={[]}
+        marriages={[]}
+        spouseCommandOpen={spouseCommandOpen}
+        onCommandOpenChange={setSpouseCommandOpen}
+        spouseFamilyStatus={spouseFamilyStatus}
+        onFamilyStatusChange={setSpouseFamilyStatus}
+        onSave={handleSpouseSave}
+        isImageUploadEnabled={isImageUploadEnabled}
+      />
 
       {/* Success Modal */}
       <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
