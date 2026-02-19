@@ -280,11 +280,11 @@ const StitchFamilyCreator = () => {
           </p>
         </div>
 
-        {/* Step Dots Indicator */}
+        {/* Step Dots Indicator with Numbers */}
         <div className="flex items-center justify-center gap-3 mb-12 relative z-10">
-          <div className={`w-3 h-3 rounded-full transition-all duration-500 ${currentStep === 1 ? 'bg-primary scale-125 ring-4 ring-primary/20' : 'bg-primary/40'}`} />
-          <div className={`w-8 h-0.5 rounded-full transition-all duration-500 ${currentStep >= 2 ? 'bg-primary' : 'bg-border'}`} />
-          <div className={`w-3 h-3 rounded-full transition-all duration-500 ${currentStep === 2 ? 'bg-primary scale-125 ring-4 ring-primary/20' : 'bg-border'}`} />
+          <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500 ${currentStep === 1 ? 'bg-primary text-primary-foreground scale-110 ring-4 ring-primary/20 shadow-lg shadow-primary/30' : 'bg-primary/20 text-primary'}`}>1</div>
+          <div className={`w-10 h-0.5 rounded-full transition-all duration-500 ${currentStep >= 2 ? 'bg-primary' : 'bg-border'}`} />
+          <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-500 ${currentStep === 2 ? 'bg-primary text-primary-foreground scale-110 ring-4 ring-primary/20 shadow-lg shadow-primary/30' : 'bg-border text-muted-foreground'}`}>2</div>
         </div>
 
         {/* ─── Step 1: Family Identity ─── */}
@@ -295,7 +295,7 @@ const StitchFamilyCreator = () => {
               : 'opacity-0 -translate-y-8 max-h-0 overflow-hidden pointer-events-none'
           }`}
         >
-          <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-lg shadow-lg shadow-primary/30 mb-8 border-4 border-card ring-1 ring-border">1</div>
+
 
           <div className="w-full max-w-2xl bg-card/70 backdrop-blur-xl border border-border/50 rounded-[2rem] p-6 md:p-8 shadow-xl shadow-muted/20">
             <div className="flex items-center gap-4 mb-6">
@@ -362,7 +362,7 @@ const StitchFamilyCreator = () => {
               : 'opacity-0 translate-y-12 max-h-0 overflow-hidden pointer-events-none'
           }`}
         >
-          <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-lg shadow-lg shadow-primary/30 mb-8 border-4 border-card ring-1 ring-border">2</div>
+
 
           <div className="relative w-full max-w-4xl flex flex-col md:flex-row items-start justify-center gap-8 md:gap-12">
             {/* Founder Node Card */}
