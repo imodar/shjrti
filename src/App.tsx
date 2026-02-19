@@ -172,7 +172,7 @@ const App = () => {
                     </ProtectedRoute>
                   } />
                   <Route path="/family-creator" element={
-                    <ProtectedRoute requireActiveSubscription={true}>
+                    <ProtectedRoute>
                       <FamilyCreator />
                     </ProtectedRoute>
                   } />
