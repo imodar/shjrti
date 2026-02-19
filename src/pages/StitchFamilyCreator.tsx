@@ -258,7 +258,7 @@ const StitchFamilyCreator = () => {
       <main className="max-w-5xl mx-auto px-4 py-12 relative overflow-hidden">
         {/* Abstract Background Roots */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.06]">
-          <svg className="absolute top-0 end-0 w-1/2 h-full text-primary" fill="none" viewBox="0 0 400 800">
+          <svg className="absolute top-0 end-0 w-1/2 h-full text-muted-foreground" fill="none" viewBox="0 0 400 800">
             <path d="M400 0C400 200 200 300 100 500C0 700 0 800 0 800" stroke="currentColor" strokeWidth="2" />
             <path d="M400 100C300 300 150 400 50 600" stroke="currentColor" strokeDasharray="4 4" strokeWidth="1" />
           </svg>
