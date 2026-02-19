@@ -249,8 +249,8 @@ async function handleInvite(userId: string, body: Record<string, unknown>) {
         recipientName: email,
         variables: {
           family_name: familyInfo?.name || 'شجرة عائلة',
-          invite_url: inviteUrl,
-          owner_name: `${ownerProfile?.email || ''}`,
+          accept_url: inviteUrl,
+          inviter_name: ownerProfile?.email || '',
         },
         language: 'ar',
       },
