@@ -645,6 +645,7 @@ const StitchFamilyCreator = () => {
         onFamilyStatusChange={setSpouseFamilyStatus}
         onSave={handleSpouseSave}
         isImageUploadEnabled={isImageUploadEnabled}
+        hideToggle
       />
 
       {/* Success Modal */}
