@@ -35,4 +35,5 @@ export const PROTECTED_ROUTES: string[] = [
   'api-docs',
   'stitch-tree-view',
   'stitch-account',
+  'stitch-family-creator',
 ];

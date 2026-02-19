@@ -35,6 +35,7 @@ import FamilyBuilderNewWithContext from "./pages/FamilyBuilderNew/FamilyBuilderN
 import FamilyBuilderStitch from "./pages/FamilyBuilderStitch";
 import StitchTreeView from "./pages/StitchTreeView";
 import StitchAccount from "./pages/StitchAccount";
+import StitchFamilyCreator from "./pages/StitchFamilyCreator";
 import StitchLoadingFallback from "./components/stitch/StitchLoadingFallback";
 
 import FamilyTreeView from "./pages/FamilyTreeView/FamilyTreeViewWithContext";
@@ -207,6 +208,11 @@ const App = () => {
           <Route path="/stitch-account" element={
             <ProtectedRoute>
               <StitchAccount />
+            </ProtectedRoute>
+          } />
+          <Route path="/stitch-family-creator" element={
+            <ProtectedRoute>
+              <StitchFamilyCreator />
             </ProtectedRoute>
           } />
                   <Route path="/family-tree-view" element={
