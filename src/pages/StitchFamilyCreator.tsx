@@ -255,245 +255,334 @@ const StitchFamilyCreator = () => {
     <div className="theme-stitch min-h-screen bg-background">
       <StitchHeader hideNav variant="account" />
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Page Title + Steps */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-primary-foreground">
-              <span className="material-icons-round text-xl">park</span>
-            </div>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground">{t('create_family_tree', 'إنشاء شجرة العائلة')}</h1>
-              <p className="text-sm text-muted-foreground">{t('create_tree_description', 'ابدأ رحلتك في بناء تاريخ عائلتك')}</p>
-            </div>
-          </div>
-
-          {/* Step Indicator */}
-          <div className="flex items-center gap-3 mt-6">
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all ${currentStep >= 1 ? 'bg-primary text-primary-foreground shadow-md' : 'bg-muted text-muted-foreground'}`}>
-              <span>1</span>
-              <span className="hidden sm:inline">{t('family_info', 'معلومات العائلة')}</span>
-            </div>
-            <div className={`w-8 h-1 rounded-full transition-all ${currentStep >= 2 ? 'bg-primary' : 'bg-border'}`} />
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all ${currentStep >= 2 ? 'bg-primary text-primary-foreground shadow-md' : 'bg-muted text-muted-foreground'}`}>
-              <span>2</span>
-              <span className="hidden sm:inline">{t('founder_data', 'بيانات المؤسس')}</span>
-            </div>
-          </div>
+      <main className="max-w-5xl mx-auto px-4 py-12 relative">
+        {/* Abstract Background Roots */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-[0.06]">
+          <svg className="absolute top-0 end-0 w-1/2 h-full text-primary" fill="none" viewBox="0 0 400 800">
+            <path d="M400 0C400 200 200 300 100 500C0 700 0 800 0 800" stroke="currentColor" strokeWidth="2" />
+            <path d="M400 100C300 300 150 400 50 600" stroke="currentColor" strokeDasharray="4 4" strokeWidth="1" />
+          </svg>
         </div>
 
-        {/* Step 1: Family Info */}
-        {currentStep === 1 && (
-          <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
-            <div className="h-1 bg-primary" />
-            <div className="p-6 md:p-8 space-y-6">
-              <div>
-                <Label htmlFor="familyName" className="text-sm font-semibold text-foreground mb-2 block">
-                  {t('family_name_required', 'اسم العائلة *')}
-                </Label>
-                <Input
-                  id="familyName"
-                  placeholder={t('family_name_example', 'مثال : السعيد')}
-                  value={treeData.name}
-                  onChange={(e) => setTreeData({ ...treeData, name: e.target.value })}
-                  className="h-12 rounded-xl border-border focus:border-primary"
-                />
+        {/* Page Heading */}
+        <div className="text-center mb-16 relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full mb-4">
+            <span className="material-icons-round text-sm">eco</span>
+            {t('planting_legacy', 'زراعة إرث جديد')}
+          </div>
+          <h2 className="font-bold text-3xl md:text-4xl text-foreground mb-3">{t('create_family_tree', 'إنشاء شجرة العائلة')}</h2>
+          <p className="text-muted-foreground max-w-md mx-auto text-sm md:text-base">{t('create_tree_description', 'كل إرث عظيم يبدأ باسم واحد. لنبدأ بتوثيق رحلة عائلتك الفريدة.')}</p>
+        </div>
+
+        {/* Journey Layout */}
+        <div className="relative">
+          {/* Central Journey Line */}
+          <div className="hidden md:block absolute start-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary to-border z-0" />
+
+          {/* ─── Step 1: Family Identity ─── */}
+          <div className="relative z-10 flex flex-col items-center mb-20 md:mb-24">
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-lg mb-8 border-4 border-card ring-1 ring-border transition-all ${
+              currentStep >= 1 ? 'bg-primary text-primary-foreground shadow-primary/30' : 'bg-muted text-muted-foreground'
+            }`}>1</div>
+
+            <div className="w-full max-w-2xl bg-card/70 backdrop-blur-xl border border-border/50 rounded-[2rem] p-6 md:p-8 shadow-xl shadow-muted/20">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
+                  <span className="material-icons-round text-2xl">home</span>
+                </div>
+                <div>
+                  <h3 className="font-bold text-xl text-foreground">{t('family_identity', 'هوية العائلة')}</h3>
+                  <p className="text-xs text-muted-foreground">{t('family_identity_desc', 'الاسم الذي يحدد تراثك')}</p>
+                </div>
               </div>
 
-              <div>
-                <Label htmlFor="familyDescription" className="text-sm font-semibold text-foreground mb-2 block">
-                  {t('family_description_optional', 'وصف العائلة (اختياري)')}
-                </Label>
-                <Textarea
-                  id="familyDescription"
-                  placeholder={t('family_description_placeholder', 'شارك قصة عائلتك...')}
-                  value={treeData.description}
-                  onChange={(e) => setTreeData({ ...treeData, description: e.target.value })}
-                  className="min-h-[120px] rounded-xl border-border focus:border-primary"
-                />
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                    {t('family_name_required', 'اسم شجرة العائلة *')}
+                  </label>
+                  <Input
+                    placeholder={t('family_name_example', 'مثال: شجرة عائلة السعيد')}
+                    value={treeData.name}
+                    onChange={(e) => setTreeData({ ...treeData, name: e.target.value })}
+                    className="h-14 rounded-xl border-border/50 bg-muted/30 text-lg font-medium focus:border-primary focus:ring-primary/20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-2">
+                    {t('family_description_optional', 'وصف مختصر (اختياري)')}
+                  </label>
+                  <Textarea
+                    placeholder={t('family_description_placeholder', 'صف بإيجاز أصول أو فروع هذه الشجرة...')}
+                    value={treeData.description}
+                    onChange={(e) => setTreeData({ ...treeData, description: e.target.value })}
+                    rows={3}
+                    className="rounded-xl border-border/50 bg-muted/30 focus:border-primary focus:ring-primary/20"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        )}
 
-        {/* Step 2: Founder + Wives */}
-        {currentStep === 2 && (
-          <div className="space-y-6">
-            {/* Founder Card */}
-            <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
-              <div className="h-1 bg-primary" />
-              <div className="p-6 md:p-8">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <UserPlus className="w-4 h-4 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-bold text-foreground">{t('founder_info', 'معلومات المؤسس')}</h3>
+          {/* ─── Step 2: The Founder's Legacy ─── */}
+          <div className="relative z-10 flex flex-col items-center mb-20 md:mb-24">
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-lg mb-8 border-4 border-card ring-1 ring-border transition-all ${
+              currentStep >= 2 ? 'bg-primary text-primary-foreground shadow-primary/30' : 'bg-muted text-muted-foreground'
+            }`}>2</div>
+
+            {currentStep < 2 ? (
+              <div className="text-center opacity-50">
+                <h3 className="font-bold text-xl md:text-2xl text-foreground mb-2">{t('founders_legacy', 'إرث المؤسس')}</h3>
+                <p className="text-sm text-muted-foreground">{t('complete_step1_first', 'أكمل الخطوة الأولى للمتابعة')}</p>
+              </div>
+            ) : (
+              <>
+                <div className="text-center mb-10">
+                  <h3 className="font-bold text-xl md:text-2xl text-foreground mb-2">{t('founders_legacy', 'إرث المؤسس')}</h3>
+                  <p className="text-sm text-muted-foreground">{t('founder_subtitle', 'أضف جذر شجرة عائلتك — الأب أو الأم المؤسس')}</p>
                 </div>
 
-                <div className="space-y-5">
-                  {/* Name */}
-                  <div>
-                    <Label htmlFor="founderName" className="text-sm font-semibold text-foreground mb-2 block">
-                      الاسم الأول * <span className="text-muted-foreground font-normal">(عائلة: {treeData.name})</span>
-                    </Label>
-                    <Input
-                      id="founderName"
-                      placeholder="الاسم الأول فقط"
-                      value={founderData.name}
-                      onChange={(e) => setFounderData({ ...founderData, name: e.target.value })}
-                      className="h-12 rounded-xl border-border focus:border-primary"
-                    />
-                  </div>
-
-                  {/* Gender */}
-                  <div>
-                    <Label className="text-sm font-semibold text-foreground mb-2 block">الجنس *</Label>
-                    <Select value={founderData.gender} onValueChange={(v) => setFounderData({ ...founderData, gender: v })}>
-                      <SelectTrigger className="h-12 rounded-xl border-border"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="male">ذكر</SelectItem>
-                        <SelectItem value="female">أنثى</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Dates + Status Row */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <Label className="text-sm font-semibold text-foreground mb-2 block">تاريخ الميلاد</Label>
-                      <EnhancedDatePicker value={founderData.birthDate} onChange={(d) => setFounderData({ ...founderData, birthDate: d })} placeholder="تاريخ الميلاد" className="h-12" />
-                    </div>
-                    <div>
-                      <Label className="text-sm font-semibold text-foreground mb-2 block">الحالة</Label>
-                      <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(v) => setFounderData({ ...founderData, isAlive: v === "alive" })}>
-                        <SelectTrigger className="h-12 rounded-xl border-border"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="alive">على قيد الحياة</SelectItem>
-                          <SelectItem value="deceased">متوفى</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    {!founderData.isAlive && (
-                      <div>
-                        <Label className="text-sm font-semibold text-foreground mb-2 block">تاريخ الوفاة</Label>
-                        <EnhancedDatePicker value={founderData.deathDate} onChange={(d) => setFounderData({ ...founderData, deathDate: d })} placeholder="تاريخ الوفاة" className="h-12" disableFuture />
+                <div className="relative w-full max-w-4xl flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
+                  {/* Founder Node Card */}
+                  <div className="w-full md:w-80 bg-card/70 backdrop-blur-xl border border-border/50 p-1 rounded-[2.5rem] shadow-2xl">
+                    <div className="bg-card rounded-[2.3rem] p-6 text-center border border-border/30">
+                      {/* Avatar */}
+                      <div className="w-24 h-24 mx-auto mb-6 relative group">
+                        <div className="w-full h-full rounded-full bg-primary/10 flex items-center justify-center border-4 border-card shadow-inner overflow-hidden">
+                          {founderData.croppedImage ? (
+                            <img src={founderData.croppedImage} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="material-icons-round text-5xl text-primary/30">person</span>
+                          )}
+                        </div>
+                        {isImageUploadEnabled && (
+                          <>
+                            <input type="file" accept="image/*" onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setFounderData({ ...founderData, image: file });
+                                const reader = new FileReader();
+                                reader.onload = (ev) => { setCropImage(ev.target?.result as string); setShowCropModal(true); };
+                                reader.readAsDataURL(file);
+                              }
+                            }} className="hidden" id="founder-image-journey" />
+                            <label htmlFor="founder-image-journey" className="absolute bottom-0 end-0 w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center shadow-lg border-2 border-card cursor-pointer hover:scale-110 transition-transform">
+                              <span className="material-icons-round text-base">photo_camera</span>
+                            </label>
+                          </>
+                        )}
                       </div>
-                    )}
+
+                      <div className="space-y-4">
+                        <Input
+                          value={founderData.name}
+                          onChange={(e) => setFounderData({ ...founderData, name: e.target.value })}
+                          placeholder={t('founders_name', 'اسم المؤسس')}
+                          className="text-center border-none bg-transparent focus:ring-0 text-xl font-bold placeholder:text-muted-foreground/40 h-auto py-1"
+                        />
+
+                        <div className="flex items-center justify-center gap-2">
+                          <div className="px-3 py-1 bg-primary/10 rounded-full text-[10px] font-bold text-primary flex items-center gap-1.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                            {t('founder_badge', 'مؤسس')}
+                          </div>
+                        </div>
+
+                        <div className="pt-4 border-t border-border/50 space-y-3">
+                          {/* Gender */}
+                          <Select value={founderData.gender} onValueChange={(v) => setFounderData({ ...founderData, gender: v })}>
+                            <SelectTrigger className="h-10 rounded-lg border-border/50 text-sm"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="male">ذكر</SelectItem>
+                              <SelectItem value="female">أنثى</SelectItem>
+                            </SelectContent>
+                          </Select>
+
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="text-start">
+                              <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">{t('birth_date', 'تاريخ الميلاد')}</p>
+                              <EnhancedDatePicker value={founderData.birthDate} onChange={(d) => setFounderData({ ...founderData, birthDate: d })} placeholder="----" className="h-9 text-xs" />
+                            </div>
+                            <div className="text-start">
+                              <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">{t('status', 'الحالة')}</p>
+                              <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(v) => setFounderData({ ...founderData, isAlive: v === "alive" })}>
+                                <SelectTrigger className="h-9 rounded-lg border-border/50 text-xs"><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="alive">على قيد الحياة</SelectItem>
+                                  <SelectItem value="deceased">متوفى</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          {!founderData.isAlive && (
+                            <div className="text-start">
+                              <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">تاريخ الوفاة</p>
+                              <EnhancedDatePicker value={founderData.deathDate} onChange={(d) => setFounderData({ ...founderData, deathDate: d })} placeholder="----" className="h-9 text-xs" disableFuture />
+                            </div>
+                          )}
+
+                          {/* Bio */}
+                          <Textarea
+                            value={founderData.bio}
+                            onChange={(e) => setFounderData({ ...founderData, bio: e.target.value })}
+                            placeholder={t('founder_bio_placeholder', 'سيرة مختصرة...')}
+                            rows={2}
+                            className="rounded-lg border-border/50 text-xs focus:border-primary"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Image Upload */}
-                  <div className="bg-muted/50 rounded-xl p-4 border border-border">
-                    <Label className="text-sm font-semibold text-foreground mb-3 block">صورة المؤسس (اختياري)</Label>
-                    <div className="flex items-center gap-4">
-                      <input type="file" accept="image/*" onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setFounderData({ ...founderData, image: file });
-                          const reader = new FileReader();
-                          reader.onload = (ev) => { setCropImage(ev.target?.result as string); setShowCropModal(true); };
-                          reader.readAsDataURL(file);
-                        }
-                      }} className="hidden" id="founder-image" />
-                      <Label htmlFor={isImageUploadEnabled ? "founder-image" : undefined} className={`flex-1 ${isImageUploadEnabled ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
-                        <div className="flex items-center gap-3 px-4 py-3 border-2 border-dashed border-border rounded-xl hover:border-primary hover:bg-primary/5 transition-all">
-                          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                            <Upload className="h-5 w-5 text-primary" />
+                  {/* Spouses Panel */}
+                  <div className="flex-1 w-full bg-card/70 backdrop-blur-xl p-6 md:p-8 rounded-[2rem] border-2 border-dashed border-primary/30">
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <h4 className="font-bold text-lg text-foreground">{t('spouses_partners', 'الزوجات')}</h4>
+                        <p className="text-xs text-muted-foreground">{t('add_spouses_desc', 'أضف زوجة أو أكثر للمؤسس')}</p>
+                      </div>
+                      <button
+                        onClick={() => setIsAddingWife(true)}
+                        className="bg-primary text-primary-foreground p-2.5 rounded-xl shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
+                      >
+                        <Plus className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    <div className="space-y-3">
+                      {wives.length === 0 ? (
+                        <div className="bg-card/50 border border-border/50 rounded-2xl p-4 flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                            <span className="material-icons-round text-xl">person</span>
                           </div>
                           <div className="flex-1">
-                            <p className="text-sm font-medium text-foreground">اختر صورة</p>
-                            <p className="text-xs text-muted-foreground">JPG, PNG أو GIF</p>
+                            <p className="text-xs font-bold text-muted-foreground">{t('no_spouses_yet', 'لم تتم إضافة زوجات بعد')}</p>
+                            <p className="text-[10px] text-muted-foreground/70">{t('click_plus_spouse', 'اضغط + لإضافة زوجة')}</p>
                           </div>
                         </div>
-                      </Label>
-                      {founderData.croppedImage && (
-                        <div className="relative">
-                          <img src={founderData.croppedImage} alt="صورة المؤسس" className="w-16 h-16 rounded-lg object-cover border-2 border-primary/30" />
-                          <button onClick={() => setFounderData({ ...founderData, croppedImage: null, image: null })} className="absolute -top-2 -right-2 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center text-xs">
-                            <X className="h-3 w-3" />
-                          </button>
-                        </div>
+                      ) : (
+                        wives.map((wife) => (
+                          <div key={wife.id} className="bg-card/50 border border-border/50 rounded-2xl p-4 flex items-center gap-4 group hover:bg-card transition-colors">
+                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                              <span className="material-icons-round text-xl">person</span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-bold text-foreground truncate">{wife.name}</p>
+                              <div className="flex flex-wrap gap-1.5 mt-1">
+                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${wife.isAlive ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                                  {wife.isAlive ? "حية" : "متوفاة"}
+                                </span>
+                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${wife.maritalStatus === 'married' ? 'bg-primary/10 text-primary' : wife.maritalStatus === 'divorced' ? 'bg-destructive/10 text-destructive' : 'bg-muted text-muted-foreground'}`}>
+                                  {wife.maritalStatus === 'married' ? 'متزوجة' : wife.maritalStatus === 'divorced' ? 'مطلقة' : 'أرملة'}
+                                </span>
+                              </div>
+                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"><MoreVertical className="h-4 w-4" /></Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => { setEditingWife(wife); setIsAddingWife(true); }}>
+                                  <Edit className="h-4 w-4 me-2" />{t('edit', 'تعديل')}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setWives(wives.filter(w => w.id !== wife.id))}>
+                                  <Trash2 className="h-4 w-4 me-2" />حذف
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        ))
                       )}
+                      <p className="text-[10px] text-center text-muted-foreground italic pt-1">
+                        {t('spouse_note', 'لا يمكنك إضافة أولاد بدون إضافة زوجة أولاً')}
+                      </p>
                     </div>
                   </div>
+                </div>
+              </>
+            )}
+          </div>
 
-                  {/* Biography */}
+          {/* ─── Step 3: Progress & Action ─── */}
+          <div className="relative z-10 flex flex-col items-center">
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg shadow-lg mb-8 border-4 border-card ring-1 ring-border transition-all ${
+              currentStep >= 2 && treeData.name && founderData.name ? 'bg-primary text-primary-foreground shadow-primary/30' : 'bg-muted text-muted-foreground'
+            }`}>3</div>
+
+            {/* Progress Ring Card */}
+            {currentStep >= 2 && (
+              <div className="bg-card/70 backdrop-blur-xl border border-border/50 p-1 rounded-3xl w-full max-w-sm mb-10 shadow-xl">
+                <div className="bg-card rounded-[1.4rem] p-5 flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-full border-4 border-primary/10 flex items-center justify-center relative">
+                    <svg className="w-full h-full -rotate-90" viewBox="0 0 56 56">
+                      <circle className="text-primary/10" cx="28" cy="28" r="24" fill="transparent" stroke="currentColor" strokeWidth="4" />
+                      <circle className="text-primary transition-all duration-500" cx="28" cy="28" r="24" fill="transparent" stroke="currentColor" strokeWidth="4"
+                        strokeDasharray="150"
+                        strokeDashoffset={founderData.name ? (wives.length > 0 ? "10" : "50") : "100"}
+                      />
+                    </svg>
+                    <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-foreground">
+                      {founderData.name ? (wives.length > 0 ? "90%" : "65%") : "30%"}
+                    </span>
+                  </div>
                   <div>
-                    <Label htmlFor="founderBio" className="text-sm font-semibold text-foreground mb-2 block">السيرة الذاتية (اختياري)</Label>
-                    <Textarea id="founderBio" placeholder="معلومات عن المؤسس..." value={founderData.bio} onChange={(e) => setFounderData({ ...founderData, bio: e.target.value })} className="min-h-[100px] rounded-xl border-border focus:border-primary" />
+                    <p className="font-bold text-sm text-foreground">
+                      {founderData.name ? t('almost_there', 'أوشكت على الانتهاء!') : t('complete_founder', 'أكمل بيانات المؤسس')}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground leading-tight">
+                      {founderData.name ? t('ready_to_plant', 'جاهز لزراعة الشجرة') : t('add_founder_name', 'أضف اسم المؤسس للمتابعة')}
+                    </p>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Wives Card */}
-            <div className="bg-card border border-border rounded-2xl shadow-sm overflow-hidden">
-              <div className="h-1 bg-destructive/60" />
-              <div className="p-6 md:p-8">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 bg-destructive/10 rounded-lg flex items-center justify-center">
-                    <Heart className="w-4 h-4 text-destructive" />
-                  </div>
-                  <h3 className="text-lg font-bold text-foreground">الزوجات (اختياري)</h3>
-                </div>
-                <p className="text-xs text-muted-foreground mb-6">لا يمكنك اضافة أولاد لهذه العائلة اذا لم يتم إضافة زوجة للفرد الأول في الأسرة</p>
-
-                {wives.length > 0 && (
-                  <div className="space-y-3 mb-4">
-                    {wives.map((wife) => (
-                      <div key={wife.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-xl border border-border hover:border-destructive/30 transition-colors">
-                        <div>
-                          <h4 className="font-semibold text-foreground">{wife.name}</h4>
-                          <div className="flex flex-wrap gap-2 mt-1">
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${wife.isAlive ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                              {wife.isAlive ? "على قيد الحياة" : "متوفاة"}
-                            </span>
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${wife.maritalStatus === 'married' ? 'bg-primary/10 text-primary' : wife.maritalStatus === 'divorced' ? 'bg-destructive/10 text-destructive' : 'bg-muted text-muted-foreground'}`}>
-                              {wife.maritalStatus === 'married' ? 'متزوجة' : wife.maritalStatus === 'divorced' ? 'مطلقة' : 'أرملة'}
-                            </span>
-                          </div>
-                          {wife.birthDate && <p className="text-xs text-muted-foreground mt-1">مولودة: {format(wife.birthDate, "dd/MM/yyyy", { locale: ar })}</p>}
-                        </div>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="rounded-lg"><MoreVertical className="h-4 w-4" /></Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent>
-                            <DropdownMenuItem onClick={() => { setEditingWife(wife); setIsAddingWife(true); }}>
-                              <Edit className="h-4 w-4 mr-2" />{t('edit', 'تعديل')}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setWives(wives.filter(w => w.id !== wife.id))}>
-                              <Trash2 className="h-4 w-4 mr-2" />حذف
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    ))}
-                  </div>
+            {/* Action Buttons */}
+            <div className="flex items-center gap-4 md:gap-6">
+              <button
+                onClick={handlePrevStep}
+                className="px-6 md:px-8 py-3 md:py-4 text-muted-foreground font-bold text-sm hover:text-foreground transition-colors"
+              >
+                {currentStep === 1 ? t('back_to_dashboard', 'العودة للوحة التحكم') : t('previous', 'السابق')}
+              </button>
+              <Button
+                onClick={handleNextStep}
+                disabled={isCreatingFamily}
+                className="px-8 md:px-12 py-3 md:py-4 h-auto bg-primary text-primary-foreground font-bold text-sm rounded-2xl shadow-xl shadow-primary/30 hover:-translate-y-0.5 transition-all active:scale-95"
+              >
+                {currentStep === 1
+                  ? t('next', 'متابعة')
+                  : (isCreatingFamily ? t('creating_family_progress', 'جاري الإنشاء...') : t('create_family_button', 'إنشاء الشجرة والمتابعة'))}
+                {!isCreatingFamily && (
+                  currentStep === 1
+                    ? (direction === 'rtl' ? <ArrowLeft className="h-4 w-4 ms-2" /> : <ArrowRight className="h-4 w-4 ms-2" />)
+                    : <CheckCircle className="h-4 w-4 ms-2" />
                 )}
-
-                <Button onClick={() => setIsAddingWife(true)} variant="outline" className="w-full h-14 border-2 border-dashed border-border hover:border-destructive/50 hover:bg-destructive/5 rounded-xl transition-all">
-                  <Plus className="h-5 w-5 me-2 text-destructive" />
-                  <span className="font-semibold">إضافة زوجة جديدة</span>
-                </Button>
-              </div>
+              </Button>
             </div>
           </div>
-        )}
-
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center mt-8 gap-4">
-          <Button onClick={handlePrevStep} variant="outline" className="h-12 px-6 rounded-xl border-border">
-            {direction === 'rtl' ? <ArrowRight className="h-5 w-5 me-2" /> : <ArrowLeft className="h-5 w-5 me-2" />}
-            {currentStep === 1 ? t('back_to_dashboard', 'العودة للوحة التحكم') : t('previous', 'السابق')}
-          </Button>
-
-          <Button onClick={handleNextStep} disabled={isCreatingFamily} className="h-12 px-8 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-lg">
-            {currentStep === 1 ? t('next', 'التالي') : (isCreatingFamily ? t('creating_family_progress', 'جاري إنشاء العائلة...') : t('create_family_button', 'إنشاء العائلة'))}
-            {currentStep === 1 && (direction === 'rtl' ? <ArrowLeft className="h-5 w-5 ms-2" /> : <ArrowRight className="h-5 w-5 ms-2" />)}
-            {currentStep === 2 && !isCreatingFamily && <CheckCircle className="h-5 w-5 ms-2" />}
-          </Button>
         </div>
-      </div>
+
+        {/* Side Step Indicator (xl screens) */}
+        <aside className="fixed end-8 top-1/2 -translate-y-1/2 hidden xl:flex flex-col gap-6 items-center z-40">
+          {[
+            { label: t('identity', 'الهوية'), step: 1 },
+            { label: t('founder', 'المؤسس'), step: 2 },
+            { label: t('review', 'المراجعة'), step: 3 },
+          ].map((s, i) => (
+            <div key={i}>
+              <div className="group relative">
+                <div className={`w-3 h-3 rounded-full transition-all ${currentStep >= s.step ? 'bg-primary ring-4 ring-primary/20' : 'bg-border'}`} />
+                <span className="absolute end-6 top-1/2 -translate-y-1/2 whitespace-nowrap bg-foreground text-background text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  {s.label}
+                </span>
+              </div>
+              {i < 2 && <div className="w-px h-10 bg-border mx-auto mt-2" />}
+            </div>
+          ))}
+        </aside>
+      </main>
 
       {/* Crop Modal */}
       <Dialog open={showCropModal} onOpenChange={setShowCropModal}>
