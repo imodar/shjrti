@@ -21,6 +21,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useImageUploadPermission } from "@/hooks/useImageUploadPermission";
 import { SpouseDrawer } from "@/components/stitch/SpouseDrawer";
 import { SpouseData } from "@/components/SpouseForm";
+import { StyledDropdown } from "@/components/stitch/StyledDropdown";
 
 const StitchFamilyCreator = () => {
   const navigate = useNavigate();
@@ -446,11 +447,16 @@ const StitchFamilyCreator = () => {
                 )}
               </div>
               <div className="flex-1 space-y-2">
-                <Input
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-primary text-lg">person</span>
+                  {t('founders_name', 'اسم المؤسس')} *
+                </label>
+                <input
+                  type="text"
                   value={founderData.name}
                   onChange={(e) => setFounderData({ ...founderData, name: e.target.value })}
                   placeholder={t('founders_name', 'اسم المؤسس')}
-                  className="h-12 rounded-xl border-border/50 bg-muted/30 text-lg font-bold focus:border-primary focus:ring-primary/20"
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                 />
                 <div className="flex items-center gap-2">
                   <div className="px-3 py-1 bg-primary/10 rounded-full text-[10px] font-bold text-primary flex items-center gap-1.5">
@@ -463,36 +469,63 @@ const StitchFamilyCreator = () => {
 
             {/* Founder Details */}
             <div className="space-y-4 mb-8">
-              <div className={`grid gap-3 ${!founderData.isAlive ? 'grid-cols-3' : 'grid-cols-2'}`}>
-                <div className="text-start">
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">{t('birth_date', 'تاريخ الميلاد')}</p>
-                  <EnhancedDatePicker value={founderData.birthDate} onChange={(d) => setFounderData({ ...founderData, birthDate: d })} placeholder="----" className="h-9 text-xs" />
+              <div className={`grid gap-4 ${!founderData.isAlive ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-primary text-lg">calendar_today</span>
+                    {t('birth_date', 'تاريخ الميلاد')}
+                  </label>
+                  <input
+                    type="date"
+                    value={founderData.birthDate ? founderData.birthDate.toISOString().split('T')[0] : ''}
+                    onChange={(e) => setFounderData({ ...founderData, birthDate: e.target.value ? new Date(e.target.value) : null })}
+                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  />
                 </div>
-                <div className="text-start">
-                  <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">{t('status', 'الحالة')}</p>
-                  <Select value={founderData.isAlive ? "alive" : "deceased"} onValueChange={(v) => setFounderData({ ...founderData, isAlive: v === "alive" })}>
-                    <SelectTrigger className="h-9 rounded-xl border-border/50 text-xs"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="alive">على قيد الحياة</SelectItem>
-                      <SelectItem value="deceased">متوفى</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-primary text-lg">vital_signs</span>
+                    {t('status', 'الحالة')}
+                  </label>
+                  <StyledDropdown
+                    options={[
+                      { value: 'living', label: t('member.living', 'على قيد الحياة'), icon: 'favorite' },
+                      { value: 'deceased', label: t('member.deceased', 'متوفى'), icon: 'heart_broken' }
+                    ]}
+                    value={founderData.isAlive ? 'living' : 'deceased'}
+                    onChange={(value) => setFounderData({ ...founderData, isAlive: value === 'living', deathDate: value === 'living' ? null : founderData.deathDate })}
+                    accentColor="primary"
+                  />
                 </div>
                 {!founderData.isAlive && (
-                  <div className="text-start">
-                    <p className="text-[9px] font-bold text-muted-foreground uppercase mb-1">تاريخ الوفاة</p>
-                    <EnhancedDatePicker value={founderData.deathDate} onChange={(d) => setFounderData({ ...founderData, deathDate: d })} placeholder="----" className="h-9 text-xs" disableFuture />
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      <span className="material-symbols-outlined text-primary text-lg">event</span>
+                      {t('death_date', 'تاريخ الوفاة')}
+                    </label>
+                    <input
+                      type="date"
+                      value={founderData.deathDate ? founderData.deathDate.toISOString().split('T')[0] : ''}
+                      onChange={(e) => setFounderData({ ...founderData, deathDate: e.target.value ? new Date(e.target.value) : null })}
+                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    />
                   </div>
                 )}
               </div>
 
-              <Textarea
-                value={founderData.bio}
-                onChange={(e) => setFounderData({ ...founderData, bio: e.target.value })}
-                placeholder={t('founder_bio_placeholder', 'سيرة مختصرة...')}
-                rows={2}
-                className="rounded-xl border-border/50 bg-muted/30 text-xs focus:border-primary"
-              />
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-primary text-lg">notes</span>
+                  {t('biography', 'السيرة الذاتية')}
+                </label>
+                <textarea
+                  value={founderData.bio}
+                  onChange={(e) => setFounderData({ ...founderData, bio: e.target.value })}
+                  placeholder={t('founder_bio_placeholder', 'سيرة مختصرة...')}
+                  rows={2}
+                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+                />
+              </div>
             </div>
 
             {/* Divider */}
