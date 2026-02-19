@@ -252,7 +252,7 @@ const StitchFamilyCreator = () => {
   };
 
   return (
-    <div className="theme-stitch min-h-screen bg-background">
+    <div className="theme-stitch min-h-screen bg-slate-50 dark:bg-background">
       <StitchHeader hideNav variant="account" />
 
       <main className="max-w-5xl mx-auto px-4 py-12 relative overflow-hidden">
