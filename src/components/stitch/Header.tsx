@@ -93,26 +93,16 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   return (
     <>
       <header className="h-14 md:h-16 lg:h-20 border-b border-border bg-card/80 backdrop-blur-md flex items-center justify-between px-3 md:px-4 lg:px-6 sticky top-0 z-50">
-        {/* Mobile menu button */}
-        {!hideNav && (
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="lg:hidden p-2 -ms-1 text-muted-foreground hover:bg-accent rounded-lg transition-colors"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
-        )}
-
-        {/* Brand */}
+        {/* Right side: Brand + site name + badge */}
         <div className="flex items-center gap-2 md:gap-3 lg:gap-4">
           <div className="w-9 h-9 md:w-11 md:h-11 lg:w-14 lg:h-14 bg-primary rounded-lg lg:rounded-xl flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/20">
             <span className="material-icons-round text-xl md:text-2xl lg:text-3xl">park</span>
           </div>
-          <div className="hidden sm:block">
+          <div>
             <h1 className="font-bold text-lg md:text-xl lg:text-2xl leading-tight">{t('site.name', 'شجرتي')}</h1>
             <p className="text-[10px] md:text-xs text-muted-foreground uppercase tracking-wider font-semibold">{t('stitch.genealogy_platform', 'منصة الأنساب')}</p>
           </div>
-          <div className="hidden md:block ms-2 lg:ms-6 px-2 lg:px-3 py-0.5 lg:py-1 bg-destructive/10 text-destructive rounded-full text-[9px] lg:text-[10px] font-bold border border-destructive/20">
+          <div className="ms-1 lg:ms-4 px-2 lg:px-3 py-0.5 lg:py-1 bg-destructive/10 text-destructive rounded-full text-[9px] lg:text-[10px] font-bold border border-destructive/20 hidden sm:block">
             {t('badge.beta', 'إطلاق تجريبي')}
           </div>
         </div>
@@ -141,8 +131,12 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
           </nav>
         )}
 
-        {/* User Section */}
+        {/* Left side: Language + Notifications + Avatar + Burger */}
         <div className="flex items-center gap-2 md:gap-3 lg:gap-4">
+          <div className="hidden sm:block">
+            <LanguageSwitcher />
+          </div>
+
           <button className="p-1.5 md:p-2 text-muted-foreground hover:bg-accent rounded-full transition-colors">
             <span className="material-icons-round text-xl">notifications</span>
           </button>
@@ -150,13 +144,13 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
           {/* User Profile */}
           <HoverCard openDelay={0} closeDelay={150}>
             <HoverCardTrigger asChild>
-              <div className="flex items-center gap-2 md:gap-3 ps-2 md:ps-3 lg:ps-4 border-s border-border cursor-pointer group">
-                <div className="text-end hidden md:block">
-                  <p className="text-sm lg:text-base font-bold group-hover:text-primary transition-colors truncate max-w-[100px] lg:max-w-none">{displayName}</p>
-                  <p className="text-xs lg:text-sm text-muted-foreground truncate max-w-[100px] lg:max-w-none">{localizedPackageName}</p>
-                </div>
+              <div className="flex items-center gap-2 md:gap-3 cursor-pointer group">
                 <div className="w-9 h-9 md:w-11 md:h-11 lg:w-14 lg:h-14 rounded-full bg-gradient-to-tr from-primary to-emerald-400 border-2 border-card shadow-md flex items-center justify-center text-primary-foreground font-bold text-sm md:text-lg lg:text-xl group-hover:scale-105 transition-transform">
                   {initials}
+                </div>
+                <div className="text-start hidden lg:block">
+                  <p className="text-sm lg:text-base font-bold group-hover:text-primary transition-colors truncate max-w-[100px] lg:max-w-none">{displayName}</p>
+                  <p className="text-xs lg:text-sm text-muted-foreground truncate max-w-[100px] lg:max-w-none">{localizedPackageName}</p>
                 </div>
               </div>
             </HoverCardTrigger>
@@ -226,10 +220,15 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
             </HoverCardContent>
           </HoverCard>
 
-          {/* Language Switcher - hidden on small mobile */}
-          <div className="hidden sm:block">
-            <LanguageSwitcher />
-          </div>
+          {/* Burger menu - leftmost item */}
+          {!hideNav && (
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="lg:hidden p-2 -me-1 text-muted-foreground hover:bg-accent rounded-lg transition-colors"
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+          )}
         </div>
       </header>
 
