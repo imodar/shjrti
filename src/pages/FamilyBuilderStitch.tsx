@@ -97,6 +97,9 @@ const FamilyBuilderStitch: React.FC = () => {
   // Track if initial load completed — prevents loader on tab re-focus
   const loaderDoneRef = useRef(false);
 
+  // Package name from REST API (more reliable than SubscriptionContext RPC)
+  const [restPackageName, setRestPackageName] = useState<Record<string, string> | string | undefined>(undefined);
+
   // Fetch package limits
   useEffect(() => {
     if (!user) return;
@@ -107,6 +110,9 @@ const FamilyBuilderStitch: React.FC = () => {
         const pkg = sub?.packages;
         if (pkg?.max_family_members) {
           setMaxFamilyMembers(pkg.max_family_members);
+        }
+        if (pkg?.name) {
+          setRestPackageName(pkg.name as Record<string, string> | string);
         }
       } catch (error) {
         console.error('Error fetching package limits:', error);
@@ -346,8 +352,8 @@ const FamilyBuilderStitch: React.FC = () => {
                    user?.email?.split('@')[0] || 
                    'User';
 
-  // Get package name - pass the full object for localization in Header
-  const packageName = subscription?.package_name;
+  // Get package name - prefer REST API data over SubscriptionContext RPC
+  const packageName = restPackageName || subscription?.package_name;
 
   // Only show loader on dashboard tab and only on FIRST load
   const isFullyLoaded = !loading && packageLoaded && suggestionsLoaded;

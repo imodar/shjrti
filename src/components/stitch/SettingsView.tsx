@@ -608,7 +608,24 @@ const PremiumFeatureRow: React.FC<{
     );
   }
 
-  if (isAvailable && onConfigure) {
+  if (isAvailable) {
+    if (!onConfigure) {
+      // Feature is available but no configuration needed — show as enabled
+      return (
+        <div className="p-5 bg-primary/5 border border-primary/20 rounded-2xl flex items-center gap-4">
+          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20">
+            <span className="material-symbols-outlined text-primary">{icon}</span>
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-foreground text-sm">{title}</span>
+              <span className="material-symbols-outlined text-primary text-lg">check_circle</span>
+            </div>
+            <p className="text-xs text-muted-foreground">{description}</p>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className="p-5 bg-primary/5 border border-primary/20 rounded-2xl flex items-center justify-between">
         <div className="flex items-center gap-4">
