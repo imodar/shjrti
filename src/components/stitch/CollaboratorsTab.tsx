@@ -20,6 +20,7 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
   const [inviteEmail, setInviteEmail] = useState('');
   const [sending, setSending] = useState(false);
   const [showInviteForm, setShowInviteForm] = useState(false);
+  const [removingId, setRemovingId] = useState<string | null>(null);
   const [hasPlusPlan, setHasPlusPlan] = useState(false);
   const [checkingPlan, setCheckingPlan] = useState(true);
 
@@ -75,12 +76,15 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
   };
 
   const handleRemove = async (id: string, type: 'collaborator' | 'invitation') => {
+    setRemovingId(id);
     try {
       await familyInvitationsApi.remove(id);
       toast({ title: t('common.success', 'تم بنجاح') });
       fetchData();
     } catch (e: any) {
       toast({ title: t('common.error', 'خطأ'), description: e?.message, variant: 'destructive' });
+    } finally {
+      setRemovingId(null);
     }
   };
 
@@ -181,7 +185,12 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
               disabled={sending}
               className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-bold hover:bg-primary/90 disabled:opacity-50 transition-colors"
             >
-              {sending ? t('common.sending', 'جاري الإرسال...') : t('settings.send_invite', 'إرسال')}
+              {sending ? (
+                <span className="flex items-center gap-2">
+                  <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+                  {t('common.sending', 'جاري الإرسال...')}
+                </span>
+              ) : t('settings.send_invite', 'إرسال')}
             </button>
             <button
               type="button"
@@ -218,10 +227,15 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
                   <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-bold">{t('settings.role_editor', 'مشرف')}</span>
                   <button
                     onClick={() => handleRemove(collab.id, 'collaborator')}
-                    className="text-muted-foreground hover:text-destructive transition-colors"
+                    disabled={removingId === collab.id}
+                    className="text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
                     title={t('settings.remove_collaborator', 'إزالة')}
                   >
-                    <span className="material-symbols-outlined text-lg">close</span>
+                    {removingId === collab.id ? (
+                      <span className="material-symbols-outlined animate-spin text-lg">progress_activity</span>
+                    ) : (
+                      <span className="material-symbols-outlined text-lg">close</span>
+                    )}
                   </button>
                 </div>
               </div>
@@ -245,10 +259,15 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
                   </span>
                   <button
                     onClick={() => handleRemove(inv.id, 'invitation')}
-                    className="text-muted-foreground hover:text-destructive transition-colors"
+                    disabled={removingId === inv.id}
+                    className="text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
                     title={t('settings.revoke_invitation', 'إلغاء الدعوة')}
                   >
-                    <span className="material-symbols-outlined text-lg">close</span>
+                    {removingId === inv.id ? (
+                      <span className="material-symbols-outlined animate-spin text-lg">progress_activity</span>
+                    ) : (
+                      <span className="material-symbols-outlined text-lg">close</span>
+                    )}
                   </button>
                 </div>
               </div>
