@@ -740,32 +740,32 @@ const StitchAccount: React.FC = () => {
       />
 
       {/* Main Content */}
-      <main className="flex h-[calc(100vh-56px)]">
-        {/* Left Sidebar */}
-        <aside className="w-80 bg-card border-r border-border flex flex-col z-30 hidden lg:flex">
-          <div className="p-6">
-            <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6">
+      <main className="flex flex-col lg:flex-row h-[calc(100vh-56px)] md:h-[calc(100vh-64px)] lg:h-[calc(100vh-80px)]">
+        {/* Tab Navigation - horizontal on mobile/tablet, vertical sidebar on desktop */}
+        <aside className="lg:w-80 bg-card border-b lg:border-b-0 lg:border-r border-border flex flex-col z-30 shrink-0">
+          <div className="p-3 lg:p-6 overflow-x-auto lg:overflow-x-visible">
+            <h2 className="hidden lg:block text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-6">
               {t('account.settings', 'Account Settings')}
             </h2>
-            <nav className="space-y-1">
+            <nav className="flex lg:flex-col gap-1">
               {sidebarItems.map((item) => (
                 <button key={item.key}
                   onClick={() => setActiveTab(item.key)}
                   className={cn(
-                    'w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all',
+                    'flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2.5 lg:py-3 text-sm font-medium rounded-xl transition-all whitespace-nowrap',
                     activeTab === item.key
                       ? 'font-bold text-primary bg-primary/5'
                       : 'text-muted-foreground hover:bg-slate-50 dark:hover:bg-slate-800/50'
                   )}>
-                  <span className="material-symbols-outlined text-xl">{item.icon}</span>
-                  {item.label}
+                  <span className="material-symbols-outlined text-lg lg:text-xl">{item.icon}</span>
+                  <span className="text-xs lg:text-sm">{item.label}</span>
                 </button>
               ))}
             </nav>
           </div>
 
-          {/* Danger Zone */}
-          <div className="mt-auto p-6 border-t border-border">
+          {/* Danger Zone - desktop only in sidebar */}
+          <div className="mt-auto p-6 border-t border-border hidden lg:block">
             <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded-xl border border-red-100 dark:border-red-900/30">
               <div className="flex items-center gap-2 mb-2 text-red-600 dark:text-red-400">
                 <span className="material-symbols-outlined text-lg">report</span>
@@ -786,7 +786,7 @@ const StitchAccount: React.FC = () => {
         </aside>
 
         {/* Content Area */}
-        <section className="flex-1 overflow-y-auto bg-slate-50 dark:bg-background p-8 custom-scrollbar">
+        <section className="flex-1 overflow-y-auto bg-slate-50 dark:bg-background p-4 md:p-6 lg:p-8 custom-scrollbar">
           {activeTab === 'profile' && renderProfileTab()}
           {activeTab === 'billing' && renderBillingTab()}
           {activeTab === 'security' && renderSecurityTab()}
@@ -912,23 +912,21 @@ const StitchAccount: React.FC = () => {
         </aside>
       </main>
 
-      {/* Mobile Overlay */}
-      <div className="fixed inset-0 bg-card z-[100] lg:hidden flex flex-col items-center justify-center p-8 text-center">
-        <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6">
-          <span className="material-icons-round text-4xl">desktop_windows</span>
+      {/* Danger Zone - mobile/tablet */}
+      <div className="lg:hidden p-4 border-t border-border bg-card">
+        <div className="bg-red-50 dark:bg-red-950/20 p-4 rounded-xl border border-red-100 dark:border-red-900/30">
+          <div className="flex items-center gap-2 mb-2 text-red-600 dark:text-red-400">
+            <span className="material-symbols-outlined text-lg">report</span>
+            <span className="text-xs font-bold uppercase tracking-wider">{t('profile.danger_zone', 'Danger Zone')}</span>
+          </div>
+          <button 
+            onClick={() => setShowDeleteAccountModal(true)} 
+            className="w-full mt-1 px-4 py-2.5 rounded-lg text-xs font-bold text-white bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 transition-all flex items-center justify-center gap-2"
+          >
+            <span className="material-symbols-outlined text-sm">delete_forever</span>
+            {t('profile.delete_account', 'Delete Account')}
+          </button>
         </div>
-        <h2 className="text-2xl font-bold mb-2">{t('account.desktop_optimized', 'Desktop Optimized')}</h2>
-        <p className="text-muted-foreground mb-8 max-w-xs">
-          {t('account.desktop_message', 'Shjrti Settings is best experienced on a desktop or tablet.')}
-        </p>
-        <button
-          onClick={() => {
-            const overlay = document.querySelector('.lg\\:hidden.fixed.inset-0');
-            if (overlay) overlay.classList.add('hidden');
-          }}
-          className="px-6 py-3 bg-primary text-primary-foreground font-bold rounded-xl">
-          {t('account.continue_anyway', 'Continue Anyway')}
-        </button>
       </div>
 
       {/* Account Delete Modal */}
