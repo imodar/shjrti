@@ -483,19 +483,18 @@ const FamilyBuilderStitch: React.FC = () => {
         <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6">
           <span className="material-icons-round text-4xl">desktop_windows</span>
         </div>
-        <h2 className="text-2xl font-bold mb-2">Desktop Optimized</h2>
+        <h2 className="text-2xl font-bold mb-2">{t('account.desktop_optimized', 'Desktop Optimized')}</h2>
         <p className="text-muted-foreground mb-8 max-w-xs">
-          Shjrti Dashboard is best experienced on a desktop or tablet.
+          {t('account.desktop_optimized_desc', 'Shjrti Dashboard is best experienced on a desktop or tablet.')}
         </p>
         <button 
           onClick={() => {
-            // Hide overlay and show mobile version
             const overlay = document.querySelector('.lg\\:hidden.fixed.inset-0');
             if (overlay) overlay.classList.add('hidden');
           }}
           className="px-6 py-3 bg-primary text-primary-foreground font-bold rounded-xl"
         >
-          Continue Anyway
+          {t('account.continue_anyway', 'Continue Anyway')}
         </button>
       </div>
 
