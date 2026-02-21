@@ -25,6 +25,7 @@ interface SpouseDrawerProps {
   onSave: () => void;
   isImageUploadEnabled?: boolean;
   hideToggle?: boolean;
+  onImageUploadClick?: () => void;
 }
 
 export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
@@ -41,7 +42,8 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
   onFamilyStatusChange,
   onSave,
   isImageUploadEnabled = false,
-  hideToggle = false
+  hideToggle = false,
+  onImageUploadClick
 }) => {
   const { t, direction } = useLanguage();
   const isRTL = direction === 'rtl';
@@ -373,7 +375,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
             {/* Photo Upload (Optional) */}
             {spouseFamilyStatus !== 'yes' && (
               isImageUploadEnabled ? (
-                <div className={`p-4 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${
+                <div onClick={onImageUploadClick} className={`p-4 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${
                   spouseType === 'husband'
                     ? 'border-blue-500/20 bg-blue-50/30 dark:bg-blue-900/5 hover:bg-blue-50/50'
                     : 'border-pink-500/20 bg-pink-50/30 dark:bg-pink-900/5 hover:bg-pink-50/50'

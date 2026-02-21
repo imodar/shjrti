@@ -682,6 +682,23 @@ const StitchFamilyCreator = () => {
         onSave={handleSpouseSave}
         isImageUploadEnabled={isImageUploadEnabled}
         hideToggle
+        onImageUploadClick={() => {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = 'image/*';
+          input.onchange = (e) => {
+            const file = (e.target as HTMLInputElement).files?.[0];
+            if (file) {
+              const reader = new FileReader();
+              reader.onload = (ev) => {
+                setCropImage(ev.target?.result as string);
+                setShowCropModal(true);
+              };
+              reader.readAsDataURL(file);
+            }
+          };
+          input.click();
+        }}
       />
 
       {/* Success Modal */}
