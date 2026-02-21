@@ -253,9 +253,9 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
 
   // Privacy option labels
   const privacyOptions = [
-    { value: 'full', label: t('tree_settings.name_full', 'الاسم الكامل'), locked: false },
-    { value: 'family_only', label: t('tree_settings.name_first_hidden', 'إخفاء الاسم الأول (إظهار النسب فقط)'), locked: true },
-    { value: 'hidden', label: t('tree_settings.name_hidden_full', 'إخفاء الاسم بالكامل'), locked: true },
+    { value: 'full', label: t('tree_settings.name_full', 'الاسم الكامل'), locked: false, example: 'سارة الأمير' },
+    { value: 'family_only', label: t('tree_settings.name_first_hidden', 'إخفاء الاسم الأول (إظهار النسب فقط)'), locked: true, example: '███ الأمير' },
+    { value: 'hidden', label: t('tree_settings.name_hidden_full', 'إخفاء الاسم بالكامل'), locked: true, example: '███ ████' },
   ];
 
   const currentPrivacyLabel = privacyOptions.find(o => o.value === femaleNamePrivacy)?.label || '';
@@ -643,7 +643,12 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
                           ) : (
                             <span className="material-symbols-outlined text-primary text-lg">radio_button_unchecked</span>
                           )}
-                          <span>{opt.label}</span>
+                          <div className="flex flex-col gap-0.5">
+                            <span>{opt.label}</span>
+                            <span className={`text-xs ${opt.value === 'full' ? 'text-muted-foreground' : 'text-muted-foreground/70'}`} dir="rtl">
+                              مثال: <span className={opt.value !== 'full' ? 'bg-muted-foreground/20 rounded px-0.5 select-none' : ''}>{opt.example}</span>
+                            </span>
+                          </div>
                         </button>
                       );
                     })}
