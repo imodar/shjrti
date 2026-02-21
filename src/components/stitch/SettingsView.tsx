@@ -643,11 +643,30 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
                           ) : (
                             <span className="material-symbols-outlined text-primary text-lg">radio_button_unchecked</span>
                           )}
-                          <div className="flex flex-col gap-0.5">
+                          <div className="flex flex-col gap-1 flex-1">
                             <span>{opt.label}</span>
-                            <span className={`text-xs ${opt.value === 'full' ? 'text-muted-foreground' : 'text-muted-foreground/70'}`} dir="rtl">
-                              مثال: <span className={opt.value !== 'full' ? 'bg-muted-foreground/20 rounded px-0.5 select-none' : ''}>{opt.example}</span>
-                            </span>
+                            <div className="flex items-center gap-1.5 text-xs" dir="rtl">
+                              <span className="text-muted-foreground">مثال:</span>
+                              {opt.value === 'full' ? (
+                                <div className="flex gap-1.5">
+                                  <span className="bg-muted rounded px-2 py-0.5 text-foreground">سارة</span>
+                                  <span className="bg-muted rounded px-2 py-0.5 text-foreground">الأمير</span>
+                                </div>
+                              ) : opt.value === 'family_only' ? (
+                                <div className="flex gap-1.5">
+                                  <span className="bg-destructive/10 text-destructive rounded px-2 py-0.5 blur-[2px] select-none">سارة</span>
+                                  <span className="bg-muted rounded px-2 py-0.5 text-foreground">الأمير</span>
+                                </div>
+                              ) : (
+                                <span className="bg-destructive/10 text-destructive rounded px-2 py-0.5 blur-[2px] select-none">سارة الأمير</span>
+                              )}
+                            </div>
+                            {opt.value === 'family_only' && (
+                              <span className="text-[10px] text-destructive/70">الاسم الأول مخفي</span>
+                            )}
+                            {opt.value === 'hidden' && (
+                              <span className="text-[10px] text-destructive/70">الاسم الأول واسم العائلة مخفي</span>
+                            )}
                           </div>
                         </button>
                       );
