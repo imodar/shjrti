@@ -14,7 +14,9 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
 // Header is handled by StitchLayout
-import { supabase } from "@/integrations/supabase/client";
+import { familiesApi } from "@/lib/api/endpoints/families";
+import { membersApi } from "@/lib/api/endpoints/members";
+import { marriagesApi } from "@/lib/api/endpoints/marriages";
 import { formatDateForDatabase } from "@/lib/dateUtils";
 import WifeForm, { WifeFormRef } from "@/components/WifeForm";
 import Cropper from "react-easy-crop";
@@ -83,12 +85,6 @@ const StitchFamilyCreator = () => {
         toast({ title: "خطأ", description: "يرجى إكمال جميع البيانات المطلوبة للمؤسس", variant: "destructive" });
         return;
       }
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) {
-        toast({ title: "خطأ في المصادقة", description: "يرجى تسجيل الدخول أولاً", variant: "destructive" });
-        navigate('/stitch-dashboard');
-        return;
-      }
       handleCreateFamily();
     }
   };
@@ -102,49 +98,6 @@ const StitchFamilyCreator = () => {
     }
   };
 
-  const checkFamilyCreationLimits = async (userId: string): Promise<boolean> => {
-    try {
-      const { data: subscription, error: subscriptionError } = await supabase
-        .from('user_subscriptions')
-        .select(`*, packages (max_family_trees, name)`)
-        .eq('user_id', userId).eq('status', 'active').single();
-
-      const getPackageName = (nameData: any) => {
-        try {
-          const obj = typeof nameData === 'string' ? JSON.parse(nameData) : nameData;
-          return obj?.ar || obj?.en || 'الباقة الحالية';
-        } catch { return typeof nameData === 'string' ? nameData : 'الباقة الحالية'; }
-      };
-
-      if (subscriptionError || !subscription) {
-        const { data: defaultPackage, error: packageError } = await supabase
-          .from('packages').select('id, max_family_trees, name').eq('is_active', true).order('price', { ascending: true }).limit(1).single();
-        if (packageError || !defaultPackage) { toast({ title: "خطأ", description: "لم يتم العثور على باقة متاحة", variant: "destructive" }); return false; }
-        const { data: families, error: familiesError } = await supabase
-          .from('families').select('id').eq('creator_id', userId).eq('is_archived', false);
-        if (familiesError) { toast({ title: "خطأ", description: "حدث خطأ في التحقق من حدود الباقة", variant: "destructive" }); return false; }
-        const count = families?.length || 0;
-        const max = defaultPackage.max_family_trees || 1;
-        if (count >= max) {
-          toast({ title: "تم الوصول للحد الأقصى", description: `لقد وصلت للحد الأقصى من أشجار العائلة (${max}) في باقة ${getPackageName(defaultPackage.name)}.`, variant: "destructive" });
-          return false;
-        }
-        return true;
-      }
-
-      const { data: families, error: familiesError } = await supabase
-        .from('families').select('id').eq('creator_id', userId).eq('is_archived', false);
-      if (familiesError) { toast({ title: "خطأ", description: "حدث خطأ في التحقق من حدود الباقة", variant: "destructive" }); return false; }
-      const count = families?.length || 0;
-      const max = subscription.packages?.max_family_trees || 1;
-      if (count >= max) {
-        toast({ title: "تم الوصول للحد الأقصى", description: `لقد وصلت للحد الأقصى من أشجار العائلة (${max}) في ${getPackageName(subscription.packages?.name)}.`, variant: "destructive" });
-        return false;
-      }
-      return true;
-    } catch { toast({ title: "خطأ", description: "حدث خطأ في التحقق من حدود الباقة", variant: "destructive" }); return false; }
-  };
-
   const creationLockRef = useRef(false);
 
   const handleCreateFamily = async () => {
@@ -152,63 +105,68 @@ const StitchFamilyCreator = () => {
     creationLockRef.current = true;
     setIsCreatingFamily(true);
     try {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError || !user) { toast({ title: "خطأ في المصادقة", description: "يرجى تسجيل الدخول أولاً", variant: "destructive" }); return; }
-
-      const canCreate = await checkFamilyCreationLimits(user.id);
-      if (!canCreate) return;
-
-      const { data: family, error: familyError } = await supabase
-        .from('families').insert({ name: treeData.name, description: treeData.description, creator_id: user.id }).select().single();
-
-      if (familyError) {
-        if (familyError.message?.includes('FAMILY_LIMIT_EXCEEDED')) {
-          toast({ title: "تم الوصول للحد الأقصى", description: familyError.message.split(':')[1] || 'تم الوصول للحد الأقصى من الأشجار', variant: "destructive" });
-          return;
-        }
-        throw familyError;
-      }
+      // 1. Create family via API (backend handles limits via enforce_family_limit trigger)
+      const family = await familiesApi.create({
+        name: treeData.name,
+        description: treeData.description || undefined,
+      });
 
       setCreatedFamilyId(family.id);
 
-      await supabase.from('family_members').insert({ family_id: family.id, user_id: user.id, role: 'creator' });
-
+      // 2. Create founder via API
       const extractFamilyName = (name: string) => name.replace(/^عائلة\s+/, '').trim();
       const cleanFamilyName = extractFamilyName(treeData.name || '');
       const founderName = `${founderData.name || 'مؤسس'} ${cleanFamilyName}`.trim() || 'مؤسس العائلة';
 
-      const { data: founder, error: founderError } = await supabase
-        .from('family_tree_members').insert({
-          family_id: family.id, name: founderName, first_name: founderData.name, last_name: cleanFamilyName,
-          gender: founderData.gender, birth_date: formatDateForDatabase(founderData.birthDate),
-          death_date: formatDateForDatabase(founderData.deathDate), is_alive: founderData.isAlive,
-          biography: founderData.bio, image_url: founderData.croppedImage, is_founder: true, created_by: user.id
-        }).select().single();
+      const founder = await membersApi.create({
+        family_id: family.id,
+        name: founderName,
+        first_name: founderData.name,
+        last_name: cleanFamilyName,
+        gender: founderData.gender,
+        birth_date: formatDateForDatabase(founderData.birthDate) || undefined,
+        death_date: formatDateForDatabase(founderData.deathDate) || undefined,
+        is_alive: founderData.isAlive,
+        biography: founderData.bio || undefined,
+        image_url: founderData.croppedImage || undefined,
+        is_founder: true,
+      });
 
-      if (founderError) throw founderError;
-
+      // 3. Create wives + marriages via API
       for (const wife of wives) {
         const wifeName = wife.name || 'زوجة غير محددة';
-        const { data: wifeData, error: wifeError } = await supabase
-          .from('family_tree_members').insert({
-            family_id: family.id, name: wifeName, first_name: wife.first_name || wife.name || 'زوجة',
-            last_name: wife.last_name || cleanFamilyName, gender: 'female',
-            marital_status: wife.maritalStatus || 'married',
-            birth_date: formatDateForDatabase(wife.birthDate), death_date: formatDateForDatabase(wife.deathDate),
-            is_alive: wife.isAlive, created_by: user.id
-          }).select().single();
-        if (wifeError) throw wifeError;
-        await supabase.from('marriages').insert({
-          family_id: family.id, husband_id: founder.id, wife_id: wifeData.id,
-          marital_status: wife.maritalStatus || 'married', is_active: true
+
+        const wifeData = await membersApi.create({
+          family_id: family.id,
+          name: wifeName,
+          first_name: wife.first_name || wife.name || 'زوجة',
+          last_name: wife.last_name || cleanFamilyName,
+          gender: 'female',
+          marital_status: wife.maritalStatus || 'married',
+          birth_date: formatDateForDatabase(wife.birthDate) || undefined,
+          death_date: formatDateForDatabase(wife.deathDate) || undefined,
+          is_alive: wife.isAlive,
+        });
+
+        await marriagesApi.create({
+          family_id: family.id,
+          husband_id: founder.id,
+          wife_id: wifeData.id,
+          marital_status: wife.maritalStatus || 'married',
+          is_active: true,
         });
       }
 
       setShowSuccessModal(true);
       toast({ title: t('family_created_success', 'تم إنشاء العائلة بنجاح'), description: `تم حفظ بيانات العائلة مع ${wives.length} من الزوجات` });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error creating family:', error);
-      toast({ title: t('error_creating_family', 'خطأ في إنشاء العائلة'), description: t('error_saving_family', 'حدث خطأ أثناء حفظ بيانات العائلة'), variant: "destructive" });
+      const errorMsg = error?.message || '';
+      if (errorMsg.includes('FAMILY_LIMIT_EXCEEDED') || errorMsg.includes('limit')) {
+        toast({ title: "تم الوصول للحد الأقصى", description: t('family_limit_reached', 'لقد وصلت للحد الأقصى من أشجار العائلة في باقتك الحالية'), variant: "destructive" });
+      } else {
+        toast({ title: t('error_creating_family', 'خطأ في إنشاء العائلة'), description: t('error_saving_family', 'حدث خطأ أثناء حفظ بيانات العائلة'), variant: "destructive" });
+      }
     } finally {
       setIsCreatingFamily(false);
       creationLockRef.current = false;
