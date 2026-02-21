@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { StitchHeader } from '@/components/stitch';
+// Header is handled by StitchLayout
 import DashboardLoader from '@/components/stitch/DashboardLoader';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -205,13 +205,6 @@ const StitchDashboard: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-background animate-in fade-in duration-500">
-       <StitchHeader 
-         variant="account"
-         activeTab="home" 
-         userName={displayName}
-         packageName={packageName}
-       />
-      
       <main className="max-w-7xl mx-auto px-6 py-5">
         {/* Hero Section */}
         <section className="hero-glass rounded-[2rem] p-6 mb-10 shadow-xl shadow-slate-200/50 relative overflow-hidden border border-white dark:border-border">

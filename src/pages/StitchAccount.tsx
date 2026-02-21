@@ -7,7 +7,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { usePackageTransition } from '@/hooks/usePackageTransition';
 import { profilesApi, subscriptionsApi, invoicesApi, packagesApi, scheduledChangesApi } from '@/lib/api';
 import { familiesApi } from '@/lib/api/endpoints/families';
-import { StitchHeader } from '@/components/stitch';
+// Header is handled by StitchLayout
 import DashboardLoader from '@/components/stitch/DashboardLoader';
 import { useToast } from '@/hooks/use-toast';
 import AccountDeleteModal from '@/components/AccountDeleteModal';
@@ -722,23 +722,7 @@ const StitchAccount: React.FC = () => {
   );
 
   return (
-    <div className={cn('theme-stitch min-h-screen overflow-hidden', direction === 'rtl' && 'rtl')}>
-      {/* Header */}
-      <StitchHeader
-        variant="account"
-        familyName={'Shjrti'}
-        userName={userName}
-        packageName={packageName}
-        activeTab="account"
-        onTabChange={(tab) => {
-          if (tab === 'dashboard') navigate(`/stitch-family-builder?family=${familyId}&tab=dashboard`);
-          else if (tab === 'account') return;
-          else navigate(`/stitch-family-builder?family=${familyId}&tab=${tab}`);
-        }}
-        suggestionsCount={0}
-        isOwner={true}
-      />
-
+    <div className="min-h-screen overflow-hidden">
       {/* Main Content */}
       <main className="flex flex-col lg:flex-row h-[calc(100vh-56px)] md:h-[calc(100vh-64px)] lg:h-[calc(100vh-80px)]">
         {/* Tab Navigation - horizontal on mobile/tablet, vertical sidebar on desktop */}

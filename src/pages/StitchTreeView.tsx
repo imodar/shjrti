@@ -5,7 +5,8 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
  import { useLanguage } from '@/contexts/LanguageContext';
  import { useSubscription } from '@/contexts/SubscriptionContext';
  import { useFamilyData } from '@/contexts/FamilyDataContext';
- import { StitchHeader, StitchFamilyBar } from '@/components/stitch';
+ import { StitchFamilyBar } from '@/components/stitch';
+ import { useStitchLayout } from '@/components/stitch/StitchLayout';
  import { StitchTreeCanvas } from '@/components/stitch/TreeCanvas';
  import { cn } from '@/lib/utils';
  
@@ -110,6 +111,14 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
     setZoomLevel(1); // Reset zoom when changing root
   }, []);
 
+  // Sync header overrides with layout
+  const { setHeaderOverrides } = useStitchLayout();
+  useEffect(() => {
+    setHeaderOverrides({
+      familyName: familyData?.name,
+    });
+  }, [familyData?.name, setHeaderOverrides]);
+
    if (loading) {
      return (
        <div className="min-h-screen bg-background flex items-center justify-center">
@@ -119,18 +128,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
    }
  
    return (
-     <div className={cn(
-       'theme-stitch min-h-screen overflow-hidden',
-       direction === 'rtl' && 'rtl'
-     )}>
-       {/* Header */}
-       <StitchHeader
-         familyName={familyData?.name || 'Shjrti'}
-         userName={userName}
-         packageName={packageName}
-         activeTab="tree"
-         suggestionsCount={0}
-       />
+     <div className="min-h-screen overflow-hidden">
  
       {/* Family Bar - Unified with Builder */}
       <StitchFamilyBar

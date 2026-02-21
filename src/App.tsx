@@ -37,6 +37,7 @@ import StitchTreeView from "./pages/StitchTreeView";
 import StitchAccount from "./pages/StitchAccount";
 import StitchFamilyCreator from "./pages/StitchFamilyCreator";
 import StitchLoadingFallback from "./components/stitch/StitchLoadingFallback";
+import StitchLayout from "./components/stitch/StitchLayout";
 
 import FamilyTreeView from "./pages/FamilyTreeView/FamilyTreeViewWithContext";
 import FamilyStatistics from "./pages/FamilyStatistics";
@@ -167,54 +168,26 @@ const App = () => {
                       <DashboardBackup />
                     </ProtectedRoute>
                   } />
-                  <Route path="/stitch-dashboard" element={
+                  {/* Stitch Theme Routes - shared layout */}
+                  <Route element={
                     <ProtectedRoute>
-                      <StitchDashboard />
+                      <StitchLayout />
                     </ProtectedRoute>
-                  } />
-                  <Route path="/family-creator" element={
-                    <ProtectedRoute>
-                      <FamilyCreator />
-                    </ProtectedRoute>
-                  } />
-          <Route path="/family-builder" element={
-            <ProtectedRoute requireActiveSubscription={true}>
-              <ProtectedFamilyRoute>
-                <FamilyBuilder />
-              </ProtectedFamilyRoute>
-            </ProtectedRoute>
-          } />
-          <Route path="/family-builder-new" element={
-            <ProtectedRoute>
-              <ProtectedFamilyRoute loadingFallback={<SkeletonLayoutForBuilder />}>
-                <FamilyBuilderNewWithContext />
-              </ProtectedFamilyRoute>
-            </ProtectedRoute>
-          } />
-          <Route path="/stitch-family-builder" element={
-            <ProtectedRoute>
-              <ProtectedFamilyRoute loadingFallback={<StitchLoadingFallback />}>
-                <FamilyBuilderStitchWithProvider />
-              </ProtectedFamilyRoute>
-            </ProtectedRoute>
-          } />
-          <Route path="/stitch-tree-view" element={
-            <ProtectedRoute>
-              <ProtectedFamilyRoute loadingFallback={<StitchLoadingFallback />}>
-                <StitchTreeViewWithProvider />
-              </ProtectedFamilyRoute>
-            </ProtectedRoute>
-          } />
-          <Route path="/stitch-account" element={
-            <ProtectedRoute>
-              <StitchAccount />
-            </ProtectedRoute>
-          } />
-          <Route path="/stitch-family-creator" element={
-            <ProtectedRoute>
-              <StitchFamilyCreator />
-            </ProtectedRoute>
-          } />
+                  }>
+                    <Route path="/stitch-dashboard" element={<StitchDashboard />} />
+                    <Route path="/stitch-account" element={<StitchAccount />} />
+                    <Route path="/stitch-family-creator" element={<StitchFamilyCreator />} />
+                    <Route path="/stitch-family-builder" element={
+                      <ProtectedFamilyRoute loadingFallback={<StitchLoadingFallback />}>
+                        <FamilyBuilderStitchWithProvider />
+                      </ProtectedFamilyRoute>
+                    } />
+                    <Route path="/stitch-tree-view" element={
+                      <ProtectedFamilyRoute loadingFallback={<StitchLoadingFallback />}>
+                        <StitchTreeViewWithProvider />
+                      </ProtectedFamilyRoute>
+                    } />
+                  </Route>
                   <Route path="/family-tree-view" element={
                     <ProtectedRoute>
                       <FamilyTreeView />

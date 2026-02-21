@@ -7,7 +7,8 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useFamilyData } from '@/contexts/FamilyDataContext';
 import { useFamilyRole } from '@/hooks/useFamilyRole';
 import { subscriptionsApi, suggestionsApi, familiesApi } from '@/lib/api';
-import { StitchHeader, StitchFamilyBar, StitchSidebar, StitchRightPanel, StitchMainContent, StitchSettingsView } from '@/components/stitch';
+import { StitchFamilyBar, StitchSidebar, StitchRightPanel, StitchMainContent, StitchSettingsView } from '@/components/stitch';
+import { useStitchLayout } from '@/components/stitch/StitchLayout';
 import DashboardLoader from '@/components/stitch/DashboardLoader';
 import { MemberDeleteModal } from '@/components/stitch/MemberDeleteModal';
 import { cn } from '@/lib/utils';
@@ -324,7 +325,7 @@ const FamilyBuilderStitch: React.FC = () => {
     setEditingMember(null);
   };
 
-  const handleTabChange = (tab: string) => {
+  const handleTabChange = useCallback((tab: string) => {
     // Reset all views
     setShowSuggestions(false);
     setShowStatistics(false);
@@ -339,7 +340,7 @@ const FamilyBuilderStitch: React.FC = () => {
     else if (tab === 'settings') setShowSettings(true);
 
     setActiveTab(tab);
-  };
+  }, []);
 
   // Get selected member object
   const selectedMember = useMemo(() => {
@@ -354,6 +355,17 @@ const FamilyBuilderStitch: React.FC = () => {
 
   // Get package name - prefer REST API data over SubscriptionContext RPC
   const packageName = restPackageName || subscription?.package_name;
+
+  // Sync header overrides with layout
+  const { setHeaderOverrides } = useStitchLayout();
+  useEffect(() => {
+    setHeaderOverrides({
+      familyName: familyData?.name,
+      suggestionsCount: pendingSuggestionsCount,
+      onTabChange: handleTabChange,
+      isOwner,
+    });
+  }, [familyData?.name, pendingSuggestionsCount, isOwner, handleTabChange, setHeaderOverrides]);
 
   // Only show loader on dashboard tab and only on FIRST load
   const isFullyLoaded = !loading && packageLoaded && suggestionsLoaded;
@@ -375,20 +387,7 @@ const FamilyBuilderStitch: React.FC = () => {
   }
 
   return (
-    <div className={cn(
-      'theme-stitch min-h-screen overflow-hidden',
-      direction === 'rtl' && 'rtl'
-    )}>
-      {/* Header */}
-      <StitchHeader
-        familyName={familyData?.name || 'Shjrti'}
-        userName={userName}
-        packageName={packageName}
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        suggestionsCount={pendingSuggestionsCount}
-        isOwner={isOwner}
-      />
+    <div className="min-h-screen overflow-hidden">
 
       {/* Family Bar - NEW */}
       <StitchFamilyBar
