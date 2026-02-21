@@ -36,7 +36,11 @@ const StitchFamilyCreator = () => {
   const [showCropModal, setShowCropModal] = useState(false);
   const [editingWife, setEditingWife] = useState<{ id: string; first_name: string; last_name: string; name: string; isAlive: boolean; birthDate: Date | null; deathDate: Date | null; maritalStatus?: string } | null>(null);
   const [isAddingWife, setIsAddingWife] = useState(false);
-  const [currentSpouse, setCurrentSpouse] = useState<SpouseData | null>(null);
+  const [currentSpouse, setCurrentSpouse] = useState<SpouseData>({
+    id: crypto.randomUUID(), firstName: '', lastName: '', name: '', isAlive: true,
+    birthDate: null, deathDate: null, maritalStatus: 'married', isFamilyMember: false,
+    existingFamilyMemberId: '', croppedImage: null, biography: '', isSaved: false,
+  });
   const [spouseFamilyStatus, setSpouseFamilyStatus] = useState<'yes' | 'no' | null>('no');
   const [spouseCommandOpen, setSpouseCommandOpen] = useState(false);
   const [cropImage, setCropImage] = useState<string | null>(null);
@@ -280,7 +284,7 @@ const StitchFamilyCreator = () => {
   };
 
   const handleSpouseSave = () => {
-    if (!currentSpouse || !currentSpouse.firstName?.trim()) return;
+    if (!currentSpouse.firstName?.trim()) return;
     const fullName = `${currentSpouse.firstName} ${currentSpouse.lastName || ''}`.trim();
     if (editingWife) {
       setWives(wives.map(w => w.id === editingWife.id ? { ...w, first_name: currentSpouse.firstName, last_name: currentSpouse.lastName, name: fullName, isAlive: currentSpouse.isAlive, birthDate: currentSpouse.birthDate, deathDate: currentSpouse.deathDate, maritalStatus: currentSpouse.maritalStatus || 'married' } : w));
@@ -291,7 +295,6 @@ const StitchFamilyCreator = () => {
     }
     setIsAddingWife(false);
     setEditingWife(null);
-    setCurrentSpouse(null);
   };
 
   return (
@@ -666,7 +669,7 @@ const StitchFamilyCreator = () => {
       {/* SpouseDrawer */}
       <SpouseDrawer
         isOpen={isAddingWife}
-        onClose={() => { setIsAddingWife(false); setEditingWife(null); setCurrentSpouse(null); }}
+        onClose={() => { setIsAddingWife(false); setEditingWife(null); }}
         spouseType="wife"
         currentSpouse={currentSpouse}
         onSpouseChange={setCurrentSpouse}
