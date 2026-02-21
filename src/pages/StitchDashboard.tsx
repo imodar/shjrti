@@ -257,9 +257,9 @@ const StitchDashboard: React.FC = () => {
               </div>
             </div>
             
-            <div className="w-full lg:w-64 flex-shrink-0">
-              {!packageData ? (
-                /* Free Plan - Gold Upgrade CTA */
+            {!packageData && (
+              <div className="w-full lg:w-64 flex-shrink-0">
+                {/* Free Plan - Gold Upgrade CTA */}
                 <div className="rounded-2xl p-5 shadow-xl border-2 border-yellow-400/50 relative overflow-hidden group"
                   style={{ background: 'linear-gradient(135deg, hsl(45 100% 96%), hsl(40 80% 90%))' }}>
                   <div className="absolute top-0 right-0 w-28 h-28 rounded-full -mr-14 -mt-14 transition-transform group-hover:scale-110"
@@ -269,14 +269,14 @@ const StitchDashboard: React.FC = () => {
                       style={{ background: 'hsla(37, 60%, 60%, 0.2)' }}>
                       <span className="material-symbols-outlined text-3xl" style={{ color: 'hsl(37 60% 45%)' }}>workspace_premium</span>
                     </div>
-                    <h3 className="text-base font-bold mb-1" style={{ color: 'hsl(37 60% 30%)' }}>
-                      {t('dashboard.upgrade_plan', 'Upgrade Your Plan')}
+                    <h3 className="text-base font-bold mb-1" style={{ color: 'hsl(37 50% 35%)' }}>
+                      {t('dashboard.free_plan', 'Free Plan')}
                     </h3>
-                    <p className="text-xs mb-4" style={{ color: 'hsl(37 40% 45%)' }}>
-                      {t('dashboard.upgrade_description', 'Get more features and unlimited trees')}
+                    <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                      {t('dashboard.upgrade_text', 'Upgrade for unlimited features')}
                     </p>
                     <button
-                      onClick={() => navigate('/plan-selection')}
+                      onClick={() => navigate('/stitch-account')}
                       className="w-full text-white font-bold py-3 rounded-xl text-sm shadow-lg hover:brightness-110 hover:-translate-y-0.5 transition-all"
                       style={{ background: 'linear-gradient(135deg, hsl(37 70% 55%), hsl(30 70% 45%))' }}
                     >
@@ -287,32 +287,8 @@ const StitchDashboard: React.FC = () => {
                     </button>
                   </div>
                 </div>
-              ) : (
-                /* Paid Plan - Premium Card */
-                <div className="rounded-2xl p-5 shadow-xl border border-primary/20 relative overflow-hidden group"
-                  style={{ background: 'linear-gradient(135deg, hsl(var(--primary) / 0.05), hsl(var(--primary) / 0.12))' }}>
-                  <div className="absolute top-0 right-0 w-28 h-28 rounded-full -mr-14 -mt-14 bg-primary/10 transition-transform group-hover:scale-110" />
-                  <div className="relative z-10 text-center">
-                    <div className="w-14 h-14 bg-primary/15 text-primary rounded-xl flex items-center justify-center mx-auto mb-4">
-                      <span className="material-symbols-outlined text-3xl">verified</span>
-                    </div>
-                    <h3 className="text-base font-bold text-primary mb-1">{localizedPackageName}</h3>
-                    {subscription?.expires_at ? (
-                      <p className="text-xs text-muted-foreground font-medium mt-2">
-                        <span className="material-symbols-outlined text-sm align-middle mr-1">event</span>
-                        {t('dashboard.valid_until', 'Valid until {date}')
-                          .replace('{date}', new Date(subscription.expires_at).toLocaleDateString())}
-                      </p>
-                    ) : (
-                      <p className="text-xs text-muted-foreground font-medium mt-2">
-                        <span className="material-symbols-outlined text-sm align-middle mr-1">all_inclusive</span>
-                        {t('dashboard.active_subscription', 'Active Subscription')}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </section>
 
