@@ -16,6 +16,22 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'GET, PUT, OPTIONS',
 };
 
+// Check admin status
+async function checkAdmin(userId: string): Promise<boolean> {
+  const supabase = createServiceClient();
+  const { data, error } = await supabase
+    .from('admin_users')
+    .select('id')
+    .eq('user_id', userId)
+    .maybeSingle();
+  
+  if (error) {
+    console.error('[API] Admin check error:', error);
+    return false;
+  }
+  return !!data;
+}
+
 // Response helpers
 function successResponse<T>(data: T, status = 200) {
   return new Response(JSON.stringify({ success: true, data }), {
@@ -159,11 +175,19 @@ Deno.serve(async (req) => {
       body = await req.json().catch(() => ({}));
     }
     
-    console.log(`[API] ${req.method} /api-profiles`);
+    // Parse URL for action parameter
+    const url = new URL(req.url);
+    const action = url.searchParams.get('action');
+    
+    console.log(`[API] ${req.method} /api-profiles${action ? `?action=${action}` : ''}`);
     
     // Route based on HTTP method
     switch (req.method) {
       case 'GET':
+        if (action === 'check-admin') {
+          const isAdmin = await checkAdmin(user!.id);
+          return successResponse({ is_admin: isAdmin });
+        }
         return await handleGet(user!.id);
         
       case 'PUT':

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { getLocalizedText } from "@/lib/packageUtils";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
-import { TreePine, Settings, HelpCircle, LogOut, Menu } from "lucide-react";
+import { TreePine, Settings, HelpCircle, LogOut, Menu, Shield } from "lucide-react";
+import { profilesApi } from "@/lib/api/endpoints/profiles";
 import {
   HoverCard,
   HoverCardContent,
@@ -46,6 +47,15 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   const { user, signOut } = useAuth();
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      profilesApi.checkAdmin()
+        .then(res => setIsAdmin(res.is_admin))
+        .catch(() => setIsAdmin(false));
+    }
+  }, [user?.id]);
 
   const displayName = userName || user?.email?.split("@")[0] || "User";
   const initials = displayName.charAt(0).toUpperCase();
@@ -204,6 +214,18 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
                     <p className="text-[10px] text-muted-foreground">{t('nav.help.desc', 'Support & guidance')}</p>
                   </div>
                 </div>
+
+                {isAdmin && (
+                  <Link to="/admin" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-accent transition-colors group">
+                    <div className="p-1.5 bg-destructive/10 rounded-lg group-hover:bg-destructive/20 transition-colors">
+                      <Shield className="h-4 w-4 text-destructive" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">{t('nav.admin_panel', 'لوحة الإدارة')}</p>
+                      <p className="text-[10px] text-muted-foreground">{t('nav.admin_panel.desc', 'إدارة النظام والمستخدمين')}</p>
+                    </div>
+                  </Link>
+                )}
               </div>
 
               <div className="pt-1 border-t border-border">
