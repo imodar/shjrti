@@ -229,7 +229,7 @@ const StitchDashboard: React.FC = () => {
                 <div className="space-y-1">
                   <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
                     <span>{t('dashboard.family_trees_section', 'Tree Slots')}</span>
-                    <span className="text-foreground">{treesUsed} / {maxTrees} {t('dashboard.family_trees_section', 'Trees')} ({Math.round((treesUsed / maxTrees) * 100)}%)</span>
+                    <span className="text-foreground">{treesUsed} / {maxTrees} {t('dashboard.family_trees_section', 'Trees')}</span>
                   </div>
                   <div className="h-1 w-full bg-muted rounded-full overflow-hidden">
                     <div 
