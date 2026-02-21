@@ -379,6 +379,34 @@ const StitchAccount: React.FC = () => {
     }
   };
 
+  const handleDownloadInvoice = (invoiceId: string) => {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    const session = supabase.auth.getSession();
+    session.then(({ data }) => {
+      const token = data.session?.access_token || '';
+      const url = `${supabaseUrl}/functions/v1/generate-invoice-pdf?id=${invoiceId}`;
+      // Open in new tab with auth via fetch + blob
+      fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'apikey': anonKey,
+        },
+      })
+        .then(res => res.text())
+        .then(html => {
+          const w = window.open('', '_blank');
+          if (w) {
+            w.document.write(html);
+            w.document.close();
+          }
+        })
+        .catch(() => {
+          toast({ title: t('billing.download_error', 'Download Error'), variant: 'destructive' });
+        });
+    });
+  };
+
   const getInvoiceStatusInfo = (status: string) => {
     switch (status) {
       case 'paid': return { label: t('billing.paid', 'Paid'), bgClass: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600', borderClass: 'border-slate-100 dark:border-slate-800' };
@@ -753,7 +781,10 @@ const StitchAccount: React.FC = () => {
                         </>
                       )}
                       {invoice.payment_status !== 'pending' && invoice.amount > 0 && (
-                        <button className="px-4 py-2 border border-border text-muted-foreground rounded-xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center gap-2">
+                        <button 
+                          onClick={() => handleDownloadInvoice(invoice.id)}
+                          className="px-4 py-2 border border-border text-muted-foreground rounded-xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center gap-2"
+                        >
                           <span className="material-symbols-outlined text-lg">download</span>
                           {t('billing.download', 'Download')}
                         </button>
