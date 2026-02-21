@@ -351,27 +351,27 @@ export const StitchStatisticsView: React.FC<StatisticsViewProps> = ({
         {/* Monthly Birthday Grid + Tree Completeness */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Monthly Birthdays */}
-          <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-            <h3 className="font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
+          <div className="lg:col-span-2 bg-white dark:bg-slate-900 p-4 sm:p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
+            <h3 className="font-bold text-slate-800 dark:text-white mb-4 sm:mb-6 flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">calendar_month</span>
               {t('stats.birthday_grid', 'Monthly Birthday Grid')}
             </h3>
-            <div className="grid grid-cols-6 gap-3">
+            <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 sm:gap-3">
               {stats.monthlyBirthdays.map((count, i) => {
                 const isCurrentMonth = i === stats.currentMonth;
                 return (
                   <div
                     key={i}
-                    className={`p-3 rounded-xl border text-center ${
+                    className={`p-2 sm:p-3 rounded-xl border text-center min-w-0 ${
                       isCurrentMonth
                         ? 'bg-primary/10 border-primary/20'
                         : 'bg-slate-50 dark:bg-slate-800/40 border-slate-100 dark:border-slate-800'
                     }`}
                   >
-                    <div className={`text-[10px] font-bold uppercase ${isCurrentMonth ? 'text-primary' : 'text-slate-400'}`}>
+                    <div className={`text-[8px] sm:text-[10px] font-bold uppercase truncate ${isCurrentMonth ? 'text-primary' : 'text-slate-400'}`}>
                       {stats.monthNames[i]}
                     </div>
-                    <div className="text-lg font-bold text-primary">
+                    <div className="text-sm sm:text-lg font-bold text-primary">
                       {String(count).padStart(2, '0')}
                     </div>
                   </div>
