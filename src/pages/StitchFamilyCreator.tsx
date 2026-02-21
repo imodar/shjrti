@@ -5,7 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter, DialogPortal, DialogOverlay } from "@/components/ui/dialog";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { cn } from "@/lib/utils";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ArrowRight, ArrowLeft, Heart, UserPlus, CheckCircle, Plus, Upload, X, MoreVertical, Edit, Trash2, Crown, Users } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -651,19 +653,24 @@ const StitchFamilyCreator = () => {
 
       {/* Crop Modal */}
       <Dialog open={showCropModal} onOpenChange={setShowCropModal}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>قص الصورة</DialogTitle>
-            <DialogDescription>اسحب لتحريك الصورة أو استخدم عجلة الماوس للتكبير والتصغير</DialogDescription>
-          </DialogHeader>
-          <div className="relative w-full h-64 bg-black rounded-lg overflow-hidden">
-            {cropImage && <Cropper image={cropImage} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />}
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowCropModal(false)}>إلغاء</Button>
-            <Button onClick={handleCropSave}>حفظ</Button>
-          </DialogFooter>
-        </DialogContent>
+        <DialogPortal>
+          <DialogOverlay className="z-[80]" />
+          <DialogPrimitive.Content className={cn(
+            "fixed left-[50%] top-[50%] z-[80] grid w-full max-w-md translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg"
+          )}>
+            <DialogHeader>
+              <DialogTitle>قص الصورة</DialogTitle>
+              <DialogDescription>اسحب لتحريك الصورة أو استخدم عجلة الماوس للتكبير والتصغير</DialogDescription>
+            </DialogHeader>
+            <div className="relative w-full h-64 bg-black rounded-lg overflow-hidden">
+              {cropImage && <Cropper image={cropImage} crop={crop} zoom={zoom} aspect={1} onCropChange={setCrop} onZoomChange={setZoom} onCropComplete={onCropComplete} />}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowCropModal(false)}>إلغاء</Button>
+              <Button onClick={handleCropSave}>حفظ</Button>
+            </DialogFooter>
+          </DialogPrimitive.Content>
+        </DialogPortal>
       </Dialog>
 
       {/* SpouseDrawer */}
