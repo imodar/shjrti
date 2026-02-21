@@ -29,6 +29,7 @@ interface StitchHeaderProps {
   hideNav?: boolean;
   isOwner?: boolean;
   variant?: 'builder' | 'account';
+  isLoadingLayout?: boolean;
 }
 
 export const StitchHeader: React.FC<StitchHeaderProps> = ({
@@ -41,6 +42,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   hideNav = false,
   isOwner = true,
   variant = 'builder',
+  isLoadingLayout = false,
 }) => {
   const navigate = useNavigate();
   const { t, currentLanguage } = useLanguage();
@@ -155,13 +157,25 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
           <HoverCard openDelay={0} closeDelay={150}>
             <HoverCardTrigger asChild>
               <div className="flex items-center gap-2 md:gap-3 cursor-pointer group">
-                <div className="w-9 h-9 md:w-11 md:h-11 lg:w-14 lg:h-14 rounded-full bg-gradient-to-tr from-primary to-emerald-400 border-2 border-card shadow-md flex items-center justify-center text-primary-foreground font-bold text-sm md:text-lg lg:text-xl group-hover:scale-105 transition-transform">
-                  {initials}
-                </div>
-                <div className="text-start hidden lg:block">
-                  <p className="text-sm lg:text-base font-bold group-hover:text-primary transition-colors truncate max-w-[100px] lg:max-w-none">{displayName}</p>
-                  <p className="text-xs lg:text-sm text-muted-foreground truncate max-w-[100px] lg:max-w-none">{localizedPackageName}</p>
-                </div>
+                {isLoadingLayout ? (
+                  <>
+                    <div className="w-9 h-9 md:w-11 md:h-11 lg:w-14 lg:h-14 rounded-full bg-muted animate-pulse" />
+                    <div className="text-start hidden lg:block space-y-1.5">
+                      <div className="h-4 w-20 bg-muted rounded animate-pulse" />
+                      <div className="h-3 w-16 bg-muted rounded animate-pulse" />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-9 h-9 md:w-11 md:h-11 lg:w-14 lg:h-14 rounded-full bg-gradient-to-tr from-primary to-emerald-400 border-2 border-card shadow-md flex items-center justify-center text-primary-foreground font-bold text-sm md:text-lg lg:text-xl group-hover:scale-105 transition-transform">
+                      {initials}
+                    </div>
+                    <div className="text-start hidden lg:block">
+                      <p className="text-sm lg:text-base font-bold group-hover:text-primary transition-colors truncate max-w-[100px] lg:max-w-none">{displayName}</p>
+                      <p className="text-xs lg:text-sm text-muted-foreground truncate max-w-[100px] lg:max-w-none">{localizedPackageName}</p>
+                    </div>
+                  </>
+                )}
               </div>
             </HoverCardTrigger>
 
@@ -274,13 +288,25 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
           {/* User info in mobile menu */}
           <div className="p-4 border-b border-border bg-muted/50">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-emerald-400 flex items-center justify-center text-primary-foreground font-bold">
-                {initials}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold truncate">{displayName}</p>
-                <p className="text-xs text-muted-foreground truncate">{localizedPackageName}</p>
-              </div>
+              {isLoadingLayout ? (
+                <>
+                  <div className="w-10 h-10 rounded-full bg-muted animate-pulse" />
+                  <div className="flex-1 min-w-0 space-y-1.5">
+                    <div className="h-4 w-24 bg-muted rounded animate-pulse" />
+                    <div className="h-3 w-16 bg-muted rounded animate-pulse" />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-emerald-400 flex items-center justify-center text-primary-foreground font-bold">
+                    {initials}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold truncate">{displayName}</p>
+                    <p className="text-xs text-muted-foreground truncate">{localizedPackageName}</p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 

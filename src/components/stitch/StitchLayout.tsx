@@ -127,6 +127,7 @@ const StitchLayout: React.FC = () => {
         userName={userName}
         packageName={packageName}
         hideNav={hideNav}
+        isLoadingLayout={isLoading}
         familyName={headerOverrides.familyName}
         suggestionsCount={headerOverrides.suggestionsCount}
         onTabChange={headerOverrides.onTabChange}
