@@ -187,7 +187,7 @@ const StitchDashboard: React.FC = () => {
   };
 
   const handleCreateTree = () => {
-    navigate('/family-creator');
+    navigate('/stitch-family-creator');
   };
 
   const handleManageTree = (familyId: string) => {
