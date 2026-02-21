@@ -79,6 +79,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
   };
 
   if (!currentSpouse) return null;
+  // Note: Keep DOM mounted even when !isOpen so CSS transitions work
 
   return (
     <>
