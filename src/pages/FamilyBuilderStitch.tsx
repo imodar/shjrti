@@ -401,6 +401,19 @@ const FamilyBuilderStitch: React.FC = () => {
         }] : undefined}
       />
 
+      {/* Mobile/Tablet - Show Members List Bar (like old design) */}
+      {!showGallery && !showSettings && !isSidebarOpen && (
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="lg:hidden flex items-center justify-center gap-2 w-full py-3 px-4 bg-card border-b border-border text-foreground hover:bg-muted transition-colors"
+        >
+          <span className="material-icons-round text-lg">menu</span>
+          <span className="text-sm font-bold">
+            {t('family_builder.show_members_list', 'عرض قائمة الأعضاء')} ({stats.totalMembers})
+          </span>
+        </button>
+      )}
+
       {/* Main Layout */}
       <main className="flex h-[calc(100vh-120px)]">
         {/* Left Sidebar - Members List (hidden in gallery view which has its own sidebar) */}
@@ -477,19 +490,6 @@ const FamilyBuilderStitch: React.FC = () => {
           />
         )}
       </main>
-
-      {/* Mobile/Tablet - Toggle Members List Button */}
-      {!showGallery && !showSettings && !isSidebarOpen && (
-        <button
-          onClick={() => setIsSidebarOpen(true)}
-          className="fixed top-1/2 -translate-y-1/2 z-40 lg:hidden ltr:left-0 rtl:right-0 bg-primary text-primary-foreground shadow-lg px-2 py-4 ltr:rounded-r-xl rtl:rounded-l-xl flex flex-col items-center gap-1 hover:brightness-110 transition-all"
-        >
-          <span className="material-icons-round text-lg">groups</span>
-          <span className="text-[10px] font-bold writing-mode-vertical" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>
-            {t('family_builder.members_title', 'Members')}
-          </span>
-        </button>
-      )}
 
       {/* Member Delete Confirmation Modal */}
       <MemberDeleteModal
