@@ -110,23 +110,35 @@ export const AddFounderParentDrawer: React.FC<AddFounderParentDrawerProps> = ({
   ];
   const currentStepIndex = steps.findIndex(s => s.key === currentStep);
 
-  if (!isOpen) return null;
+  const isRTL = direction === 'rtl';
 
   return (
-    <div className="fixed inset-0 z-[60] flex justify-end">
-      {/* Backdrop */}
+    <>
+      {/* Overlay - always mounted, animated via CSS */}
       <div
-        className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm animate-fade-in"
+        className={cn(
+          "fixed inset-0 z-[60]",
+          "bg-slate-900/40 backdrop-blur-sm",
+          "transition-opacity duration-300 ease-out",
+          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        )}
         onClick={handleClose}
       />
 
-      {/* Drawer */}
-      <div
-        className="relative w-full max-w-[700px] h-full bg-slate-50 dark:bg-background shadow-2xl flex flex-col"
+      {/* Drawer - always mounted, slides in/out */}
+      <aside
+        className={cn(
+          "fixed top-0 h-full w-full max-w-[700px] bg-slate-50 dark:bg-background shadow-2xl z-[70] flex flex-col",
+          "transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          isOpen ? "" : "pointer-events-none",
+          isRTL
+            ? cn("left-0 border-r border-slate-200 dark:border-slate-800", isOpen ? "translate-x-0" : "-translate-x-full")
+            : cn("right-0 border-l border-slate-200 dark:border-slate-800", isOpen ? "translate-x-0" : "translate-x-full")
+        )}
         style={{
-          animation: direction === 'rtl'
-            ? 'slide-in-from-left-full 0.3s ease-out forwards'
-            : 'slide-in-from-right-full 0.3s ease-out forwards'
+          boxShadow: isOpen
+            ? (isRTL ? '20px 0 60px -15px rgba(0,0,0,0.3)' : '-20px 0 60px -15px rgba(0,0,0,0.3)')
+            : 'none'
         }}
       >
         {/* Header */}
@@ -252,8 +264,8 @@ export const AddFounderParentDrawer: React.FC<AddFounderParentDrawerProps> = ({
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </aside>
+    </>
   );
 
   // === Step 1: Warning ===
