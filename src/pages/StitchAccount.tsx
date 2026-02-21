@@ -80,6 +80,7 @@ const StitchAccount: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [scheduledDowngrade, setScheduledDowngrade] = useState<any>(null);
   const [cancellingDowngrade, setCancellingDowngrade] = useState(false);
+  const [downloadingInvoiceId, setDownloadingInvoiceId] = useState<string | null>(null);
 
   // Query for scheduled package changes
   const { data: scheduledChanges, refetch: refetchScheduledChanges } = useQuery({
@@ -379,32 +380,25 @@ const StitchAccount: React.FC = () => {
     }
   };
 
-  const handleDownloadInvoice = (invoiceId: string) => {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-    const session = supabase.auth.getSession();
-    session.then(({ data }) => {
+  const handleDownloadInvoice = async (invoiceId: string) => {
+    setDownloadingInvoiceId(invoiceId);
+    try {
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const { data } = await supabase.auth.getSession();
       const token = data.session?.access_token || '';
       const url = `${supabaseUrl}/functions/v1/generate-invoice-pdf?id=${invoiceId}`;
-      // Open in new tab with auth via fetch + blob
-      fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'apikey': anonKey,
-        },
-      })
-        .then(res => res.text())
-        .then(html => {
-          const w = window.open('', '_blank');
-          if (w) {
-            w.document.write(html);
-            w.document.close();
-          }
-        })
-        .catch(() => {
-          toast({ title: t('billing.download_error', 'Download Error'), variant: 'destructive' });
-        });
-    });
+      const res = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${token}`, 'apikey': anonKey },
+      });
+      const html = await res.text();
+      const w = window.open('', '_blank');
+      if (w) { w.document.write(html); w.document.close(); }
+    } catch {
+      toast({ title: t('billing.download_error', 'Download Error'), variant: 'destructive' });
+    } finally {
+      setDownloadingInvoiceId(null);
+    }
   };
 
   const getInvoiceStatusInfo = (status: string) => {
@@ -783,9 +777,14 @@ const StitchAccount: React.FC = () => {
                       {invoice.payment_status !== 'pending' && invoice.amount > 0 && (
                         <button 
                           onClick={() => handleDownloadInvoice(invoice.id)}
-                          className="px-4 py-2 border border-border text-muted-foreground rounded-xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center gap-2"
+                          disabled={!!downloadingInvoiceId}
+                          className="px-4 py-2 border border-border text-muted-foreground rounded-xl text-sm font-bold hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <span className="material-symbols-outlined text-lg">download</span>
+                          {downloadingInvoiceId === invoice.id ? (
+                            <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                          ) : (
+                            <span className="material-symbols-outlined text-lg">download</span>
+                          )}
                           {t('billing.download', 'Download')}
                         </button>
                       )}
