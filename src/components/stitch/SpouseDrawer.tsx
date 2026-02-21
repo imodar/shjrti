@@ -78,29 +78,31 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
     }
   };
 
-  if (!isOpen || !currentSpouse) return null;
+  if (!currentSpouse) return null;
 
   return (
     <>
-      {/* Overlay */}
+      {/* Overlay - always mounted, animated via CSS */}
       <div 
         className={cn(
-          "fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60]",
-          "transition-all duration-500 ease-out",
+          "fixed inset-0 z-[60]",
+          "bg-slate-900/40 backdrop-blur-sm",
+          "transition-opacity duration-300 ease-out",
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         )}
         onClick={onClose}
       />
       
-      {/* Drawer */}
+      {/* Drawer - always mounted, slides in/out */}
       <aside 
         className={cn(
-          "fixed top-0 h-full w-[400px] bg-white dark:bg-slate-900 shadow-2xl z-[70] flex flex-col",
+          "fixed top-0 h-full w-[400px] max-w-[90vw] bg-white dark:bg-slate-900 shadow-2xl z-[70] flex flex-col",
           "border-slate-200 dark:border-slate-800",
-          "transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          "transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
+          isOpen ? "" : "pointer-events-none",
           isRTL 
-            ? cn("left-0 border-r", isOpen ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0")
-            : cn("right-0 border-l", isOpen ? "translate-x-0 opacity-100" : "translate-x-full opacity-0")
+            ? cn("left-0 border-r", isOpen ? "translate-x-0" : "-translate-x-full")
+            : cn("right-0 border-l", isOpen ? "translate-x-0" : "translate-x-full")
         )}
         style={{
           boxShadow: isOpen 
