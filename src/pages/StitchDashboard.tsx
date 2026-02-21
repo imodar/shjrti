@@ -42,9 +42,9 @@ const StitchDashboard: React.FC = () => {
   const [packageLoaded, setPackageLoaded] = useState(false);
 
   const loadingSteps = [
-    { id: 'profile', labelAr: 'جاري التحقق من بيانات الحساب...', labelEn: 'Verifying account data...', completed: profileLoaded },
-    { id: 'families', labelAr: 'جاري تحميل أشجار العائلة...', labelEn: 'Loading family trees...', completed: familiesLoaded },
-    { id: 'package', labelAr: 'جاري التحقق من الاشتراك...', labelEn: 'Checking subscription...', completed: packageLoaded },
+    { id: 'profile', labelAr: t('loading.verifying_account', 'جاري التحقق من بيانات الحساب...'), labelEn: t('loading.verifying_account', 'Verifying account data...'), completed: profileLoaded },
+    { id: 'families', labelAr: t('loading.loading_trees', 'جاري تحميل أشجار العائلة...'), labelEn: t('loading.loading_trees', 'Loading family trees...'), completed: familiesLoaded },
+    { id: 'package', labelAr: t('loading.checking_subscription', 'جاري التحقق من الاشتراك...'), labelEn: t('loading.checking_subscription', 'Checking subscription...'), completed: packageLoaded },
   ];
 
   const [displayName, setDisplayName] = useState(user?.email?.split('@')[0] || 'User');
