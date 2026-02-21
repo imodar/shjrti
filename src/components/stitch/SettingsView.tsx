@@ -654,19 +654,13 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
                                 </div>
                               ) : opt.value === 'family_only' ? (
                                 <div className="flex gap-1.5">
-                                  <span className="bg-destructive/10 text-destructive rounded px-2 py-0.5 blur-[2px] select-none">سارة</span>
+                                  <span className="bg-destructive/10 text-destructive/60 rounded px-2 py-0.5 text-[10px] select-none">الاسم الأول مخفي</span>
                                   <span className="bg-muted rounded px-2 py-0.5 text-foreground">الأمير</span>
                                 </div>
                               ) : (
-                                <span className="bg-destructive/10 text-destructive rounded px-2 py-0.5 blur-[2px] select-none">سارة الأمير</span>
+                                <span className="bg-destructive/10 text-destructive/60 rounded px-2 py-0.5 text-[10px] select-none">الاسم الأول واسم العائلة مخفي</span>
                               )}
                             </div>
-                            {opt.value === 'family_only' && (
-                              <span className="text-[10px] text-destructive/70">الاسم الأول مخفي</span>
-                            )}
-                            {opt.value === 'hidden' && (
-                              <span className="text-[10px] text-destructive/70">الاسم الأول واسم العائلة مخفي</span>
-                            )}
                           </div>
                         </button>
                       );
