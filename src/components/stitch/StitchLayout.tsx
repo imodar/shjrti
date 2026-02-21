@@ -82,16 +82,16 @@ const StitchLayout: React.FC = () => {
           subscriptionsApi.get().catch(() => null),
         ]);
 
-        if (profileRes?.data) {
-          const p = profileRes.data;
+        if (profileRes) {
+          const p = profileRes as any;
           setUserName(
             [p.first_name, p.last_name].filter(Boolean).join(' ') ||
             user.email?.split('@')[0] || 'User'
           );
         }
 
-        if (subRes?.data) {
-          const sub = subRes.data as any;
+        if (subRes) {
+          const sub = subRes as any;
           const pkgName = sub.packages?.name || sub.package?.name;
           if (pkgName) {
             setPackageName(pkgName);
