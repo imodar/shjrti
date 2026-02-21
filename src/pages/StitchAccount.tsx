@@ -8,6 +8,7 @@ import { usePackageTransition } from '@/hooks/usePackageTransition';
 import { profilesApi, subscriptionsApi, invoicesApi, packagesApi, scheduledChangesApi } from '@/lib/api';
 import { familiesApi } from '@/lib/api/endpoints/families';
 // Header is handled by StitchLayout
+import { GlobalFooterSimplified } from '@/components/GlobalFooterSimplified';
 import DashboardLoader from '@/components/stitch/DashboardLoader';
 import { useToast } from '@/hooks/use-toast';
 import AccountDeleteModal from '@/components/AccountDeleteModal';
@@ -997,6 +998,7 @@ const StitchAccount: React.FC = () => {
         onClose={() => setShowDeleteAccountModal(false)}
         userStats={stats}
       />
+      <GlobalFooterSimplified />
     </div>
   );
 };
