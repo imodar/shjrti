@@ -269,6 +269,20 @@ async function handleUpdate(userId: string, familyId: string, payload: Record<st
   const { id, creator_id, created_at, ...updateData } = payload;
   
   const supabase = createServiceClient();
+
+  // If share_password is being set (non-null, non-empty string), hash it server-side
+  if (typeof updateData.share_password === 'string' && updateData.share_password.trim()) {
+    const { data: hashedPassword, error: hashError } = await supabase
+      .rpc('hash_share_password', { plain_password: updateData.share_password.trim() });
+    
+    if (hashError) {
+      console.error('[API] Password hashing error:', hashError);
+      return errorResponse('HASH_ERROR', 'Failed to hash password', 500);
+    }
+    updateData.share_password = hashedPassword;
+  }
+  // If share_password is explicitly null, allow clearing it
+  
   const { data, error } = await supabase
     .from('families')
     .update({ ...updateData, updated_at: new Date().toISOString() })
