@@ -478,25 +478,18 @@ const FamilyBuilderStitch: React.FC = () => {
         )}
       </main>
 
-      {/* Mobile Overlay - Desktop Optimized Message */}
-      <div className="fixed inset-0 bg-card z-[100] lg:hidden flex flex-col items-center justify-center p-8 text-center">
-        <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6">
-          <span className="material-icons-round text-4xl">desktop_windows</span>
-        </div>
-        <h2 className="text-2xl font-bold mb-2">{t('account.desktop_optimized', 'Desktop Optimized')}</h2>
-        <p className="text-muted-foreground mb-8 max-w-xs">
-          {t('account.desktop_optimized_desc', 'Shjrti Dashboard is best experienced on a desktop or tablet.')}
-        </p>
-        <button 
-          onClick={() => {
-            const overlay = document.querySelector('.lg\\:hidden.fixed.inset-0');
-            if (overlay) overlay.classList.add('hidden');
-          }}
-          className="px-6 py-3 bg-primary text-primary-foreground font-bold rounded-xl"
+      {/* Mobile/Tablet - Toggle Members List Button */}
+      {!showGallery && !showSettings && !isSidebarOpen && (
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="fixed top-1/2 -translate-y-1/2 z-40 lg:hidden ltr:left-0 rtl:right-0 bg-primary text-primary-foreground shadow-lg px-2 py-4 ltr:rounded-r-xl rtl:rounded-l-xl flex flex-col items-center gap-1 hover:brightness-110 transition-all"
         >
-          {t('account.continue_anyway', 'Continue Anyway')}
+          <span className="material-icons-round text-lg">groups</span>
+          <span className="text-[10px] font-bold writing-mode-vertical" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>
+            {t('family_builder.members_title', 'Members')}
+          </span>
         </button>
-      </div>
+      )}
 
       {/* Member Delete Confirmation Modal */}
       <MemberDeleteModal

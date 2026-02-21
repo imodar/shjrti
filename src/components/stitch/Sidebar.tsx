@@ -124,12 +124,38 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
   };
 
   return (
-    <aside className={cn(
-      'w-80 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col z-30 shadow-xl lg:shadow-none',
-      !isOpen && 'hidden'
-    )}>
+    <>
+      {/* Mobile/Tablet backdrop */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden animate-fade-in"
+          onClick={onClose}
+        />
+      )}
+      
+      <aside className={cn(
+        'w-80 bg-white dark:bg-slate-900 border-e border-slate-200 dark:border-slate-800 flex flex-col z-50 shadow-xl',
+        // Desktop: static sidebar
+        'lg:relative lg:shadow-none lg:z-30',
+        // Mobile/Tablet: fixed drawer
+        'max-lg:fixed max-lg:inset-y-0 max-lg:top-0',
+        direction === 'rtl' ? 'max-lg:right-0' : 'max-lg:left-0',
+        // Slide animation
+        isOpen 
+          ? 'max-lg:animate-slide-in-right' 
+          : 'max-lg:hidden',
+        // Desktop: respect isOpen for settings/gallery hide
+        !isOpen && 'lg:hidden'
+      )}>
       {/* Header */}
       <div className="p-6 border-b border-slate-100 dark:border-slate-800">
+        {/* Mobile close button */}
+        <button 
+          onClick={onClose}
+          className="lg:hidden mb-3 p-1.5 rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground transition-colors"
+        >
+          <span className="material-icons-round text-xl">close</span>
+        </button>
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="font-bold text-slate-800 dark:text-slate-100">{t('family_builder.members_title', 'Family Members')}</h2>
@@ -355,6 +381,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
         </button>
       </div>
     </aside>
+    </>
   );
 };
 
