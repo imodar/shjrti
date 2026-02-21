@@ -92,8 +92,9 @@ const StitchLayout: React.FC = () => {
 
         if (subRes?.data) {
           const sub = subRes.data as any;
-          if (sub.package?.name) {
-            setPackageName(sub.package.name);
+          const pkgName = sub.packages?.name || sub.package?.name;
+          if (pkgName) {
+            setPackageName(pkgName);
           }
         }
 
