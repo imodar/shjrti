@@ -529,6 +529,54 @@ const StitchAccount: React.FC = () => {
             <p className="text-sm text-muted-foreground">{t('billing.choose_plan_desc', 'Pick the plan that best fits your family history needs.')}</p>
           </div>
 
+          {/* Scheduled Downgrade Banner */}
+          {scheduledDowngrade && (
+            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-amber-600 dark:text-amber-400">schedule</span>
+                  <h4 className="font-bold text-amber-800 dark:text-amber-300 text-sm">{t('billing.scheduled_change_title', 'تغيير مجدول للباقة')}</h4>
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full">
+                  {t('billing.pending', 'قيد الانتظار')}
+                </span>
+              </div>
+              <div className="space-y-1.5 text-sm">
+                {scheduledDowngrade.target_package && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">{t('billing.new_package', 'الباقة الجديدة:')}</span>
+                    <span className="font-semibold text-foreground">
+                      {typeof scheduledDowngrade.target_package.name === 'object' 
+                        ? (scheduledDowngrade.target_package.name?.ar || scheduledDowngrade.target_package.name?.en) 
+                        : scheduledDowngrade.target_package.name}
+                    </span>
+                  </div>
+                )}
+                {scheduledDowngrade.scheduled_date && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">{t('billing.apply_date', 'تاريخ التطبيق:')}</span>
+                    <span className="font-semibold text-foreground">
+                      {new Date(scheduledDowngrade.scheduled_date).toLocaleDateString('ar-SA')}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground">{t('billing.auto_apply_note', 'سيتم تطبيق الباقة الجديدة تلقائياً عند انتهاء اشتراكك الحالي')}</p>
+              <button
+                onClick={cancelScheduledDowngrade}
+                disabled={cancellingDowngrade}
+                className="w-full py-2 px-4 rounded-xl text-sm font-bold border-2 border-amber-300 dark:border-amber-700 text-amber-700 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {cancellingDowngrade ? (
+                  <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <span className="material-symbols-outlined text-lg">close</span>
+                )}
+                {cancellingDowngrade ? t('billing.cancelling', 'جاري الإلغاء...') : t('billing.cancel_scheduled', 'إلغاء التغيير المجدول')}
+              </button>
+            </div>
+          )}
+
           {/* Plan Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {packagesLoading ? (
