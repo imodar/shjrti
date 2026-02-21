@@ -44,6 +44,13 @@ export const profilesApi = {
   update: async (input: ProfileUpdateInput): Promise<Profile> => {
     return apiClient.put<Profile>(FUNCTION_NAME, input);
   },
+
+  /**
+   * Check if current user is an admin
+   */
+  checkAdmin: async (): Promise<{ is_admin: boolean }> => {
+    return apiClient.get<{ is_admin: boolean }>(FUNCTION_NAME, { action: 'check-admin' });
+  },
 };
 
 export default profilesApi;
