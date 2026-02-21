@@ -375,16 +375,32 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
             {/* Photo Upload (Optional) */}
             {spouseFamilyStatus !== 'yes' && (
               isImageUploadEnabled ? (
-                <div onClick={onImageUploadClick} className={`p-4 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${
-                  spouseType === 'husband'
-                    ? 'border-blue-500/20 bg-blue-50/30 dark:bg-blue-900/5 hover:bg-blue-50/50'
-                    : 'border-pink-500/20 bg-pink-50/30 dark:bg-pink-900/5 hover:bg-pink-50/50'
-                }`}>
-                  <span className={`material-symbols-outlined ${spouseType === 'husband' ? 'text-blue-500' : 'text-pink-500'}`}>upload_file</span>
-                  <span className={`text-xs font-medium ${spouseType === 'husband' ? 'text-blue-600' : 'text-pink-600'}`}>
-                    {t('member.upload_photo_optional', 'Upload Photo (Optional)')}
-                  </span>
-                </div>
+                currentSpouse.croppedImage ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="relative">
+                      <img src={currentSpouse.croppedImage} alt="Spouse" className="w-20 h-20 rounded-full object-cover border-2 border-pink-300 dark:border-pink-600" />
+                      <button
+                        type="button"
+                        onClick={onImageUploadClick}
+                        className="absolute -bottom-1 -end-1 w-7 h-7 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full flex items-center justify-center shadow-sm hover:bg-slate-50 transition-colors"
+                      >
+                        <span className="material-icons-round text-sm text-slate-500">edit</span>
+                      </button>
+                    </div>
+                    <span className="text-[10px] text-slate-400">{t('member.click_to_change', 'Click to change')}</span>
+                  </div>
+                ) : (
+                  <div onClick={onImageUploadClick} className={`p-4 rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors ${
+                    spouseType === 'husband'
+                      ? 'border-blue-500/20 bg-blue-50/30 dark:bg-blue-900/5 hover:bg-blue-50/50'
+                      : 'border-pink-500/20 bg-pink-50/30 dark:bg-pink-900/5 hover:bg-pink-50/50'
+                  }`}>
+                    <span className={`material-symbols-outlined ${spouseType === 'husband' ? 'text-blue-500' : 'text-pink-500'}`}>upload_file</span>
+                    <span className={`text-xs font-medium ${spouseType === 'husband' ? 'text-blue-600' : 'text-pink-600'}`}>
+                      {t('member.upload_photo_optional', 'Upload Photo (Optional)')}
+                    </span>
+                  </div>
+                )
               ) : (
                 <div className="p-4 rounded-xl border-2 border-dashed border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10 flex flex-col items-center justify-center gap-1">
                   <span className="material-symbols-outlined text-amber-500">lock</span>
