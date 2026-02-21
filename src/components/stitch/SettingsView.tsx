@@ -53,6 +53,16 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
   const [tokenExpiresAt, setTokenExpiresAt] = useState<string | null>(familyData?.share_token_expires_at || null);
   const [isGeneratingToken, setIsGeneratingToken] = useState(false);
 
+  // Password protection
+  const [sharePassword, setSharePassword] = useState('');
+  const [isEditingPassword, setIsEditingPassword] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const hasExistingPassword = !!familyData?.share_password;
+
+  // Gallery sharing
+  const [shareGallery, setShareGallery] = useState(familyData?.share_gallery || false);
+  const [isUpdatingGallery, setIsUpdatingGallery] = useState(false);
+
   // Modals
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isDomainModalOpen, setIsDomainModalOpen] = useState(false);
@@ -71,6 +81,7 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
       setFemalePhotoHidden(familyData.female_photo_hidden || false);
       setShareToken(familyData.share_token || null);
       setTokenExpiresAt(familyData.share_token_expires_at || null);
+      setShareGallery(familyData.share_gallery || false);
     }
   }, [familyData]);
 
@@ -184,6 +195,60 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
 
   const handleDeleteSuccess = (treeId: string) => {
     navigate('/stitch-dashboard');
+  };
+
+  // Password protection handlers
+  const handleSavePassword = async () => {
+    if (!sharePassword.trim()) return;
+    setIsUpdatingPassword(true);
+    try {
+      // API edge function handles hashing server-side
+      await familiesApi.update(familyId, { share_password: sharePassword.trim() });
+      toast({ title: t('tree_settings.toast.saved', 'تم الحفظ'), description: t('tree_settings.toast.password_saved', 'تم حفظ كلمة المرور بنجاح') });
+      setIsEditingPassword(false);
+      setSharePassword('');
+      onFamilyUpdated?.();
+    } catch (e) {
+      console.error('Error saving password:', e);
+      toast({ title: t('common.error', 'خطأ'), description: t('tree_settings.toast.password_save_failed', 'فشل حفظ كلمة المرور'), variant: 'destructive' });
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
+
+  const handleDeletePassword = async () => {
+    setIsUpdatingPassword(true);
+    try {
+      await familiesApi.update(familyId, { share_password: null });
+      toast({ title: t('tree_settings.toast.saved', 'تم الحفظ'), description: t('tree_settings.toast.password_removed', 'تم إزالة كلمة المرور') });
+      onFamilyUpdated?.();
+    } catch (e) {
+      console.error('Error removing password:', e);
+      toast({ title: t('common.error', 'خطأ'), description: t('tree_settings.toast.error', 'حدث خطأ'), variant: 'destructive' });
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
+
+  // Gallery sharing handler
+  const handleGalleryToggle = async (checked: boolean) => {
+    setIsUpdatingGallery(true);
+    try {
+      await familiesApi.update(familyId, { share_gallery: checked });
+      setShareGallery(checked);
+      toast({
+        title: checked ? t('tree_settings.gallery_sharing_enabled', 'تم تفعيل معرض الصور') : t('tree_settings.gallery_sharing_disabled', 'تم إيقاف معرض الصور'),
+        description: checked
+          ? t('tree_settings.gallery_now_available', 'يمكن للزوار الآن مشاهدة ألبوم الصور')
+          : t('tree_settings.gallery_no_longer_available', 'لن يتمكن الزوار من مشاهدة ألبوم الصور'),
+      });
+      onFamilyUpdated?.();
+    } catch (e) {
+      console.error('Error updating gallery sharing:', e);
+      toast({ title: t('common.error', 'خطأ'), description: t('tree_settings.gallery_update_error', 'فشل تحديث إعدادات المعرض'), variant: 'destructive' });
+    } finally {
+      setIsUpdatingGallery(false);
+    }
   };
 
   // Privacy option labels
@@ -361,25 +426,141 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
                   onConfigure={() => setIsDomainModalOpen(true)}
                 />
 
-                {/* Password Protection - Premium */}
-                <PremiumFeatureRow
-                  icon="lock_person"
-                  title={t('tree_settings.password_protection', 'حماية بكلمة مرور')}
-                  description={t('tree_settings.password_protection_desc', 'اطلب كلمة مرور للزوار للوصول إلى بيانات الشجرة')}
-                  isAvailable={hasCustomDomainFeature}
-                  isLoading={checkingFeatures}
-                  onUpgrade={() => navigate('/plan-selection')}
-                />
+                {/* Password Protection */}
+                {checkingFeatures ? (
+                  <div className="p-5 border border-dashed border-border rounded-2xl flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+                  </div>
+                ) : hasCustomDomainFeature ? (
+                  <div className={`p-5 rounded-2xl border ${hasExistingPassword ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800' : 'bg-primary/5 border-primary/20'}`}>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${hasExistingPassword ? 'bg-green-100 dark:bg-green-900/30' : 'bg-primary/10'}`}>
+                          <span className={`material-symbols-outlined ${hasExistingPassword ? 'text-green-600' : 'text-primary'}`}>lock_person</span>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-foreground text-sm">{t('tree_settings.password_protection', 'حماية بكلمة مرور')}</span>
+                            {hasExistingPassword && <span className="material-symbols-outlined text-green-600 text-lg">check_circle</span>}
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {hasExistingPassword
+                              ? t('tree_settings.password_protected_desc', 'الشجرة محمية بكلمة مرور')
+                              : t('tree_settings.password_protection_desc', 'احمِ شجرتك بكلمة مرور لمنع الوصول غير المصرح')}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
 
-                {/* Public Photo Gallery - Premium */}
-                <PremiumFeatureRow
-                  icon="collections"
-                  title={t('tree_settings.gallery_sharing_title', 'معرض الصور العام')}
-                  description={t('tree_settings.gallery_sharing_premium_desc', 'السماح للزوار بتصفح ألبومات صور العائلة')}
-                  isAvailable={hasImageUploadFeature}
-                  isLoading={checkingFeatures}
-                  onUpgrade={() => navigate('/plan-selection')}
-                />
+                    {isEditingPassword ? (
+                      <div className="space-y-3 mt-4">
+                        <input
+                          type="password"
+                          value={sharePassword}
+                          onChange={(e) => setSharePassword(e.target.value)}
+                          placeholder={t('tree_settings.enter_password', 'أدخل كلمة المرور الجديدة')}
+                          className="w-full px-4 py-3 rounded-xl border border-border bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={handleSavePassword}
+                            disabled={isUpdatingPassword || !sharePassword.trim()}
+                            className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-xs font-bold hover:bg-primary/90 transition-colors disabled:opacity-50"
+                          >
+                            {isUpdatingPassword ? t('tree_settings.saving', 'جاري الحفظ...') : t('tree_settings.save', 'حفظ')}
+                          </button>
+                          <button
+                            onClick={() => { setIsEditingPassword(false); setSharePassword(''); }}
+                            className="px-4 py-2 border border-border rounded-xl text-xs font-bold text-foreground hover:bg-muted transition-colors"
+                          >
+                            {t('tree_settings.cancel', 'إلغاء')}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex gap-2 mt-3">
+                        <button
+                          onClick={() => setIsEditingPassword(true)}
+                          className="px-4 py-2 bg-card border border-border rounded-xl text-xs font-bold text-foreground hover:bg-muted transition-colors"
+                        >
+                          {hasExistingPassword ? t('tree_settings.change_password', 'تغيير كلمة المرور') : t('tree_settings.set_password', 'تعيين كلمة مرور')}
+                        </button>
+                        {hasExistingPassword && (
+                          <button
+                            onClick={handleDeletePassword}
+                            disabled={isUpdatingPassword}
+                            className="px-4 py-2 bg-destructive/10 text-destructive border border-destructive/20 rounded-xl text-xs font-bold hover:bg-destructive/20 transition-colors disabled:opacity-50"
+                          >
+                            <span className="material-symbols-outlined text-sm align-middle ml-1">delete</span>
+                            {isUpdatingPassword ? t('tree_settings.removing_protection', 'جاري الإزالة...') : t('tree_settings.remove_protection', 'إزالة الحماية')}
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <PremiumFeatureRow
+                    icon="lock_person"
+                    title={t('tree_settings.password_protection', 'حماية بكلمة مرور')}
+                    description={t('tree_settings.password_protection_desc', 'احمِ شجرتك بكلمة مرور لمنع الوصول غير المصرح')}
+                    isAvailable={false}
+                    isLoading={false}
+                    onUpgrade={() => navigate('/plan-selection')}
+                  />
+                )}
+
+                {/* Public Photo Gallery */}
+                {checkingFeatures ? (
+                  <div className="p-5 border border-dashed border-border rounded-2xl flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+                  </div>
+                ) : hasImageUploadFeature ? (
+                  <div className={`p-5 rounded-2xl border ${shareGallery ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800' : 'bg-primary/5 border-primary/20'}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${shareGallery ? 'bg-green-100 dark:bg-green-900/30' : 'bg-primary/10'}`}>
+                          <span className={`material-symbols-outlined ${shareGallery ? 'text-green-600' : 'text-primary'}`}>collections</span>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-foreground text-sm">{t('tree_settings.gallery_sharing_title', 'مشاركة ألبوم صور العائلة')}</span>
+                            {shareGallery && <span className="material-symbols-outlined text-green-600 text-lg">check_circle</span>}
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {t('tree_settings.gallery_sharing_desc', 'اسمح للزوار بمشاهدة ألبوم صور العائلة')}
+                          </p>
+                        </div>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                        <input
+                          type="checkbox"
+                          checked={shareGallery}
+                          onChange={(e) => handleGalleryToggle(e.target.checked)}
+                          disabled={isUpdatingGallery}
+                          className="sr-only peer"
+                        />
+                        <div className="w-12 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-6 rtl:peer-checked:after:-translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary" />
+                      </label>
+                    </div>
+                    {shareGallery && (
+                      <div className="mt-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800 flex items-start gap-2">
+                        <span className="material-symbols-outlined text-amber-600 text-sm mt-0.5">warning</span>
+                        <p className="text-xs text-amber-700 dark:text-amber-300">
+                          {t('tree_settings.gallery_warning_desc', 'سيتمكن أي شخص لديه رابط المشاركة من مشاهدة صور العائلة')}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <PremiumFeatureRow
+                    icon="collections"
+                    title={t('tree_settings.gallery_sharing_title', 'مشاركة ألبوم صور العائلة')}
+                    description={t('tree_settings.gallery_sharing_premium_desc', 'السماح للزوار بتصفح ألبومات صور العائلة')}
+                    isAvailable={false}
+                    isLoading={false}
+                    onUpgrade={() => navigate('/plan-selection')}
+                  />
+                )}
 
                 {/* Premium Upgrade CTA */}
                 {(!hasCustomDomainFeature || !hasImageUploadFeature) && !checkingFeatures && (

@@ -31,6 +31,7 @@ export interface FamilyUpdateInput {
   name?: string;
   description?: string;
   custom_domain?: string | null;
+  share_password?: string | null;
   share_gallery?: boolean;
   female_name_privacy?: string;
   female_photo_hidden?: boolean;
