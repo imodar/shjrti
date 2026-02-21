@@ -8,6 +8,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getLocalizedText } from '@/lib/packageUtils';
 import { supabase } from '@/integrations/supabase/client';
 import { profilesApi, familyInvitationsApi } from '@/lib/api';
+import { GlobalFooterSimplified } from '@/components/GlobalFooterSimplified';
 
 interface FamilyWithCount {
   id: string;
@@ -503,22 +504,7 @@ const StitchDashboard: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-border mt-10">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-muted rounded flex items-center justify-center">
-              <span className="material-symbols-outlined text-muted-foreground text-lg">park</span>
-            </div>
-             <p className="text-[10px] text-muted-foreground font-black uppercase tracking-[2px]">{t('dashboard.copyright', '© 2024 Shjrti Platform')}</p>
-           </div>
-           <nav className="flex gap-8">
-             <a className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors" href="/privacy-policy">{t('dashboard.privacy', 'Privacy')}</a>
-             <a className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors" href="/terms-conditions">{t('dashboard.terms', 'Terms')}</a>
-             <a className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors" href="/api-docs">{t('dashboard.api_docs', 'API docs')}</a>
-             <a className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors" href="/contact">{t('dashboard.support', 'Support')}</a>
-          </nav>
-        </div>
-      </footer>
+      <GlobalFooterSimplified />
 
       {/* Mobile FAB */}
       <button 
