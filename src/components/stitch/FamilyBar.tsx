@@ -122,26 +122,26 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
         )}
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-3 lg:gap-6 shrink-0">
         {/* Last editor avatar */}
         {displayCollaborators.length > 0 && (
-          <div className="flex -space-x-2">
+          <div className="hidden sm:flex -space-x-2">
             {displayCollaborators.map((collab) => (
               <div 
                 key={collab.id}
-                className={`w-7 h-7 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold ${collab.color || ''}`}
+                className={`w-6 h-6 lg:w-7 lg:h-7 rounded-full border-2 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[9px] lg:text-[10px] font-bold ${collab.color || ''}`}
               >
                 {collab.initial}
               </div>
             ))}
             {displayAdditionalCount > 0 && (
-              <div className="w-7 h-7 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] font-bold">
+              <div className="w-6 h-6 lg:w-7 lg:h-7 rounded-full border-2 border-white dark:border-slate-900 bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[9px] lg:text-[10px] font-bold">
                 +{displayAdditionalCount}
               </div>
             )}
           </div>
         )}
-        {lastUpdated && <p className="text-[11px] text-slate-400 font-medium">{t('stitch.last_updated', 'Last updated')}: {lastUpdated}</p>}
+        {lastUpdated && <p className="text-[9px] lg:text-[11px] text-slate-400 font-medium truncate max-w-[100px] lg:max-w-none">{t('stitch.last_updated', 'Last updated')}: {lastUpdated}</p>}
       </div>
     </div>
   );
