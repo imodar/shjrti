@@ -276,31 +276,33 @@ export const StitchStatisticsView: React.FC<StatisticsViewProps> = ({
                 </div>
               </div>
             </div>
-            <div className="flex items-end gap-4 px-4" style={{ height: '12rem' }}>
-              {(() => {
-                const maxCount = Math.max(...stats.genderByGen.flatMap(g => [g.males, g.females]), 1);
-                return stats.genderByGen.map(({ gen, males, females }) => {
-                  const maleH = Math.round((males / maxCount) * 160);
-                  const femaleH = Math.round((females / maxCount) * 160);
-                  return (
-                    <div key={gen} className="flex-1 flex flex-col items-center justify-end h-full">
-                      <div className="w-full flex items-end justify-center gap-1 flex-1">
-                        <div className="flex-1 flex flex-col items-center justify-end h-full">
-                          <span className="text-[9px] font-bold text-primary mb-0.5">{males}</span>
-                          <div className="w-full bg-primary rounded-t-md" style={{ height: `${maleH}px` }} />
+            <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 pb-2">
+              <div className="flex items-end gap-4 px-4" style={{ height: '12rem', minWidth: stats.genderByGen.length > 6 ? `${stats.genderByGen.length * 4.5}rem` : '100%' }}>
+                {(() => {
+                  const maxCount = Math.max(...stats.genderByGen.flatMap(g => [g.males, g.females]), 1);
+                  return stats.genderByGen.map(({ gen, males, females }) => {
+                    const maleH = Math.round((males / maxCount) * 160);
+                    const femaleH = Math.round((females / maxCount) * 160);
+                    return (
+                      <div key={gen} className="flex-1 min-w-[3rem] flex flex-col items-center justify-end h-full">
+                        <div className="w-full flex items-end justify-center gap-1 flex-1">
+                          <div className="flex-1 flex flex-col items-center justify-end h-full">
+                            <span className="text-[9px] font-bold text-primary mb-0.5">{males}</span>
+                            <div className="w-full bg-primary rounded-t-md" style={{ height: `${maleH}px` }} />
+                          </div>
+                          <div className="flex-1 flex flex-col items-center justify-end h-full">
+                            <span className="text-[9px] font-bold text-secondary mb-0.5">{females}</span>
+                            <div className="w-full bg-secondary rounded-t-md" style={{ height: `${femaleH}px` }} />
+                          </div>
                         </div>
-                        <div className="flex-1 flex flex-col items-center justify-end h-full">
-                          <span className="text-[9px] font-bold text-secondary mb-0.5">{females}</span>
-                          <div className="w-full bg-secondary rounded-t-md" style={{ height: `${femaleH}px` }} />
-                        </div>
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-1 whitespace-nowrap">
+                          {t('stats.gen', 'Gen')} {gen}
+                        </span>
                       </div>
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter mt-1">
-                        {t('stats.gen', 'Gen')} {gen}
-                      </span>
-                    </div>
-                  );
-                });
-              })()}
+                    );
+                  });
+                })()}
+              </div>
             </div>
           </div>
         )}
