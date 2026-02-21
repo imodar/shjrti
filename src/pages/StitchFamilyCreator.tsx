@@ -13,7 +13,7 @@ import { ArrowRight, ArrowLeft, Heart, UserPlus, CheckCircle, Plus, Upload, X, M
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ar } from "date-fns/locale";
-import { StitchHeader } from "@/components/stitch/Header";
+// Header is handled by StitchLayout
 import { supabase } from "@/integrations/supabase/client";
 import { formatDateForDatabase } from "@/lib/dateUtils";
 import WifeForm, { WifeFormRef } from "@/components/WifeForm";
@@ -305,8 +305,7 @@ const StitchFamilyCreator = () => {
   };
 
   return (
-    <div className="theme-stitch min-h-screen bg-slate-50 dark:bg-background">
-      <StitchHeader hideNav variant="account" />
+    <div className="min-h-screen">
 
       <main className="max-w-5xl mx-auto px-4 py-12 relative overflow-hidden">
         {/* Abstract Background Roots */}
