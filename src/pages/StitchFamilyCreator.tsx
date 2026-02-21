@@ -36,6 +36,7 @@ const StitchFamilyCreator = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [createdFamilyId, setCreatedFamilyId] = useState<string | null>(null);
   const [showCropModal, setShowCropModal] = useState(false);
+  const [cropTarget, setCropTarget] = useState<'founder' | 'spouse'>('founder');
   const [editingWife, setEditingWife] = useState<{ id: string; first_name: string; last_name: string; name: string; isAlive: boolean; birthDate: Date | null; deathDate: Date | null; maritalStatus?: string } | null>(null);
   const [isAddingWife, setIsAddingWife] = useState(false);
   const [currentSpouse, setCurrentSpouse] = useState<SpouseData>({
@@ -241,7 +242,11 @@ const StitchFamilyCreator = () => {
     if (cropImage && croppedAreaPixels) {
       try {
         const croppedImageUrl = await getCroppedImg(cropImage, croppedAreaPixels);
-        setFounderData({ ...founderData, croppedImage: croppedImageUrl });
+        if (cropTarget === 'spouse') {
+          setCurrentSpouse({ ...currentSpouse, croppedImage: croppedImageUrl });
+        } else {
+          setFounderData({ ...founderData, croppedImage: croppedImageUrl });
+        }
         setShowCropModal(false); setCropImage(null); setCrop({ x: 0, y: 0 }); setZoom(1); setCroppedAreaPixels(null);
         toast({ title: "تم حفظ الصورة", description: "تم قص الصورة وحفظها بنجاح" });
       } catch (e) { console.error(e); toast({ title: "خطأ في معالجة الصورة", description: "حدث خطأ أثناء قص الصورة", variant: "destructive" }); }
@@ -441,7 +446,7 @@ const StitchFamilyCreator = () => {
                       if (file) {
                         setFounderData({ ...founderData, image: file });
                         const reader = new FileReader();
-                        reader.onload = (ev) => { setCropImage(ev.target?.result as string); setShowCropModal(true); };
+                        reader.onload = (ev) => { setCropImage(ev.target?.result as string); setCropTarget('founder'); setShowCropModal(true); };
                         reader.readAsDataURL(file);
                       }
                     }} className="hidden" id="founder-image-journey" />
@@ -699,6 +704,7 @@ const StitchFamilyCreator = () => {
               const reader = new FileReader();
               reader.onload = (ev) => {
                 setCropImage(ev.target?.result as string);
+                setCropTarget('spouse');
                 setShowCropModal(true);
               };
               reader.readAsDataURL(file);
