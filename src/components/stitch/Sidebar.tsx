@@ -142,7 +142,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
             onClick={onAddMember}
             disabled={!canAddMember}
             className={cn(
-              "p-2 rounded-lg transition-colors",
+              "p-2 rounded-lg transition-colors flex items-center justify-center",
               canAddMember 
                 ? "bg-primary/10 text-primary hover:bg-primary/20" 
                 : "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-300/60 dark:border-amber-600/40 cursor-not-allowed animate-pulse"
