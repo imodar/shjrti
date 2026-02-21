@@ -204,7 +204,18 @@ const StitchDashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-background animate-in fade-in duration-500">
+    <div className="min-h-screen bg-slate-50 dark:bg-background animate-in fade-in duration-500 relative overflow-hidden">
+      {/* Floating background icons */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <span className="material-symbols-outlined absolute top-[8%] left-[5%] text-[8rem] text-primary/[0.04] rotate-[-15deg] animate-[pulse_6s_ease-in-out_infinite]">park</span>
+        <span className="material-symbols-outlined absolute top-[15%] right-[8%] text-[6rem] text-primary/[0.05] rotate-[12deg] animate-[pulse_8s_ease-in-out_infinite]">family_restroom</span>
+        <span className="material-symbols-outlined absolute top-[40%] left-[3%] text-[5rem] text-primary/[0.04] rotate-[20deg] animate-[pulse_7s_ease-in-out_infinite]">diversity_3</span>
+        <span className="material-symbols-outlined absolute top-[55%] right-[4%] text-[7rem] text-primary/[0.04] rotate-[-10deg] animate-[pulse_9s_ease-in-out_infinite]">account_tree</span>
+        <span className="material-symbols-outlined absolute top-[75%] left-[10%] text-[5rem] text-primary/[0.05] rotate-[8deg] animate-[pulse_5s_ease-in-out_infinite]">nature</span>
+        <span className="material-symbols-outlined absolute top-[30%] right-[15%] text-[4rem] text-primary/[0.03] rotate-[-25deg] animate-[pulse_10s_ease-in-out_infinite]">favorite</span>
+        <span className="material-symbols-outlined absolute bottom-[20%] right-[12%] text-[6rem] text-primary/[0.04] rotate-[15deg] animate-[pulse_7s_ease-in-out_infinite]">photo_library</span>
+        <span className="material-symbols-outlined absolute bottom-[10%] left-[25%] text-[4rem] text-primary/[0.03] rotate-[-8deg] animate-[pulse_6s_ease-in-out_infinite]">history_edu</span>
+      </div>
       <main className="max-w-7xl mx-auto px-6 py-5">
         {/* Hero Section */}
         <section className="hero-glass rounded-[2rem] p-6 mb-10 shadow-xl shadow-slate-200/50 relative overflow-hidden border border-white dark:border-border">
