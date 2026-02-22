@@ -19,6 +19,7 @@ interface StitchSettingsViewProps {
   familyData: Family | null;
   onFamilyUpdated?: () => void;
   isOwner?: boolean;
+  onBack?: () => void;
 }
 
 export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
@@ -26,6 +27,7 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
   familyData,
   onFamilyUpdated,
   isOwner = true,
+  onBack,
 }) => {
   const navigate = useNavigate();
   const { t, currentLanguage } = useLanguage();
@@ -746,13 +748,13 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
           </>
         )}
 
-        {/* Back to Dashboard */}
+        {/* Back to Members */}
         <div className="flex justify-center pb-8">
           <button
-            onClick={() => navigate(`/stitch-family-builder?family=${familyId}`)}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-bold text-sm transition-colors group"
+            onClick={() => onBack ? onBack() : navigate(`/stitch-family-builder?family=${familyId}`)}
+            className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white font-bold text-sm transition-all duration-200 group border border-primary/20 hover:border-primary hover:shadow-lg hover:shadow-primary/20"
           >
-            <span className="material-symbols-outlined transition-transform group-hover:rtl:translate-x-1 group-hover:ltr:-translate-x-1">arrow_back</span>
+            <span className="material-symbols-outlined text-lg transition-transform group-hover:rtl:translate-x-1 group-hover:ltr:-translate-x-1">arrow_back</span>
             {t('settings.back_to_members', 'العودة الى إدارة الأعضاء')}
           </button>
         </div>

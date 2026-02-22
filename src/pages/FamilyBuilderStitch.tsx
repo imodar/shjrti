@@ -453,6 +453,7 @@ const FamilyBuilderStitch: React.FC = () => {
             familyData={familyData}
             onFamilyUpdated={refetch}
             isOwner={isOwner}
+            onBack={() => handleTabChange('dashboard')}
           />
         ) : (
           <StitchMainContent
