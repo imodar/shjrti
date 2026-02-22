@@ -6,7 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useFamilyData } from '@/contexts/FamilyDataContext';
 import { useFamilyRole } from '@/hooks/useFamilyRole';
-import { subscriptionsApi, suggestionsApi, familiesApi } from '@/lib/api';
+import { subscriptionsApi, suggestionsApi, familiesApi, profilesApi } from '@/lib/api';
 import { StitchFamilyBar, StitchSidebar, StitchRightPanel, StitchMainContent, StitchSettingsView } from '@/components/stitch';
 import { useStitchLayout } from '@/components/stitch/StitchLayout';
 import DashboardLoader from '@/components/stitch/DashboardLoader';
@@ -95,19 +95,24 @@ const FamilyBuilderStitch: React.FC = () => {
   // Default to true so loader is skipped when data is cached; useEffects set false only when fetching
   const [packageLoaded, setPackageLoaded] = useState(true);
   const [suggestionsLoaded, setSuggestionsLoaded] = useState(true);
-  // Track if initial load completed — prevents loader on tab re-focus
   const loaderDoneRef = useRef(false);
 
   // Package name from REST API (more reliable than SubscriptionContext RPC)
   const [restPackageName, setRestPackageName] = useState<Record<string, string> | string | undefined>(undefined);
 
-  // Fetch package limits
+  // Profile name from REST API
+  const [profileFirstName, setProfileFirstName] = useState<string | null>(null);
+
+  // Fetch profile name + package limits from REST API
   useEffect(() => {
     if (!user) return;
     setPackageLoaded(false);
-    const fetchPackageLimits = async () => {
+    const fetchData = async () => {
       try {
-        const sub = await subscriptionsApi.get();
+        const [sub, profile] = await Promise.all([
+          subscriptionsApi.get(),
+          profilesApi.get(),
+        ]);
         const pkg = sub?.packages;
         if (pkg?.max_family_members) {
           setMaxFamilyMembers(pkg.max_family_members);
@@ -115,13 +120,16 @@ const FamilyBuilderStitch: React.FC = () => {
         if (pkg?.name) {
           setRestPackageName(pkg.name as Record<string, string> | string);
         }
+        if (profile?.first_name) {
+          setProfileFirstName(profile.first_name);
+        }
       } catch (error) {
-        console.error('Error fetching package limits:', error);
+        console.error('Error fetching package/profile:', error);
       } finally {
         setPackageLoaded(true);
       }
     };
-    fetchPackageLimits();
+    fetchData();
   }, [user?.id]);
 
   // Fetch pending suggestions count from API
@@ -348,8 +356,9 @@ const FamilyBuilderStitch: React.FC = () => {
     return familyMembers.find(m => m.id === selectedMemberId);
   }, [selectedMemberId, familyMembers]);
 
-  // Get user display name
-  const userName = user?.user_metadata?.first_name || 
+  // Get user display name - prefer REST API profile data
+  const userName = profileFirstName || 
+                   user?.user_metadata?.first_name || 
                    user?.email?.split('@')[0] || 
                    'User';
 
