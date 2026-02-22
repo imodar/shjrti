@@ -76,11 +76,11 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
                 <PopoverTrigger asChild>
                   <button className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400">
                     <span className="material-icons-round text-base sm:text-lg text-slate-400 hidden sm:inline">family_restroom</span>
-                    <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate max-w-[80px] sm:max-w-[120px] lg:max-w-none">{getSelectedLabel()}</span>
+                    <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate max-w-[120px] sm:max-w-[180px] lg:max-w-none">{getSelectedLabel()}</span>
                     <span className="material-icons-round text-base sm:text-lg">expand_more</span>
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[250px] p-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg z-[100]" align="start">
+                <PopoverContent className="w-[320px] p-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg z-[100]" align="start">
                   <Command>
                     <CommandInput placeholder={t('tree_view.search_branch', 'Search branch...')} className="h-9" />
                     <CommandList>
