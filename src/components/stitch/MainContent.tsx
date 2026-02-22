@@ -8,6 +8,7 @@ import { StitchGalleryView } from './GalleryView';
 import { Member, Marriage } from '@/types/family.types';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getParentageInfo } from '@/lib/memberDisplayUtils';
+import { WelcomeVariantsPreview } from './WelcomeVariants';
 
 interface Activity {
   id: string;
@@ -197,15 +198,13 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   return (
     <section className="flex-1 overflow-y-auto bg-slate-50 dark:bg-background-dark p-8 custom-scrollbar">
       <div className="max-w-4xl mx-auto">
-        {/* Welcome Header */}
-        <header className="mb-10">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            {t('stitch.welcome_back', 'Welcome back')}, {userName}!
-          </h2>
-          <p className="text-slate-500">
-            {t('stitch.whats_happening', "Here's what's happening in your family tree today.")}
-          </p>
-        </header>
+        {/* Welcome Variants Preview */}
+        <WelcomeVariantsPreview
+          userName={userName}
+          familyMembers={familyMembers}
+          marriages={marriages}
+        />
+        <div className="h-6" />
 
         {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
