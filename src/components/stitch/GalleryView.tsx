@@ -681,29 +681,25 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
 
           <div className={`p-4 lg:p-8 h-full overflow-y-auto custom-scrollbar ${!isImageUploadEnabled ? 'blur-[12px] pointer-events-none select-none' : ''}`}>
             {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-              <div className="flex items-center gap-3 flex-wrap">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center shadow-lg shadow-primary/20">
-                    <span className="material-symbols-outlined text-white text-lg">photo_library</span>
-                  </div>
-                  <h2 className="text-xl lg:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    {t('gallery.title', 'معرض الصور')}
-                  </h2>
+            <div className="flex items-center justify-between gap-3 mb-6 lg:mb-10">
+              <div className="flex items-center gap-2 lg:gap-3 min-w-0">
+                <div className="w-8 h-8 lg:w-9 lg:h-9 rounded-xl bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center shadow-lg shadow-primary/20 shrink-0">
+                  <span className="material-symbols-outlined text-white text-base lg:text-lg">photo_library</span>
                 </div>
-                <span className="hidden md:inline text-slate-300 dark:text-slate-600">|</span>
-                <p className="text-sm text-slate-400 dark:text-slate-500 italic">
+                <h2 className="text-base lg:text-2xl font-extrabold text-foreground tracking-tight truncate">
+                  {t('gallery.title', 'معرض الصور')}
+                </h2>
+                <span className="hidden md:inline text-muted-foreground/30">|</span>
+                <p className="hidden md:block text-sm text-muted-foreground italic truncate">
                   {t('gallery.subtitle', "لحظات عائلية ثمينة عبر الأجيال")}
                 </p>
               </div>
               {isImageUploadEnabled && (
-                <div className="flex gap-2">
-                  <div className="bg-white dark:bg-slate-900 px-4 py-2 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex items-center gap-3">
-                    <span className="material-symbols-outlined text-primary">photo_library</span>
-                    <div>
-                      <p className="text-[10px] text-slate-400 uppercase font-bold leading-none">{t('gallery.total_items', 'Total Items')}</p>
-                      <p className="text-lg font-bold leading-tight">{filteredMemories.length.toLocaleString()}</p>
-                    </div>
+                <div className="bg-card px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl shadow-sm border border-border flex items-center gap-2 lg:gap-3 shrink-0">
+                  <span className="material-symbols-outlined text-primary text-base lg:text-xl">photo_library</span>
+                  <div>
+                    <p className="text-[9px] lg:text-[10px] text-muted-foreground uppercase font-bold leading-none">{t('gallery.total_items', 'إجمالي العناصر')}</p>
+                    <p className="text-sm lg:text-lg font-bold leading-tight">{filteredMemories.length.toLocaleString()}</p>
                   </div>
                 </div>
               )}
@@ -722,37 +718,37 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
               </div>
             ) : filteredMemories.length === 0 ? (
               /* Beautiful empty state when user HAS permission but no photos */
-              <div className="flex-1 flex flex-col items-center justify-center py-20">
-                <div className="relative mb-8">
+              <div className="flex-1 flex flex-col items-center justify-center py-12 lg:py-20">
+                <div className="relative mb-6 lg:mb-8">
                   <div className="absolute -inset-4 bg-primary/5 rounded-full blur-2xl" />
-                  <div className="relative w-64 h-64 flex items-center justify-center">
+                  <div className="relative w-40 h-40 lg:w-64 lg:h-64 flex items-center justify-center">
                     <div className="relative flex flex-col items-center">
-                      <div className="w-48 h-48 bg-white dark:bg-slate-800 rounded-3xl shadow-2xl flex items-center justify-center border border-slate-100 dark:border-slate-700 rotate-3 transition-transform hover:rotate-0">
-                        <span className="material-symbols-outlined text-8xl text-slate-200 dark:text-slate-700">photo_library</span>
+                      <div className="w-28 h-28 lg:w-48 lg:h-48 bg-card rounded-3xl shadow-2xl flex items-center justify-center border border-border rotate-3 transition-transform hover:rotate-0">
+                        <span className="material-symbols-outlined text-5xl lg:text-8xl text-muted-foreground/30">photo_library</span>
                       </div>
-                      <div className="absolute -top-4 -right-4 w-32 h-32 bg-white dark:bg-slate-800 rounded-3xl shadow-2xl flex items-center justify-center border border-slate-100 dark:border-slate-700 -rotate-6 transition-transform hover:rotate-0">
-                        <span className="material-symbols-outlined text-6xl text-primary/30">family_history</span>
+                      <div className="absolute -top-3 -right-3 lg:-top-4 lg:-right-4 w-20 h-20 lg:w-32 lg:h-32 bg-card rounded-3xl shadow-2xl flex items-center justify-center border border-border -rotate-6 transition-transform hover:rotate-0">
+                        <span className="material-symbols-outlined text-3xl lg:text-6xl text-primary/30">family_history</span>
                       </div>
-                      <div className="absolute -bottom-2 -left-6 w-24 h-24 bg-white dark:bg-slate-800 rounded-2xl shadow-xl flex items-center justify-center border border-slate-100 dark:border-slate-700 rotate-12 transition-transform hover:rotate-0">
-                        <span className="material-symbols-outlined text-4xl text-secondary/40">photo_camera</span>
+                      <div className="absolute -bottom-1 -left-4 lg:-bottom-2 lg:-left-6 w-16 h-16 lg:w-24 lg:h-24 bg-card rounded-2xl shadow-xl flex items-center justify-center border border-border rotate-12 transition-transform hover:rotate-0">
+                        <span className="material-symbols-outlined text-2xl lg:text-4xl text-secondary/40">photo_camera</span>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="text-center max-w-md mx-auto space-y-4">
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {t('gallery.empty_title', 'Your Family Gallery is Empty')}
+                <div className="text-center max-w-md mx-auto space-y-3 lg:space-y-4 px-4">
+                  <h3 className="text-lg lg:text-2xl font-bold text-foreground">
+                    {t('gallery.empty_title', 'معرض صور العائلة فارغ')}
                   </h3>
-                  <p className="text-slate-500 dark:text-slate-400 text-lg">
-                    {t('gallery.empty_description', 'Start preserving your legacy by uploading your first memory.')}
+                  <p className="text-muted-foreground text-sm lg:text-lg">
+                    {t('gallery.empty_description', 'ابدأ بتوثيق إرثك العائلي برفع أول ذكرى.')}
                   </p>
-                  <div className="pt-6">
+                  <div className="pt-4 lg:pt-6">
                     <button
                       onClick={() => openFilePicker()}
-                      className="bg-primary text-white px-10 py-4 rounded-2xl shadow-xl shadow-primary/30 font-bold text-lg flex items-center gap-3 hover:scale-105 transition-all active:scale-95 mx-auto"
+                      className="bg-primary text-primary-foreground px-8 lg:px-10 py-3 lg:py-4 rounded-2xl shadow-xl shadow-primary/30 font-bold text-base lg:text-lg flex items-center gap-2 lg:gap-3 hover:scale-105 transition-all active:scale-95 mx-auto"
                     >
-                      <span className="material-symbols-outlined text-2xl">add_a_photo</span>
-                      {t('gallery.upload_first', 'Upload First Memory')}
+                      <span className="material-symbols-outlined text-xl lg:text-2xl">add_a_photo</span>
+                      {t('gallery.upload_first', 'ارفع أول صورة')}
                     </button>
                   </div>
                 </div>
