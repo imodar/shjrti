@@ -118,6 +118,9 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   });
   const [reviewSaving, setReviewSaving] = useState(false);
   const [reviewTagSearch, setReviewTagSearch] = useState('');
+  const reviewImageRef = useRef<HTMLDivElement>(null);
+  const [reviewPendingTag, setReviewPendingTag] = useState<{ x: number; y: number } | null>(null);
+  const [reviewPendingSearch, setReviewPendingSearch] = useState('');
   const loadMemories = useCallback(async () => {
     if (!familyId) return;
     try {
@@ -941,15 +944,15 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
 
       {/* Review Memory Details Popup */}
       {reviewPopup.open && (
-        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-900 w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
+        <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 lg:p-8 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-card w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
             {/* Header */}
-            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
                   <span className="material-symbols-outlined text-xl">image_search</span>
                 </div>
-                <h3 className="font-bold text-slate-900 dark:text-white">
+                <h3 className="font-bold text-foreground">
                   {reviewPopup.mode === 'create'
                     ? t('gallery.review_details', 'Review Memory Details')
                     : t('gallery.edit_memory', 'Edit Memory Details')}
@@ -957,146 +960,256 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
               </div>
               <button
                 onClick={handleReviewDiscard}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-muted text-muted-foreground transition-colors"
               >
                 <span className="material-symbols-outlined text-xl">close</span>
               </button>
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-6">
-              {/* Image Preview */}
-              <div className="relative group rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 shadow-inner border border-slate-200 dark:border-slate-700">
+            <div className="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-5">
+              {/* Image Preview - larger, with click-to-tag */}
+              <div
+                ref={reviewImageRef}
+                className="relative group rounded-2xl overflow-hidden bg-muted shadow-inner border border-border cursor-crosshair"
+                onClick={(e) => {
+                  const rect = reviewImageRef.current?.getBoundingClientRect();
+                  if (!rect) return;
+                  const x = ((e.clientX - rect.left) / rect.width) * 100;
+                  const y = ((e.clientY - rect.top) / rect.height) * 100;
+                  setReviewPendingTag({ x, y });
+                  setReviewPendingSearch('');
+                }}
+              >
                 <img
                   alt="Memory Preview"
-                  className="w-full aspect-[4/3] object-cover"
+                  className="w-full aspect-[16/10] object-contain bg-black/5 dark:bg-black/20"
                   src={reviewPopup.imageUrl}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                {/* Existing tag dots on image */}
+                {reviewPopup.linkedMemberIds.map((memberId, idx) => {
+                  const member = familyMembers.find(m => m.id === memberId);
+                  if (!member) return null;
+                  // For tags without position, don't show dot
+                  return null;
+                })}
+
+                {/* Pending tag marker + dropdown */}
+                {reviewPendingTag && (
+                  <>
+                    <div
+                      className="absolute inset-0 z-30"
+                      onClick={(e) => { e.stopPropagation(); setReviewPendingTag(null); }}
+                    />
+                    <div
+                      className="absolute transform -translate-x-1/2 -translate-y-1/2 z-40"
+                      style={{ left: `${reviewPendingTag.x}%`, top: `${reviewPendingTag.y}%` }}
+                    >
+                      <div className="w-8 h-8 rounded-full border-2 border-dashed border-white bg-white/30 backdrop-blur-sm animate-pulse flex items-center justify-center shadow-xl">
+                        <span className="material-symbols-outlined text-white text-sm">add</span>
+                      </div>
+                      {/* Member selection dropdown */}
+                      <div
+                        className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-card rounded-xl shadow-2xl border border-border overflow-hidden z-50"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="p-2 border-b border-border">
+                          <div className="relative">
+                            <span className="material-symbols-outlined absolute start-2 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">search</span>
+                            <input
+                              autoFocus
+                              type="text"
+                              value={reviewPendingSearch}
+                              onChange={(e) => setReviewPendingSearch(e.target.value)}
+                              placeholder={t('gallery.search_member', 'ابحث عن عضو...')}
+                              className="w-full ps-7 pe-3 py-1.5 bg-muted border-none rounded-lg text-xs focus:ring-1 focus:ring-primary/30 outline-none"
+                            />
+                          </div>
+                        </div>
+                        <div className="max-h-40 overflow-y-auto custom-scrollbar">
+                          {familyMembers
+                            .filter(m => !reviewPopup.linkedMemberIds.includes(m.id) && (reviewPendingSearch.trim() === '' || m.name.toLowerCase().includes(reviewPendingSearch.toLowerCase())))
+                            .slice(0, 8)
+                            .map(member => (
+                              <button
+                                key={member.id}
+                                type="button"
+                                onClick={() => {
+                                  setReviewPopup(prev => ({ ...prev, linkedMemberIds: [...prev.linkedMemberIds, member.id] }));
+                                  setReviewPendingTag(null);
+                                }}
+                                className="w-full px-3 py-2 flex items-center gap-2.5 hover:bg-accent transition-colors text-start"
+                              >
+                                <div className="w-7 h-7 rounded-full bg-muted overflow-hidden flex items-center justify-center shrink-0">
+                                  {member.image_url ? (
+                                    <img src={member.image_url} alt="" className="w-full h-full object-cover" />
+                                  ) : (
+                                    <span className="text-muted-foreground font-bold text-[10px]">{(member.name || '?')[0]}</span>
+                                  )}
+                                </div>
+                                <span className="text-xs font-semibold text-foreground truncate">{member.name}</span>
+                              </button>
+                            ))}
+                          {familyMembers.filter(m => !reviewPopup.linkedMemberIds.includes(m.id) && (reviewPendingSearch.trim() === '' || m.name.toLowerCase().includes(reviewPendingSearch.toLowerCase()))).length === 0 && (
+                            <p className="py-4 text-center text-xs text-muted-foreground">{t('gallery.no_members_available', 'لا يوجد أعضاء متاحين')}</p>
+                          )}
+                        </div>
+                        <div className="p-2 border-t border-border">
+                          <button
+                            onClick={() => setReviewPendingTag(null)}
+                            className="w-full py-1.5 text-[11px] text-muted-foreground hover:text-foreground font-medium transition-colors"
+                          >
+                            {t('common.cancel', 'إلغاء')}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Tag hint */}
+                {reviewPopup.linkedMemberIds.length === 0 && !reviewPendingTag && (
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
+                    <div className="bg-foreground/60 backdrop-blur-sm text-background text-[11px] px-4 py-2 rounded-full flex items-center gap-2 shadow-lg">
+                      <span className="material-symbols-outlined text-sm">touch_app</span>
+                      {t('gallery.click_to_tag', 'اضغط على الصورة لتحديد الأشخاص')}
+                    </div>
+                  </div>
+                )}
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
               </div>
 
-              {/* Description */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">
-                  {t('gallery.description', 'Description')}
-                </label>
-                <textarea
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-slate-400 resize-none outline-none"
-                  placeholder={t('gallery.description_placeholder', 'Tell the story behind this photo... Who is in it? What happened that day?')}
-                  rows={5}
-                  value={reviewPopup.caption}
-                  onChange={e => setReviewPopup(prev => ({ ...prev, caption: e.target.value }))}
-                />
+              {/* Row: Description (3/4) + Tagged Members (1/4) */}
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                {/* Description - 3/4 */}
+                <div className="lg:col-span-3 space-y-2">
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">
+                    {t('gallery.description', 'Description')}
+                  </label>
+                  <textarea
+                    className="w-full bg-muted border border-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground resize-none outline-none"
+                    placeholder={t('gallery.description_placeholder', 'Tell the story behind this photo... Who is in it? What happened that day?')}
+                    rows={4}
+                    value={reviewPopup.caption}
+                    onChange={e => setReviewPopup(prev => ({ ...prev, caption: e.target.value }))}
+                  />
+                </div>
+
+                {/* Tagged Members - 1/4 */}
+                <div className="lg:col-span-1 space-y-2">
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">
+                    {t('gallery.tagged', 'Tagged')}
+                  </label>
+                  <div className="bg-muted border border-border rounded-xl p-3 min-h-[120px] max-h-[160px] overflow-y-auto custom-scrollbar">
+                    {reviewPopup.linkedMemberIds.length === 0 ? (
+                      <p className="text-xs text-muted-foreground text-center py-4">
+                        {t('gallery.no_tags_yet', 'Click on the image to tag members')}
+                      </p>
+                    ) : (
+                      <div className="flex flex-col gap-1.5">
+                        {reviewPopup.linkedMemberIds.map(memberId => {
+                          const member = familyMembers.find(m => m.id === memberId);
+                          if (!member) return null;
+                          return (
+                            <div key={memberId} className="flex items-center gap-2 bg-card ps-1.5 pe-1 py-1 rounded-lg border border-border group/tag">
+                              <div className="w-5 h-5 rounded-full bg-muted overflow-hidden flex items-center justify-center shrink-0">
+                                {member.image_url ? (
+                                  <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <span className="text-[9px] font-bold text-muted-foreground">{(member.name || '?')[0]}</span>
+                                )}
+                              </div>
+                              <span className="text-[11px] font-semibold text-foreground truncate flex-1">{member.name}</span>
+                              <button
+                                type="button"
+                                onClick={() => setReviewPopup(prev => ({ ...prev, linkedMemberIds: prev.linkedMemberIds.filter(id => id !== memberId) }))}
+                                className="w-5 h-5 rounded-full opacity-0 group-hover/tag:opacity-100 hover:bg-destructive/10 text-muted-foreground hover:text-destructive flex items-center justify-center transition-all shrink-0"
+                              >
+                                <span className="material-symbols-outlined text-xs">close</span>
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                  {/* Quick add search below tagged list */}
+                  <div className="relative">
+                    <span className="material-symbols-outlined absolute start-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-base">person_add</span>
+                    <input
+                      className="w-full ps-8 pe-3 py-2 bg-muted border border-border rounded-lg text-xs focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                      type="text"
+                      placeholder={t('gallery.add_member', 'Add member...')}
+                      value={reviewTagSearch}
+                      onChange={e => setReviewTagSearch(e.target.value)}
+                    />
+                  </div>
+                  {reviewTagSearch.trim() && (
+                    <div className="max-h-28 overflow-y-auto bg-popover border border-border rounded-lg shadow-lg">
+                      {familyMembers
+                        .filter(m => !reviewPopup.linkedMemberIds.includes(m.id) && m.name.toLowerCase().includes(reviewTagSearch.toLowerCase()))
+                        .slice(0, 6)
+                        .map(member => (
+                          <button
+                            key={member.id}
+                            type="button"
+                            className="w-full flex items-center gap-2 px-3 py-2 hover:bg-accent text-start transition-colors"
+                            onClick={() => {
+                              setReviewPopup(prev => ({ ...prev, linkedMemberIds: [...prev.linkedMemberIds, member.id] }));
+                              setReviewTagSearch('');
+                            }}
+                          >
+                            <div className="w-5 h-5 rounded-full bg-muted overflow-hidden flex items-center justify-center shrink-0">
+                              {member.image_url ? (
+                                <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="text-[9px] font-bold text-muted-foreground">{(member.name || '?')[0]}</span>
+                              )}
+                            </div>
+                            <span className="text-xs font-medium text-foreground">{member.name}</span>
+                          </button>
+                        ))}
+                      {familyMembers.filter(m => !reviewPopup.linkedMemberIds.includes(m.id) && m.name.toLowerCase().includes(reviewTagSearch.toLowerCase())).length === 0 && (
+                        <p className="px-3 py-2 text-xs text-muted-foreground text-center">{t('gallery.no_members_found', 'No members found')}</p>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Date */}
+              {/* Date - last row */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">
+                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">
                   {t('gallery.date_of_event', 'Date of Event')}
                 </label>
-                <div className="relative">
-                  <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">calendar_today</span>
+                <div className="relative max-w-xs">
+                  <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">calendar_today</span>
                   <input
-                    className="w-full ps-10 pe-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                    className="w-full ps-10 pe-4 py-3 bg-muted border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
                     type="date"
                     value={reviewPopup.photoDate}
                     onChange={e => setReviewPopup(prev => ({ ...prev, photoDate: e.target.value }))}
                   />
                 </div>
-                <p className="text-[10px] text-slate-400 px-1 mt-1">
+                <p className="text-[10px] text-muted-foreground px-1 mt-1">
                   {t('gallery.date_hint', 'Leave blank if the exact date is unknown.')}
                 </p>
-              </div>
-
-              {/* Tag Members */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">
-                  {t('gallery.tag_members', 'Tag Members')}
-                </label>
-                {/* Selected tags */}
-                {reviewPopup.linkedMemberIds.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-2">
-                    {reviewPopup.linkedMemberIds.map(memberId => {
-                      const member = familyMembers.find(m => m.id === memberId);
-                      if (!member) return null;
-                      return (
-                        <div key={memberId} className="flex items-center gap-1.5 bg-primary/5 dark:bg-primary/10 ps-1 pe-1 py-1 rounded-full border border-primary/20">
-                          <div className="w-5 h-5 rounded-full bg-muted overflow-hidden flex items-center justify-center">
-                            {member.image_url ? (
-                              <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <span className="text-[9px] font-bold text-muted-foreground">{(member.name || '?')[0]}</span>
-                            )}
-                          </div>
-                          <span className="text-xs font-semibold text-foreground">{member.name}</span>
-                          <button
-                            type="button"
-                            onClick={() => setReviewPopup(prev => ({ ...prev, linkedMemberIds: prev.linkedMemberIds.filter(id => id !== memberId) }))}
-                            className="w-5 h-5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive flex items-center justify-center transition-colors"
-                          >
-                            <span className="material-symbols-outlined text-sm">close</span>
-                          </button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-                {/* Search & add */}
-                <div className="relative">
-                  <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">person_search</span>
-                  <input
-                    className="w-full ps-10 pe-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                    type="text"
-                    placeholder={t('gallery.search_member_to_tag', 'Search member to tag...')}
-                    value={reviewTagSearch}
-                    onChange={e => setReviewTagSearch(e.target.value)}
-                  />
-                </div>
-                {reviewTagSearch.trim() && (
-                  <div className="max-h-32 overflow-y-auto bg-popover border border-border rounded-xl shadow-lg">
-                    {familyMembers
-                      .filter(m => !reviewPopup.linkedMemberIds.includes(m.id) && m.name.toLowerCase().includes(reviewTagSearch.toLowerCase()))
-                      .slice(0, 8)
-                      .map(member => (
-                        <button
-                          key={member.id}
-                          type="button"
-                          className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-accent text-start transition-colors"
-                          onClick={() => {
-                            setReviewPopup(prev => ({ ...prev, linkedMemberIds: [...prev.linkedMemberIds, member.id] }));
-                            setReviewTagSearch('');
-                          }}
-                        >
-                          <div className="w-7 h-7 rounded-full bg-muted overflow-hidden flex items-center justify-center shrink-0">
-                            {member.image_url ? (
-                              <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
-                            ) : (
-                              <span className="text-[10px] font-bold text-muted-foreground">{(member.name || '?')[0]}</span>
-                            )}
-                          </div>
-                          <span className="text-sm font-medium text-foreground">{member.name}</span>
-                        </button>
-                      ))}
-                    {familyMembers.filter(m => !reviewPopup.linkedMemberIds.includes(m.id) && m.name.toLowerCase().includes(reviewTagSearch.toLowerCase())).length === 0 && (
-                      <p className="px-4 py-3 text-xs text-muted-foreground text-center">{t('gallery.no_members_found', 'No members found')}</p>
-                    )}
-                  </div>
-                )}
               </div>
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 flex items-center justify-end gap-3">
+            <div className="p-6 border-t border-border bg-muted/50 flex items-center justify-end gap-3 shrink-0">
               <button
                 onClick={handleReviewDiscard}
-                className="px-6 py-2.5 text-sm font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                className="px-6 py-2.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
               >
                 {t('gallery.discard', 'Discard')}
               </button>
               <button
                 onClick={handleReviewSave}
                 disabled={reviewSaving}
-                className="px-8 py-2.5 bg-primary text-white font-bold text-sm rounded-xl shadow-lg shadow-primary/20 hover:opacity-90 transition-all flex items-center gap-2 disabled:opacity-50"
+                className="px-8 py-2.5 bg-primary text-primary-foreground font-bold text-sm rounded-xl shadow-lg shadow-primary/20 hover:opacity-90 transition-all flex items-center gap-2 disabled:opacity-50"
               >
                 {reviewSaving ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
