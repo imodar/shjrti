@@ -209,21 +209,21 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
               </div>
 
               <div className={cn("text-center md:text-start", direction === 'rtl' ? 'md:text-right' : 'md:text-left')}>
-                <h2 className="text-2xl font-bold text-slate-800 dark:text-white font-serif leading-tight italic">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 dark:text-white font-serif leading-tight italic break-words">
                   {getDisplayName()}
                 </h2>
                 {(() => {
                   const parentageInfo = getParentageInfo(member, familyMembers);
                   if (parentageInfo) {
                     return (
-                      <p className="text-slate-500 dark:text-slate-400 text-sm font-medium" dir={direction}>
+                      <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-medium text-center md:text-start" dir={direction}>
                         {parentageInfo.genderTerm} {parentageInfo.lineage}
                       </p>
                     );
                   }
                   return null;
                 })()}
-                <p className="text-slate-400 text-sm font-medium">
+                <p className="text-slate-400 text-xs sm:text-sm font-medium">
                   {birthYear && deathYear ? `${birthYear} — ${deathYear}` :
                    birthYear ? `${birthYear} — ${t('profile.present', 'Present')}` : ''}
                 </p>
