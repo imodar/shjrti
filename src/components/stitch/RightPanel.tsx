@@ -136,6 +136,90 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
         )}
       </div>
 
+      {/* Alternative Suggestions Design - More Dynamic */}
+      {latestSuggestions.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+              <span className="material-symbols-outlined text-white text-sm">lightbulb</span>
+            </div>
+            <h3 className="font-bold text-sm">{t('suggestions.pending_alt', 'آخر الاقتراحات')}</h3>
+            {pendingSuggestions > 0 && (
+              <span className="ml-auto relative flex h-5 w-5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-50" />
+                <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-white text-[9px] font-bold items-center justify-center">
+                  {pendingSuggestions}
+                </span>
+              </span>
+            )}
+          </div>
+
+          <div className="relative">
+            {/* Timeline line */}
+            <div className="absolute top-0 bottom-0 left-3 rtl:left-auto rtl:right-3 w-0.5 bg-gradient-to-b from-primary/40 via-amber-400/40 to-transparent" />
+
+            <div className="space-y-4">
+              {latestSuggestions.map((suggestion, i) => (
+                <div key={`alt-${suggestion.id}`} className="relative pl-8 rtl:pl-0 rtl:pr-8 group">
+                  {/* Timeline dot */}
+                  <div 
+                    className="absolute left-1.5 rtl:left-auto rtl:right-1.5 top-2 w-3 h-3 rounded-full border-2 border-white dark:border-slate-900 group-hover:scale-125 transition-transform"
+                    style={{ 
+                      background: i === 0 ? 'linear-gradient(135deg, #f59e0b, #ef4444)' : 
+                                  i === 1 ? 'linear-gradient(135deg, #10b981, #06b6d4)' : 
+                                  'linear-gradient(135deg, #8b5cf6, #6366f1)' 
+                    }}
+                  />
+                  
+                  <div className="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-default">
+                    {/* Header with member name */}
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <div className={cn(
+                        "w-6 h-6 rounded-full flex items-center justify-center text-white text-[9px] font-bold",
+                        i === 0 ? "bg-gradient-to-br from-amber-400 to-red-500" :
+                        i === 1 ? "bg-gradient-to-br from-emerald-400 to-cyan-500" :
+                        "bg-gradient-to-br from-violet-400 to-indigo-500"
+                      )}>
+                        {suggestion.submitter_name.charAt(0).toUpperCase()}
+                      </div>
+                      <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 truncate flex-1">
+                        {suggestion.submitter_name}
+                      </span>
+                      <span className="text-[9px] text-slate-400 whitespace-nowrap">
+                        {new Date(suggestion.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+
+                    {/* Member badge */}
+                    {suggestion.member_name && (
+                      <div className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-0.5 rounded-full mb-1.5">
+                        <span className="material-symbols-outlined text-[10px]">person</span>
+                        <span className="text-[9px] font-bold">{suggestion.member_name}</span>
+                      </div>
+                    )}
+
+                    {/* Suggestion text */}
+                    <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">
+                      {suggestion.suggestion_text}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {pendingSuggestions > 0 && (
+            <button
+              onClick={onReviewSuggestions}
+              className="w-full mt-4 py-2.5 bg-gradient-to-r from-primary to-emerald-500 text-white text-xs font-bold rounded-xl hover:opacity-90 hover:shadow-lg transition-all flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-sm">reviews</span>
+              {t('suggestions.review_all', 'مراجعة الاقتراحات')}
+            </button>
+          )}
+        </div>
+      )}
+
     </aside>
   );
 };
