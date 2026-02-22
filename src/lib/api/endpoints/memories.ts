@@ -39,6 +39,28 @@ export interface FamilyMemoryUpdateInput {
   linked_member_id?: string;
 }
 
+export interface PhotoMemberTag {
+  id: string;
+  memory_id: string;
+  member_id: string;
+  x_percent: number;
+  y_percent: number;
+  created_by: string;
+  created_at: string;
+}
+
+export interface PhotoTagCreateInput {
+  memory_id: string;
+  member_id: string;
+  x_percent: number;
+  y_percent: number;
+}
+
+export interface TaggedMemberCount {
+  member_id: string;
+  count: number;
+}
+
 export const memoriesApi = {
   // Member Memories
   getMemberMemories: async (memberId: string): Promise<MemberMemory[]> => {
@@ -72,6 +94,23 @@ export const memoriesApi = {
 
   deleteFamilyMemory: async (id: string): Promise<DeleteResponse> => {
     return apiClient.delete<DeleteResponse>(FUNCTION_NAME, undefined, { id, type: 'family' });
+  },
+
+  // Photo Member Tags
+  getPhotoTags: async (memoryId: string): Promise<PhotoMemberTag[]> => {
+    return apiClient.get<PhotoMemberTag[]>(FUNCTION_NAME, { type: 'tags', memoryId });
+  },
+
+  createPhotoTag: async (input: PhotoTagCreateInput): Promise<PhotoMemberTag> => {
+    return apiClient.post<PhotoMemberTag>(FUNCTION_NAME, input, { type: 'tags' });
+  },
+
+  deletePhotoTag: async (id: string): Promise<DeleteResponse> => {
+    return apiClient.delete<DeleteResponse>(FUNCTION_NAME, undefined, { id, type: 'tags' });
+  },
+
+  getTaggedMembers: async (familyId: string): Promise<TaggedMemberCount[]> => {
+    return apiClient.get<TaggedMemberCount[]>(FUNCTION_NAME, { type: 'tagged-members', familyId });
   },
 };
 
