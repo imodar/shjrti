@@ -12,6 +12,7 @@ import { useStitchLayout } from '@/components/stitch/StitchLayout';
 import DashboardLoader from '@/components/stitch/DashboardLoader';
 import { MemberDeleteModal } from '@/components/stitch/MemberDeleteModal';
 import { cn } from '@/lib/utils';
+import { GlobalFooterSimplified } from '@/components/GlobalFooterSimplified';
 
 /**
  * FamilyBuilderStitch - Stitch theme variant of FamilyBuilderNew
@@ -513,6 +514,8 @@ const FamilyBuilderStitch: React.FC = () => {
         familyMembers={familyMembers}
         marriages={marriages}
       />
+
+      <GlobalFooterSimplified />
     </div>
   );
 };
