@@ -28,6 +28,7 @@ interface ReviewPopupState {
   caption: string;
   photoDate: string;
   file?: File; // only for create mode, to allow "Change Photo"
+  linkedMemberIds: string[]; // tagged member IDs
 }
 
 interface StitchGalleryViewProps {
@@ -113,8 +114,10 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
     fileSize: 0,
     caption: '',
     photoDate: '',
+    linkedMemberIds: [],
   });
   const [reviewSaving, setReviewSaving] = useState(false);
+  const [reviewTagSearch, setReviewTagSearch] = useState('');
   const loadMemories = useCallback(async () => {
     if (!familyId) return;
     try {
@@ -239,6 +242,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
         caption: '',
         photoDate: '',
         file,
+        linkedMemberIds: [],
       });
     } catch (error) {
       console.error('Upload error:', error);
@@ -252,8 +256,9 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   const handleReviewSave = async () => {
     setReviewSaving(true);
     try {
+      let memoryId = reviewPopup.memoryId;
       if (reviewPopup.mode === 'create') {
-        await memoriesApi.createFamilyMemory({
+        const created = await memoriesApi.createFamilyMemory({
           family_id: familyId,
           file_path: reviewPopup.filePath,
           original_filename: reviewPopup.originalFilename,
@@ -262,14 +267,46 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
           caption: reviewPopup.caption || undefined,
           photo_date: reviewPopup.photoDate || undefined,
         });
+        memoryId = created.id;
         sonnerToast.success(t('gallery.upload_success', 'Photo uploaded successfully'));
-      } else if (reviewPopup.mode === 'edit' && reviewPopup.memoryId) {
-        await memoriesApi.updateFamilyMemory(reviewPopup.memoryId, {
+      } else if (reviewPopup.mode === 'edit' && memoryId) {
+        await memoriesApi.updateFamilyMemory(memoryId, {
           caption: reviewPopup.caption || undefined,
           photo_date: reviewPopup.photoDate || undefined,
         });
         sonnerToast.success(t('gallery.update_success', 'Memory updated successfully'));
       }
+
+      // Sync photo tags
+      if (memoryId) {
+        try {
+          const existingTags = await memoriesApi.getPhotoTags(memoryId);
+          const existingMemberIds = existingTags.map(t => t.member_id);
+          const desiredMemberIds = reviewPopup.linkedMemberIds;
+
+          // Delete removed tags
+          for (const tag of existingTags) {
+            if (!desiredMemberIds.includes(tag.member_id)) {
+              await memoriesApi.deletePhotoTag(tag.id);
+            }
+          }
+          // Create new tags
+          for (const memberId of desiredMemberIds) {
+            if (!existingMemberIds.includes(memberId)) {
+              await memoriesApi.createPhotoTag({
+                memory_id: memoryId,
+                member_id: memberId,
+                x_percent: 50,
+                y_percent: 50,
+              });
+            }
+          }
+        } catch (tagError) {
+          console.error('Error syncing tags:', tagError);
+        }
+        loadAllTags();
+      }
+
       setReviewPopup(prev => ({ ...prev, open: false }));
       loadMemories();
     } catch (error) {
@@ -290,7 +327,17 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   };
 
   // Open edit popup for an existing memory
-  const openEditPopup = (memory: MemoryWithUrl) => {
+  const openEditPopup = async (memory: MemoryWithUrl) => {
+    // Load existing tags for edit mode
+    const existingTagMemberIds: string[] = [];
+    if (memory.id) {
+      try {
+        const tags = await memoriesApi.getPhotoTags(memory.id);
+        tags.forEach(t => existingTagMemberIds.push(t.member_id));
+      } catch (e) {
+        console.error('Error loading tags for edit:', e);
+      }
+    }
     setReviewPopup({
       open: true,
       mode: 'edit',
@@ -302,7 +349,9 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
       memoryId: memory.id,
       caption: memory.caption || '',
       photoDate: memory.photo_date ? memory.photo_date.split('T')[0] : '',
+      linkedMemberIds: existingTagMemberIds,
     });
+    setReviewTagSearch('');
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -957,6 +1006,82 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                 <p className="text-[10px] text-slate-400 px-1 mt-1">
                   {t('gallery.date_hint', 'Leave blank if the exact date is unknown.')}
                 </p>
+              </div>
+
+              {/* Tag Members */}
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-1">
+                  {t('gallery.tag_members', 'Tag Members')}
+                </label>
+                {/* Selected tags */}
+                {reviewPopup.linkedMemberIds.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {reviewPopup.linkedMemberIds.map(memberId => {
+                      const member = familyMembers.find(m => m.id === memberId);
+                      if (!member) return null;
+                      return (
+                        <div key={memberId} className="flex items-center gap-1.5 bg-primary/5 dark:bg-primary/10 ps-1 pe-1 py-1 rounded-full border border-primary/20">
+                          <div className="w-5 h-5 rounded-full bg-muted overflow-hidden flex items-center justify-center">
+                            {member.image_url ? (
+                              <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="text-[9px] font-bold text-muted-foreground">{(member.name || '?')[0]}</span>
+                            )}
+                          </div>
+                          <span className="text-xs font-semibold text-foreground">{member.name}</span>
+                          <button
+                            type="button"
+                            onClick={() => setReviewPopup(prev => ({ ...prev, linkedMemberIds: prev.linkedMemberIds.filter(id => id !== memberId) }))}
+                            className="w-5 h-5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive flex items-center justify-center transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-sm">close</span>
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                {/* Search & add */}
+                <div className="relative">
+                  <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">person_search</span>
+                  <input
+                    className="w-full ps-10 pe-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                    type="text"
+                    placeholder={t('gallery.search_member_to_tag', 'Search member to tag...')}
+                    value={reviewTagSearch}
+                    onChange={e => setReviewTagSearch(e.target.value)}
+                  />
+                </div>
+                {reviewTagSearch.trim() && (
+                  <div className="max-h-32 overflow-y-auto bg-popover border border-border rounded-xl shadow-lg">
+                    {familyMembers
+                      .filter(m => !reviewPopup.linkedMemberIds.includes(m.id) && m.name.toLowerCase().includes(reviewTagSearch.toLowerCase()))
+                      .slice(0, 8)
+                      .map(member => (
+                        <button
+                          key={member.id}
+                          type="button"
+                          className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-accent text-start transition-colors"
+                          onClick={() => {
+                            setReviewPopup(prev => ({ ...prev, linkedMemberIds: [...prev.linkedMemberIds, member.id] }));
+                            setReviewTagSearch('');
+                          }}
+                        >
+                          <div className="w-7 h-7 rounded-full bg-muted overflow-hidden flex items-center justify-center shrink-0">
+                            {member.image_url ? (
+                              <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="text-[10px] font-bold text-muted-foreground">{(member.name || '?')[0]}</span>
+                            )}
+                          </div>
+                          <span className="text-sm font-medium text-foreground">{member.name}</span>
+                        </button>
+                      ))}
+                    {familyMembers.filter(m => !reviewPopup.linkedMemberIds.includes(m.id) && m.name.toLowerCase().includes(reviewTagSearch.toLowerCase())).length === 0 && (
+                      <p className="px-4 py-3 text-xs text-muted-foreground text-center">{t('gallery.no_members_found', 'No members found')}</p>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
