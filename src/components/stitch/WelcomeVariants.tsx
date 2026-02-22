@@ -51,10 +51,10 @@ export const StitchWelcomeCard: React.FC<WelcomeCardProps> = ({ userName, family
         </div>
 
         <div className="flex-1">
-          <h2 className="text-2xl font-bold text-white mb-1">
+          <h2 className="text-base sm:text-lg md:text-xl font-bold text-white mb-0.5 sm:mb-1 truncate">
             {t('stitch.welcome_back', 'مرحباً بعودتك')}، {userName}!
           </h2>
-          <p className="text-white/80 text-sm">
+          <p className="text-white/80 text-[11px] sm:text-xs md:text-sm">
             {t('stitch.whats_happening', 'إليك ما يحدث في شجرة عائلتك اليوم')}
           </p>
         </div>
