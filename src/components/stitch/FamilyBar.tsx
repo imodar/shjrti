@@ -107,7 +107,7 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
                             }}
                             className="text-xs cursor-pointer"
                           >
-                            <span className="material-icons-round text-sm text-pink-500 me-2">favorite</span>
+                            
                             {option.label}
                           </CommandItem>
                         ))}
