@@ -497,47 +497,30 @@ async function handleGetTaggedMembers(userId: string, familyId: string): Promise
   }
 
   const supabase = createServiceClient();
-  // Get all unique member_ids that have been tagged in this family's photos
-  const { data, error } = await supabase
+  
+  // First get all family memory IDs
+  const { data: memories } = await supabase
+    .from('family_memories')
+    .select('id')
+    .eq('family_id', familyId);
+  
+  if (!memories || memories.length === 0) {
+    return successResponse([]);
+  }
+
+  const memoryIds = memories.map(m => m.id);
+  const { data: tags, error } = await supabase
     .from('photo_member_tags')
-    .select('member_id, memory_id')
-    .in('memory_id', 
-      supabase.from('family_memories').select('id').eq('family_id', familyId)
-    );
+    .select('member_id')
+    .in('memory_id', memoryIds);
 
   if (error) {
-    // Fallback: use a raw approach
-    const { data: memories } = await supabase
-      .from('family_memories')
-      .select('id')
-      .eq('family_id', familyId);
-    
-    if (!memories || memories.length === 0) {
-      return successResponse([]);
-    }
-
-    const memoryIds = memories.map(m => m.id);
-    const { data: tags, error: tagError } = await supabase
-      .from('photo_member_tags')
-      .select('member_id')
-      .in('memory_id', memoryIds);
-
-    if (tagError) {
-      return errorResponse('DATABASE_ERROR', tagError.message, HttpStatus.BAD_REQUEST);
-    }
-
-    // Get unique member IDs with counts
-    const memberCounts: Record<string, number> = {};
-    (tags || []).forEach(t => {
-      memberCounts[t.member_id] = (memberCounts[t.member_id] || 0) + 1;
-    });
-
-    return successResponse(Object.entries(memberCounts).map(([member_id, count]) => ({ member_id, count })));
+    return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
   }
 
   // Get unique member IDs with counts
   const memberCounts: Record<string, number> = {};
-  (data || []).forEach(t => {
+  (tags || []).forEach(t => {
     memberCounts[t.member_id] = (memberCounts[t.member_id] || 0) + 1;
   });
 
