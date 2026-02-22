@@ -1235,6 +1235,51 @@ export type Database = {
         }
         Relationships: []
       }
+      photo_member_tags: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          member_id: string
+          memory_id: string
+          x_percent: number
+          y_percent: number
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          member_id: string
+          memory_id: string
+          x_percent?: number
+          y_percent?: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          member_id?: string
+          memory_id?: string
+          x_percent?: number
+          y_percent?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "photo_member_tags_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "family_tree_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "photo_member_tags_memory_id_fkey"
+            columns: ["memory_id"]
+            isOneToOne: false
+            referencedRelation: "family_memories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string

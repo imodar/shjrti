@@ -8,10 +8,12 @@ import { toast as sonnerToast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import { Member } from '@/types/family.types';
 import type { FamilyMemory } from '@/lib/api/types';
+import type { PhotoMemberTag } from '@/lib/api/endpoints/memories';
 import { useDropzone } from 'react-dropzone';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import { useImageUploadPermission } from '@/hooks/useImageUploadPermission';
+import { PhotoTagger } from './PhotoTagger';
 
 // Types for the review/edit popup
 interface ReviewPopupState {
@@ -95,6 +97,10 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   const [filterMemberId, setFilterMemberId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [selectedMemoryTags, setSelectedMemoryTags] = useState<PhotoMemberTag[]>([]);
+  const [taggedMemberCounts, setTaggedMemberCounts] = useState<Record<string, number>>({});
+  const [filterByTaggedMember, setFilterByTaggedMember] = useState<string | null>(null);
+  const [memoryTagsMap, setMemoryTagsMap] = useState<Record<string, string[]>>({}); // memoryId -> member_ids
 
   // Review popup state
   const [reviewPopup, setReviewPopup] = useState<ReviewPopupState>({
@@ -130,7 +136,41 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
     loadMemories();
   }, [loadMemories]);
 
+  // Load all tags for the family (for filtering)
+  const loadAllTags = useCallback(async () => {
+    if (!familyId) return;
+    try {
+      const taggedMembers = await memoriesApi.getTaggedMembers(familyId);
+      const counts: Record<string, number> = {};
+      taggedMembers.forEach(tm => { counts[tm.member_id] = tm.count; });
+      setTaggedMemberCounts(counts);
+    } catch (error) {
+      console.error('Error loading tagged members:', error);
+    }
+  }, [familyId]);
+
+  useEffect(() => {
+    loadAllTags();
+  }, [loadAllTags]);
+
+  // Load tags when selecting a memory
+  const loadMemoryTags = useCallback(async (memoryId: string) => {
+    try {
+      const tags = await memoriesApi.getPhotoTags(memoryId);
+      setSelectedMemoryTags(tags);
+      // Update the map
+      setMemoryTagsMap(prev => ({
+        ...prev,
+        [memoryId]: tags.map(t => t.member_id),
+      }));
+    } catch (error) {
+      console.error('Error loading photo tags:', error);
+      setSelectedMemoryTags([]);
+    }
+  }, []);
+
   // Members with memory count for sidebar
+  // Members with memory count for sidebar (combines linked_member_id + photo tags)
   const membersWithCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     memories.forEach(m => {
@@ -138,17 +178,27 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
         counts[m.linked_member_id] = (counts[m.linked_member_id] || 0) + 1;
       }
     });
+    // Merge tagged member counts
+    Object.entries(taggedMemberCounts).forEach(([memberId, count]) => {
+      counts[memberId] = (counts[memberId] || 0) + count;
+    });
     return familyMembers
       .filter(m => counts[m.id])
       .map(m => ({ ...m, memoryCount: counts[m.id] || 0 }))
       .sort((a, b) => b.memoryCount - a.memoryCount);
-  }, [familyMembers, memories]);
+  }, [familyMembers, memories, taggedMemberCounts]);
 
   // Filter memories
   const filteredMemories = useMemo(() => {
     let result = memories;
     if (filterMemberId) {
-      result = result.filter(m => m.linked_member_id === filterMemberId);
+      result = result.filter(m => {
+        // Check linked_member_id
+        if (m.linked_member_id === filterMemberId) return true;
+        // Check photo tags
+        const taggedMembers = memoryTagsMap[m.id] || [];
+        return taggedMembers.includes(filterMemberId);
+      });
     }
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
@@ -158,7 +208,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
       );
     }
     return result;
-  }, [memories, filterMemberId, searchQuery]);
+  }, [memories, filterMemberId, searchQuery, memoryTagsMap]);
 
   // Upload handler - uploads file to storage then opens review popup
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -283,11 +333,13 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
       : Math.max(selectedIndex - 1, 0);
     setSelectedIndex(newIndex);
     setSelectedMemory(filteredMemories[newIndex]);
+    loadMemoryTags(filteredMemories[newIndex].id);
   };
 
   const openMemory = (memory: MemoryWithUrl, index: number) => {
     setSelectedMemory(memory);
     setSelectedIndex(index);
+    loadMemoryTags(memory.id);
   };
 
   const getMemberName = (memberId: string | null) => {
@@ -665,17 +717,23 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
           </button>
 
           <div className="relative w-full lg:max-w-7xl h-[90vh] lg:h-[85vh] bg-white dark:bg-slate-900 rounded-t-[24px] lg:rounded-[32px] shadow-2xl overflow-hidden flex flex-col lg:flex-row">
-            {/* Image Area */}
+            {/* Image Area with PhotoTagger */}
             <div className="relative h-[45vh] lg:h-auto lg:w-[68%] bg-slate-100 dark:bg-black/20 flex items-center justify-center group overflow-hidden shrink-0">
-              <img
-                alt={selectedMemory.caption || selectedMemory.original_filename}
-                className="w-full h-full object-contain"
-                src={selectedMemory.imageUrl}
+              <PhotoTagger
+                memoryId={selectedMemory.id}
+                imageUrl={selectedMemory.imageUrl}
+                imageAlt={selectedMemory.caption || selectedMemory.original_filename}
+                familyMembers={familyMembers}
+                tags={selectedMemoryTags}
+                onTagsChange={() => {
+                  loadMemoryTags(selectedMemory.id);
+                  loadAllTags();
+                }}
               />
               {/* Prev / Next Arrows */}
               {selectedIndex > 0 && (
                 <button
-                  className="absolute start-6 w-12 h-12 rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-lg flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                  className="absolute start-6 w-12 h-12 rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-lg flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10"
                   onClick={() => navigateMemory('prev')}
                 >
                   <span className="material-symbols-outlined text-3xl">chevron_left</span>
@@ -683,7 +741,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
               )}
               {selectedIndex < filteredMemories.length - 1 && (
                 <button
-                  className="absolute end-6 w-12 h-12 rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-lg flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                  className="absolute end-6 w-12 h-12 rounded-full bg-white/20 hover:bg-white/40 text-white backdrop-blur-lg flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 z-10"
                   onClick={() => navigateMemory('next')}
                 >
                   <span className="material-symbols-outlined text-3xl">chevron_right</span>
@@ -735,14 +793,33 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                   </div>
                 </div>
 
-                {/* Linked Member */}
-                {selectedMemory.linked_member_id && (
+                {/* Tagged Members */}
+                {(selectedMemoryTags.length > 0 || selectedMemory.linked_member_id) && (
                   <div>
-                    <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4">
-                      {t('gallery.associated_member', 'Associated Member')}
+                    <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <span className="material-symbols-outlined text-sm">person_pin</span>
+                      {t('gallery.tagged_members', 'الأشخاص المحددون')}
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {(() => {
+                      {/* Show photo tags */}
+                      {selectedMemoryTags.map(tag => {
+                        const member = familyMembers.find(m => m.id === tag.member_id);
+                        if (!member) return null;
+                        return (
+                          <div key={tag.id} className="flex items-center gap-2 bg-primary/5 dark:bg-primary/10 pe-3 ps-1 py-1 rounded-full border border-primary/20">
+                            <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center">
+                              {member.image_url ? (
+                                <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <span className="text-[10px] font-bold text-slate-400">{(member.name || '?')[0]}</span>
+                              )}
+                            </div>
+                            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{member.name}</span>
+                          </div>
+                        );
+                      })}
+                      {/* Show linked member if not already in tags */}
+                      {selectedMemory.linked_member_id && !selectedMemoryTags.some(t => t.member_id === selectedMemory.linked_member_id) && (() => {
                         const member = familyMembers.find(m => m.id === selectedMemory.linked_member_id);
                         if (!member) return null;
                         return (
