@@ -109,36 +109,36 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
     <div className="space-y-6">
       {/* Upgrade prompt for non-Plus users */}
       {!checkingPlan && !hasPlusPlan && (
-        <div className="bg-card rounded-2xl p-8 shadow-sm border border-border relative overflow-hidden">
-          <div className="mt-2 p-6 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-[hsl(var(--accent-gold))] opacity-10 blur-3xl -mr-16 -mt-16 rounded-full" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary opacity-10 blur-2xl -ml-12 -mb-12 rounded-full" />
-            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="bg-card rounded-2xl p-4 sm:p-8 shadow-sm border border-border relative overflow-hidden">
+          <div className="mt-1 sm:mt-2 p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-[hsl(var(--accent-gold))] opacity-10 blur-3xl -mr-12 sm:-mr-16 -mt-12 sm:-mt-16 rounded-full" />
+            <div className="absolute bottom-0 left-0 w-16 sm:w-24 h-16 sm:h-24 bg-primary opacity-10 blur-2xl -ml-8 sm:-ml-12 -mb-8 sm:-mb-12 rounded-full" />
+            <div className="relative z-10 flex flex-col items-center text-center sm:text-start sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center justify-center sm:justify-start gap-2 mb-2">
                   <span className="px-2 py-0.5 bg-[hsl(37,60%,60%)]/20 text-[hsl(37,60%,60%)] text-[10px] font-bold rounded uppercase tracking-widest border border-[hsl(37,60%,60%)]/30">
                     {t('settings.pro_advantage', 'Pro Advantage')}
                   </span>
                 </div>
-                <h4 className="text-lg font-bold mb-2">{t('settings.unlock_collaborators', 'أضف مشرفين لإدارة شجرتك')}</h4>
+                <h4 className="text-base sm:text-lg font-bold mb-2">{t('settings.unlock_collaborators', 'أضف مشرفين لإدارة شجرتك')}</h4>
                 <ul className="space-y-1.5">
-                  <li className="flex items-center gap-2 text-xs text-slate-300">
+                  <li className="flex items-center justify-center sm:justify-start gap-2 text-xs text-slate-300">
                     <span className="material-symbols-outlined text-[hsl(37,60%,60%)] text-sm">verified</span>
                     {t('settings.collab_feature_1', 'دعوة مشرفين عبر البريد الإلكتروني')}
                   </li>
-                  <li className="flex items-center gap-2 text-xs text-slate-300">
+                  <li className="flex items-center justify-center sm:justify-start gap-2 text-xs text-slate-300">
                     <span className="material-symbols-outlined text-[hsl(37,60%,60%)] text-sm">verified</span>
                     {t('settings.collab_feature_2', 'تعاون مشترك في تحرير بيانات الشجرة')}
                   </li>
                 </ul>
               </div>
-              <div className="flex-shrink-0 w-full md:w-auto">
+              <div className="flex-shrink-0 w-full sm:w-auto">
                 <button
                   onClick={() => navigate('/plan-selection')}
-                  className="w-full md:w-auto px-8 py-4 font-bold rounded-xl transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap text-slate-900"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 font-bold rounded-xl transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap text-slate-900 text-sm sm:text-base"
                   style={{ background: 'hsl(37 60% 60%)', boxShadow: '0 0 15px hsla(37, 60%, 60%, 0.3)' }}
                 >
-                  <span className="material-symbols-outlined">workspace_premium</span>
+                  <span className="material-symbols-outlined text-lg sm:text-2xl">workspace_premium</span>
                   {t('settings.upgrade_to_premium', 'ترقية إلى المميزة')}
                 </button>
               </div>
@@ -151,18 +151,18 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
       {(hasPlusPlan || checkingPlan) && (
       <>
       {/* Current Collaborators */}
-      <div className="bg-card rounded-2xl p-8 shadow-sm border border-border">
-        <div className="flex items-center justify-between mb-6">
+      <div className="bg-card rounded-2xl p-4 sm:p-8 shadow-sm border border-border">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
           <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-primary text-2xl">group</span>
+            <span className="material-symbols-outlined text-primary text-xl sm:text-2xl">group</span>
             <div>
-              <h3 className="font-bold text-lg text-foreground">{t('settings.collaborators', 'المشرفون')}</h3>
-              <p className="text-sm text-muted-foreground">{t('settings.collaborators_desc', 'الأشخاص الذين يمكنهم إدارة هذه الشجرة')}</p>
+              <h3 className="font-bold text-base sm:text-lg text-foreground">{t('settings.collaborators', 'المشرفون')}</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">{t('settings.collaborators_desc', 'الأشخاص الذين يمكنهم إدارة هذه الشجرة')}</p>
             </div>
           </div>
           <button
             onClick={() => setShowInviteForm(true)}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors"
+            className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-primary text-primary-foreground rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors"
           >
             <span className="material-symbols-outlined text-base">person_add</span>
             {t('settings.invite_new', 'دعوة مشرف')}
@@ -171,34 +171,36 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
 
         {/* Invite Form */}
         {showInviteForm && (
-          <form onSubmit={handleInvite} className="mb-6 p-4 bg-muted rounded-xl border border-border flex gap-3">
+          <form onSubmit={handleInvite} className="mb-6 p-3 sm:p-4 bg-muted rounded-xl border border-border flex flex-col sm:flex-row gap-2 sm:gap-3">
             <input
               type="email"
               value={inviteEmail}
               onChange={(e) => setInviteEmail(e.target.value)}
               placeholder={t('settings.invite_email_placeholder', 'أدخل البريد الإلكتروني...')}
-              className="flex-1 px-4 py-2 bg-card border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="flex-1 px-4 py-2.5 bg-card border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
               required
             />
-            <button
-              type="submit"
-              disabled={sending}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-bold hover:bg-primary/90 disabled:opacity-50 transition-colors"
-            >
-              {sending ? (
-                <span className="flex items-center gap-2">
-                  <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
-                  {t('common.sending', 'جاري الإرسال...')}
-                </span>
-              ) : t('settings.send_invite', 'إرسال')}
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowInviteForm(false)}
-              className="px-3 py-2 border border-border rounded-lg text-sm text-muted-foreground hover:bg-accent transition-colors"
-            >
-              {t('common.cancel', 'إلغاء')}
-            </button>
+            <div className="flex gap-2">
+              <button
+                type="submit"
+                disabled={sending}
+                className="flex-1 sm:flex-none px-4 py-2.5 bg-primary text-primary-foreground rounded-lg text-sm font-bold hover:bg-primary/90 disabled:opacity-50 transition-colors"
+              >
+                {sending ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="material-symbols-outlined animate-spin text-sm">progress_activity</span>
+                    {t('common.sending', 'جاري الإرسال...')}
+                  </span>
+                ) : t('settings.send_invite', 'إرسال')}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowInviteForm(false)}
+                className="px-3 py-2.5 border border-border rounded-lg text-sm text-muted-foreground hover:bg-accent transition-colors"
+              >
+                {t('common.cancel', 'إلغاء')}
+              </button>
+            </div>
           </form>
         )}
 
@@ -211,20 +213,20 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
         ) : (
           <div className="space-y-3">
             {collaborators.map((collab) => (
-              <div key={collab.id} className="flex items-center justify-between p-4 bg-muted rounded-xl border border-border">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold text-sm">
+              <div key={collab.id} className="flex items-center justify-between p-3 sm:p-4 bg-muted rounded-xl border border-border gap-2">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold text-xs sm:text-sm flex-shrink-0">
                     {(collab.first_name?.[0] || collab.email?.[0] || '?').toUpperCase()}
                   </div>
-                  <div>
-                    <p className="font-semibold text-sm text-foreground">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-xs sm:text-sm text-foreground truncate">
                       {collab.first_name || collab.last_name ? `${collab.first_name || ''} ${collab.last_name || ''}`.trim() : collab.email}
                     </p>
-                    <p className="text-xs text-muted-foreground">{collab.email}</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{collab.email}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-bold">{t('settings.role_editor', 'مشرف')}</span>
+                <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+                  <span className="text-[10px] sm:text-xs bg-primary/10 text-primary px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full font-bold">{t('settings.role_editor', 'مشرف')}</span>
                   <button
                     onClick={() => handleRemove(collab.id, 'collaborator')}
                     disabled={removingId === collab.id}
@@ -232,9 +234,9 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
                     title={t('settings.remove_collaborator', 'إزالة')}
                   >
                     {removingId === collab.id ? (
-                      <span className="material-symbols-outlined animate-spin text-lg">progress_activity</span>
+                      <span className="material-symbols-outlined animate-spin text-base sm:text-lg">progress_activity</span>
                     ) : (
-                      <span className="material-symbols-outlined text-lg">close</span>
+                      <span className="material-symbols-outlined text-base sm:text-lg">close</span>
                     )}
                   </button>
                 </div>
@@ -243,18 +245,18 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
 
             {/* Pending Invitations */}
             {invitations.map((inv) => (
-              <div key={inv.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-xl border border-dashed border-border">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-muted text-muted-foreground rounded-full flex items-center justify-center">
-                    <span className="material-symbols-outlined text-lg">mail</span>
+              <div key={inv.id} className="flex items-center justify-between p-3 sm:p-4 bg-muted/50 rounded-xl border border-dashed border-border gap-2">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-muted text-muted-foreground rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="material-symbols-outlined text-base sm:text-lg">mail</span>
                   </div>
-                  <div>
-                    <p className="font-semibold text-sm text-foreground">{inv.invited_email}</p>
-                    <p className="text-xs text-muted-foreground">{t('settings.invitation_pending', 'بانتظار القبول')}</p>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-xs sm:text-sm text-foreground truncate">{inv.invited_email}</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">{t('settings.invitation_pending', 'بانتظار القبول')}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 px-2 py-1 rounded-full font-bold">
+                <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+                  <span className="text-[10px] sm:text-xs bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full font-bold">
                     {t('settings.pending', 'معلقة')}
                   </span>
                   <button
@@ -264,9 +266,9 @@ const CollaboratorsTab: React.FC<CollaboratorsTabProps> = ({ familyId, isOwner =
                     title={t('settings.revoke_invitation', 'إلغاء الدعوة')}
                   >
                     {removingId === inv.id ? (
-                      <span className="material-symbols-outlined animate-spin text-lg">progress_activity</span>
+                      <span className="material-symbols-outlined animate-spin text-base sm:text-lg">progress_activity</span>
                     ) : (
-                      <span className="material-symbols-outlined text-lg">close</span>
+                      <span className="material-symbols-outlined text-base sm:text-lg">close</span>
                     )}
                   </button>
                 </div>

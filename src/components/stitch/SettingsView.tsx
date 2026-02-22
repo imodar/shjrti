@@ -279,19 +279,20 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
       <div className="max-w-4xl mx-auto space-y-6">
 
         {/* Settings Tabs */}
-        <div className="flex gap-1 sm:gap-2 bg-muted/50 p-1 sm:p-1.5 rounded-xl border border-border/50 overflow-x-auto">
+        <div className="flex gap-1 bg-muted/50 p-1 rounded-xl border border-border/50 overflow-x-auto scrollbar-none">
           {settingsTabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveSettingsTab(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 rounded-lg text-[11px] sm:text-sm font-semibold transition-all whitespace-nowrap min-w-0 ${
+              className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 whitespace-nowrap ${
                 activeSettingsTab === tab.id
-                  ? 'bg-background text-primary shadow-md shadow-primary/10'
+                  ? 'bg-background text-primary shadow-md shadow-primary/10 scale-[1.02]'
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
               }`}
             >
-              <span className="material-symbols-outlined text-base sm:text-lg">{tab.icon}</span>
-              <span className="truncate">{tab.label}</span>
+              <span className="material-symbols-outlined text-[18px] sm:text-lg">{tab.icon}</span>
+              <span className="hidden xs:inline sm:inline">{tab.label}</span>
+              <span className="xs:hidden sm:hidden">{tab.icon === 'tune' ? t('settings.tab_general_short', 'عامة') : tab.icon === 'admin_panel_settings' ? t('settings.tab_admins_short', 'المشرفون') : t('settings.tab_advanced_short', 'متقدمة')}</span>
             </button>
           ))}
         </div>
