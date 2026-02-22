@@ -71,16 +71,18 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
           (m.wife_id === member?.id && m.husband_id === spouse.id)
         );
 
+        const marriageDate = marriage?.marriage_date || null;
+
         items.push({
           type: 'marriage',
-          date: marriage?.created_at || null,
+          date: marriageDate,
           icon: 'favorite',
           borderColor: 'border-secondary',
           bgColor: 'bg-secondary/5',
           textColor: 'text-secondary',
           title: `${t('timeline.marriage_with', 'Union with')} ${spouseName.trim()}`,
           description: t('timeline.marriage_description', 'A union that strengthened the family bonds and continued the legacy.'),
-          dateLabel: marriage?.created_at || '',
+          dateLabel: marriageDate || '',
         });
       });
     }
@@ -162,10 +164,10 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
         <div className="w-16 h-16 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mb-4">
           <span className="material-symbols-outlined text-3xl">history</span>
         </div>
-        <h3 className="text-2xl font-bold text-slate-800 dark:text-white">
+        <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 dark:text-white">
           {t('timeline.life_journey_of', 'The Life Journey of')} {getDisplayName()}
         </h3>
-        <p className="text-sm text-slate-400 font-medium uppercase tracking-widest mt-2">
+        <p className="text-[10px] sm:text-xs md:text-sm text-slate-400 font-medium uppercase tracking-widest mt-1 sm:mt-2">
           {t('timeline.chronological_history', 'A Chronological History of Leadership and Legacy')}
         </p>
       </div>
@@ -173,38 +175,46 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
       {/* Timeline */}
       <div className="relative">
         {/* Centered Vertical Line */}
-        <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-secondary to-slate-200 dark:to-slate-700 hidden md:block" />
+        <div className="absolute left-4 sm:left-1/2 sm:-translate-x-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-secondary to-slate-200 dark:to-slate-700" />
 
         <div className="space-y-16">
           {events.map((event, index) => {
             const isLeft = index % 2 === 0;
             return (
-              <div key={index} className="relative flex flex-col md:flex-row items-center">
-                {/* Left content or spacer */}
+              <div key={index} className="relative flex items-start sm:items-center">
+                {/* Mobile: icon on the line + content to the right */}
+                {/* Desktop: alternating left/right */}
+                
+                {/* Left content or spacer (desktop only) */}
                 {isLeft ? (
-                  <div className={cn("flex-1 mb-4 md:mb-0", direction === 'rtl' ? 'md:text-left md:pl-12' : 'md:text-right md:pr-12')}>
+                  <div className={cn("hidden sm:block flex-1", direction === 'rtl' ? 'text-left pl-12' : 'text-right pr-12')}>
                     <TimelineCard event={event} />
                   </div>
                 ) : (
-                  <div className="flex-1 hidden md:block" />
+                  <div className="hidden sm:block flex-1" />
                 )}
 
                 {/* Center icon */}
                 <div className={cn(
-                  "absolute left-1/2 -translate-x-1/2 w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center z-10 shadow-lg hidden md:flex",
+                  "absolute left-4 sm:left-1/2 -translate-x-1/2 w-8 h-8 sm:w-12 sm:h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center z-10 shadow-lg",
                   event.borderColor,
-                  "border-4"
+                  "border-2 sm:border-4"
                 )}>
-                  <span className={cn("material-symbols-outlined", event.textColor)}>{event.icon}</span>
+                  <span className={cn("material-symbols-outlined text-sm sm:text-base", event.textColor)}>{event.icon}</span>
                 </div>
 
-                {/* Right content or spacer */}
+                {/* Mobile content (always right of line) */}
+                <div className="sm:hidden flex-1 pl-10">
+                  <TimelineCard event={event} />
+                </div>
+
+                {/* Right content or spacer (desktop only) */}
                 {!isLeft ? (
-                  <div className={cn("flex-1", direction === 'rtl' ? 'md:pr-12' : 'md:pl-12')}>
+                  <div className={cn("hidden sm:block flex-1", direction === 'rtl' ? 'pr-12' : 'pl-12')}>
                     <TimelineCard event={event} />
                   </div>
                 ) : (
-                  <div className="flex-1 hidden md:block" />
+                  <div className="hidden sm:block flex-1" />
                 )}
               </div>
             );
@@ -223,14 +233,14 @@ const TimelineCard: React.FC<{ event: TimelineEvent }> = ({ event }) => (
     event.type === 'death' ? 'border-slate-200 dark:border-slate-700' : `${event.bgColor.replace('/5', '/10')}`
   )}>
     {event.dateLabel && (
-      <span className={cn("text-xs font-extrabold uppercase tracking-widest", event.textColor)}>
+      <span className={cn("text-[10px] sm:text-xs font-extrabold uppercase tracking-widest", event.textColor)}>
         {event.type === 'children' || event.type === 'marriage'
           ? event.dateLabel
           : <DateDisplay date={event.dateLabel} />}
       </span>
     )}
-    <h4 className="text-lg font-bold text-slate-800 dark:text-white mt-1">{event.title}</h4>
-    <p className="text-sm text-slate-500 mt-2 max-w-sm">{event.description}</p>
+    <h4 className="text-sm sm:text-base md:text-lg font-bold text-slate-800 dark:text-white mt-1">{event.title}</h4>
+    <p className="text-xs sm:text-sm text-slate-500 mt-1 sm:mt-2 max-w-sm">{event.description}</p>
   </div>
 );
 
