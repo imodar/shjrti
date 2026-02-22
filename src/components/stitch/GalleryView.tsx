@@ -102,6 +102,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   const [taggedMemberCounts, setTaggedMemberCounts] = useState<Record<string, number>>({});
   const [filterByTaggedMember, setFilterByTaggedMember] = useState<string | null>(null);
   const [memoryTagsMap, setMemoryTagsMap] = useState<Record<string, string[]>>({}); // memoryId -> member_ids
+  const [memberSearchQuery, setMemberSearchQuery] = useState(''); // search for member names in sidebar
 
   // Review popup state
   const [reviewPopup, setReviewPopup] = useState<ReviewPopupState>({
@@ -159,12 +160,36 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
     loadAllTags();
   }, [loadAllTags]);
 
+  // Load ALL memory tags upfront so member filtering works
+  const loadAllMemoryTags = useCallback(async () => {
+    if (!familyId || memories.length === 0) return;
+    try {
+      const newMap: Record<string, string[]> = {};
+      await Promise.all(
+        memories.map(async (m) => {
+          try {
+            const tags = await memoriesApi.getPhotoTags(m.id);
+            if (tags.length > 0) {
+              newMap[m.id] = tags.map(t => t.member_id);
+            }
+          } catch { /* skip */ }
+        })
+      );
+      setMemoryTagsMap(newMap);
+    } catch (error) {
+      console.error('Error loading all memory tags:', error);
+    }
+  }, [familyId, memories]);
+
+  useEffect(() => {
+    loadAllMemoryTags();
+  }, [loadAllMemoryTags]);
+
   // Load tags when selecting a memory
   const loadMemoryTags = useCallback(async (memoryId: string) => {
     try {
       const tags = await memoriesApi.getPhotoTags(memoryId);
       setSelectedMemoryTags(tags);
-      // Update the map
       setMemoryTagsMap(prev => ({
         ...prev,
         [memoryId]: tags.map(t => t.member_id),
@@ -175,7 +200,6 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
     }
   }, []);
 
-  // Members with memory count for sidebar
   // Members with memory count for sidebar (combines linked_member_id + photo tags)
   const membersWithCounts = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -183,25 +207,32 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
       if (m.linked_member_id) {
         counts[m.linked_member_id] = (counts[m.linked_member_id] || 0) + 1;
       }
-    });
-    // Merge tagged member counts
-    Object.entries(taggedMemberCounts).forEach(([memberId, count]) => {
-      counts[memberId] = (counts[memberId] || 0) + count;
+      const taggedIds = memoryTagsMap[m.id] || [];
+      taggedIds.forEach(memberId => {
+        if (memberId !== m.linked_member_id) {
+          counts[memberId] = (counts[memberId] || 0) + 1;
+        }
+      });
     });
     return familyMembers
       .filter(m => counts[m.id])
       .map(m => ({ ...m, memoryCount: counts[m.id] || 0 }))
       .sort((a, b) => b.memoryCount - a.memoryCount);
-  }, [familyMembers, memories, taggedMemberCounts]);
+  }, [familyMembers, memories, memoryTagsMap]);
+
+  // Filter the members list in sidebar by name search
+  const filteredMembersWithCounts = useMemo(() => {
+    if (!memberSearchQuery.trim()) return membersWithCounts;
+    const q = memberSearchQuery.toLowerCase();
+    return membersWithCounts.filter(m => (m.name || '').toLowerCase().includes(q));
+  }, [membersWithCounts, memberSearchQuery]);
 
   // Filter memories
   const filteredMemories = useMemo(() => {
     let result = memories;
     if (filterMemberId) {
       result = result.filter(m => {
-        // Check linked_member_id
         if (m.linked_member_id === filterMemberId) return true;
-        // Check photo tags
         const taggedMembers = memoryTagsMap[m.id] || [];
         return taggedMembers.includes(filterMemberId);
       });
@@ -538,8 +569,8 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                   className={`w-full ps-10 pe-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs focus:ring-2 focus:ring-primary/20 outline-none ${!isImageUploadEnabled ? 'cursor-not-allowed' : ''}`}
                   placeholder={!isImageUploadEnabled ? t('gallery.filter_disabled', 'Filter disabled...') : t('gallery.filter_member', 'Filter by family member...')}
                   type="text"
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
+                  value={memberSearchQuery}
+                  onChange={e => setMemberSearchQuery(e.target.value)}
                   disabled={!isImageUploadEnabled}
                 />
               </div>
@@ -561,7 +592,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                 </div>
               </button>
 
-              {membersWithCounts.map(member => (
+              {filteredMembersWithCounts.map(member => (
                 <button
                   key={member.id}
                   onClick={() => setFilterMemberId(member.id)}
