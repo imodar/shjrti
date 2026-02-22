@@ -161,29 +161,34 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   }, [loadAllTags]);
 
   // Load ALL memory tags upfront so member filtering works
-  const loadAllMemoryTags = useCallback(async () => {
-    if (!familyId || memories.length === 0) return;
-    try {
-      const newMap: Record<string, string[]> = {};
-      await Promise.all(
-        memories.map(async (m) => {
-          try {
-            const tags = await memoriesApi.getPhotoTags(m.id);
-            if (tags.length > 0) {
-              newMap[m.id] = tags.map(t => t.member_id);
-            }
-          } catch { /* skip */ }
-        })
-      );
-      setMemoryTagsMap(newMap);
-    } catch (error) {
-      console.error('Error loading all memory tags:', error);
-    }
-  }, [familyId, memories]);
-
   useEffect(() => {
+    if (!familyId || memories.length === 0) return;
+    const currentMemories = [...memories]; // capture current snapshot
+    let cancelled = false;
+    const loadAllMemoryTags = async () => {
+      try {
+        const newMap: Record<string, string[]> = {};
+        await Promise.all(
+          currentMemories.map(async (m) => {
+            try {
+              const tags = await memoriesApi.getPhotoTags(m.id);
+              if (tags.length > 0) {
+                newMap[m.id] = tags.map(t => t.member_id);
+              }
+            } catch { /* skip */ }
+          })
+        );
+        if (!cancelled) {
+          console.log('[Gallery] Loaded all memory tags:', Object.keys(newMap).length, 'memories with tags, map:', JSON.stringify(newMap));
+          setMemoryTagsMap(newMap);
+        }
+      } catch (error) {
+        console.error('Error loading all memory tags:', error);
+      }
+    };
     loadAllMemoryTags();
-  }, [loadAllMemoryTags]);
+    return () => { cancelled = true; };
+  }, [familyId, memories.length]);
 
   // Load tags when selecting a memory
   const loadMemoryTags = useCallback(async (memoryId: string) => {
