@@ -175,17 +175,17 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
 
         {/* Search & Filter in one row */}
         <div className="flex gap-2">
-          <div className="relative flex-1">
-            <span className="material-icons-round absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+          <div className="relative flex-[2]">
+            <span className="material-icons-round absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
             <input
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20"
+              className="w-full pl-10 rtl:pl-4 rtl:pr-10 pr-4 py-[9px] bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 h-[42px]"
               placeholder={t('family_builder.search_placeholder', 'Search by name...')}
               type="text"
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
             />
           </div>
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <StyledDropdown
               value={filter}
               onChange={setFilter}
