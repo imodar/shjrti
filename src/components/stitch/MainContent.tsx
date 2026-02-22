@@ -8,7 +8,7 @@ import { StitchGalleryView } from './GalleryView';
 import { Member, Marriage } from '@/types/family.types';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getParentageInfo } from '@/lib/memberDisplayUtils';
-import { WelcomeVariantsPreview } from './WelcomeVariants';
+import { StitchWelcomeCard } from './WelcomeVariants';
 
 interface Activity {
   id: string;
@@ -198,13 +198,12 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   return (
     <section className="flex-1 overflow-y-auto bg-slate-50 dark:bg-background-dark p-8 custom-scrollbar">
       <div className="max-w-4xl mx-auto">
-        {/* Welcome Variants Preview */}
-        <WelcomeVariantsPreview
+        {/* Welcome Card */}
+        <StitchWelcomeCard
           userName={userName}
           familyMembers={familyMembers}
           marriages={marriages}
         />
-        <div className="h-6" />
 
         {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
