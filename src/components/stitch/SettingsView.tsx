@@ -279,19 +279,19 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
       <div className="max-w-4xl mx-auto space-y-6">
 
         {/* Settings Tabs */}
-        <div className="flex gap-2 bg-muted/50 p-1.5 rounded-xl border border-border/50">
+        <div className="flex gap-1 sm:gap-2 bg-muted/50 p-1 sm:p-1.5 rounded-xl border border-border/50 overflow-x-auto">
           {settingsTabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveSettingsTab(tab.id)}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 sm:py-3 rounded-lg text-[11px] sm:text-sm font-semibold transition-all whitespace-nowrap min-w-0 ${
                 activeSettingsTab === tab.id
                   ? 'bg-background text-primary shadow-md shadow-primary/10'
                   : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
               }`}
             >
-              <span className="material-symbols-outlined text-lg">{tab.icon}</span>
-              {tab.label}
+              <span className="material-symbols-outlined text-base sm:text-lg">{tab.icon}</span>
+              <span className="truncate">{tab.label}</span>
             </button>
           ))}
         </div>
