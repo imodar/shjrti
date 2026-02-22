@@ -749,7 +749,7 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
         {/* Back to Dashboard */}
         <div className="flex justify-center pb-8">
           <button
-            onClick={() => navigate('/stitch-dashboard')}
+            onClick={() => navigate(`/stitch-family-builder?family=${familyId}`)}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-bold text-sm transition-colors group"
           >
             <span className="material-symbols-outlined transition-transform group-hover:rtl:translate-x-1 group-hover:ltr:-translate-x-1">arrow_back</span>
