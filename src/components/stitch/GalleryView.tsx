@@ -271,7 +271,15 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   // Upload handler - uploads file to storage then opens review popup
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (!familyId || acceptedFiles.length === 0) return;
-    const file = acceptedFiles[0]; // Handle one file at a time for review
+    const file = acceptedFiles[0];
+    
+    // Check storage capacity (100MB limit)
+    const totalUsed = memories.reduce((acc, m) => acc + (m.file_size || 0), 0);
+    if (totalUsed + file.size > 100 * 1024 * 1024) {
+      sonnerToast.error(t('gallery.storage_full', 'Storage capacity exceeded (100MB limit)'));
+      return;
+    }
+    
     setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
@@ -411,8 +419,8 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
 
   const { getRootProps, getInputProps, isDragActive, open: openFilePicker } = useDropzone({
     onDrop,
-    accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'] },
-    maxSize: 100 * 1024 * 1024, // 100MB limit
+    accept: { 'image/png': ['.png'], 'image/jpeg': ['.jpg', '.jpeg'] },
+    maxSize: 5 * 1024 * 1024, // 5MB per file
     noClick: false,
   });
 
@@ -538,7 +546,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                 <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                   {t('gallery.drop_here', 'Drop memories here')}
                 </p>
-                <p className="text-[10px] text-slate-400 mt-1">{t('gallery.file_format_hint', 'PNG, JPG up to 10MB')}</p>
+                <p className="text-[10px] text-slate-400 mt-1">{t('gallery.file_format_hint', 'PNG, JPG up to 5MB')}</p>
               </div>
             ) : (
               <div className="border-2 border-dashed border-border rounded-2xl p-6 flex flex-col items-center justify-center text-center bg-muted/30">
@@ -565,7 +573,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t('gallery.storage_capacity', 'Storage Capacity')}</span>
                 {isImageUploadEnabled ? (
                   <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300">
-                    {(memories.reduce((acc, m) => acc + (m.file_size || 0), 0) / (1024 * 1024 * 1024)).toFixed(1)} GB
+                    {(memories.reduce((acc, m) => acc + (m.file_size || 0), 0) / (1024 * 1024)).toFixed(1)} / 100 MB
                   </span>
                 ) : (
                   <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1">
@@ -576,7 +584,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
               </div>
               <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden relative">
                 {isImageUploadEnabled ? (
-                  <div className="bg-primary h-full rounded-full shadow-[0_0_8px_rgba(69,179,143,0.4)]" style={{ width: `${Math.min(memories.reduce((acc, m) => acc + (m.file_size || 0), 0) / (10 * 1024 * 1024 * 1024) * 100, 100)}%` }} />
+                  <div className="bg-primary h-full rounded-full shadow-[0_0_8px_rgba(69,179,143,0.4)]" style={{ width: `${Math.min(memories.reduce((acc, m) => acc + (m.file_size || 0), 0) / (100 * 1024 * 1024) * 100, 100)}%` }} />
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-r from-slate-300 to-slate-400 dark:from-slate-700 dark:to-slate-600 opacity-50" />
                 )}
