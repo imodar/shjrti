@@ -57,13 +57,12 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
   const displayAdditionalCount = additionalCount;
 
   return (
-    <div className="h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 z-40 relative">
-      <div className="flex items-center gap-4">
-        
+    <div className="h-12 sm:h-14 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-3 sm:px-4 lg:px-6 z-40 relative">
+      <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 min-w-0 flex-1">
 
-        <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-primary text-xl">account_tree</span>
-          <h2 className="family-title text-xl font-semibold text-slate-800 dark:text-slate-100 italic" style={{ fontFamily: "'Playfair Display', serif" }}>
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+          <span className="material-symbols-outlined text-primary text-lg sm:text-xl shrink-0">account_tree</span>
+          <h2 className="family-title text-sm sm:text-base lg:text-xl font-semibold text-slate-800 dark:text-slate-100 italic truncate" style={{ fontFamily: "'Playfair Display', serif" }}>
             {t('stitch.family_of', 'Family of')} {familyName}
           </h2>
         </div>
@@ -71,14 +70,14 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
         {/* Root Selector - Only shown on tree view */}
         {showRootSelector && rootOptions.length > 0 && (
           <>
-            <div className="h-4 w-[1px] bg-slate-200 dark:bg-slate-700 mx-2"></div>
-            <div className="flex items-center gap-0">
+            <div className="hidden sm:block h-4 w-[1px] bg-slate-200 dark:bg-slate-700"></div>
+            <div className="flex items-center gap-0 shrink-0">
               <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
-                  <button className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400">
-                    <span className="material-icons-round text-lg text-slate-400">family_restroom</span>
-                    <span className="text-xs font-semibold uppercase tracking-wider">{getSelectedLabel()}</span>
-                    <span className="material-icons-round text-lg">expand_more</span>
+                  <button className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-400">
+                    <span className="material-icons-round text-base sm:text-lg text-slate-400 hidden sm:inline">family_restroom</span>
+                    <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider truncate max-w-[80px] sm:max-w-[120px] lg:max-w-none">{getSelectedLabel()}</span>
+                    <span className="material-icons-round text-base sm:text-lg">expand_more</span>
                   </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[250px] p-0 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg z-[100]" align="start">
@@ -122,7 +121,7 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
         )}
       </div>
 
-      <div className="flex items-center gap-3 lg:gap-6 shrink-0">
+      <div className="flex items-center gap-2 sm:gap-3 lg:gap-6 shrink-0">
         {/* Last editor avatar */}
         {displayCollaborators.length > 0 && (
           <div className="hidden sm:flex -space-x-2">
@@ -141,7 +140,7 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
             )}
           </div>
         )}
-        {lastUpdated && <p className="text-[9px] lg:text-[11px] text-slate-400 font-medium truncate max-w-[100px] lg:max-w-none">{t('stitch.last_updated', 'Last updated')}: {lastUpdated}</p>}
+        {lastUpdated && <p className="hidden sm:block text-[9px] lg:text-[11px] text-slate-400 font-medium truncate max-w-[100px] lg:max-w-none">{t('stitch.last_updated', 'Last updated')}: {lastUpdated}</p>}
       </div>
     </div>
   );
