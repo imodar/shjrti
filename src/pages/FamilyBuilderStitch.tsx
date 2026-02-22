@@ -77,7 +77,7 @@ const FamilyBuilderStitch: React.FC = () => {
   // Local state
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMemberId, setSelectedMemberId] = useState<string | undefined>();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 1024);
   const [showAddMemberForm, setShowAddMemberForm] = useState(false);
   const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
   const [editingMember, setEditingMember] = useState<any>(null);
