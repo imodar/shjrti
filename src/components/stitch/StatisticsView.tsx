@@ -319,26 +319,32 @@ export const StitchStatisticsView: React.FC<StatisticsViewProps> = ({
               {t('stats.top_surnames', 'Top Surnames')}
             </h3>
             <div className="flex flex-wrap gap-3 items-center justify-center min-h-[8rem]">
-              {stats.topSurnames.length > 0 ? stats.topSurnames.map(([name, count]) => {
-                const range = stats.maxSurnameCount - stats.minSurnameCount || 1;
-                const ratio = (count - stats.minSurnameCount) / range;
-                // Scale font size from 0.75rem (smallest) to 2.25rem (largest)
-                const fontSize = 0.75 + ratio * 1.5;
-                const opacity = 0.45 + ratio * 0.55;
-                const fontWeight = ratio > 0.6 ? 700 : ratio > 0.3 ? 600 : 500;
-                return (
-                  <span
-                    key={name}
-                    className="text-primary transition-all hover:scale-110 cursor-default"
-                    style={{ fontSize: `${fontSize}rem`, opacity, fontWeight }}
-                    title={`${name}: ${count}`}
-                  >
-                    {name}
-                  </span>
+              {(() => {
+                const surnameColors = [
+                  '#16a34a', '#22c55e', '#65a30d', '#84cc16', '#ca8a04',
+                  '#eab308', '#f59e0b', '#d97706', '#ea580c', '#f97316',
+                  '#374151', '#6b7280', '#059669', '#0d9488', '#a3a3a3',
+                ];
+                return stats.topSurnames.length > 0 ? stats.topSurnames.map(([name, count], i) => {
+                  const range = stats.maxSurnameCount - stats.minSurnameCount || 1;
+                  const ratio = (count - stats.minSurnameCount) / range;
+                  const fontSize = 0.75 + ratio * 1.5;
+                  const fontWeight = ratio > 0.6 ? 700 : ratio > 0.3 ? 600 : 500;
+                  const color = surnameColors[i % surnameColors.length];
+                  return (
+                    <span
+                      key={name}
+                      className="transition-all hover:scale-110 cursor-default"
+                      style={{ fontSize: `${fontSize}rem`, fontWeight, color }}
+                      title={`${name}: ${count}`}
+                    >
+                      {name}
+                    </span>
+                  );
+                }) : (
+                  <p className="text-sm text-muted-foreground">{t('stats.no_surnames', 'No surnames recorded')}</p>
                 );
-              }) : (
-                <p className="text-sm text-muted-foreground">{t('stats.no_surnames', 'No surnames recorded')}</p>
-              )}
+              })()}
             </div>
           </div>
 
