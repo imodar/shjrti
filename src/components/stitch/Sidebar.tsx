@@ -142,9 +142,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
         // Animation
         isOpen 
           ? 'max-lg:animate-[slide-up_0.3s_ease-out]' 
-          : 'max-lg:hidden',
-        // Desktop: respect isOpen for settings/gallery hide
-        !isOpen && 'lg:hidden'
+          : 'max-lg:hidden'
       )}>
       {/* Mobile drag handle */}
       <div className="lg:hidden flex justify-center py-2">
