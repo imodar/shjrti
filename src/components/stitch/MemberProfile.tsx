@@ -262,22 +262,24 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
         </div>
 
         {/* Tabs */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl p-1.5 shadow-sm border border-slate-100 dark:border-slate-800 flex items-center">
-          {tabs.map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                'flex-1 py-3 px-4 text-sm font-bold flex items-center justify-center gap-2 rounded-xl transition-colors',
-                activeTab === tab.id
-                  ? 'text-primary bg-primary/5 border-b-2 border-primary'
-                  : 'text-slate-400 hover:text-slate-600'
-              )}
-            >
-              <span className="material-symbols-outlined text-lg">{tab.icon}</span>
-              {tab.label}
-            </button>
-          ))}
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+          <div className="flex items-center overflow-x-auto scrollbar-none p-1.5 gap-1">
+            {tabs.map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  'flex-shrink-0 flex-1 min-w-[80px] py-2.5 sm:py-3 px-3 sm:px-5 text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl transition-all duration-200',
+                  activeTab === tab.id
+                    ? 'text-white bg-primary shadow-md shadow-primary/25 scale-[1.02]'
+                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800'
+                )}
+              >
+                <span className="material-symbols-outlined text-base sm:text-lg">{tab.icon}</span>
+                <span className="hidden xs:inline sm:inline">{tab.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Tab Content */}
