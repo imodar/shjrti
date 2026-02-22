@@ -677,7 +677,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                 </div>
                 <span className="hidden md:inline text-slate-300 dark:text-slate-600">|</span>
                 <p className="text-sm text-slate-400 dark:text-slate-500 italic">
-                  {t('gallery.description', "لحظات عائلية ثمينة عبر الأجيال")}
+                  {t('gallery.subtitle', "لحظات عائلية ثمينة عبر الأجيال")}
                 </p>
               </div>
               {isImageUploadEnabled && (
@@ -1030,7 +1030,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                 }}
               >
                 <img
-                  alt="Memory Preview"
+                  alt={t('gallery.memory_preview', 'Memory Preview')}
                   className="w-full aspect-[16/10] object-contain bg-black/5 dark:bg-black/20 rounded-2xl"
                   src={reviewPopup.imageUrl}
                 />
@@ -1133,7 +1133,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                 {/* Description - 3/4 */}
                 <div className="lg:col-span-3 flex flex-col gap-2">
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">
-                    {t('gallery.description', 'Description')}
+                    {t('gallery.description_label', 'الوصف')}
                   </label>
                   <textarea
                     className="w-full flex-1 bg-muted border border-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground resize-none outline-none min-h-[200px]"
