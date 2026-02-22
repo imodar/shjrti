@@ -205,17 +205,22 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
     }
   }, []);
 
-  // Members with memory count for sidebar (combines linked_member_id + photo tags)
+  // Members with memory count for sidebar (combines linked_member_id + photo tags + taggedMemberCounts)
   const membersWithCounts = useMemo(() => {
     const counts: Record<string, number> = {};
+    // First, seed from taggedMemberCounts (fast API response, always available)
+    Object.entries(taggedMemberCounts).forEach(([memberId, count]) => {
+      counts[memberId] = count;
+    });
+    // Then overlay with more detailed memoryTagsMap if available
     memories.forEach(m => {
       if (m.linked_member_id) {
-        counts[m.linked_member_id] = (counts[m.linked_member_id] || 0) + 1;
+        counts[m.linked_member_id] = Math.max(counts[m.linked_member_id] || 0, 1);
       }
       const taggedIds = memoryTagsMap[m.id] || [];
       taggedIds.forEach(memberId => {
-        if (memberId !== m.linked_member_id) {
-          counts[memberId] = (counts[memberId] || 0) + 1;
+        if (!counts[memberId]) {
+          counts[memberId] = 1;
         }
       });
     });
@@ -223,7 +228,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
       .filter(m => counts[m.id])
       .map(m => ({ ...m, memoryCount: counts[m.id] || 0 }))
       .sort((a, b) => b.memoryCount - a.memoryCount);
-  }, [familyMembers, memories, memoryTagsMap]);
+  }, [familyMembers, memories, memoryTagsMap, taggedMemberCounts]);
 
   // Filter the members list in sidebar by name search
   const filteredMembersWithCounts = useMemo(() => {
