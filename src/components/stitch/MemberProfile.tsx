@@ -147,7 +147,6 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
     { id: 'overview', label: t('profile.tab_overview', 'Overview'), icon: 'account_circle' },
     { id: 'family', label: t('profile.tab_family', 'Family'), icon: 'groups' },
     { id: 'timeline', label: t('profile.tab_timeline', 'Timeline'), icon: 'history' },
-    { id: 'media', label: t('profile.tab_media', 'Media'), icon: 'photo_library' },
   ];
 
   const infoCards = [
@@ -417,12 +416,6 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
           />
         )}
 
-        {activeTab === 'media' && (
-          <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 shadow-sm">
-            <h3 className="font-bold text-slate-800 dark:text-white mb-6">{t('profile.media', 'Media')}</h3>
-            <p className="text-sm text-slate-500">{t('profile.coming_soon', 'Coming soon...')}</p>
-          </div>
-        )}
 
         {/* Back Button */}
         {onBack && (
