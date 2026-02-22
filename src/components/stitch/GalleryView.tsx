@@ -13,7 +13,18 @@ import { useDropzone } from 'react-dropzone';
 import { formatDistanceToNow } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import { useImageUploadPermission } from '@/hooks/useImageUploadPermission';
+import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { PhotoTagger } from './PhotoTagger';
+
+// Small helper to resolve member avatar in sidebar (hooks can't be called inside .map)
+const SidebarMemberAvatar: React.FC<{ imageUrl?: string | null; name: string }> = ({ imageUrl, name }) => {
+  const resolvedUrl = useResolvedImageUrl(imageUrl || null);
+  return resolvedUrl ? (
+    <img src={resolvedUrl} alt={name} className="w-full h-full object-cover" />
+  ) : (
+    <span className="text-slate-400 font-bold text-xs">{(name || '?')[0]}</span>
+  );
+};
 
 // Types for the review/edit popup
 interface ReviewPopupState {
@@ -611,11 +622,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                   }`}
                 >
                   <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center">
-                    {member.image_url ? (
-                      <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-slate-400 font-bold text-xs">{(member.name || '?')[0]}</span>
-                    )}
+                    <SidebarMemberAvatar imageUrl={member.image_url} name={member.name} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-xs font-bold truncate">{member.name}</h4>
