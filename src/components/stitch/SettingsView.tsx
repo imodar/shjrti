@@ -753,7 +753,7 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-bold text-sm transition-colors group"
           >
             <span className="material-symbols-outlined transition-transform group-hover:rtl:translate-x-1 group-hover:ltr:-translate-x-1">arrow_back</span>
-            {t('settings.back_to_dashboard', 'العودة للوحة التحكم')}
+            {t('settings.back_to_members', 'العودة الى إدارة الأعضاء')}
           </button>
         </div>
       </div>
