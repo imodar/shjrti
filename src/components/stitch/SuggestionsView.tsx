@@ -254,7 +254,7 @@ export const StitchSuggestionsView: React.FC<StitchSuggestionsViewProps> = ({
                         {statusConfig.label}
                       </span>
                       <span className="px-3 py-1 bg-slate-50 dark:bg-slate-800 text-slate-500 text-[10px] font-bold rounded-full uppercase tracking-wider">
-                        {suggestion.suggestion_type.replace('_', ' ')}
+                        {t(`suggestions.type.${suggestion.suggestion_type}`, suggestion.suggestion_type.replace('_', ' '))}
                       </span>
                     </div>
                     {memberName && (
