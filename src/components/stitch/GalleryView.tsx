@@ -1083,58 +1083,24 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
               {/* Row: Description (3/4) + Tagged Members (1/4) */}
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
                 {/* Description - 3/4 */}
-                <div className="lg:col-span-3 space-y-2">
+                <div className="lg:col-span-3 flex flex-col gap-2">
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">
                     {t('gallery.description', 'Description')}
                   </label>
                   <textarea
-                    className="w-full bg-muted border border-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground resize-none outline-none"
+                    className="w-full flex-1 bg-muted border border-border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all placeholder:text-muted-foreground resize-none outline-none min-h-[200px]"
                     placeholder={t('gallery.description_placeholder', 'Tell the story behind this photo... Who is in it? What happened that day?')}
-                    rows={4}
                     value={reviewPopup.caption}
                     onChange={e => setReviewPopup(prev => ({ ...prev, caption: e.target.value }))}
                   />
                 </div>
 
                 {/* Tagged Members - 1/4 */}
-                <div className="lg:col-span-1 space-y-2">
+                <div className="lg:col-span-1 flex flex-col gap-2">
                   <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">
                     {t('gallery.tagged', 'Tagged')}
                   </label>
-                  <div className="bg-muted border border-border rounded-xl p-3 min-h-[120px] max-h-[160px] overflow-y-auto custom-scrollbar">
-                    {reviewPopup.linkedMemberIds.length === 0 ? (
-                      <p className="text-xs text-muted-foreground text-center py-4">
-                        {t('gallery.no_tags_yet', 'Click on the image to tag members')}
-                      </p>
-                    ) : (
-                      <div className="flex flex-col gap-1.5">
-                        {reviewPopup.linkedMemberIds.map(memberId => {
-                          const member = familyMembers.find(m => m.id === memberId);
-                          if (!member) return null;
-                          return (
-                            <div key={memberId} className="flex items-center gap-2 bg-card ps-1.5 pe-1 py-1 rounded-lg border border-border group/tag">
-                              <div className="w-5 h-5 rounded-full bg-muted overflow-hidden flex items-center justify-center shrink-0">
-                                {member.image_url ? (
-                                  <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
-                                ) : (
-                                  <span className="text-[9px] font-bold text-muted-foreground">{(member.name || '?')[0]}</span>
-                                )}
-                              </div>
-                              <span className="text-[11px] font-semibold text-foreground truncate flex-1">{member.name}</span>
-                              <button
-                                type="button"
-                                onClick={() => setReviewPopup(prev => ({ ...prev, linkedMemberIds: prev.linkedMemberIds.filter(id => id !== memberId) }))}
-                                className="w-5 h-5 rounded-full opacity-0 group-hover/tag:opacity-100 hover:bg-destructive/10 text-muted-foreground hover:text-destructive flex items-center justify-center transition-all shrink-0"
-                              >
-                                <span className="material-symbols-outlined text-xs">close</span>
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                  {/* Quick add search below tagged list */}
+                  {/* Quick add search - moved above the list */}
                   <div className="relative">
                     <span className="material-symbols-outlined absolute start-2.5 top-1/2 -translate-y-1/2 text-muted-foreground text-base">person_add</span>
                     <input
@@ -1175,34 +1141,61 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                       )}
                     </div>
                   )}
+                  {/* Tagged members list */}
+                  <div className="bg-muted border border-border rounded-xl p-2.5 flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+                    {reviewPopup.linkedMemberIds.length === 0 ? (
+                      <p className="text-xs text-muted-foreground text-center py-6">
+                        {t('gallery.no_tags_yet', 'Click on the image to tag members')}
+                      </p>
+                    ) : (
+                      <div className="flex flex-col gap-1.5">
+                        {reviewPopup.linkedMemberIds.map(memberId => {
+                          const member = familyMembers.find(m => m.id === memberId);
+                          if (!member) return null;
+                          return (
+                            <div key={memberId} className="flex items-center gap-2 bg-card ps-1.5 pe-1 py-1 rounded-lg border border-border group/tag">
+                              <div className="w-5 h-5 rounded-full bg-muted overflow-hidden flex items-center justify-center shrink-0">
+                                {member.image_url ? (
+                                  <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <span className="text-[9px] font-bold text-muted-foreground">{(member.name || '?')[0]}</span>
+                                )}
+                              </div>
+                              <span className="text-[11px] font-semibold text-foreground truncate flex-1">{member.name}</span>
+                              <button
+                                type="button"
+                                onClick={() => setReviewPopup(prev => ({ ...prev, linkedMemberIds: prev.linkedMemberIds.filter(id => id !== memberId) }))}
+                                className="w-5 h-5 rounded-full opacity-0 group-hover/tag:opacity-100 hover:bg-destructive/10 text-muted-foreground hover:text-destructive flex items-center justify-center transition-all shrink-0"
+                              >
+                                <span className="material-symbols-outlined text-xs">close</span>
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-
-              {/* Date - last row */}
-              <div className="space-y-2">
-                <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">
-                  {t('gallery.date_of_event', 'Date of Event')}
-                </label>
-                <div className="relative max-w-xs">
-                  <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">calendar_today</span>
-                  <input
-                    className="w-full ps-10 pe-4 py-3 bg-muted border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                    type="date"
-                    value={reviewPopup.photoDate}
-                    onChange={e => setReviewPopup(prev => ({ ...prev, photoDate: e.target.value }))}
-                  />
-                </div>
-                <p className="text-[10px] text-muted-foreground px-1 mt-1">
-                  {t('gallery.date_hint', 'Leave blank if the exact date is unknown.')}
-                </p>
               </div>
             </div>
 
-            {/* Footer */}
-            <div className="p-6 border-t border-border bg-muted/50 flex items-center justify-end gap-3 shrink-0">
+            {/* Footer with date + actions */}
+            <div className="px-6 py-4 border-t border-border bg-muted/50 flex items-center gap-4 shrink-0">
+              {/* Date inline */}
+              <div className="flex items-center gap-2 flex-1">
+                <span className="material-symbols-outlined text-muted-foreground text-lg">calendar_today</span>
+                <input
+                  className="w-40 bg-card border border-border rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                  type="date"
+                  value={reviewPopup.photoDate}
+                  onChange={e => setReviewPopup(prev => ({ ...prev, photoDate: e.target.value }))}
+                  title={t('gallery.date_of_event', 'Date of Event')}
+                />
+                <span className="text-[10px] text-muted-foreground hidden sm:inline">{t('gallery.date_of_event', 'Date of Event')}</span>
+              </div>
               <button
                 onClick={handleReviewDiscard}
-                className="px-6 py-2.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
+                className="px-5 py-2.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
               >
                 {t('gallery.discard', 'Discard')}
               </button>
