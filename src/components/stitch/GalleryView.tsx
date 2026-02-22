@@ -1229,7 +1229,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                               <button
                                 type="button"
                                 onClick={() => setReviewPopup(prev => ({ ...prev, linkedMemberIds: prev.linkedMemberIds.filter(id => id !== memberId) }))}
-                                className="w-5 h-5 rounded-full opacity-0 group-hover/tag:opacity-100 hover:bg-destructive/10 text-muted-foreground hover:text-destructive flex items-center justify-center transition-all shrink-0"
+                                className="w-5 h-5 rounded-full sm:opacity-0 group-hover/tag:opacity-100 hover:bg-destructive/10 text-muted-foreground hover:text-destructive flex items-center justify-center transition-all shrink-0"
                               >
                                 <span className="material-symbols-outlined text-xs">close</span>
                               </button>
@@ -1244,39 +1244,44 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
             </div>
 
             {/* Footer with date + actions */}
-            <div className="px-6 py-4 border-t border-border bg-muted/50 flex items-center gap-4 shrink-0">
-              {/* Date inline */}
-              <div className="flex items-center gap-2 flex-1">
-                <span className="material-symbols-outlined text-muted-foreground text-lg">calendar_today</span>
-                <input
-                  className="w-40 bg-card border border-border rounded-lg px-3 py-2 text-sm focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all outline-none"
-                  type="date"
-                  value={reviewPopup.photoDate}
-                  onChange={e => setReviewPopup(prev => ({ ...prev, photoDate: e.target.value }))}
-                  title={t('gallery.date_of_event', 'Date of Event')}
-                />
-                <span className="text-[10px] text-muted-foreground hidden sm:inline">{t('gallery.date_of_event', 'Date of Event')}</span>
+            <div className="px-4 sm:px-6 py-4 border-t border-border bg-muted/50 shrink-0">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+                {/* Date inline */}
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <span className="material-symbols-outlined text-muted-foreground text-lg shrink-0">calendar_today</span>
+                  <input
+                    className="flex-1 sm:flex-none sm:w-40 bg-card border border-border rounded-lg px-3 py-2.5 sm:py-2 text-sm focus:ring-1 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                    type="date"
+                    value={reviewPopup.photoDate}
+                    onChange={e => setReviewPopup(prev => ({ ...prev, photoDate: e.target.value }))}
+                    title={t('gallery.date_of_event', 'Date of Event')}
+                  />
+                  <span className="text-[10px] text-muted-foreground hidden sm:inline">{t('gallery.date_of_event', 'Date of Event')}</span>
+                </div>
+                {/* Action buttons */}
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <button
+                    onClick={handleReviewDiscard}
+                    className="flex-1 sm:flex-none px-5 py-2.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors rounded-xl border border-border sm:border-none"
+                  >
+                    {t('gallery.discard', 'Discard')}
+                  </button>
+                  <button
+                    onClick={handleReviewSave}
+                    disabled={reviewSaving}
+                    className="flex-1 sm:flex-none px-6 sm:px-8 py-2.5 bg-primary text-primary-foreground font-bold text-sm rounded-xl shadow-lg shadow-primary/20 hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {reviewSaving ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <span className="material-symbols-outlined text-lg">check_circle</span>
+                    )}
+                    {reviewPopup.mode === 'create'
+                      ? t('gallery.upload_to_gallery', 'Upload to Gallery')
+                      : t('gallery.save_changes', 'Save Changes')}
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={handleReviewDiscard}
-                className="px-5 py-2.5 text-sm font-bold text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {t('gallery.discard', 'Discard')}
-              </button>
-              <button
-                onClick={handleReviewSave}
-                disabled={reviewSaving}
-                className="px-8 py-2.5 bg-primary text-primary-foreground font-bold text-sm rounded-xl shadow-lg shadow-primary/20 hover:opacity-90 transition-all flex items-center gap-2 disabled:opacity-50"
-              >
-                {reviewSaving ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <span className="material-symbols-outlined text-lg">check_circle</span>
-                )}
-                {reviewPopup.mode === 'create'
-                  ? t('gallery.upload_to_gallery', 'Upload to Gallery')
-                  : t('gallery.save_changes', 'Save Changes')}
-              </button>
             </div>
           </div>
         </div>
