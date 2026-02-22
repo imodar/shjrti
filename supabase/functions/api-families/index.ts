@@ -104,14 +104,18 @@ async function checkAccess(userId: string, familyId: string): Promise<boolean> {
 }
 
 // GET handlers
-async function handleList(userId: string) {
-  console.log(`[API] GET - Listing families for user: ${userId}`);
+async function handleList(userId: string, includeStats: boolean = false) {
+  console.log(`[API] GET - Listing families for user: ${userId}, stats: ${includeStats}`);
   const supabase = createServiceClient();
   
-  // Get owned families
+  // Get owned families with optional member counts
+  const selectQuery = includeStats 
+    ? '*, family_tree_members(count)' 
+    : '*';
+  
   const { data: owned, error } = await supabase
     .from('families')
-    .select('*')
+    .select(selectQuery)
     .eq('creator_id', userId)
     .order('created_at', { ascending: false });
   
@@ -131,13 +135,46 @@ async function handleList(userId: string) {
     const familyIds = collabs.map(c => c.family_id);
     const { data: collabFamilies } = await supabase
       .from('families')
-      .select('*')
+      .select(selectQuery)
       .in('id', familyIds)
       .order('created_at', { ascending: false });
     collaborated = (collabFamilies || []).map(f => ({ ...f, _role: 'editor' }));
   }
+
+  let allFamilies = [...(owned || []), ...collaborated];
+
+  // If stats requested, enrich with member counts and last activity
+  if (includeStats && allFamilies.length > 0) {
+    // Extract member counts
+    allFamilies = allFamilies.map((f: any) => ({
+      ...f,
+      member_count: f.family_tree_members?.[0]?.count || 0,
+      family_tree_members: undefined, // clean up nested data
+    }));
+
+    // Get last activity for all families
+    const familyIds = allFamilies.map((f: any) => f.id);
+    const { data: activityData } = await supabase
+      .from('activity_log')
+      .select('family_id, created_at')
+      .in('family_id', familyIds)
+      .order('created_at', { ascending: false });
+
+    if (activityData) {
+      const activityMap: Record<string, string> = {};
+      for (const log of activityData) {
+        if (!activityMap[log.family_id]) {
+          activityMap[log.family_id] = log.created_at;
+        }
+      }
+      allFamilies = allFamilies.map((f: any) => ({
+        ...f,
+        last_activity_at: activityMap[f.id] || f.updated_at,
+      }));
+    }
+  }
   
-  return successResponse([...(owned || []), ...collaborated]);
+  return successResponse(allFamilies);
 }
 
 async function handleGet(userId: string, familyId: string, include?: string) {
@@ -377,7 +414,8 @@ Deno.serve(async (req) => {
         if (id) {
           return await handleGet(user!.id, id, include || undefined);
         }
-        return await handleList(user!.id);
+        const stats = url.searchParams.get('stats') === 'true';
+        return await handleList(user!.id, stats);
         
       case 'POST':
         // Special action for share token regeneration

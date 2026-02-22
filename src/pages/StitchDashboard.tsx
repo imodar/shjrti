@@ -6,8 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getLocalizedText } from '@/lib/packageUtils';
-import { supabase } from '@/integrations/supabase/client';
-import { profilesApi, familyInvitationsApi } from '@/lib/api';
+import { profilesApi, familiesApi, subscriptionsApi } from '@/lib/api';
 import { GlobalFooterSimplified } from '@/components/GlobalFooterSimplified';
 
 interface FamilyWithCount {
@@ -68,90 +67,52 @@ const StitchDashboard: React.FC = () => {
         } catch (e) { console.error('Profile error:', e); }
         setProfileLoaded(true);
 
-        // Step 2: Families
+        // Step 2: Families (with stats: member counts + last activity)
         try {
-          const { data: familiesData, error } = await supabase
-            .from('families')
-            .select(`id, name, updated_at, family_tree_members(count)`)
-            .eq('creator_id', user.id)
-            .eq('is_archived', false)
-            .order('updated_at', { ascending: false });
-
-          if (!error && familiesData) {
-            const familyIds = familiesData.map(f => f.id);
-            // Fetch last activity date for each family
-            let activityMap: Record<string, string> = {};
-            if (familyIds.length > 0) {
-              const { data: activityData } = await supabase
-                .from('activity_log')
-                .select('family_id, created_at')
-                .in('family_id', familyIds)
-                .order('created_at', { ascending: false });
-              if (activityData) {
-                for (const log of activityData) {
-                  if (!activityMap[log.family_id]) {
-                    activityMap[log.family_id] = log.created_at;
-                  }
-                }
-              }
-            }
-            setFamilies(
-              familiesData.map(family => ({
-                id: family.id,
-                name: family.name,
-                updated_at: family.updated_at,
-                memberCount: (family as any).family_tree_members?.[0]?.count || 0,
-                lastActivityAt: activityMap[family.id] || family.updated_at
-              }))
-            );
-          }
+          const allFamilies = await familiesApi.list({ stats: true });
+          
+          // Separate owned vs shared families
+          const ownedFamilies = allFamilies
+            .filter((f: any) => !f._role && !(f.is_archived))
+            .map((f: any) => ({
+              id: f.id,
+              name: f.name,
+              updated_at: f.updated_at,
+              memberCount: f.member_count || 0,
+              lastActivityAt: f.last_activity_at || f.updated_at,
+            }));
+          
+          const shared = allFamilies
+            .filter((f: any) => f._role === 'editor' && !(f.is_archived))
+            .map((f: any) => ({
+              id: f.id,
+              name: f.name,
+              updated_at: f.updated_at,
+              memberCount: f.member_count || 0,
+            }));
+          
+          setFamilies(ownedFamilies);
+          setSharedFamilies(shared);
         } catch (e) { console.error('Families error:', e); }
         setFamiliesLoaded(true);
 
-        // Step 2b: Shared Families (collaborator)
-        try {
-          const { data: collabs } = await supabase
-            .from('family_collaborators')
-            .select('family_id')
-            .eq('user_id', user.id);
-
-          if (collabs && collabs.length > 0) {
-            const sharedIds = collabs.map(c => (c as any).family_id);
-            const { data: sharedData } = await supabase
-              .from('families')
-              .select('id, name, updated_at, family_tree_members(count)')
-              .in('id', sharedIds)
-              .eq('is_archived', false);
-
-            if (sharedData) {
-              setSharedFamilies(
-                sharedData.map(family => ({
-                  id: family.id,
-                  name: family.name,
-                  updated_at: family.updated_at,
-                  memberCount: (family as any).family_tree_members?.[0]?.count || 0
-                }))
-              );
-            }
-          }
-        } catch (e) { console.error('Shared families error:', e); }
-
         // Step 3: Package/Subscription
         try {
-          const { data: subData } = await supabase
-            .from('user_subscriptions')
-            .select('package_id')
-            .eq('user_id', user.id)
-            .eq('status', 'active')
-            .maybeSingle();
-
-          if (subData?.package_id) {
-            const { data: pkgData } = await supabase
-              .from('packages')
-              .select('name, max_family_trees, max_family_members, price_sar')
-              .eq('id', subData.package_id)
-              .single();
-            if (pkgData) setPackageData(pkgData as PackageData);
+          const sub = await subscriptionsApi.get();
+          if (sub?.packages) {
+            setPackageData({
+              name: sub.packages.name as Record<string, string>,
+              max_family_trees: sub.packages.max_family_trees,
+              max_family_members: sub.packages.max_family_members,
+              price_sar: sub.packages.price_sar,
+            });
+          } else if (sub?.package) {
+            setPackageData({
+              name: sub.package.name,
+              max_family_trees: sub.package.max_family_trees,
+              max_family_members: sub.package.max_family_members,
+              price_sar: sub.package.price_sar,
+            });
           }
         } catch (e) { console.error('Package error:', e); }
         setPackageLoaded(true);
