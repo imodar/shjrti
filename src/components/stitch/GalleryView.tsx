@@ -409,10 +409,11 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
     setReviewTagSearch('');
   };
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive, open: openFilePicker } = useDropzone({
     onDrop,
     accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'] },
     maxSize: 10 * 1024 * 1024,
+    noClick: false,
   });
 
   // Delete handler
@@ -477,7 +478,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
           </button>
           {isImageUploadEnabled && (
             <button
-              onClick={() => fileInputRef.current?.click()}
+              onClick={(e) => { e.stopPropagation(); openFilePicker(); }}
               className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-bold"
             >
               <span className="material-symbols-outlined text-lg">add_a_photo</span>
@@ -732,7 +733,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                   </p>
                   <div className="pt-6">
                     <button
-                      onClick={() => document.querySelector<HTMLInputElement>('input[type="file"]')?.click()}
+                      onClick={() => openFilePicker()}
                       className="bg-primary text-white px-10 py-4 rounded-2xl shadow-xl shadow-primary/30 font-bold text-lg flex items-center gap-3 hover:scale-105 transition-all active:scale-95 mx-auto"
                     >
                       <span className="material-symbols-outlined text-2xl">add_a_photo</span>
