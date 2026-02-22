@@ -143,7 +143,7 @@ export const StyledDropdown: React.FC<StyledDropdownProps> = ({
       {/* Dropdown Panel */}
       {isOpen && (
         <div className={cn(
-          "absolute w-full top-full bg-white dark:bg-slate-800 border-x border-b rounded-b-xl shadow-2xl overflow-hidden",
+          "absolute min-w-[200px] top-full bg-white dark:bg-slate-800 border-x border-b rounded-b-xl shadow-2xl overflow-hidden",
           "animate-in fade-in slide-in-from-top-2 duration-200",
           accentClasses.border,
           isRTL ? "right-0" : "left-0"
