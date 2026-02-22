@@ -8,7 +8,9 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
  import { StitchFamilyBar } from '@/components/stitch';
  import { useStitchLayout } from '@/components/stitch/StitchLayout';
  import { StitchTreeCanvas } from '@/components/stitch/TreeCanvas';
- import { cn } from '@/lib/utils';
+  import { cn } from '@/lib/utils';
+  import { isMemberFromFamily } from '@/lib/memberDisplayUtils';
+  import type { Member } from '@/types/family.types';
  
  /**
   * StitchTreeView - Interactive tree visualization with Stitch theme
@@ -87,20 +89,48 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
    // Get package name
    const packageName = subscription?.package_name;
  
-  // Generate root options from marriages
+  // Generate root options from marriages with lineage display
   const rootOptions = useMemo(() => {
     if (!marriages || marriages.length === 0) return [];
     
+    const getLineageLabel = (member: Member | undefined): string => {
+      if (!member) return t('tree_view.unknown', 'غير معروف');
+      const firstName = member.first_name || member.name?.split(' ')[0] || member.name || '';
+      const isFromFamily = isMemberFromFamily(member, familyMembers);
+      
+      if (isFromFamily) {
+        // Family member: show "name ابن/بنت parent_name"
+        const fatherId = member.father_id || (member as any).fatherId;
+        const father = fatherId ? familyMembers.find(m => m.id === fatherId) : undefined;
+        if (father && !member.is_founder) {
+          const parentName = father.first_name || father.name?.split(' ')[0] || father.name || '';
+          const term = member.gender === 'female' ? 'بنت' : 'ابن';
+          return `${firstName} ${term} ${parentName}`;
+        }
+        return firstName;
+      } else {
+        // External spouse: show "name + last_name"
+        if (member.last_name) {
+          return `${firstName} ${member.last_name}`;
+        }
+        return firstName;
+      }
+    };
+
     return marriages.map(marriage => {
       const husband = familyMembers.find(m => m.id === marriage.husband_id);
       const wife = familyMembers.find(m => m.id === marriage.wife_id);
       
-      const husbandName = husband?.first_name || husband?.name || t('tree_view.unknown', 'Unknown');
-      const wifeName = wife?.first_name || wife?.name || t('tree_view.unknown_wife', 'Unknown');
+      const husbandLabel = getLineageLabel(husband);
+      const wifeLabel = getLineageLabel(wife);
+      
+      // Heart icon: active marriage = ❤️, divorced/inactive = 💔
+      const isActive = marriage.is_active !== false && (marriage as any).marital_status !== 'divorced';
+      const heartIcon = isActive ? '❤️' : '💔';
       
       return {
         id: marriage.id,
-        label: `${husbandName} & ${wifeName}`
+        label: `${husbandLabel} ${heartIcon} ${wifeLabel}`
       };
     });
   }, [marriages, familyMembers, t]);
