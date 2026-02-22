@@ -412,7 +412,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   const { getRootProps, getInputProps, isDragActive, open: openFilePicker } = useDropzone({
     onDrop,
     accept: { 'image/*': ['.png', '.jpg', '.jpeg', '.gif', '.webp'] },
-    maxSize: 10 * 1024 * 1024,
+    maxSize: 100 * 1024 * 1024, // 100MB limit
     noClick: false,
   });
 
