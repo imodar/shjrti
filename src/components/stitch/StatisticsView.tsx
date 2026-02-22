@@ -100,7 +100,9 @@ export const StitchStatisticsView: React.FC<StatisticsViewProps> = ({
     });
     const topSurnames = Array.from(surnameCount.entries())
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5);
+      .slice(0, 15);
+    const maxSurnameCount = topSurnames.length > 0 ? topSurnames[0][1] : 1;
+    const minSurnameCount = topSurnames.length > 0 ? topSurnames[topSurnames.length - 1][1] : 1;
 
     // --- Common first names (exclude placeholder names like زوجة/زوج) ---
     const placeholderNames = new Set(['زوجة', 'زوج', 'wife', 'husband', 'spouse']);
@@ -165,6 +167,8 @@ export const StitchStatisticsView: React.FC<StatisticsViewProps> = ({
       childrenPerMarriage,
       genderByGen,
       topSurnames,
+      maxSurnameCount,
+      minSurnameCount,
       topFirstNames,
       monthlyBirthdays,
       monthNames,
@@ -314,12 +318,26 @@ export const StitchStatisticsView: React.FC<StatisticsViewProps> = ({
             <h3 className="font-bold text-sm text-slate-800 dark:text-white mb-6">
               {t('stats.top_surnames', 'Top Surnames')}
             </h3>
-            <div className="flex flex-wrap gap-2 items-center justify-center min-h-[8rem]">
-              {stats.topSurnames.length > 0 ? stats.topSurnames.map(([name, count], i) => {
-                const sizes = ['text-2xl font-bold text-primary', 'text-xl font-semibold text-secondary', 'text-lg font-medium text-slate-500', 'text-base font-medium text-slate-400', 'text-sm font-medium text-slate-300'];
-                return <span key={name} className={sizes[i] || sizes[4]}>{name}</span>;
+            <div className="flex flex-wrap gap-3 items-center justify-center min-h-[8rem]">
+              {stats.topSurnames.length > 0 ? stats.topSurnames.map(([name, count]) => {
+                const range = stats.maxSurnameCount - stats.minSurnameCount || 1;
+                const ratio = (count - stats.minSurnameCount) / range;
+                // Scale font size from 0.75rem (smallest) to 2.25rem (largest)
+                const fontSize = 0.75 + ratio * 1.5;
+                const opacity = 0.45 + ratio * 0.55;
+                const fontWeight = ratio > 0.6 ? 700 : ratio > 0.3 ? 600 : 500;
+                return (
+                  <span
+                    key={name}
+                    className="text-primary transition-all hover:scale-110 cursor-default"
+                    style={{ fontSize: `${fontSize}rem`, opacity, fontWeight }}
+                    title={`${name}: ${count}`}
+                  >
+                    {name}
+                  </span>
+                );
               }) : (
-                <p className="text-sm text-slate-400">{t('stats.no_surnames', 'No surnames recorded')}</p>
+                <p className="text-sm text-muted-foreground">{t('stats.no_surnames', 'No surnames recorded')}</p>
               )}
             </div>
           </div>
