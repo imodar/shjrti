@@ -133,25 +133,25 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
     <div className="space-y-6">
         {/* Parents */}
         {(father || mother) && (
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
-            <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-4 flex items-center justify-between">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
+            <h3 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white mb-3 sm:mb-4 flex items-center justify-between">
               {t('profile.parents', 'Parents')}
-              <span className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold">
+              <span className="text-[9px] sm:text-[10px] text-slate-400 uppercase tracking-widest font-semibold">
                 {t('profile.ascending_line', 'Ascending Line')}
               </span>
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {father && (
                 <button
                   onClick={() => onMemberClick?.(father)}
-                  className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-blue-200 transition-colors group text-start"
+                  className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-blue-200 transition-colors group text-start"
                 >
-                  <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-500 shadow-sm">
-                    <span className="material-symbols-outlined text-xl">male</span>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-500 shadow-sm flex-shrink-0">
+                    <span className="material-symbols-outlined text-lg sm:text-xl">male</span>
                   </div>
-                  <div>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase">{t('profile.father', 'Father')}</p>
-                    <p className="text-base font-bold text-slate-700 dark:text-slate-200">
+                  <div className="min-w-0">
+                    <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase">{t('profile.father', 'Father')}</p>
+                    <p className="text-sm sm:text-base font-bold text-slate-700 dark:text-slate-200 truncate">
                       {father.first_name ? `${father.first_name} ${father.last_name || ''}` : father.name}
                     </p>
                   </div>
@@ -160,14 +160,14 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
               {mother && (
                 <button
                   onClick={() => onMemberClick?.(mother)}
-                  className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-pink-200 transition-colors text-start"
+                  className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-pink-200 transition-colors text-start"
                 >
-                  <div className="w-10 h-10 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center text-pink-500 shadow-sm">
-                    <span className="material-symbols-outlined text-xl">female</span>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center text-pink-500 shadow-sm flex-shrink-0">
+                    <span className="material-symbols-outlined text-lg sm:text-xl">female</span>
                   </div>
-                  <div>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase">{t('profile.mother', 'Mother')}</p>
-                    <p className="text-base font-bold text-slate-700 dark:text-slate-200">
+                  <div className="min-w-0">
+                    <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase">{t('profile.mother', 'Mother')}</p>
+                    <p className="text-sm sm:text-base font-bold text-slate-700 dark:text-slate-200 truncate">
                       {mother.first_name ? `${mother.first_name} ${mother.last_name || ''}` : mother.name}
                     </p>
                   </div>
@@ -179,47 +179,47 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
 
         {/* Spouses & Children */}
         {(spouseGroups.length > 0 || unassignedChildren.length > 0) && (
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
-            <h3 className="text-base font-bold text-slate-800 dark:text-white mb-6">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
+            <h3 className="text-sm sm:text-base font-bold text-slate-800 dark:text-white mb-4 sm:mb-6">
               {t('profile.spouses_and_children', 'Spouses & Children')}
             </h3>
             <div className="space-y-4">
               {spouseGroups.map(({ spouse, children: spouseChildren, sons, daughters }) => (
-                <div key={spouse.id} className="p-4 bg-slate-50/50 dark:bg-slate-800/20 rounded-2xl border border-slate-100 dark:border-slate-800">
+                <div key={spouse.id} className="p-3 sm:p-4 bg-slate-50/50 dark:bg-slate-800/20 rounded-2xl border border-slate-100 dark:border-slate-800">
                   {/* Spouse header */}
-                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
                     <button
                       onClick={() => onMemberClick?.(spouse)}
-                      className="flex items-center gap-4 text-start hover:opacity-80 transition-opacity"
+                      className="flex items-center gap-3 sm:gap-4 text-start hover:opacity-80 transition-opacity"
                     >
                       <div className={cn(
-                        'w-12 h-12 rounded-full flex items-center justify-center ring-4',
+                        'w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ring-2 sm:ring-4 flex-shrink-0',
                         spouse.gender === 'female'
                           ? 'bg-pink-50 dark:bg-pink-900/20 text-pink-500 ring-pink-50/50'
                           : 'bg-blue-50 dark:bg-blue-900/20 text-blue-500 ring-blue-50/50'
                       )}>
                         <SpouseAvatar spouse={spouse} />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="font-bold text-base text-slate-800 dark:text-white">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                          <h4 className="font-bold text-sm sm:text-base text-slate-800 dark:text-white truncate">
                             {spouse.first_name ? `${spouse.first_name} ${spouse.last_name || ''}` : spouse.name}
                           </h4>
-                          <span className="px-2.5 py-1 bg-primary/10 text-primary text-xs font-bold rounded-md">
+                          <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-primary/10 text-primary text-[10px] sm:text-xs font-bold rounded-md">
                             {getSpouseLabel(spouse)}
                           </span>
                         </div>
                         {getSpouseSubtitle(spouse) && (
-                          <p className="text-sm text-slate-500">{getSpouseSubtitle(spouse)}</p>
+                          <p className="text-xs sm:text-sm text-slate-500 truncate">{getSpouseSubtitle(spouse)}</p>
                         )}
                       </div>
                     </button>
-                    <div className="flex gap-2">
-                      <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-full text-xs font-bold border border-blue-100 dark:border-blue-800 flex items-center gap-1">
-                        <span className="material-symbols-outlined text-sm">male</span> {sons.length} {t('son', 'Sons')}
+                    <div className="flex gap-1.5 sm:gap-2">
+                      <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-full text-[10px] sm:text-xs font-bold border border-blue-100 dark:border-blue-800 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-xs sm:text-sm">male</span> {sons.length} {t('son', 'Sons')}
                       </span>
-                      <span className="px-3 py-1 bg-pink-50 dark:bg-pink-900/20 text-pink-500 rounded-full text-xs font-bold border border-pink-100 dark:border-pink-800 flex items-center gap-1">
-                        <span className="material-symbols-outlined text-sm">female</span> {daughters.length} {t('daughter', 'Daughters')}
+                      <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-pink-50 dark:bg-pink-900/20 text-pink-500 rounded-full text-[10px] sm:text-xs font-bold border border-pink-100 dark:border-pink-800 flex items-center gap-1">
+                        <span className="material-symbols-outlined text-xs sm:text-sm">female</span> {daughters.length} {t('daughter', 'Daughters')}
                       </span>
                     </div>
                   </div>
@@ -275,37 +275,37 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
 
         {/* Grandchildren */}
         {grandchildGroups.length > 0 && (
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-base font-bold text-slate-800 dark:text-white">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 mb-4 sm:mb-6">
+              <h3 className="text-sm sm:text-base font-bold text-slate-800 dark:text-white">
                 {t('profile.grandchildren', 'Grandchildren')}
               </h3>
-              <div className="flex gap-2">
-                <span className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-full text-xs font-bold border border-blue-100 dark:border-blue-800 flex items-center gap-1">
-                  <span className="material-symbols-outlined text-sm">male</span> {totalGrandSons} {t('profile.grandson', 'حفيد')}
+              <div className="flex gap-1.5 sm:gap-2">
+                <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-full text-[10px] sm:text-xs font-bold border border-blue-100 dark:border-blue-800 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-xs sm:text-sm">male</span> {totalGrandSons} {t('profile.grandson', 'حفيد')}
                 </span>
-                <span className="px-3 py-1 bg-pink-50 dark:bg-pink-900/20 text-pink-500 rounded-full text-xs font-bold border border-pink-100 dark:border-pink-800 flex items-center gap-1">
-                  <span className="material-symbols-outlined text-sm">female</span> {totalGrandDaughters} {t('profile.granddaughter', 'حفيدة')}
+                <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-pink-50 dark:bg-pink-900/20 text-pink-500 rounded-full text-[10px] sm:text-xs font-bold border border-pink-100 dark:border-pink-800 flex items-center gap-1">
+                  <span className="material-symbols-outlined text-xs sm:text-sm">female</span> {totalGrandDaughters} {t('profile.granddaughter', 'حفيدة')}
                 </span>
               </div>
             </div>
             <div className="space-y-4">
               {grandchildGroups.map(({ parent, spouse, grandkids }) => (
                 <div key={parent.id} className="border border-slate-100 dark:border-slate-800 rounded-xl overflow-hidden">
-                  <div className="bg-slate-50 dark:bg-slate-800/50 px-4 py-3 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
+                  <div className="bg-slate-50 dark:bg-slate-800/50 px-3 sm:px-4 py-2.5 sm:py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-0 border-b border-slate-100 dark:border-slate-800">
                     <button
                       onClick={() => onMemberClick?.(parent)}
                       className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                     >
-                      <span className="material-symbols-outlined text-slate-400 text-lg">person</span>
-                      <p className="text-base font-bold">
+                      <span className="material-symbols-outlined text-slate-400 text-base sm:text-lg">person</span>
+                      <p className="text-sm sm:text-base font-bold truncate">
                         {t('family_word', 'Family')} {parent.first_name || parent.name} {parent.last_name || ''}
                       </p>
                     </button>
                     {spouse && (
                       <button
                         onClick={() => onMemberClick?.(spouse)}
-                        className="text-sm text-slate-400 font-medium hover:text-primary transition-colors"
+                        className="text-xs sm:text-sm text-slate-400 font-medium hover:text-primary transition-colors truncate"
                       >
                         {spouse.gender === 'male' ? t('profile.the_husband', 'الزوج') : t('profile.the_wife', 'الزوجة')}: {spouse.first_name || spouse.name} {spouse.last_name || ''}
                       </button>
@@ -343,15 +343,15 @@ const ChildChip: React.FC<{ child: any; onClick: () => void; compact?: boolean }
   <button
     onClick={onClick}
     className={cn(
-      'flex items-center justify-between px-5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-xl shadow-sm hover:border-primary/30 transition-colors text-start',
-      compact ? 'py-3.5' : 'py-4'
+      'flex items-center justify-between px-3 sm:px-5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-xl shadow-sm hover:border-primary/30 transition-colors text-start',
+      compact ? 'py-2.5 sm:py-3.5' : 'py-3 sm:py-4'
     )}
   >
-    <span className={cn('font-bold', compact ? 'text-sm' : 'text-base')}>
+    <span className={cn('font-bold truncate', compact ? 'text-xs sm:text-sm' : 'text-sm sm:text-base')}>
       {child.first_name || child.name}
     </span>
     <span className={cn(
-      'material-symbols-outlined text-xl',
+      'material-symbols-outlined text-lg sm:text-xl flex-shrink-0',
       child.gender === 'female' ? 'text-pink-400' : 'text-blue-400'
     )}>
       {child.gender === 'female' ? 'female' : 'male'}
