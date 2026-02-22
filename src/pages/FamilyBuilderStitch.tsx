@@ -308,6 +308,7 @@ const FamilyBuilderStitch: React.FC = () => {
   const handleMemberClick = (member: any) => {
     setSelectedMemberId(member.id);
     setShowAddMemberForm(false);
+    setIsSidebarOpen(false);
   };
 
   const handleAddMember = () => {
