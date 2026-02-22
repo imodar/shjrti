@@ -152,23 +152,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
           selectedRootMarriage={selectedRootMarriage}
        />
  
-       {/* Mobile Overlay */}
-       <div className="fixed inset-0 bg-card z-[100] lg:hidden flex flex-col items-center justify-center p-8 text-center">
-         <div className="w-20 h-20 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6">
-           <span className="material-icons-round text-4xl">desktop_windows</span>
-         </div>
-         <h2 className="text-2xl font-bold mb-2">{t('stitch.desktop_optimized', 'Desktop Optimized')}</h2>
-         <p className="text-muted-foreground mb-8 max-w-xs">
-           {t('stitch.tree_desktop_message', 'The interactive family tree view is designed for larger screens. Please switch to a desktop or tablet for the best experience.')}
-         </p>
-         <button 
-           onClick={() => navigate('/stitch-dashboard')}
-           className="px-6 py-3 bg-primary text-primary-foreground font-bold rounded-xl"
-         >
-           {t('stitch.go_to_dashboard', 'Go to Dashboard')}
-         </button>
-       </div>
-     </div>
+      </div>
    );
  };
  
