@@ -514,17 +514,18 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
           <div className={`p-4 lg:p-8 h-full overflow-y-auto custom-scrollbar ${!isImageUploadEnabled ? 'blur-[12px] pointer-events-none select-none' : ''}`}>
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-              <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <span className={`px-2 py-0.5 text-[10px] font-bold rounded uppercase tracking-widest border ${isImageUploadEnabled ? 'bg-secondary/10 text-secondary border-secondary/20' : 'bg-slate-200 dark:bg-slate-800 text-slate-400 border-slate-300 dark:border-slate-700'}`}>
-                    {isImageUploadEnabled ? t('gallery.archive_badge', 'Archive') : t('gallery.preview_badge', 'Preview')}
-                  </span>
-                  <h2 className="text-xl lg:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                    {t('gallery.title', 'Family Gallery')}
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-emerald-500 flex items-center justify-center shadow-lg shadow-primary/20">
+                    <span className="material-symbols-outlined text-white text-lg">photo_library</span>
+                  </div>
+                  <h2 className="text-xl lg:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    {t('gallery.title', 'معرض الصور')}
                   </h2>
                 </div>
-                <p className="text-slate-500 dark:text-slate-400 max-w-lg">
-                  {t('gallery.description', "A dynamic mosaic of our family's most precious memories, curated across generations.")}
+                <span className="hidden md:inline text-slate-300 dark:text-slate-600">|</span>
+                <p className="text-sm text-slate-400 dark:text-slate-500 italic">
+                  {t('gallery.description', "لحظات عائلية ثمينة عبر الأجيال")}
                 </p>
               </div>
               {isImageUploadEnabled && (
