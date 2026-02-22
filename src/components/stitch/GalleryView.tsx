@@ -971,7 +971,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
               {/* Image Preview - larger, with click-to-tag */}
               <div
                 ref={reviewImageRef}
-                className="relative group rounded-2xl overflow-hidden bg-muted shadow-inner border border-border cursor-crosshair"
+                className="relative group rounded-2xl bg-muted shadow-inner border border-border cursor-crosshair"
                 onClick={(e) => {
                   const rect = reviewImageRef.current?.getBoundingClientRect();
                   if (!rect) return;
@@ -983,7 +983,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
               >
                 <img
                   alt="Memory Preview"
-                  className="w-full aspect-[16/10] object-contain bg-black/5 dark:bg-black/20"
+                  className="w-full aspect-[16/10] object-contain bg-black/5 dark:bg-black/20 rounded-2xl"
                   src={reviewPopup.imageUrl}
                 />
                 {/* Existing tag dots on image */}
