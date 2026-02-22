@@ -19,8 +19,9 @@ export interface ActivityLogEntry {
 const FUNCTION_NAME = 'api-families';
 
 export const familiesApi = {
-  list: async (): Promise<Family[]> => {
-    return apiClient.get<Family[]>(FUNCTION_NAME);
+  list: async (options?: { stats?: boolean }): Promise<Family[]> => {
+    const params = options?.stats ? { stats: 'true' } : undefined;
+    return apiClient.get<Family[]>(FUNCTION_NAME, params);
   },
 
   get: async (id: string): Promise<Family> => {
