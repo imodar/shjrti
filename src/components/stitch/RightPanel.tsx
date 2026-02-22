@@ -220,6 +220,155 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
         </div>
       )}
 
+      {/* ===== Option 3: Stacked Cards with Glow Effect ===== */}
+      {latestSuggestions.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="relative w-7 h-7">
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 animate-pulse opacity-50 blur-sm" />
+              <div className="relative w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
+                <span className="material-symbols-outlined text-white text-sm">magic_button</span>
+              </div>
+            </div>
+            <h3 className="font-bold text-sm">{t('suggestions.option3', 'الخيار 3: بطاقات متوهجة')}</h3>
+          </div>
+
+          <div className="space-y-3">
+            {latestSuggestions.map((suggestion, i) => {
+              const colors = [
+                { border: 'border-amber-300/50', glow: 'shadow-amber-200/30', bg: 'from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20', accent: 'text-amber-600', dot: 'bg-amber-400' },
+                { border: 'border-emerald-300/50', glow: 'shadow-emerald-200/30', bg: 'from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/20', accent: 'text-emerald-600', dot: 'bg-emerald-400' },
+                { border: 'border-violet-300/50', glow: 'shadow-violet-200/30', bg: 'from-violet-50 to-fuchsia-50 dark:from-violet-950/30 dark:to-fuchsia-950/20', accent: 'text-violet-600', dot: 'bg-violet-400' },
+              ];
+              const c = colors[i % 3];
+              return (
+                <div
+                  key={`v3-${suggestion.id}`}
+                  className={cn(
+                    "relative rounded-2xl p-3.5 border bg-gradient-to-br transition-all duration-500 hover:scale-[1.02] hover:shadow-lg cursor-default group",
+                    c.border, c.glow, c.bg
+                  )}
+                >
+                  {/* Animated corner accent */}
+                  <div className={cn("absolute top-2 right-2 rtl:right-auto rtl:left-2 w-2 h-2 rounded-full group-hover:scale-150 transition-transform", c.dot)} 
+                    style={{ animation: `pulse 2s ease-in-out infinite ${i * 0.5}s` }} 
+                  />
+
+                  {/* Submitter row */}
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className={cn("w-7 h-7 rounded-full bg-white dark:bg-slate-800 shadow-sm flex items-center justify-center text-[10px] font-black", c.accent)}>
+                      {suggestion.submitter_name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[11px] font-bold text-slate-800 dark:text-slate-200 truncate">{suggestion.submitter_name}</p>
+                      <p className="text-[9px] text-slate-400">{new Date(suggestion.created_at).toLocaleDateString()}</p>
+                    </div>
+                    <span className={cn("material-symbols-outlined text-base", c.accent)} style={{ animation: 'spin 4s linear infinite' }}>autorenew</span>
+                  </div>
+
+                  {/* Member tag */}
+                  {suggestion.member_name && (
+                    <div className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white/60 dark:bg-slate-800/60 mb-1.5 text-[9px] font-bold", c.accent)}>
+                      <span className="material-symbols-outlined text-[10px]">person_pin</span>
+                      {suggestion.member_name}
+                    </div>
+                  )}
+
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed line-clamp-2">
+                    {suggestion.suggestion_text}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+
+          {pendingSuggestions > 0 && (
+            <button
+              onClick={onReviewSuggestions}
+              className="w-full mt-3 py-2.5 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-xs font-bold rounded-xl hover:shadow-lg hover:shadow-violet-300/30 transition-all flex items-center justify-center gap-2"
+            >
+              <span className="material-symbols-outlined text-sm animate-bounce">arrow_forward</span>
+              {t('suggestions.review_all', 'مراجعة الاقتراحات')}
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* ===== Option 4: Chat Bubble Style ===== */}
+      {latestSuggestions.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center relative">
+              <span className="material-symbols-outlined text-white text-sm">forum</span>
+              {pendingSuggestions > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-[8px] font-bold flex items-center justify-center border-2 border-white dark:border-slate-900">
+                  {pendingSuggestions}
+                </span>
+              )}
+            </div>
+            <h3 className="font-bold text-sm">{t('suggestions.option4', 'الخيار 4: فقاعات محادثة')}</h3>
+          </div>
+
+          <div className="space-y-3">
+            {latestSuggestions.map((suggestion, i) => (
+              <div key={`v4-${suggestion.id}`} className="group">
+                {/* Sender info */}
+                <div className="flex items-center gap-1.5 mb-1 px-1">
+                  <div 
+                    className="w-5 h-5 rounded-full flex items-center justify-center text-white text-[8px] font-bold"
+                    style={{
+                      background: i === 0 ? 'linear-gradient(135deg, #f97316, #ef4444)' :
+                                  i === 1 ? 'linear-gradient(135deg, #22c55e, #14b8a6)' :
+                                  'linear-gradient(135deg, #a855f7, #6366f1)'
+                    }}
+                  >
+                    {suggestion.submitter_name.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400">{suggestion.submitter_name}</span>
+                  <span className="text-[8px] text-slate-300 mx-0.5">•</span>
+                  <span className="text-[9px] text-slate-400">{new Date(suggestion.created_at).toLocaleDateString()}</span>
+                </div>
+                
+                {/* Chat bubble */}
+                <div className="relative bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-950/30 dark:to-blue-950/20 rounded-2xl rounded-tr-sm rtl:rounded-tr-2xl rtl:rounded-tl-sm p-3 border border-sky-200/40 dark:border-sky-800/30 hover:shadow-md hover:shadow-sky-100/50 transition-all duration-300">
+                  {/* Triangle pointer */}
+                  <div className="absolute top-0 right-3 rtl:right-auto rtl:left-3 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-b-[6px] border-b-sky-50 dark:border-b-sky-950/30 -translate-y-[5px]" />
+                  
+                  {/* Member tag */}
+                  {suggestion.member_name && (
+                    <div className="flex items-center gap-1 mb-1.5">
+                      <span className="material-symbols-outlined text-sky-500 text-xs">account_circle</span>
+                      <span className="text-[10px] font-bold text-sky-600 dark:text-sky-400">{suggestion.member_name}</span>
+                    </div>
+                  )}
+
+                  <p className="text-[11px] text-slate-700 dark:text-slate-300 leading-relaxed line-clamp-3">
+                    {suggestion.suggestion_text}
+                  </p>
+                  
+                  {/* Typing indicator style dots */}
+                  <div className="flex gap-0.5 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="w-1 h-1 rounded-full bg-sky-400" style={{ animation: 'pulse 1s infinite 0s' }} />
+                    <div className="w-1 h-1 rounded-full bg-sky-400" style={{ animation: 'pulse 1s infinite 0.2s' }} />
+                    <div className="w-1 h-1 rounded-full bg-sky-400" style={{ animation: 'pulse 1s infinite 0.4s' }} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {pendingSuggestions > 0 && (
+            <button
+              onClick={onReviewSuggestions}
+              className="w-full mt-3 py-2.5 bg-gradient-to-r from-sky-400 to-blue-600 text-white text-xs font-bold rounded-xl hover:shadow-lg hover:shadow-sky-200/40 transition-all flex items-center justify-center gap-2 group"
+            >
+              <span className="material-symbols-outlined text-sm group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform">chat</span>
+              {t('suggestions.review_all', 'مراجعة الاقتراحات')}
+            </button>
+          )}
+        </div>
+      )}
+
     </aside>
   );
 };
