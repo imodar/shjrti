@@ -423,7 +423,14 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
       await memoriesApi.deleteFamilyMemory(id);
       sonnerToast.success(t('gallery.deleted', 'Photo deleted'));
       setSelectedMemory(null);
+      // Remove deleted memory's tags from local state immediately
+      setMemoryTagsMap(prev => {
+        const updated = { ...prev };
+        delete updated[id];
+        return updated;
+      });
       loadMemories();
+      loadAllTags(); // Refresh tagged member counts
     } catch (error) {
       console.error('Delete error:', error);
       sonnerToast.error(t('gallery.delete_error', 'Failed to delete photo'));
