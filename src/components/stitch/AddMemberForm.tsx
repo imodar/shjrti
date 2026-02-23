@@ -106,13 +106,13 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
           const isInternal = Boolean(father) || Boolean(member.is_founder);
 
           if (isInternal) {
-            if (isWife) {
+          if (isWife) {
               if (father) {
-                const relationship = member.gender === 'female' ? 'بنت' : 'ابن';
+                const relationship = member.gender === 'female' ? t('member.daughter_of', 'بنت') : t('member.child_of_male', 'ابن');
                 const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
                 if (grandfather) {
                   const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
-                  return `${firstName} ${relationship} ${fatherFirstName} بن ${grandfatherFirstName}`;
+                  return `${firstName} ${relationship} ${fatherFirstName} ${t('member.son_of', 'بن')} ${grandfatherFirstName}`;
                 }
                 return `${firstName} ${relationship} ${fatherFirstName}`;
               }
@@ -122,9 +122,9 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                 const fatherFirstName = father.first_name || father.name?.split(' ')[0] || father.name;
                 if (grandfather) {
                   const grandfatherFirstName = grandfather.first_name || grandfather.name?.split(' ')[0] || grandfather.name;
-                  return `${firstName} بن ${fatherFirstName} بن ${grandfatherFirstName}`;
+                  return `${firstName} ${t('member.son_of', 'بن')} ${fatherFirstName} ${t('member.son_of', 'بن')} ${grandfatherFirstName}`;
                 }
-                return `${firstName} بن ${fatherFirstName}`;
+                return `${firstName} ${t('member.son_of', 'بن')} ${fatherFirstName}`;
               }
               return firstName;
             }
@@ -163,7 +163,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
           <p className="text-slate-500 text-sm mt-1">
             {formMode === 'edit'
               ? t('member.edit_desc', 'قم بتعديل بيانات العضو')
-              : t('stitch.add_member_desc', `Create a new profile for a family member in the ${familyData?.name || 'family'} tree.`)}
+              : t('stitch.add_member_desc', 'أنشئ ملفاً شخصياً جديداً لعضو في شجرة العائلة')}
           </p>
         </div>
 
