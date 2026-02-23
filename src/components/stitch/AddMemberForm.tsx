@@ -347,64 +347,58 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
               </div>
             </div>
 
-            {/* Row 3: Biography (3/4), Profile Picture (1/4) */}
-            <div className="grid grid-cols-4 gap-6">
-              {/* Biography - 3/4 */}
-              <div className="col-span-3 space-y-2">
-                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                  <span className="material-symbols-outlined text-primary text-lg">history_edu</span>
-                  {t('family_builder.biography', 'Biography')}
-                </label>
-                <textarea
-                  value={formData.bio}
-                  onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
-                  placeholder={t('member.biography_placeholder', 'Brief history or description...')}
-                  rows={5}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
-                />
-              </div>
-
+            {/* Row 3: Profile Picture (1/4), Biography (3/4) */}
+            <div className="grid grid-cols-4 gap-6 items-stretch">
               {/* Profile Picture - 1/4 */}
-              <div className="space-y-2">
+              <div className="space-y-2 flex flex-col">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <span className="material-symbols-outlined text-primary text-lg">image</span>
                   {t('family_builder.upload_image', 'Profile Picture')}
                 </label>
                 {!isImageUploadEnabled ? (
-                  <div className="border-2 border-dashed border-amber-200 dark:border-amber-800 rounded-2xl p-4 h-28 flex flex-col items-center justify-center text-center bg-amber-50/50 dark:bg-amber-900/10">
-                    <span className="material-symbols-outlined text-xl text-amber-500 mb-1">lock</span>
-                    <p className="text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                  <div className="flex-1 border-2 border-dashed border-amber-200 dark:border-amber-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center bg-amber-50/50 dark:bg-amber-900/10 min-h-[200px]">
+                    <div className="w-14 h-14 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mb-3">
+                      <span className="material-symbols-outlined text-2xl text-amber-500">lock</span>
+                    </div>
+                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400">
                       {t('upgrade.feature_locked', 'Premium Feature')}
                     </p>
+                    <p className="text-[10px] text-amber-500/70 mt-1">{t('upgrade.unlock_photos', 'Unlock photo uploads')}</p>
                     <button
                       type="button"
                       onClick={() => window.location.href = '/plan-selection'}
-                      className="mt-1 text-[9px] font-bold text-amber-700 underline hover:text-amber-800"
+                      className="mt-3 px-4 py-1.5 text-[10px] font-bold text-white bg-amber-500 rounded-lg hover:bg-amber-600 transition-colors shadow-sm"
                     >
                       {t('upgrade.upgrade_now', 'Upgrade Now')}
                     </button>
                   </div>
                 ) : displayImage ? (
-                  <div className="relative">
+                  <div className="relative flex-1 min-h-[200px]">
                     <img 
                       src={displayImage} 
                       alt="Profile" 
-                      className="w-full h-28 object-cover rounded-2xl border-2 border-slate-200 dark:border-slate-700"
+                      className="w-full h-full object-cover rounded-2xl border-2 border-slate-200 dark:border-slate-700"
                     />
-                    <button
-                      type="button"
-                      onClick={handleDeleteImage}
-                      className="absolute top-2 end-2 p-1.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                    >
-                      <span className="material-symbols-outlined text-sm">delete</span>
-                    </button>
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent rounded-b-2xl p-3 flex items-end justify-between">
+                      <p className="text-[10px] text-white/80 font-medium">{t('member.profile_photo', 'Profile Photo')}</p>
+                      <button
+                        type="button"
+                        onClick={handleDeleteImage}
+                        className="p-1.5 bg-red-500/90 text-white rounded-lg hover:bg-red-600 transition-colors backdrop-blur-sm"
+                      >
+                        <span className="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    </div>
                   </div>
                 ) : (
-                  <label className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl p-4 h-28 flex flex-col items-center justify-center text-center bg-slate-50/50 dark:bg-slate-800/30 hover:border-primary hover:bg-emerald-50/10 transition-all cursor-pointer">
-                    <span className="material-symbols-outlined text-2xl text-primary mb-1">upload</span>
-                    <p className="text-[10px] font-semibold text-slate-600 dark:text-slate-300">
+                  <label className="flex-1 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl flex flex-col items-center justify-center text-center bg-slate-50/50 dark:bg-slate-800/30 hover:border-primary hover:bg-primary/5 transition-all cursor-pointer group min-h-[200px]">
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                      <span className="material-symbols-outlined text-3xl text-primary">add_a_photo</span>
+                    </div>
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                       {t('member.click_to_upload', 'Click to upload')}
                     </p>
+                    <p className="text-[10px] text-slate-400 mt-1">JPG, PNG</p>
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -414,6 +408,25 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                     />
                   </label>
                 )}
+              </div>
+
+              {/* Biography - 3/4 */}
+              <div className="col-span-3 space-y-2 flex flex-col">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-primary text-lg">history_edu</span>
+                  {t('family_builder.biography', 'Biography')}
+                </label>
+                <div className="flex-1 relative">
+                  <textarea
+                    value={formData.bio}
+                    onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                    placeholder={t('member.biography_placeholder', 'Brief history or description...')}
+                    className="w-full h-full min-h-[200px] px-5 py-4 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm leading-relaxed focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+                  />
+                  <div className="absolute bottom-3 end-3 text-[10px] text-slate-300 dark:text-slate-600 pointer-events-none">
+                    {formData.bio?.length || 0} {t('common.characters', 'chars')}
+                  </div>
+                </div>
               </div>
             </div>
 
