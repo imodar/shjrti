@@ -87,37 +87,34 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
       });
     }
 
-    // Children event
+    // Children events - one per child
     if (children.length > 0) {
-      const maleCount = children.filter((c: any) => c.gender === 'male').length;
-      const femaleCount = children.filter((c: any) => c.gender === 'female').length;
+      const sortedChildren = [...children].sort((a: any, b: any) => {
+        const dateA = a.birth_date || a.birthDate || '';
+        const dateB = b.birth_date || b.birthDate || '';
+        return dateA.localeCompare(dateB);
+      });
 
-      const parts: string[] = [];
-      if (maleCount > 0) parts.push(`${maleCount} ${t('timeline.sons', 'sons')}`);
-      if (femaleCount > 0) parts.push(`${femaleCount} ${t('timeline.daughters', 'daughters')}`);
-      const childrenSummary = parts.join(` ${t('common.and', 'and')} `);
+      sortedChildren.forEach((child: any) => {
+        const childName = child.first_name
+          ? `${child.first_name} ${child.last_name || ''}`
+          : child.name || t('common.unknown', 'Unknown');
+        const childBirthDate = child.birth_date || child.birthDate || null;
+        const isMale = child.gender === 'male';
 
-      // Sort children by birth date to get range
-      const childBirthDates = children
-        .map((c: any) => c.birth_date || c.birthDate)
-        .filter(Boolean)
-        .sort();
-
-      const rangeStart = childBirthDates[0]?.split('-')[0];
-      const rangeEnd = childBirthDates[childBirthDates.length - 1]?.split('-')[0];
-
-      items.push({
-        type: 'children',
-        date: childBirthDates[0] || null,
-        icon: 'family_history',
-        borderColor: 'border-primary',
-        bgColor: 'bg-primary/5',
-        textColor: 'text-primary',
-        title: t('timeline.family_growth', 'The Foundation of Legacy'),
-        description: `${t('timeline.welcomed', 'Welcomed')} ${childrenSummary}. ${rangeStart && rangeEnd && rangeStart !== rangeEnd ? `(${rangeStart} — ${rangeEnd})` : ''}`,
-        dateLabel: rangeStart && rangeEnd && rangeStart !== rangeEnd
-          ? `${rangeStart} — ${rangeEnd}`
-          : rangeStart || '',
+        items.push({
+          type: 'children',
+          date: childBirthDate,
+          icon: isMale ? 'boy' : 'girl',
+          borderColor: isMale ? 'border-sky-400' : 'border-pink-400',
+          bgColor: isMale ? 'bg-sky-50 dark:bg-sky-900/20' : 'bg-pink-50 dark:bg-pink-900/20',
+          textColor: isMale ? 'text-sky-500' : 'text-pink-500',
+          title: childName.trim(),
+          description: isMale
+            ? t('timeline.son_born', 'A son was born')
+            : t('timeline.daughter_born', 'A daughter was born'),
+          dateLabel: childBirthDate || '',
+        });
       });
     }
 
@@ -234,8 +231,8 @@ const TimelineCard: React.FC<{ event: TimelineEvent }> = ({ event }) => (
   )}>
     {event.dateLabel && (
       <span className={cn("text-[10px] sm:text-xs font-extrabold uppercase tracking-widest", event.textColor)}>
-        {event.type === 'children' || event.type === 'marriage'
-          ? event.dateLabel
+        {event.type === 'marriage' && !event.dateLabel
+          ? null
           : <DateDisplay date={event.dateLabel} />}
       </span>
     )}
