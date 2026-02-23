@@ -523,7 +523,6 @@ const FamilyBuilderStitch: React.FC = () => {
             selectedMember={selectedMember}
             onEditMember={handleEditMember}
             onDeleteMember={() => setShowDeleteModal(true)}
-            readOnly={selectedMember ? isExternalSpouse(selectedMember) : false}
             onBackFromProfile={handleBackFromProfile}
             onMemberClick={handleMemberClick}
           />
