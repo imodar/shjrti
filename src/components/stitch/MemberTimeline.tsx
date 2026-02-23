@@ -45,6 +45,7 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
     const items: TimelineEvent[] = [];
 
     // Birth event
+    const bornVerb = member?.gender === 'female' ? t('timeline.born_female_verb', 'وُلدت') : t('timeline.born_male_verb', 'وُلد');
     if (birthDate) {
       items.push({
         type: 'birth',
@@ -53,9 +54,21 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
         borderColor: 'border-primary',
         bgColor: 'bg-primary/5',
         textColor: 'text-primary',
-        title: t('timeline.born_event', 'Born'),
-        description: t('timeline.birth_description', 'The beginning of a life journey and the start of a new chapter in the family history.'),
+        title: `${bornVerb} ${getDisplayName()}`,
+        description: '',
         dateLabel: birthDate,
+      });
+    } else {
+      items.push({
+        type: 'birth',
+        date: null,
+        icon: 'child_care',
+        borderColor: 'border-primary',
+        bgColor: 'bg-primary/5',
+        textColor: 'text-primary',
+        title: `${bornVerb} ${getDisplayName()}`,
+        description: t('timeline.birth_date_unknown', 'تاريخ الميلاد غير معروف'),
+        dateLabel: '',
       });
     }
 
@@ -81,7 +94,7 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
           bgColor: 'bg-secondary/5',
           textColor: 'text-secondary',
           title: `${t('timeline.marriage_with', 'Union with')} ${spouseName.trim()}`,
-          description: t('timeline.marriage_description', 'A union that strengthened the family bonds and continued the legacy.'),
+          description: '',
           dateLabel: marriageDate || '',
         });
       });
@@ -102,6 +115,10 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
         const childBirthDate = child.birth_date || child.birthDate || null;
         const isMale = child.gender === 'male';
 
+        const childVerb = isMale
+          ? t('timeline.son_born', 'وُلد لهم')
+          : t('timeline.daughter_born', 'وُلدت لهم');
+
         items.push({
           type: 'children',
           date: childBirthDate,
@@ -109,10 +126,8 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
           borderColor: isMale ? 'border-sky-400' : 'border-pink-400',
           bgColor: isMale ? 'bg-sky-50 dark:bg-sky-900/20' : 'bg-pink-50 dark:bg-pink-900/20',
           textColor: isMale ? 'text-sky-500' : 'text-pink-500',
-          title: childName.trim(),
-          description: isMale
-            ? t('timeline.son_born', 'A son was born')
-            : t('timeline.daughter_born', 'A daughter was born'),
+          title: `${childVerb} ${childName.trim()}`,
+          description: '',
           dateLabel: childBirthDate || '',
         });
       });
@@ -120,9 +135,7 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
 
     // Death event
     if (!isAlive && deathDate) {
-      const birthYear = birthDate?.split('-')[0];
-      const deathYear = deathDate?.split('-')[0];
-      const age = birthYear && deathYear ? parseInt(deathYear) - parseInt(birthYear) : null;
+      const deathVerb = member?.gender === 'female' ? t('timeline.died_female_verb', 'توفيت') : t('timeline.died_male_verb', 'توفي');
 
       items.push({
         type: 'death',
@@ -131,10 +144,8 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
         borderColor: 'border-slate-300 dark:border-slate-600',
         bgColor: 'bg-slate-50 dark:bg-slate-800/30',
         textColor: 'text-slate-400',
-        title: t('timeline.passing', 'A Peacefully Concluded Life'),
-        description: age
-          ? `${t('timeline.passed_at_age', 'Passed away at age')} ${age}. ${t('timeline.remembered', 'Remembered as a pillar of the family whose legacy continues.')}`
-          : t('timeline.remembered', 'Remembered as a pillar of the family whose legacy continues.'),
+        title: `${deathVerb} ${getDisplayName()}`,
+        description: '',
         dateLabel: deathDate,
       });
     }
@@ -229,15 +240,15 @@ const TimelineCard: React.FC<{ event: TimelineEvent }> = ({ event }) => (
     event.bgColor,
     event.type === 'death' ? 'border-slate-200 dark:border-slate-700' : `${event.bgColor.replace('/5', '/10')}`
   )}>
+    <h4 className="text-sm sm:text-base md:text-lg font-bold text-slate-800 dark:text-white">{event.title}</h4>
+    {event.description && (
+      <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-sm">{event.description}</p>
+    )}
     {event.dateLabel && (
-      <span className={cn("text-[10px] sm:text-xs font-extrabold uppercase tracking-widest", event.textColor)}>
-        {event.type === 'marriage' && !event.dateLabel
-          ? null
-          : <DateDisplay date={event.dateLabel} />}
+      <span className={cn("text-[10px] sm:text-xs font-extrabold uppercase tracking-widest mt-2 block", event.textColor)}>
+        <DateDisplay date={event.dateLabel} />
       </span>
     )}
-    <h4 className="text-sm sm:text-base md:text-lg font-bold text-slate-800 dark:text-white mt-1">{event.title}</h4>
-    <p className="text-xs sm:text-sm text-slate-500 mt-1 sm:mt-2 max-w-sm">{event.description}</p>
   </div>
 );
 
