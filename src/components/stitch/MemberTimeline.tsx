@@ -134,7 +134,7 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
     }
 
     // Death event
-    if (!isAlive && deathDate) {
+    if (!isAlive) {
       const deathVerb = member?.gender === 'female' ? t('timeline.died_female_verb', 'توفيت') : t('timeline.died_male_verb', 'توفي');
 
       items.push({
