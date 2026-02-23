@@ -316,35 +316,43 @@ const FamilyBuilderStitch: React.FC = () => {
   }
 
   // Handlers
-  const handleMemberClick = (member: any) => {
-    // Check if this member is an external spouse (married into the family)
+  // Helper: check if a member is an external spouse
+  const isExternalSpouse = useCallback((member: any) => {
     const isFounder = member.is_founder || member.isFounder;
     const hasFamilyParent = (member.father_id || member.fatherId) &&
       familyMembers.find(m => m.id === (member.father_id || member.fatherId));
     const marriage = marriages.find((m: any) => m.husband_id === member.id || m.wife_id === member.id);
-    const isExternalSpouse = marriage && !hasFamilyParent && !isFounder;
+    return !!(marriage && !hasFamilyParent && !isFounder);
+  }, [familyMembers, marriages]);
 
-    if (isExternalSpouse) {
-      // Find the partner (the family member)
-      const partnerId = marriage.husband_id === member.id ? marriage.wife_id : marriage.husband_id;
-      const partner = familyMembers.find(m => m.id === partnerId);
-      const partnerName = partner
-        ? (partner.first_name || partner.name?.split(' ')[0] || partner.name || '')
-        : '';
-      const spouseName = member.first_name || member.name?.split(' ')[0] || member.name || '';
-
-      setSpouseWarningData({
-        spouseName,
-        partnerName,
-        partnerMember: partner,
-      });
-      setShowSpouseEditWarning(true);
-      return;
-    }
-
+  const handleMemberClick = (member: any) => {
     setSelectedMemberId(member.id);
     setShowAddMemberForm(false);
     setIsSidebarOpen(false);
+  };
+
+  const handleEditMember = () => {
+    if (!selectedMember) return;
+
+    if (isExternalSpouse(selectedMember)) {
+      // Find partner
+      const marriage = marriages.find((m: any) => m.husband_id === selectedMember.id || m.wife_id === selectedMember.id);
+      if (marriage) {
+        const partnerId = marriage.husband_id === selectedMember.id ? marriage.wife_id : marriage.husband_id;
+        const partner = familyMembers.find(m => m.id === partnerId);
+        setSpouseWarningData({
+          spouseName: selectedMember.first_name || selectedMember.name?.split(' ')[0] || '',
+          partnerName: partner?.first_name || partner?.name?.split(' ')[0] || '',
+          partnerMember: partner,
+        });
+        setShowSpouseEditWarning(true);
+      }
+      return;
+    }
+
+    setEditingMember(selectedMember);
+    setFormMode('edit');
+    setShowAddMemberForm(true);
   };
 
   const handleAddMember = () => {
@@ -513,14 +521,9 @@ const FamilyBuilderStitch: React.FC = () => {
             formMode={formMode}
             onMemberSaved={handleMemberSaved}
             selectedMember={selectedMember}
-            onEditMember={() => {
-              if (selectedMember) {
-                setEditingMember(selectedMember);
-                setFormMode('edit');
-                setShowAddMemberForm(true);
-              }
-            }}
+            onEditMember={handleEditMember}
             onDeleteMember={() => setShowDeleteModal(true)}
+            readOnly={selectedMember ? isExternalSpouse(selectedMember) : false}
             onBackFromProfile={handleBackFromProfile}
             onMemberClick={handleMemberClick}
           />

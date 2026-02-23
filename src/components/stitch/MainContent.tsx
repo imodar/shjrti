@@ -58,6 +58,8 @@ interface StitchMainContentProps {
   showStatistics?: boolean;
   // Gallery view
   showGallery?: boolean;
+  // Read-only mode (for external spouses)
+  readOnly?: boolean;
 }
 
 export const StitchMainContent: React.FC<StitchMainContentProps> = ({
@@ -85,6 +87,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   showSuggestions = false,
   showStatistics = false,
   showGallery = false,
+  readOnly = false,
 }) => {
   const { t } = useLanguage();
 
@@ -171,10 +174,11 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
         member={selectedMember}
         familyMembers={familyMembers as any[]}
         marriages={marriages as any[]}
-        onEdit={onEditMember}
-        onDelete={onDeleteMember}
+        onEdit={readOnly ? undefined : onEditMember}
+        onDelete={readOnly ? undefined : onDeleteMember}
         onBack={onBackFromProfile}
         onMemberClick={onMemberClick}
+        readOnly={readOnly}
       />
     );
   }
