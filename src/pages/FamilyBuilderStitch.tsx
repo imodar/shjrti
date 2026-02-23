@@ -12,6 +12,15 @@ import { useStitchLayout } from '@/components/stitch/StitchLayout';
 import DashboardLoader from '@/components/stitch/DashboardLoader';
 import { MemberDeleteModal } from '@/components/stitch/MemberDeleteModal';
 import { cn } from '@/lib/utils';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogFooter,
+  AlertDialogCancel,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import { GlobalFooterSimplified } from '@/components/GlobalFooterSimplified';
 
 /**
@@ -93,6 +102,8 @@ const FamilyBuilderStitch: React.FC = () => {
   const [pendingSuggestionsCount, setPendingSuggestionsCount] = useState(0);
   const [latestSuggestions, setLatestSuggestions] = useState<Array<{ id: string; submitter_name: string; suggestion_text: string; created_at: string; member_name?: string }>>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSpouseEditWarning, setShowSpouseEditWarning] = useState(false);
+  const [spouseWarningData, setSpouseWarningData] = useState<{ spouseName: string; partnerName: string; partnerMember: any } | null>(null);
   // Default to true so loader is skipped when data is cached; useEffects set false only when fetching
   const [packageLoaded, setPackageLoaded] = useState(true);
   const [suggestionsLoaded, setSuggestionsLoaded] = useState(true);
@@ -306,6 +317,31 @@ const FamilyBuilderStitch: React.FC = () => {
 
   // Handlers
   const handleMemberClick = (member: any) => {
+    // Check if this member is an external spouse (married into the family)
+    const isFounder = member.is_founder || member.isFounder;
+    const hasFamilyParent = (member.father_id || member.fatherId) &&
+      familyMembers.find(m => m.id === (member.father_id || member.fatherId));
+    const marriage = marriages.find((m: any) => m.husband_id === member.id || m.wife_id === member.id);
+    const isExternalSpouse = marriage && !hasFamilyParent && !isFounder;
+
+    if (isExternalSpouse) {
+      // Find the partner (the family member)
+      const partnerId = marriage.husband_id === member.id ? marriage.wife_id : marriage.husband_id;
+      const partner = familyMembers.find(m => m.id === partnerId);
+      const partnerName = partner
+        ? (partner.first_name || partner.name?.split(' ')[0] || partner.name || '')
+        : '';
+      const spouseName = member.first_name || member.name?.split(' ')[0] || member.name || '';
+
+      setSpouseWarningData({
+        spouseName,
+        partnerName,
+        partnerMember: partner,
+      });
+      setShowSpouseEditWarning(true);
+      return;
+    }
+
     setSelectedMemberId(member.id);
     setShowAddMemberForm(false);
     setIsSidebarOpen(false);
@@ -516,6 +552,76 @@ const FamilyBuilderStitch: React.FC = () => {
         familyMembers={familyMembers}
         marriages={marriages}
       />
+
+      {/* Spouse Edit Protection Modal */}
+      <AlertDialog open={showSpouseEditWarning} onOpenChange={setShowSpouseEditWarning}>
+        <AlertDialogContent className="max-w-sm rounded-3xl border-0 shadow-2xl">
+          <div className="p-2">
+            <AlertDialogHeader className="pb-4">
+              <div className="mx-auto w-14 h-14 bg-amber-100 dark:bg-amber-900/30 rounded-2xl flex items-center justify-center mb-3">
+                <span className="material-symbols-outlined text-2xl text-amber-600 dark:text-amber-400">shield</span>
+              </div>
+              <AlertDialogTitle className="text-lg font-bold text-center">
+                {t('family_builder.protected_edit', 'تعديل محمي')}
+              </AlertDialogTitle>
+            </AlertDialogHeader>
+
+            <div className="text-center space-y-3 px-1">
+              <div className="bg-amber-50 dark:bg-amber-900/20 rounded-2xl p-4 border border-amber-200 dark:border-amber-800">
+                <p className="text-sm text-slate-700 dark:text-slate-300 font-medium">
+                  {t('family_builder.cannot_edit_directly', 'لا يمكن تعديل بيانات')} {spouseWarningData?.spouseName} {t('family_builder.directly', 'مباشرة')}
+                </p>
+              </div>
+
+              {spouseWarningData?.partnerName && (
+                <div className="bg-card rounded-2xl p-4 border-2 border-primary/20">
+                  <p className="text-xs text-muted-foreground mb-2">
+                    {t('family_builder.go_to_edit', 'للتعديل، انتقل إلى:')}
+                  </p>
+                  <div className="bg-primary/5 rounded-xl p-3 border border-primary/10">
+                    <span className="font-bold text-primary text-base">
+                      {spouseWarningData.partnerName}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <div className="bg-sky-50 dark:bg-sky-900/20 rounded-2xl p-3 border border-sky-200 dark:border-sky-800">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="material-symbols-outlined text-sm text-sky-600 dark:text-sky-400">info</span>
+                  <p className="text-xs text-sky-700 dark:text-sky-300">
+                    {t('family_builder.data_integrity_note', 'هذا الإجراء يحافظ على سلامة البيانات والعلاقات العائلية')}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <AlertDialogFooter className="pt-5 flex flex-col gap-2">
+              <AlertDialogCancel className="w-full rounded-xl">
+                {t('common.back', 'عودة')}
+              </AlertDialogCancel>
+              {spouseWarningData?.partnerMember && (
+                <Button
+                  className="w-full rounded-xl"
+                  onClick={() => {
+                    setShowSpouseEditWarning(false);
+                    const partner = spouseWarningData.partnerMember;
+                    if (partner) {
+                      setSelectedMemberId(partner.id);
+                      setShowAddMemberForm(false);
+                      setIsSidebarOpen(false);
+                    }
+                    setSpouseWarningData(null);
+                  }}
+                >
+                  <span className="material-symbols-outlined text-sm ltr:mr-2 rtl:ml-2">edit</span>
+                  {t('family_builder.edit_member_data', 'تعديل بيانات')} {spouseWarningData.partnerName}
+                </Button>
+              )}
+            </AlertDialogFooter>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <GlobalFooterSimplified />
     </div>
