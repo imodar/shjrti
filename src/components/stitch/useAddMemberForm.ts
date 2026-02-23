@@ -170,51 +170,26 @@ export const useAddMemberForm = ({
     }
   };
 
-  const handleDeleteImage = async () => {
-    try {
-      let currentPath: string | null = editingMember?.image_url || editingMember?.image || null;
-      if (!currentPath && editingMember?.id) {
-        try {
-          const memberData = await membersApi.get(editingMember.id);
-          currentPath = memberData?.image_url ?? null;
-        } catch (error) {
-          console.error('Error fetching member image:', error);
-        }
-      }
-
-      if (croppedImage && croppedImage.startsWith('blob:')) {
-        URL.revokeObjectURL(croppedImage);
-      }
-
-      if (currentPath && !currentPath.startsWith('data:image/') && !currentPath.startsWith('blob:')) {
-        await deleteMemberImage(currentPath);
-      }
-
-      if (editingMember?.id) {
-        await membersApi.updateImage(editingMember.id, null);
-      }
-
-      setCroppedImage(null);
-      setSelectedImage(null);
-      setImageChanged(true);
-      (window as any).__croppedImageBlob = null;
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-
-      toast({
-        title: t('member.image_deleted', 'تم حذف الصورة'),
-        description: t('member.image_deleted_desc', 'تم حذف صورة العضو بنجاح'),
-      });
-    } catch (err) {
-      console.error('Failed to delete image', err);
-      toast({
-        title: t('member.image_delete_failed', 'فشل حذف الصورة'),
-        description: t('member.image_delete_failed_desc', 'حدث خطأ أثناء حذف الصورة'),
-        variant: 'destructive',
-      });
+  const handleDeleteImage = () => {
+    // Only mark image for deletion locally - actual deletion happens on save
+    if (croppedImage && croppedImage.startsWith('blob:')) {
+      URL.revokeObjectURL(croppedImage);
     }
+
+    setCroppedImage(null);
+    setSelectedImage(null);
+    setEditingMemberImageUrl(null);
+    setImageChanged(true);
+    (window as any).__croppedImageBlob = null;
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+
+    toast({
+      title: t('member.image_deleted', 'تم حذف الصورة'),
+      description: t('member.image_delete_on_save', 'سيتم تأكيد الحذف عند حفظ التعديلات'),
+    });
   };
 
   // Form reset
@@ -570,9 +545,9 @@ export const useAddMemberForm = ({
         // Update existing member
         memberData = await membersApi.update(editingMember.id, memberPayload);
         
-        // Delete old image after successful update
-        if (oldImagePath && finalImageUrl && finalImageUrl !== oldImagePath) {
-          await deleteMemberImage(oldImagePath);
+        // Delete old image after successful update (replaced or removed)
+        if (oldImagePath && finalImageUrl !== oldImagePath) {
+          await deleteMemberImage(oldImagePath).catch(err => console.error('Failed to delete old image:', err));
         }
       } else {
         // Create new member
