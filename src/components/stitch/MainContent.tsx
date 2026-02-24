@@ -160,6 +160,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
       <StitchGalleryView
         familyId={familyId}
         familyMembers={familyMembers}
+        readOnly={readOnly}
       />
     );
   }
