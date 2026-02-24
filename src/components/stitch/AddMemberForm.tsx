@@ -610,6 +610,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
         isImageUploadEnabled={isImageUploadEnabled}
         isEditing={!!(currentSpouse?.id && !currentSpouse.id.startsWith('temp_'))}
         excludeMemberIds={currentSpouse?.existingFamilyMemberId ? [currentSpouse.existingFamilyMemberId] : (currentSpouse?.id && !currentSpouse.id.startsWith('temp_') ? [currentSpouse.id] : [])}
+        editingMemberId={editingMember?.id}
       />
 
       {/* Image Crop Dialog */}
