@@ -452,32 +452,37 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
         {/* Left side: Tab navigation */}
         <div className="flex items-center gap-1 sm:gap-2">
           {/* Desktop tabs */}
-          <nav className="hidden md:flex items-center gap-0.5 bg-muted p-0.5 sm:p-1 rounded-xl">
+          <nav className="hidden md:flex items-center gap-0.5">
             {publicTabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className={`relative px-2 sm:px-3 lg:px-4 py-1.5 text-xs sm:text-sm font-medium transition-colors ${
+                className={`relative flex items-center gap-1.5 px-3 lg:px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 ${
                   activeTab === tab.id
-                    ? 'font-bold bg-card text-primary rounded-lg shadow-sm'
-                    : 'text-muted-foreground hover:text-primary'
+                    ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 font-bold'
+                    : 'text-muted-foreground hover:bg-accent hover:text-foreground'
                 }`}
               >
-                {tab.label}
+                <span className={`material-icons-round text-base ${activeTab === tab.id ? 'text-primary-foreground' : 'text-muted-foreground'}`}>{tab.icon}</span>
+                <span className="hidden lg:inline">{tab.label}</span>
               </button>
             ))}
           </nav>
           {/* Mobile tab selector */}
-          <div className="md:hidden">
-            <select
-              value={activeTab}
-              onChange={(e) => handleTabChange(e.target.value)}
-              className="bg-muted border-none rounded-lg px-2 py-1.5 text-xs font-medium"
-            >
-              {publicTabs.map(tab => (
-                <option key={tab.id} value={tab.id}>{tab.label}</option>
-              ))}
-            </select>
+          <div className="md:hidden flex items-center gap-0.5 bg-muted/50 p-0.5 rounded-lg">
+            {publicTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => handleTabChange(tab.id)}
+                className={`flex items-center justify-center p-2 rounded-md transition-all duration-200 ${
+                  activeTab === tab.id
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground'
+                }`}
+              >
+                <span className="material-icons-round text-lg">{tab.icon}</span>
+              </button>
+            ))}
           </div>
         </div>
       </div>
