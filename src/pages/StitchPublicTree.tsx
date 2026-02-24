@@ -335,7 +335,6 @@ const StitchPublicTree: React.FC = () => {
     { id: 'tree', label: t('stitch.tab.tree_view', 'عرض الشجرة'), icon: 'account_tree' },
     { id: 'gallery', label: t('stitch.tab.gallery', 'المعرض'), icon: 'photo_library' },
     { id: 'statistics', label: t('stitch.tab.statistics', 'الإحصائيات'), icon: 'bar_chart' },
-    { id: 'suggestions', label: t('stitch.tab.suggestions', 'اقتراح تعديل'), icon: 'lightbulb' },
   ];
 
   const showSuggestions = activeTab === 'suggestions';

@@ -45,6 +45,7 @@ interface ReviewPopupState {
 interface StitchGalleryViewProps {
   familyId: string;
   familyMembers: Member[];
+  readOnly?: boolean;
 }
 
 interface MemoryWithUrl extends FamilyMemory {
@@ -96,10 +97,14 @@ const getMetroStyle = (index: number, totalItems: number): { className: string; 
 export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   familyId,
   familyMembers,
+  readOnly = false,
 }) => {
   const { t, currentLanguage } = useLanguage();
   const navigate = useNavigate();
   const { isImageUploadEnabled, loading: permissionLoading } = useImageUploadPermission();
+  // readOnly = can view but not upload/edit/delete; canView = show gallery content (not locked)
+  const canViewGallery = readOnly || isImageUploadEnabled;
+  const canEditGallery = !readOnly && isImageUploadEnabled;
   const [memories, setMemories] = useState<MemoryWithUrl[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -482,7 +487,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
     <>
       <section className="flex-1 overflow-hidden flex flex-col lg:flex-row">
         {/* Mobile Upload Bar */}
-        <div className="lg:hidden flex items-center gap-2 p-3 bg-card border-b border-border">
+        <div className={`lg:hidden flex items-center gap-2 p-3 bg-card border-b border-border ${readOnly ? '' : ''}`}>
           <button
             onClick={() => setShowMobileSidebar(true)}
             className="flex items-center gap-2 px-3 py-2 bg-muted rounded-xl text-sm font-bold flex-1"
@@ -491,7 +496,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
             {t('gallery.filter_members', 'Filter & Members')}
             {filterMemberId && <span className="w-2 h-2 rounded-full bg-primary" />}
           </button>
-          {isImageUploadEnabled && (
+          {canEditGallery && !readOnly && (
             <button
               onClick={(e) => { e.stopPropagation(); openFilePicker(); }}
               className="flex items-center gap-2 px-3 py-2 bg-primary text-primary-foreground rounded-xl text-sm font-bold"
@@ -521,12 +526,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
             <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
           </div>
           {/* Upload Zone - hidden on mobile (use top bar instead) */}
-          <div className="hidden lg:block p-6 border-b border-slate-100 dark:border-slate-800">
+          <div className={`hidden lg:block p-6 border-b border-slate-100 dark:border-slate-800 ${readOnly ? 'lg:hidden' : ''}`}>
             <h2 className="font-bold text-slate-800 dark:text-slate-100 mb-4 flex items-center gap-2">
               <span className="material-symbols-outlined text-primary">cloud_upload</span>
               {t('gallery.quick_upload', 'Quick Upload')}
             </h2>
-            {isImageUploadEnabled ? (
+            {canEditGallery ? (
               <div
                 {...getRootProps()}
                 className={`border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center text-center group cursor-pointer transition-colors ${
@@ -571,7 +576,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
             <div className="mt-8">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t('gallery.storage_capacity', 'Storage Capacity')}</span>
-                {isImageUploadEnabled ? (
+                {canViewGallery ? (
                   <span className="text-[10px] font-bold text-slate-700 dark:text-slate-300">
                     {(memories.reduce((acc, m) => acc + (m.file_size || 0), 0) / (1024 * 1024)).toFixed(1)} / 100 MB
                   </span>
@@ -583,13 +588,13 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                 )}
               </div>
               <div className="w-full bg-slate-100 dark:bg-slate-800 h-2 rounded-full overflow-hidden relative">
-                {isImageUploadEnabled ? (
+                {canViewGallery ? (
                   <div className="bg-primary h-full rounded-full shadow-[0_0_8px_rgba(69,179,143,0.4)]" style={{ width: `${Math.min(memories.reduce((acc, m) => acc + (m.file_size || 0), 0) / (100 * 1024 * 1024) * 100, 100)}%` }} />
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-r from-slate-300 to-slate-400 dark:from-slate-700 dark:to-slate-600 opacity-50" />
                 )}
               </div>
-              {!isImageUploadEnabled && (
+              {!canViewGallery && (
                 <p className="text-[9px] text-slate-400 mt-2 font-medium italic">
                   {t('gallery.premium_storage', 'Premium plan required for media storage')}
                 </p>
@@ -598,17 +603,17 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
           </div>
 
           {/* Members Filter */}
-          <div className={`flex-1 flex flex-col min-h-0 ${!isImageUploadEnabled ? 'opacity-40 select-none grayscale pointer-events-none' : ''}`}>
+          <div className={`flex-1 flex flex-col min-h-0 ${!canViewGallery ? 'opacity-40 select-none grayscale pointer-events-none' : ''}`}>
             <div className="p-6 pb-2">
               <div className="relative">
                 <span className="material-symbols-outlined absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
                 <input
-                  className={`w-full ps-10 pe-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs focus:ring-2 focus:ring-primary/20 outline-none ${!isImageUploadEnabled ? 'cursor-not-allowed' : ''}`}
-                  placeholder={!isImageUploadEnabled ? t('gallery.filter_disabled', 'Filter disabled...') : t('gallery.filter_member', 'Filter by family member...')}
+                  className={`w-full ps-10 pe-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-xl text-xs focus:ring-2 focus:ring-primary/20 outline-none ${!canViewGallery ? 'cursor-not-allowed' : ''}`}
+                  placeholder={!canViewGallery ? t('gallery.filter_disabled', 'Filter disabled...') : t('gallery.filter_member', 'Filter by family member...')}
                   type="text"
                   value={memberSearchQuery}
                   onChange={e => setMemberSearchQuery(e.target.value)}
-                  disabled={!isImageUploadEnabled}
+                  disabled={!canViewGallery}
                 />
               </div>
             </div>
@@ -653,7 +658,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
         {/* Main Gallery Content */}
         <div className="flex-1 relative overflow-hidden bg-slate-50 dark:bg-[#0F171A]">
           {/* Locked Overlay - when user doesn't have permission */}
-          {!isImageUploadEnabled && (
+          {!canViewGallery && (
             <>
               <div className="absolute inset-0 z-10 flex items-center justify-center p-6">
                <div className="max-w-sm w-full bg-white dark:bg-slate-900 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-slate-200 dark:border-slate-800 overflow-hidden text-center p-6 relative">
@@ -679,7 +684,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
             </>
           )}
 
-          <div className={`p-4 lg:p-8 h-full overflow-y-auto custom-scrollbar ${!isImageUploadEnabled ? 'blur-[12px] pointer-events-none select-none' : ''}`}>
+          <div className={`p-4 lg:p-8 h-full overflow-y-auto custom-scrollbar ${!canViewGallery ? 'blur-[12px] pointer-events-none select-none' : ''}`}>
             {/* Header */}
             <div className="flex items-center justify-between gap-3 mb-6 lg:mb-10">
               <div className="flex items-center gap-2 lg:gap-3 min-w-0">
@@ -694,7 +699,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                   {t('gallery.subtitle', "لحظات عائلية ثمينة عبر الأجيال")}
                 </p>
               </div>
-              {isImageUploadEnabled && (
+              {canViewGallery && (
                 <div className="bg-card px-3 lg:px-4 py-1.5 lg:py-2 rounded-xl shadow-sm border border-border flex items-center gap-2 lg:gap-3 shrink-0">
                   <span className="material-symbols-outlined text-primary text-base lg:text-xl">photo_library</span>
                   <div>
@@ -706,7 +711,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
             </div>
 
             {/* Metro Grid or Empty State */}
-            {!isImageUploadEnabled ? (
+            {!canViewGallery ? (
               /* Blurred placeholder grid for locked state */
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4" style={{ gridAutoRows: '180px', gridAutoFlow: 'dense' }}>
                 <div className="rounded-3xl bg-slate-200 dark:bg-slate-800" style={{ gridColumn: 'span 2', gridRow: 'span 2' }} />
@@ -790,7 +795,8 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                           </p>
                         )}
                       </div>
-                      {/* Hover overlay with actions */}
+                      {/* Hover overlay with actions - hidden in readOnly */}
+                      {!readOnly && (
                       <div className={`card-overlay absolute inset-0 bg-black/40 opacity-0 transition-opacity duration-300 flex flex-col justify-start ${isLarge ? 'p-6' : 'p-3'} z-30`}>
                         <div className="flex justify-end gap-2">
                           <button
@@ -807,6 +813,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                           </button>
                         </div>
                       </div>
+                      )}
                     </div>
                   );
                 })}
@@ -970,7 +977,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
 
               {/* Actions Footer */}
               <div className="p-6 pt-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-                <div className="grid grid-cols-2 gap-3 mb-3">
+                <div className={`grid ${readOnly ? 'grid-cols-1' : 'grid-cols-2'} gap-3 mb-3`}>
                   <a
                     href={selectedMemory.imageUrl}
                     download={selectedMemory.original_filename}
@@ -981,21 +988,25 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                     <span className="material-symbols-outlined text-lg">download</span>
                     {t('gallery.download', 'Download')}
                   </a>
-                  <button
-                    onClick={() => { setSelectedMemory(null); openEditPopup(selectedMemory); }}
-                    className="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
-                  >
-                    <span className="material-symbols-outlined text-lg">edit_note</span>
-                    {t('gallery.edit_details', 'Edit Details')}
-                  </button>
+                  {!readOnly && (
+                    <button
+                      onClick={() => { setSelectedMemory(null); openEditPopup(selectedMemory); }}
+                      className="flex items-center justify-center gap-2 px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-lg">edit_note</span>
+                      {t('gallery.edit_details', 'Edit Details')}
+                    </button>
+                  )}
                 </div>
-                <button
-                  onClick={() => handleDelete(selectedMemory.id)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/10 dark:text-red-400 dark:hover:bg-red-900/20 rounded-xl text-sm font-bold transition-all"
-                >
-                  <span className="material-symbols-outlined text-lg">delete</span>
-                  {t('gallery.delete_permanently', 'Delete Permanently')}
-                </button>
+                {!readOnly && (
+                  <button
+                    onClick={() => handleDelete(selectedMemory.id)}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/10 dark:text-red-400 dark:hover:bg-red-900/20 rounded-xl text-sm font-bold transition-all"
+                  >
+                    <span className="material-symbols-outlined text-lg">delete</span>
+                    {t('gallery.delete_permanently', 'Delete Permanently')}
+                  </button>
+                )}
               </div>
             </div>
           </div>
