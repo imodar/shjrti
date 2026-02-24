@@ -27,6 +27,7 @@ interface SpouseDrawerProps {
   hideToggle?: boolean;
   isEditing?: boolean;
   excludeMemberIds?: string[];
+  editingMemberId?: string;
   onImageUploadClick?: () => void;
 }
 
@@ -47,21 +48,91 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
   hideToggle = false,
   isEditing = false,
   excludeMemberIds = [],
+  editingMemberId,
   onImageUploadClick
 }) => {
   const { t, direction } = useLanguage();
   const isRTL = direction === 'rtl';
 
+  // Build set of forbidden member IDs (relatives + already-married)
+  const forbiddenIds = React.useMemo(() => {
+    const ids = new Set<string>(excludeMemberIds);
+    if (!editingMemberId) return ids;
+
+    const member = familyMembers.find(m => m.id === editingMemberId);
+    if (!member) return ids;
+
+    // 1. Exclude the member themselves
+    ids.add(editingMemberId);
+
+    // 2. Exclude all ancestors (parents, grandparents, etc.)
+    const addAncestors = (memberId: string) => {
+      const m = familyMembers.find(fm => fm.id === memberId);
+      if (!m) return;
+      if (m.father_id) { ids.add(m.father_id); addAncestors(m.father_id); }
+      if (m.mother_id) { ids.add(m.mother_id); addAncestors(m.mother_id); }
+    };
+    addAncestors(editingMemberId);
+
+    // 3. Exclude siblings (same father or same mother)
+    familyMembers.forEach(m => {
+      if (m.id === editingMemberId) return;
+      if ((member.father_id && m.father_id === member.father_id) ||
+          (member.mother_id && m.mother_id === member.mother_id)) {
+        ids.add(m.id);
+      }
+    });
+
+    // 4. Exclude aunts/uncles (father's siblings + mother's siblings)
+    const addSiblings = (parentId: string | undefined) => {
+      if (!parentId) return;
+      const parent = familyMembers.find(m => m.id === parentId);
+      if (!parent) return;
+      familyMembers.forEach(m => {
+        if (m.id === parentId) return;
+        if ((parent.father_id && m.father_id === parent.father_id) ||
+            (parent.mother_id && m.mother_id === parent.mother_id)) {
+          ids.add(m.id);
+        }
+      });
+    };
+    addSiblings(member.father_id);
+    addSiblings(member.mother_id);
+
+    // 5. Exclude children and descendants
+    const addDescendants = (parentId: string) => {
+      familyMembers.forEach(m => {
+        if (m.father_id === parentId || m.mother_id === parentId) {
+          ids.add(m.id);
+          addDescendants(m.id);
+        }
+      });
+    };
+    addDescendants(editingMemberId);
+
+    // 6. Exclude already-linked spouses of this member
+    marriages.forEach(mar => {
+      if (mar.husband_id === editingMemberId) ids.add(mar.wife_id);
+      if (mar.wife_id === editingMemberId) ids.add(mar.husband_id);
+    });
+
+    return ids;
+  }, [editingMemberId, familyMembers, marriages, excludeMemberIds]);
+
   // Filter family members for linking
   const availableMembers = familyMembers.filter(m => {
-    // Exclude specific member IDs (e.g., the member being edited)
-    if (excludeMemberIds.includes(m.id)) return false;
-    if (spouseType === 'wife') {
-      return m.gender === 'female';
-    } else if (spouseType === 'husband') {
-      return m.gender === 'male';
-    }
-    return false;
+    // Exclude forbidden relatives
+    if (forbiddenIds.has(m.id)) return false;
+    // Gender filter
+    if (spouseType === 'wife' && m.gender !== 'female') return false;
+    if (spouseType === 'husband' && m.gender !== 'male') return false;
+    // Only show unmarried/single/widowed members
+    const activeMarriageCount = marriages.filter(mar =>
+      (mar.husband_id === m.id || mar.wife_id === m.id)
+    ).length;
+    if (m.gender === 'female' && activeMarriageCount > 0) return false;
+    if (m.gender === 'male' && activeMarriageCount >= 4) return false;
+    return true;
   });
 
   // Hide toggle when editing existing spouse
