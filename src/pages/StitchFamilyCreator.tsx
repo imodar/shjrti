@@ -92,7 +92,7 @@ const StitchFamilyCreator = () => {
   const handlePrevStep = () => {
     if (currentStep === 1) {
       window.scrollTo(0, 0);
-      navigate('/stitch-dashboard');
+      navigate('/dashboard');
     } else if (currentStep === 2) {
       setCurrentStep(1);
     }
@@ -214,7 +214,7 @@ const StitchFamilyCreator = () => {
   const handleAddMoreMembers = () => {
     setShowSuccessModal(false);
     if (createdFamilyId) {
-      navigate(`/stitch-family-builder?family=${createdFamilyId}&autoAdd=true`);
+      navigate(`/family-builder?family=${createdFamilyId}&autoAdd=true`);
     } else {
       toast({ title: "خطأ", description: "لم يتم العثور على معرف العائلة", variant: "destructive" });
     }
@@ -222,7 +222,7 @@ const StitchFamilyCreator = () => {
 
   const handleSkipToDashboard = () => {
     setShowSuccessModal(false);
-    navigate("/stitch-dashboard");
+    navigate("/dashboard");
     toast({ title: "تم إنشاء الشجرة بنجاح", description: "تم إنشاء شجرة العائلة بنجاح، يمكنك إضافة أفراد آخرين لاحقاً" });
   };
 

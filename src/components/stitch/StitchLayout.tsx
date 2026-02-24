@@ -58,16 +58,16 @@ const StitchLayout: React.FC = () => {
   const pathname = location.pathname;
   const searchParams = new URLSearchParams(location.search);
 
-  const isBuilderPage = pathname === '/stitch-family-builder';
-  const isTreePage = pathname === '/stitch-tree-view';
+  const isBuilderPage = pathname === '/family-builder' || pathname === '/stitch-family-builder';
+  const isTreePage = pathname === '/family-tree-view' || pathname === '/stitch-tree-view';
   const isFamilyPage = isBuilderPage || isTreePage;
 
   const variant = isFamilyPage ? 'builder' : 'account';
-  const hideNav = pathname === '/stitch-family-creator';
+  const hideNav = pathname === '/family-creator' || pathname === '/stitch-family-creator';
 
   let activeTab = 'home';
-  if (pathname === '/stitch-dashboard') activeTab = 'home';
-  else if (pathname === '/stitch-account') activeTab = 'account';
+  if (pathname === '/dashboard' || pathname === '/stitch-dashboard') activeTab = 'home';
+  else if (pathname === '/profile' || pathname === '/stitch-account') activeTab = 'account';
   else if (isTreePage) activeTab = 'tree';
   else if (isBuilderPage) activeTab = searchParams.get('tab') || 'dashboard';
 

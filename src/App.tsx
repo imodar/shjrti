@@ -159,22 +159,32 @@ const App = () => {
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/auth/callback" element={<AuthCallback />} />
-                  <Route path="/dashboard" element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  } />
                   <Route path="/dashboard-backup" element={
                     <ProtectedRoute>
                       <DashboardBackup />
                     </ProtectedRoute>
                   } />
-                  {/* Stitch Theme Routes - shared layout */}
+                  {/* Stitch Theme Routes - shared layout (primary + aliases) */}
                   <Route element={
                     <ProtectedRoute>
                       <StitchLayout />
                     </ProtectedRoute>
                   }>
+                    {/* Primary routes */}
+                    <Route path="/dashboard" element={<StitchDashboard />} />
+                    <Route path="/profile" element={<StitchAccount />} />
+                    <Route path="/family-creator" element={<StitchFamilyCreator />} />
+                    <Route path="/family-builder" element={
+                      <ProtectedFamilyRoute loadingFallback={<StitchLoadingFallback />}>
+                        <FamilyBuilderStitchWithProvider />
+                      </ProtectedFamilyRoute>
+                    } />
+                    <Route path="/family-tree-view" element={
+                      <ProtectedFamilyRoute loadingFallback={<StitchLoadingFallback />}>
+                        <StitchTreeViewWithProvider />
+                      </ProtectedFamilyRoute>
+                    } />
+                    {/* Backward-compatible aliases */}
                     <Route path="/stitch-dashboard" element={<StitchDashboard />} />
                     <Route path="/stitch-account" element={<StitchAccount />} />
                     <Route path="/stitch-family-creator" element={<StitchFamilyCreator />} />
@@ -189,31 +199,6 @@ const App = () => {
                       </ProtectedFamilyRoute>
                     } />
                   </Route>
-                  <Route path="/family-tree-view" element={
-                    <ProtectedRoute>
-                      <FamilyTreeView />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/family-statistics" element={
-                    <ProtectedRoute>
-                      <FamilyStatistics />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/family-suggestions" element={
-                    <ProtectedRoute>
-                      <FamilySuggestions />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/family-gallery" element={
-                    <ProtectedRoute>
-                      <FamilyGallery />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/profile" element={
-                    <ProtectedRoute>
-                      <Profile />
-                    </ProtectedRoute>
-                  } />
                   <Route path="/payments" element={
                     <ProtectedRoute>
                       <Payments />
@@ -289,8 +274,8 @@ const App = () => {
                   <Route path="/contact" element={<ContactUs />} />
                   <Route path="/api-docs" element={<ApiDocs />} />
                   <Route path="/accept-invitation" element={<AcceptInvitation />} />
-                  <Route path="/tree" element={<PublicTreeViewWithContext />} />
-                  <Route path="/share" element={<PublicTreeViewWithContext />} />
+                  <Route path="/tree" element={<StitchPublicTree />} />
+                  <Route path="/share" element={<StitchPublicTree />} />
                   <Route path="/stitch-tree" element={<StitchPublicTree />} />
                   {/* Redirect old terms route to new one */}
                   <Route path="/terms" element={<TermsConditions />} />

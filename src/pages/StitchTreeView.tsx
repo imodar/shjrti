@@ -77,7 +77,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
    const handleAddMember = useCallback(() => {
      const familyId = searchParams.get('family');
      if (familyId) {
-       navigate(`/stitch-family-builder?family=${familyId}`);
+       navigate(`/family-builder?family=${familyId}`);
      }
    }, [navigate, searchParams]);
  
