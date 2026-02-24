@@ -63,7 +63,6 @@ import AdminRefunds from "./pages/AdminRefunds";
 import RenewSubscription from "./pages/RenewSubscription";
 import CustomDomainRedirect from "./pages/CustomDomainRedirect";
 import PublicTreeViewWithContext from "./pages/PublicTreeView/PublicTreeViewWithContext";
-import StitchPublicTreeViewWithContext from "./pages/StitchPublicTreeView/StitchPublicTreeViewWithContext";
 import NotFound from "./pages/NotFound";
 import ApiDocs from "./pages/ApiDocs";
 import AcceptInvitation from "./pages/AcceptInvitation";
@@ -291,7 +290,6 @@ const App = () => {
                   <Route path="/accept-invitation" element={<AcceptInvitation />} />
                   <Route path="/tree" element={<PublicTreeViewWithContext />} />
                   <Route path="/share" element={<PublicTreeViewWithContext />} />
-                  <Route path="/stitch-tree" element={<StitchPublicTreeViewWithContext />} />
                   {/* Redirect old terms route to new one */}
                   <Route path="/terms" element={<TermsConditions />} />
                   {/* 404 error page - must be before custom domain route */}
