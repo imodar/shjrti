@@ -8,6 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { Member, Marriage } from '@/types/family.types';
 import { SpouseData } from '@/components/SpouseForm';
+import { buildLineageChain } from '@/lib/memberDisplayUtils';
 import { StyledDropdown } from './StyledDropdown';
 
 interface SpouseDrawerProps {
@@ -135,6 +136,27 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
     return true;
   });
 
+  // Helper: check if member is a paternal descendant of founder
+  const isDescendantOfFounder = React.useCallback((memberId: string, visited = new Set<string>()): boolean => {
+    if (visited.has(memberId)) return false;
+    visited.add(memberId);
+    const m = familyMembers.find(fm => fm.id === memberId);
+    if (!m) return false;
+    if (m.is_founder) return true;
+    if (m.father_id) return isDescendantOfFounder(m.father_id, visited);
+    return false;
+  }, [familyMembers]);
+
+  // Build display label for member in dropdown
+  const getMemberLabel = React.useCallback((member: Member): string => {
+    if (isDescendantOfFounder(member.id)) {
+      return buildLineageChain(member, familyMembers);
+    }
+    const firstName = member.first_name || member.name?.split(' ')[0] || member.name || '';
+    const lastName = member.last_name || '';
+    return `${firstName} ${lastName}`.trim();
+  }, [familyMembers, isDescendantOfFounder]);
+
   // Hide toggle when editing existing spouse
   const shouldHideToggle = hideToggle || isEditing;
 
@@ -259,7 +281,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                   <StyledDropdown
                     options={availableMembers.map(member => ({
                       value: member.id,
-                      label: `${member.first_name || member.name} ${member.last_name || ''}`.trim(),
+                      label: getMemberLabel(member),
                       icon: 'person'
                     }))}
                     value={currentSpouse.existingFamilyMemberId || ''}
