@@ -64,18 +64,18 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
   const localizedPackageName = getLocalizedText(packageName, currentLanguage, t('stitch.free_plan', 'باقة مجانية'));
 
   const builderTabs = [
-    { id: "home", label: t('family_header.home', 'الرئيسية'), path: "/stitch-dashboard", icon: "home" },
-    { id: "dashboard", label: t('stitch.tab.dashboard', 'لوحة التحكم'), path: "/stitch-family-builder", icon: "dashboard" },
-    { id: "tree", label: t('stitch.tab.tree_view', 'عرض الشجرة'), path: "/stitch-tree-view", icon: "account_tree" },
-    { id: "gallery", label: t('stitch.tab.gallery', 'المعرض'), path: "/stitch-family-builder", icon: "photo_library" },
-    { id: "statistics", label: t('stitch.tab.statistics', 'الإحصائيات'), path: "/stitch-family-builder", icon: "bar_chart" },
-    { id: "suggestions", label: t('stitch.tab.suggestions', 'الاقتراحات'), path: "/stitch-family-builder", badge: suggestionsCount, icon: "lightbulb" },
-    { id: "settings", label: t('family_header.settings', 'الإعدادات'), path: "/stitch-family-builder", icon: "settings" },
+    { id: "home", label: t('family_header.home', 'الرئيسية'), path: "/dashboard", icon: "home" },
+    { id: "dashboard", label: t('stitch.tab.dashboard', 'لوحة التحكم'), path: "/family-builder", icon: "dashboard" },
+    { id: "tree", label: t('stitch.tab.tree_view', 'عرض الشجرة'), path: "/family-tree-view", icon: "account_tree" },
+    { id: "gallery", label: t('stitch.tab.gallery', 'المعرض'), path: "/family-builder", icon: "photo_library" },
+    { id: "statistics", label: t('stitch.tab.statistics', 'الإحصائيات'), path: "/family-builder", icon: "bar_chart" },
+    { id: "suggestions", label: t('stitch.tab.suggestions', 'الاقتراحات'), path: "/family-builder", badge: suggestionsCount, icon: "lightbulb" },
+    { id: "settings", label: t('family_header.settings', 'الإعدادات'), path: "/family-builder", icon: "settings" },
   ];
 
   const accountTabs: { id: string; label: string; path: string; badge?: number; icon: string }[] = [
-    { id: "home", label: t('family_header.home', 'الرئيسية'), path: "/stitch-dashboard", icon: "home" },
-    { id: "account", label: t('nav.account', 'الحساب'), path: "/stitch-account", icon: "person" },
+    { id: "home", label: t('family_header.home', 'الرئيسية'), path: "/dashboard", icon: "home" },
+    { id: "account", label: t('nav.account', 'الحساب'), path: "/profile", icon: "person" },
   ];
 
   const tabs = variant === 'account' ? accountTabs : builderTabs;
@@ -88,7 +88,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
       let targetPath = tab.path;
       const params = new URLSearchParams();
       if (familyId) params.set('family', familyId);
-      if (tab.id !== 'home' && tab.id !== 'tree' && tab.path === '/stitch-family-builder') {
+      if (tab.id !== 'home' && tab.id !== 'tree' && tab.path === '/family-builder') {
         params.set('tab', tab.id);
       }
       const qs = params.toString();
@@ -197,7 +197,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
               </div>
 
               <div className="py-1">
-                <Link to="/stitch-dashboard" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-accent transition-colors group">
+                <Link to="/dashboard" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-accent transition-colors group">
                   <div className="p-1.5 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
                     <TreePine className="h-4 w-4 text-primary" />
                   </div>
@@ -208,7 +208,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
                 </Link>
 
                 {isOwner && (
-                  <Link to="/stitch-account" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-accent transition-colors group">
+                  <Link to="/profile" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-accent transition-colors group">
                     <div className="p-1.5 bg-amber-500/10 rounded-lg group-hover:bg-amber-500/20 transition-colors">
                       <Settings className="h-4 w-4 text-amber-500" />
                     </div>

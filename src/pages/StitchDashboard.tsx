@@ -149,11 +149,11 @@ const StitchDashboard: React.FC = () => {
   };
 
   const handleCreateTree = () => {
-    navigate('/stitch-family-creator');
+    navigate('/family-creator');
   };
 
   const handleManageTree = (familyId: string) => {
-    navigate(`/stitch-family-builder?family=${familyId}`);
+    navigate(`/family-builder?family=${familyId}`);
   };
 
   if (loading || !loaderDone) {
@@ -260,7 +260,7 @@ const StitchDashboard: React.FC = () => {
                       {t('dashboard.upgrade_text', 'Upgrade for unlimited features')}
                     </p>
                     <button
-                      onClick={() => navigate('/stitch-account')}
+                      onClick={() => navigate('/profile')}
                       className="w-full text-white font-bold py-3 rounded-xl text-sm shadow-lg hover:brightness-110 hover:-translate-y-0.5 transition-all"
                       style={{ background: 'linear-gradient(135deg, hsl(37 70% 55%), hsl(30 70% 45%))' }}
                     >
@@ -325,7 +325,7 @@ const StitchDashboard: React.FC = () => {
                      {t('dashboard.manage', 'Manage')}
                   </button>
                   <button 
-                    onClick={() => navigate(`/stitch-family-builder?family=${family.id}&tab=settings`)}
+                    onClick={() => navigate(`/family-builder?family=${family.id}&tab=settings`)}
                     className="px-3 border border-border text-muted-foreground rounded-xl hover:bg-muted flex items-center justify-center"
                   >
                     <span className="material-symbols-outlined">share</span>

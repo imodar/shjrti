@@ -70,7 +70,7 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
   const [isDomainModalOpen, setIsDomainModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
-  const shareableLink = `${window.location.origin}/family-tree-view?family=${familyId}`;
+  const shareableLink = `${window.location.origin}/family-builder?family=${familyId}`;
   const publicShareableLink = shareToken
     ? `${window.location.origin}/share?token=${shareToken}`
     : '';
@@ -196,7 +196,7 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
   };
 
   const handleDeleteSuccess = (treeId: string) => {
-    navigate('/stitch-dashboard');
+    navigate('/dashboard');
   };
 
   // Password protection handlers
@@ -751,7 +751,7 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
         {/* Back to Members */}
         <div className="flex justify-center pb-8">
           <button
-            onClick={() => onBack ? onBack() : navigate(`/stitch-family-builder?family=${familyId}`)}
+            onClick={() => onBack ? onBack() : navigate(`/family-builder?family=${familyId}`)}
             className="inline-flex items-center gap-2.5 px-6 py-3 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white font-bold text-sm transition-all duration-200 group border border-primary/20 hover:border-primary hover:shadow-lg hover:shadow-primary/20"
           >
             <span className="material-symbols-outlined text-lg transition-transform group-hover:rtl:translate-x-1 group-hover:ltr:-translate-x-1">arrow_back</span>
