@@ -236,7 +236,8 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
             </div>
           )}
 
-          {/* Recent Activities */}
+          {/* Recent Activities - hidden for public/readOnly visitors */}
+          {!readOnly && (
           <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold flex items-center gap-2">
@@ -275,6 +276,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
               )}
             </div>
           </div>
+          )}
 
           {/* Upcoming Birthdays */}
           <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
