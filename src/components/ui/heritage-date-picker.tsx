@@ -114,10 +114,10 @@ export function HeritageDatePicker({
   const firstDay = getFirstDayOfMonth(displayYear, displayMonth);
 
   const formatDisplayDate = (date: Date) => {
-    const d = date.getDate();
-    const m = months[date.getMonth()];
+    const d = String(date.getDate()).padStart(2, '0');
+    const m = String(date.getMonth() + 1).padStart(2, '0');
     const y = date.getFullYear();
-    return `${d} ${m} ${y}`;
+    return `${d}/${m}/${y}`;
   };
 
   // Generate calendar grid
@@ -236,16 +236,16 @@ export function HeritageDatePicker({
                 <div className="flex gap-1">
                   <Button
                     variant="ghost" size="icon"
-                    onClick={() => navigateYearPage(-1)}
-                    disabled={yearPageStart <= fromYear}
+                    onClick={() => navigateYearPage(isRTL ? 1 : -1)}
+                    disabled={isRTL ? yearPageStart + 20 > toYear : yearPageStart <= fromYear}
                     className="h-8 w-8 rounded-full"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost" size="icon"
-                    onClick={() => navigateYearPage(1)}
-                    disabled={yearPageStart + 20 > toYear}
+                    onClick={() => navigateYearPage(isRTL ? -1 : 1)}
+                    disabled={isRTL ? yearPageStart <= fromYear : yearPageStart + 20 > toYear}
                     className="h-8 w-8 rounded-full"
                   >
                     <ChevronRight className="h-4 w-4" />
@@ -262,13 +262,13 @@ export function HeritageDatePicker({
             <div className="p-4">
               {/* Month Nav */}
               <div className="flex items-center justify-between mb-3">
-                <Button variant="ghost" size="icon" onClick={() => navigateMonth(-1)} className="h-8 w-8 rounded-full">
+                <Button variant="ghost" size="icon" onClick={() => navigateMonth(isRTL ? 1 : -1)} className="h-8 w-8 rounded-full">
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <span className="text-sm font-medium text-muted-foreground">
                   {months[displayMonth]} {displayYear}
                 </span>
-                <Button variant="ghost" size="icon" onClick={() => navigateMonth(1)} className="h-8 w-8 rounded-full">
+                <Button variant="ghost" size="icon" onClick={() => navigateMonth(isRTL ? -1 : 1)} className="h-8 w-8 rounded-full">
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
