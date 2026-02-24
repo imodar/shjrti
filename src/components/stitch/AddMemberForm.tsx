@@ -574,7 +574,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                 })}
 
                 {/* Add Spouse Button */}
-                {((formData.gender === 'male' && wives.length < 4) || (formData.gender === 'female' && husbands.length === 0)) && (
+                {((formData.gender === 'male' && wives.length < 4) || (formData.gender === 'female' && !husbands.some(h => h.maritalStatus !== 'divorced' && h.maritalStatus !== 'widowed' && h.isAlive !== false))) && (
                   <button
                     type="button"
                     onClick={() => handleAddSpouse(formData.gender === 'male' ? 'wife' : 'husband')}
