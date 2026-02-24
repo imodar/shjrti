@@ -46,12 +46,14 @@ interface StitchMainContentProps {
   editingMember?: any;
   formMode?: 'add' | 'edit';
   onMemberSaved?: () => void;
+  initialFormData?: any;
   // Member Profile props
   selectedMember?: any;
   onEditMember?: () => void;
   onDeleteMember?: () => void;
   onBackFromProfile?: () => void;
   onMemberClick?: (member: any) => void;
+  onAddChild?: (parentMember: any, spouseId?: string) => void;
   // Suggestions view
   showSuggestions?: boolean;
   // Statistics view
@@ -79,11 +81,13 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   editingMember,
   formMode = 'add',
   onMemberSaved,
+  initialFormData,
   selectedMember,
   onEditMember,
   onDeleteMember,
   onBackFromProfile,
   onMemberClick,
+  onAddChild,
   showSuggestions = false,
   showStatistics = false,
   showGallery = false,
@@ -178,6 +182,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
         onDelete={readOnly ? undefined : onDeleteMember}
         onBack={onBackFromProfile}
         onMemberClick={onMemberClick}
+        onAddChild={onAddChild}
         readOnly={readOnly}
       />
     );
@@ -195,6 +200,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
         formMode={formMode}
         onClose={onCloseForm}
         onMemberSaved={onMemberSaved}
+        initialFormData={initialFormData}
       />
     );
   }
