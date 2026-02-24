@@ -10,6 +10,7 @@ import { Member, Marriage } from '@/types/family.types';
 import { SpouseData } from '@/components/SpouseForm';
 import { buildLineageChain } from '@/lib/memberDisplayUtils';
 import { StyledDropdown } from './StyledDropdown';
+import { HeritageDatePicker } from '@/components/ui/heritage-date-picker';
 
 interface SpouseDrawerProps {
   isOpen: boolean;
@@ -376,17 +377,14 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                     <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
                       {t('member.birth_date', 'Birth Date')}
                     </label>
-                    <div className="relative">
-                      <span className="material-icons-round absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">calendar_today</span>
-                      <input
-                        type="date"
-                        value={currentSpouse.birthDate ? (currentSpouse.birthDate instanceof Date ? currentSpouse.birthDate.toISOString().split('T')[0] : currentSpouse.birthDate) : ''}
-                        onChange={(e) => handleInputChange('birthDate', e.target.value ? new Date(e.target.value) : null)}
-                        className={`w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 ${
-                          spouseType === 'husband' ? 'focus:ring-blue-500/20 focus:border-blue-500' : 'focus:ring-pink-500/20 focus:border-pink-500'
-                        }`}
-                      />
-                    </div>
+                    <HeritageDatePicker
+                      value={currentSpouse.birthDate instanceof Date ? currentSpouse.birthDate : (currentSpouse.birthDate ? new Date(currentSpouse.birthDate) : undefined)}
+                      onChange={(date) => handleInputChange('birthDate', date || null)}
+                      placeholder={t('member.birth_date', 'Birth Date')}
+                      disableFuture={true}
+                      fromYear={550}
+                      toYear={new Date().getFullYear()}
+                    />
                   </div>
                   <div>
                     <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
@@ -446,17 +444,14 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                     <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 ms-1">
                       {t('member.death_date', 'Death Date')}
                     </label>
-                    <div className="relative">
-                      <span className="material-icons-round absolute start-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">event_busy</span>
-                      <input
-                        type="date"
-                        value={currentSpouse.deathDate ? (currentSpouse.deathDate instanceof Date ? currentSpouse.deathDate.toISOString().split('T')[0] : currentSpouse.deathDate) : ''}
-                        onChange={(e) => handleInputChange('deathDate', e.target.value ? new Date(e.target.value) : null)}
-                        className={`w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 ${
-                          spouseType === 'husband' ? 'focus:ring-blue-500/20 focus:border-blue-500' : 'focus:ring-pink-500/20 focus:border-pink-500'
-                        }`}
-                      />
-                    </div>
+                    <HeritageDatePicker
+                      value={currentSpouse.deathDate instanceof Date ? currentSpouse.deathDate : (currentSpouse.deathDate ? new Date(currentSpouse.deathDate) : undefined)}
+                      onChange={(date) => handleInputChange('deathDate', date || null)}
+                      placeholder={t('member.death_date', 'Death Date')}
+                      disableFuture={true}
+                      fromYear={550}
+                      toYear={new Date().getFullYear()}
+                    />
                   </div>
                 )}
 

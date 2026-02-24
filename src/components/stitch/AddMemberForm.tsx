@@ -16,6 +16,7 @@ import { AddMemberFormProps } from './AddMemberFormTypes';
 import { SpouseDrawer } from './SpouseDrawer';
 import { SearchableDropdown } from '@/components/SearchableDropdown';
 import { StyledDropdown } from './StyledDropdown';
+import { HeritageDatePicker } from '@/components/ui/heritage-date-picker';
 
 export const AddMemberForm: React.FC<AddMemberFormProps> = ({
   familyId,
@@ -303,14 +304,13 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                   <span className="material-symbols-outlined text-primary text-lg">calendar_today</span>
                   {t('family_builder.birth_year', 'Birth Date')}
                 </label>
-                <input
-                  type="date"
-                  value={formData.birthDate ? formData.birthDate.toISOString().split('T')[0] : ''}
-                  onChange={(e) => setFormData(prev => ({ 
-                    ...prev, 
-                    birthDate: e.target.value ? new Date(e.target.value) : null 
-                  }))}
-                  className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                <HeritageDatePicker
+                  value={formData.birthDate}
+                  onChange={(date) => setFormData(prev => ({ ...prev, birthDate: date || null }))}
+                  placeholder={t('family_builder.birth_year', 'Birth Date')}
+                  disableFuture={true}
+                  fromYear={550}
+                  toYear={new Date().getFullYear()}
                 />
               </div>
 
@@ -343,14 +343,13 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                       <span className="material-symbols-outlined text-primary text-lg">event</span>
                       {t('member.death_date', 'Death Date')}
                     </label>
-                    <input
-                      type="date"
-                      value={formData.deathDate ? formData.deathDate.toISOString().split('T')[0] : ''}
-                      onChange={(e) => setFormData(prev => ({ 
-                        ...prev, 
-                        deathDate: e.target.value ? new Date(e.target.value) : null 
-                      }))}
-                      className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    <HeritageDatePicker
+                      value={formData.deathDate}
+                      onChange={(date) => setFormData(prev => ({ ...prev, deathDate: date || null }))}
+                      placeholder={t('member.death_date', 'Death Date')}
+                      disableFuture={true}
+                      fromYear={550}
+                      toYear={new Date().getFullYear()}
                     />
                   </>
                 ) : (
