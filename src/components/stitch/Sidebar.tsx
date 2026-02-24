@@ -24,6 +24,7 @@ interface StitchSidebarProps {
   marriages: Marriage[];
   canAddMember?: boolean;
   maxFamilyMembers?: number | null;
+  readOnly?: boolean;
 }
 
 export const StitchSidebar: React.FC<StitchSidebarProps> = ({
@@ -39,7 +40,8 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
   familyMembers,
   marriages,
   canAddMember = true,
-  maxFamilyMembers
+  maxFamilyMembers,
+  readOnly = false,
 }) => {
   const { t, direction } = useLanguage();
   const [filter, setFilter] = useState('all');
@@ -158,19 +160,21 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
               {totalCount} {t('stitch.total_members', 'Total Members')}
             </p>
           </div>
-          <button 
-            onClick={onAddMember}
-            disabled={!canAddMember}
-            className={cn(
-              "p-2 rounded-lg transition-colors flex items-center justify-center",
-              canAddMember 
-                ? "bg-primary/10 text-primary hover:bg-primary/20" 
-                : "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-300/60 dark:border-amber-600/40 cursor-not-allowed animate-pulse"
-            )}
-            title={!canAddMember && maxFamilyMembers ? `${t('family_builder.max_reached', 'Max limit reached')} (${maxFamilyMembers} ${t('stitch.members', 'members')})` : undefined}
-          >
-            <span className="material-icons-round">person_add</span>
-          </button>
+          {!readOnly && (
+            <button 
+              onClick={onAddMember}
+              disabled={!canAddMember}
+              className={cn(
+                "p-2 rounded-lg transition-colors flex items-center justify-center",
+                canAddMember 
+                  ? "bg-primary/10 text-primary hover:bg-primary/20" 
+                  : "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-300/60 dark:border-amber-600/40 cursor-not-allowed animate-pulse"
+              )}
+              title={!canAddMember && maxFamilyMembers ? `${t('family_builder.max_reached', 'Max limit reached')} (${maxFamilyMembers} ${t('stitch.members', 'members')})` : undefined}
+            >
+              <span className="material-icons-round">person_add</span>
+            </button>
+          )}
         </div>
 
         {/* Search & Filter in one row */}
@@ -353,27 +357,29 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
         })}
       </div>
 
-      {/* Footer - Add Button */}
-      <div className="p-6 bg-slate-50 dark:bg-slate-800/50">
-        <button
-          onClick={onAddMember}
-          disabled={!canAddMember}
-          className={cn(
-            "w-full py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
-            canAddMember 
-              ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90" 
-              : "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-300/60 dark:border-amber-600/40 cursor-not-allowed shadow-sm shadow-amber-200/30"
-          )}
-        >
-          <span className="material-icons-round text-lg">add</span>
-          {canAddMember 
-            ? t('family_builder.add_new_member', 'Add New Member')
-            : maxFamilyMembers 
-              ? `${t('family_builder.max_reached', 'تم الوصول للحد الأقصى')} (${maxFamilyMembers})`
-              : t('family_builder.add_new_member', 'Add New Member')
-          }
-        </button>
-      </div>
+      {/* Footer - Add Button (hidden in readOnly) */}
+      {!readOnly && (
+        <div className="p-6 bg-slate-50 dark:bg-slate-800/50">
+          <button
+            onClick={onAddMember}
+            disabled={!canAddMember}
+            className={cn(
+              "w-full py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
+              canAddMember 
+                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:opacity-90" 
+                : "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-300/60 dark:border-amber-600/40 cursor-not-allowed shadow-sm shadow-amber-200/30"
+            )}
+          >
+            <span className="material-icons-round text-lg">add</span>
+            {canAddMember 
+              ? t('family_builder.add_new_member', 'Add New Member')
+              : maxFamilyMembers 
+                ? `${t('family_builder.max_reached', 'تم الوصول للحد الأقصى')} (${maxFamilyMembers})`
+                : t('family_builder.add_new_member', 'Add New Member')
+            }
+          </button>
+        </div>
+      )}
     </aside>
     </>
   );

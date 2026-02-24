@@ -60,8 +60,10 @@ interface StitchMainContentProps {
   showStatistics?: boolean;
   // Gallery view
   showGallery?: boolean;
-  // Read-only mode (for external spouses)
+  // Read-only mode (for external spouses or public view)
   readOnly?: boolean;
+  // Suggest edit handler (for public view)
+  onSuggestEdit?: (memberId: string, memberName: string) => void;
 }
 
 export const StitchMainContent: React.FC<StitchMainContentProps> = ({
@@ -92,6 +94,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   showStatistics = false,
   showGallery = false,
   readOnly = false,
+  onSuggestEdit,
 }) => {
   const { t } = useLanguage();
 
@@ -184,6 +187,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
         onMemberClick={onMemberClick}
         onAddChild={onAddChild}
         readOnly={readOnly}
+        onSuggestEdit={readOnly && onSuggestEdit ? onSuggestEdit : undefined}
       />
     );
   }
