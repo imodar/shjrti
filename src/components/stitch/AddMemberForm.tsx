@@ -409,7 +409,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                     <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                       {t('member.click_to_upload', 'Click to upload')}
                     </p>
-                    <p className="text-[10px] text-slate-400 mt-1">JPG, PNG</p>
+                    <p className="text-[10px] text-slate-400 mt-1">{t('common.formats_jpg_png', 'JPG, PNG')}</p>
                     <input
                       ref={fileInputRef}
                       type="file"

@@ -59,7 +59,7 @@ export const StitchHeader: React.FC<StitchHeaderProps> = ({
     }
   }, [user?.id]);
 
-  const displayName = userName || user?.email?.split("@")[0] || "User";
+  const displayName = userName || user?.email?.split("@")[0] || t('common.user', 'User');
   const initials = displayName.charAt(0).toUpperCase();
   const localizedPackageName = getLocalizedText(packageName, currentLanguage, t('stitch.free_plan', 'باقة مجانية'));
 

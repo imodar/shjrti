@@ -157,7 +157,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
    const getUnitLabel = () => {
      if (unit.type === 'single') {
        const member = unit.husband || unit.wives[0];
-       return `${member?.first_name || member?.name || 'Unknown'}`;
+       return `${member?.first_name || member?.name || t('common.unknown', 'Unknown')}`;
      }
      if (unit.type === 'polygamy') {
        return `${t('tree_view.family_of', 'Family of')} ${unit.husband?.first_name || unit.husband?.name} (${t('tree_view.multiple_spouses', 'Multiple Spouses')})`;

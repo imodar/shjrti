@@ -55,7 +55,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
     if (member.first_name && member.last_name) {
       return `${member.first_name} ${member.last_name}`;
     }
-    return (member as any).name || 'Unknown';
+    return (member as any).name || t('common.unknown', 'Unknown');
   };
 
   // Get parentage line (ابن/ابنة + سلسلة النسب)
@@ -167,7 +167,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
                 ? "bg-primary/10 text-primary hover:bg-primary/20" 
                 : "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-300/60 dark:border-amber-600/40 cursor-not-allowed animate-pulse"
             )}
-            title={!canAddMember && maxFamilyMembers ? `تم الوصول للحد الأقصى (${maxFamilyMembers} أعضاء)` : undefined}
+            title={!canAddMember && maxFamilyMembers ? `${t('family_builder.max_reached', 'Max limit reached')} (${maxFamilyMembers} ${t('stitch.members', 'members')})` : undefined}
           >
             <span className="material-icons-round">person_add</span>
           </button>

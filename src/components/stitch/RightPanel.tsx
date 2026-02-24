@@ -31,13 +31,16 @@ export const StitchRightPanel: React.FC<StitchRightPanelProps> = ({
   pendingSuggestions = 0,
   latestSuggestions = [],
   onReviewSuggestions,
-  familyDistribution = [
-    { label: 'Saudi Arabia', percentage: 65, color: 'bg-primary' },
-    { label: 'United Arab Emirates', percentage: 20, color: 'bg-blue-400' },
-    { label: 'Others', percentage: 15, color: 'bg-amber-400' }
-  ]
+  familyDistribution
 }) => {
   const { t } = useLanguage();
+
+  // Default distribution if not provided
+  const distribution = familyDistribution || [
+    { label: t('country.saudi_arabia', 'Saudi Arabia'), percentage: 65, color: 'bg-primary' },
+    { label: t('country.uae', 'United Arab Emirates'), percentage: 20, color: 'bg-blue-400' },
+    { label: t('common.others', 'Others'), percentage: 15, color: 'bg-amber-400' }
+  ];
 
   const getTimeAgo = (dateStr: string) => {
     const date = new Date(dateStr);
