@@ -127,10 +127,19 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
     // Gender filter
     if (spouseType === 'wife' && m.gender !== 'female') return false;
     if (spouseType === 'husband' && m.gender !== 'male') return false;
-    // Only show unmarried/single/widowed members
-    const activeMarriageCount = marriages.filter(mar =>
-      (mar.husband_id === m.id || mar.wife_id === m.id)
-    ).length;
+    // Check active (non-divorced, non-widowed) marriage count
+    const activeMarriageCount = marriages.filter(mar => {
+      const isInvolved = mar.husband_id === m.id || mar.wife_id === m.id;
+      if (!isInvolved) return false;
+      // Divorced or widowed marriages don't count as active
+      const status = (mar as any).marital_status;
+      if (status === 'divorced' || status === 'widowed') return false;
+      // Check if spouse is deceased
+      const spouseId = mar.husband_id === m.id ? mar.wife_id : mar.husband_id;
+      const spouse = familyMembers.find(fm => fm.id === spouseId);
+      if (spouse && spouse.is_alive === false) return false;
+      return true;
+    }).length;
     if (m.gender === 'female' && activeMarriageCount > 0) return false;
     if (m.gender === 'male' && activeMarriageCount >= 4) return false;
     return true;
