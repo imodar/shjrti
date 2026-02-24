@@ -36,4 +36,5 @@ export const PROTECTED_ROUTES: string[] = [
   'stitch-tree-view',
   'stitch-account',
   'stitch-family-creator',
+  'stitch-tree',
 ];
