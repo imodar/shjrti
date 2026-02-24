@@ -735,6 +735,7 @@ export const useAddMemberForm = ({
     setFormData,
     isSaving,
     parentsLocked,
+    setParentsLocked,
     
     // Spouses
     wives,

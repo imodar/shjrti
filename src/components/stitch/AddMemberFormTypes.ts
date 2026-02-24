@@ -36,6 +36,7 @@ export interface AddMemberFormProps {
   onClose: () => void;
   onMemberSaved: () => void;
   onMemberDeleted?: () => void;
+  initialFormData?: Partial<MemberFormData>;
 }
 
 export interface SpouseFormState {

@@ -90,6 +90,7 @@ const FamilyBuilderStitch: React.FC = () => {
   const [showAddMemberForm, setShowAddMemberForm] = useState(false);
   const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
   const [editingMember, setEditingMember] = useState<any>(null);
+  const [initialFormData, setInitialFormData] = useState<any>(undefined);
   const [maxFamilyMembers, setMaxFamilyMembers] = useState<number | null>(null);
   const familyId = searchParams.get('family') || '';
   const { isOwner, isCollaborator, canEditMembers, canDelete, canInvite, loading: roleLoading } = useFamilyRole(familyId);
@@ -361,12 +362,36 @@ const FamilyBuilderStitch: React.FC = () => {
     }
     setEditingMember(null);
     setFormMode('add');
+    setInitialFormData(undefined);
+    setShowAddMemberForm(true);
+  };
+
+  const handleAddChild = (parentMember: any, spouseId?: string) => {
+    // Find the marriage record that links this parent with the specific spouse
+    const selectedMarriage = spouseId
+      ? marriages.find(m =>
+          (m.husband_id === parentMember.id || m.wife_id === parentMember.id) &&
+          (m.husband_id === spouseId || m.wife_id === spouseId)
+        )
+      : marriages.find(m =>
+          m.husband_id === parentMember.id || m.wife_id === parentMember.id
+        );
+
+    setEditingMember(null);
+    setFormMode('add');
+    setSelectedMemberId(undefined);
+    setInitialFormData({
+      relation: 'child',
+      relatedPersonId: selectedMarriage?.id || null,
+      selectedParent: selectedMarriage?.id || null,
+    });
     setShowAddMemberForm(true);
   };
 
   const handleCloseForm = () => {
     setShowAddMemberForm(false);
     setEditingMember(null);
+    setInitialFormData(undefined);
   };
 
   const handleBackFromProfile = () => {
@@ -377,6 +402,7 @@ const FamilyBuilderStitch: React.FC = () => {
     refetch();
     setShowAddMemberForm(false);
     setEditingMember(null);
+    setInitialFormData(undefined);
   };
 
   const handleTabChange = useCallback((tab: string) => {
@@ -525,6 +551,8 @@ const FamilyBuilderStitch: React.FC = () => {
             onDeleteMember={() => setShowDeleteModal(true)}
             onBackFromProfile={handleBackFromProfile}
             onMemberClick={handleMemberClick}
+            onAddChild={handleAddChild}
+            initialFormData={initialFormData}
           />
         )}
 

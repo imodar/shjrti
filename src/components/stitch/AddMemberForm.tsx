@@ -26,7 +26,8 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
   formMode,
   onClose,
   onMemberSaved,
-  onMemberDeleted
+  onMemberDeleted,
+  initialFormData
 }) => {
   const { t, direction } = useLanguage();
   const isRTL = direction === 'rtl';
@@ -36,6 +37,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
     setFormData,
     isSaving,
     parentsLocked,
+    setParentsLocked,
     wives,
     husbands,
     currentSpouse,
@@ -86,6 +88,16 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
       populateFormData(editingMember);
     }
   }, [formMode, editingMember, populateFormData]);
+
+  // Apply initial form data (e.g., pre-selected parent from "Add Child" button)
+  useEffect(() => {
+    if (initialFormData && formMode === 'add') {
+      setFormData(prev => ({ ...prev, ...initialFormData }));
+      if (initialFormData.selectedParent) {
+        setParentsLocked(true);
+      }
+    }
+  }, [initialFormData, formMode, setParentsLocked]);
 
   // Build marriage options for parent selection - matching FamilyBuilderNew format
   const marriageOptions = useMemo(() => {
