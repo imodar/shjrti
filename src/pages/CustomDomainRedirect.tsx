@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { FamilyDataProvider } from '@/contexts/FamilyDataContext';
-import PublicTreeView from './PublicTreeView';
+import StitchPublicTree from './StitchPublicTree';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { PROTECTED_ROUTES } from '@/constants/routes';
@@ -167,16 +166,13 @@ const CustomDomainRedirect = () => {
   }
 
   return (
-    <FamilyDataProvider
-      familyId={familyData.family?.id || null}
-      initialData={{
+    <StitchPublicTree
+      preloadedData={{
         family: familyData.family,
         members: familyData.members || [],
         marriages: familyData.marriages || [],
       }}
-    >
-      <PublicTreeView skipDataLoading={true} />
-    </FamilyDataProvider>
+    />
   );
 };
 

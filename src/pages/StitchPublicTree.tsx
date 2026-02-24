@@ -20,7 +20,16 @@ import type { Member, Marriage } from '@/types/family.types';
  * Accessible via /stitch-tree?token=xxx
  * Uses get-shared-family Edge Function for token-based access
  */
-const StitchPublicTree: React.FC = () => {
+interface StitchPublicTreeProps {
+  /** Pre-loaded data from CustomDomainRedirect (skips token-based fetch) */
+  preloadedData?: {
+    family: any;
+    members: Member[];
+    marriages: Marriage[];
+  };
+}
+
+const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) => {
   const [searchParams] = useSearchParams();
   const { currentTheme, setCurrentTheme } = useTheme();
   const { t, direction } = useLanguage();
@@ -48,9 +57,9 @@ const StitchPublicTree: React.FC = () => {
   }, [setCurrentTheme]);
 
   // Data state
-  const [familyData, setFamilyData] = useState<any>(null);
-  const [familyMembers, setFamilyMembers] = useState<Member[]>([]);
-  const [marriages, setMarriages] = useState<Marriage[]>([]);
+  const [familyData, setFamilyData] = useState<any>(preloadedData?.family || null);
+  const [familyMembers, setFamilyMembers] = useState<Member[]>(preloadedData?.members || []);
+  const [marriages, setMarriages] = useState<Marriage[]>(preloadedData?.marriages || []);
   const [recentActivities, setRecentActivities] = useState<Array<{
     id: string;
     type: 'edit' | 'add' | 'photo' | 'delete';
@@ -59,7 +68,7 @@ const StitchPublicTree: React.FC = () => {
     timestamp: string;
     actorName?: string;
   }>>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!preloadedData);
 
   // UI state
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -181,8 +190,10 @@ const StitchPublicTree: React.FC = () => {
   }
 
   useEffect(() => {
-    loadFamilyData();
-  }, [shareToken]);
+    if (!preloadedData) {
+      loadFamilyData();
+    }
+  }, [shareToken, preloadedData]);
 
   // Password handler
   const handlePasswordSubmit = async (password: string) => {
