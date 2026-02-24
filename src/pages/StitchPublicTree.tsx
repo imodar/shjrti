@@ -51,6 +51,14 @@ const StitchPublicTree: React.FC = () => {
   const [familyData, setFamilyData] = useState<any>(null);
   const [familyMembers, setFamilyMembers] = useState<Member[]>([]);
   const [marriages, setMarriages] = useState<Marriage[]>([]);
+  const [recentActivities, setRecentActivities] = useState<Array<{
+    id: string;
+    type: 'edit' | 'add' | 'photo' | 'delete';
+    title: string;
+    highlight: string;
+    timestamp: string;
+    actorName?: string;
+  }>>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // UI state
@@ -120,10 +128,36 @@ const StitchPublicTree: React.FC = () => {
       }
 
       // Success
-      const { family, members, marriages: marriageData } = data.data;
+      const { family, members, marriages: marriageData, activities } = data.data;
       setFamilyData(family);
       setFamilyMembers(members || []);
       setMarriages(marriageData || []);
+
+      // Map activities
+      const actionTypeMap: Record<string, { type: 'edit' | 'add' | 'photo' | 'delete'; title: string }> = {
+        member_added: { type: 'add', title: t('activity.member_added', 'تمت إضافة') },
+        member_updated: { type: 'edit', title: t('activity.member_updated', 'تم تعديل') },
+        member_deleted: { type: 'delete', title: t('activity.member_deleted', 'تم حذف') },
+        photo_uploaded: { type: 'photo', title: t('activity.photo_uploaded', 'تم رفع صورة') },
+        marriage_added: { type: 'add', title: t('activity.marriage_added', 'تمت إضافة زواج') },
+        marriage_deleted: { type: 'delete', title: t('activity.marriage_deleted', 'تم حذف زواج') },
+        settings_changed: { type: 'edit', title: t('activity.settings_changed', 'تم تغيير الإعدادات') },
+      };
+
+      const mapped = (activities || []).map((log: any) => {
+        const info = actionTypeMap[log.action_type] || { type: 'edit' as const, title: log.action_type };
+        const timeAgo = getTimeAgo(log.created_at);
+        return {
+          id: log.id,
+          type: info.type,
+          title: info.title,
+          highlight: log.target_name || '',
+          timestamp: timeAgo,
+          actorName: log.actor_name || undefined,
+        };
+      });
+      setRecentActivities(mapped);
+
       setShowPasswordModal(false);
       setPasswordError(false);
       setIsLoading(false);
@@ -133,6 +167,18 @@ const StitchPublicTree: React.FC = () => {
       setIsLoading(false);
     }
   }, [shareToken, enteredPassword]);
+
+  // Helper: time ago
+  function getTimeAgo(dateStr: string): string {
+    const now = new Date();
+    const date = new Date(dateStr);
+    const diff = Math.floor((now.getTime() - date.getTime()) / 1000);
+    if (diff < 60) return t('time.just_now', 'الآن');
+    if (diff < 3600) return `${t('time.ago', 'منذ')} ${Math.floor(diff / 60)} ${t('time.minutes', 'دقيقة')}`;
+    if (diff < 86400) return `${t('time.ago', 'منذ')} ${Math.floor(diff / 3600)} ${t('time.hours', 'ساعة')}`;
+    if (diff < 2592000) return `${t('time.ago', 'منذ')} ${Math.floor(diff / 86400)} ${t('time.days', 'يوم')}`;
+    return `${t('time.ago', 'منذ')} ${Math.floor(diff / 2592000)} ${t('time.months', 'شهر')}`;
+  }
 
   useEffect(() => {
     loadFamilyData();
@@ -454,6 +500,7 @@ const StitchPublicTree: React.FC = () => {
             {/* Main Content */}
             <StitchMainContent
               userName={t('public_tree.visitor', 'زائر')}
+              activities={recentActivities}
               milestones={upcomingBirthdays}
               familyMembers={familyMembers}
               marriages={marriages}

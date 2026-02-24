@@ -177,7 +177,7 @@ Deno.serve(async (req) => {
 
     // For regular users, fetch and return JSON data
     // Step 3: Fetch all family data using Service Role
-    const [membersResult, marriagesResult] = await Promise.all([
+    const [membersResult, marriagesResult, activityResult] = await Promise.all([
       supabaseAdmin
         .from('family_tree_members')
         .select('*')
@@ -187,6 +187,12 @@ Deno.serve(async (req) => {
         .from('marriages')
         .select('*')
         .eq('family_id', family.id),
+      supabaseAdmin
+        .from('activity_log')
+        .select('id, action_type, target_name, created_at, user_id')
+        .eq('family_id', family.id)
+        .order('created_at', { ascending: false })
+        .limit(10),
     ]);
 
     if (membersResult.error) {
@@ -250,7 +256,31 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Step 5: Return data to frontend
+    // Step 5: Enrich activity logs with actor names
+    let activities: any[] = [];
+    if (activityResult.data && activityResult.data.length > 0) {
+      const userIds = [...new Set(activityResult.data.map((a: any) => a.user_id))];
+      const { data: profiles } = await supabaseAdmin
+        .from('profiles')
+        .select('user_id, first_name, last_name')
+        .in('user_id', userIds);
+
+      const profileMap = new Map<string, string>();
+      (profiles || []).forEach((p: any) => {
+        const name = [p.first_name, p.last_name].filter(Boolean).join(' ') || 'مستخدم';
+        profileMap.set(p.user_id, name);
+      });
+
+      activities = activityResult.data.map((a: any) => ({
+        id: a.id,
+        action_type: a.action_type,
+        target_name: a.target_name,
+        created_at: a.created_at,
+        actor_name: profileMap.get(a.user_id) || undefined,
+      }));
+    }
+
+    // Step 6: Return data to frontend
     return new Response(
       JSON.stringify({
         success: true,
@@ -258,6 +288,7 @@ Deno.serve(async (req) => {
           family,
           members: processedMembers,
           marriages: marriagesResult.data || [],
+          activities,
         },
       }),
       {
