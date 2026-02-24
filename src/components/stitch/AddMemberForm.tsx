@@ -184,7 +184,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
         <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 p-8">
           <form onSubmit={(e) => { e.preventDefault(); handleFormSubmit(); }} className="space-y-8">
             {/* Row 1: Name (1/4), Gender (1/4), Family Relation (2/4) */}
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-6">
               {/* First Name - 1/4 */}
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
@@ -222,7 +222,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
               </div>
 
               {/* Family Relation - 2/4 */}
-              <div className="col-span-2 space-y-2">
+              <div className="sm:col-span-2 space-y-2">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <span className="material-symbols-outlined text-primary text-lg">account_tree</span>
                   {t('family_builder.choose_family', 'Family Relation')} *
@@ -255,7 +255,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
             </div>
 
             {/* Row 2: Twins (1/4), Birth Date (1/4), Vitality (1/4), Death Date (1/4) */}
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {/* Twins - 1/4 */}
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
@@ -359,7 +359,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
             </div>
 
             {/* Row 3: Profile Picture (1/4), Biography (3/4) */}
-            <div className="grid grid-cols-4 gap-6 items-stretch">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 sm:gap-6 items-stretch">
               {/* Profile Picture - 1/4 */}
               <div className="space-y-2 flex flex-col">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
@@ -422,7 +422,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
               </div>
 
               {/* Biography - 3/4 */}
-              <div className="col-span-3 space-y-2 flex flex-col">
+              <div className="sm:col-span-3 space-y-2 flex flex-col">
                 <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <span className="material-symbols-outlined text-primary text-lg">history_edu</span>
                   {t('family_builder.biography', 'Biography')}
