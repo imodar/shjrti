@@ -121,7 +121,7 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
 
   const getDisplayName = () => {
     if (member.first_name && member.last_name) return `${member.first_name} ${member.last_name}`;
-    return member.name || 'Unknown';
+    return member.name || t('common.unknown', 'Unknown');
   };
 
   const getInitials = () => (member.first_name || member.name || '?').charAt(0).toUpperCase();
