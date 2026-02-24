@@ -25,6 +25,8 @@ interface SpouseDrawerProps {
   onSave: () => void;
   isImageUploadEnabled?: boolean;
   hideToggle?: boolean;
+  isEditing?: boolean;
+  excludeMemberIds?: string[];
   onImageUploadClick?: () => void;
 }
 
@@ -43,6 +45,8 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
   onSave,
   isImageUploadEnabled = false,
   hideToggle = false,
+  isEditing = false,
+  excludeMemberIds = [],
   onImageUploadClick
 }) => {
   const { t, direction } = useLanguage();
@@ -50,8 +54,8 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
 
   // Filter family members for linking
   const availableMembers = familyMembers.filter(m => {
-    // For wife: show females not already married (or allow multiple based on rules)
-    // For husband: show males
+    // Exclude specific member IDs (e.g., the member being edited)
+    if (excludeMemberIds.includes(m.id)) return false;
     if (spouseType === 'wife') {
       return m.gender === 'female';
     } else if (spouseType === 'husband') {
@@ -59,6 +63,9 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
     }
     return false;
   });
+
+  // Hide toggle when editing existing spouse
+  const shouldHideToggle = hideToggle || isEditing;
 
   const handleInputChange = (field: keyof SpouseData, value: any) => {
     if (currentSpouse) {
@@ -140,7 +147,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
           {/* Toggle: Create New / Link Existing */}
-          {!hideToggle && (
+          {!shouldHideToggle && (
           <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
             <button
               type="button"

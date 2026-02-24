@@ -608,6 +608,8 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
         onFamilyStatusChange={setSpouseFamilyStatus}
         onSave={() => activeSpouseType && handleSpouseSave(activeSpouseType)}
         isImageUploadEnabled={isImageUploadEnabled}
+        isEditing={!!(currentSpouse?.id && !currentSpouse.id.startsWith('temp_'))}
+        excludeMemberIds={currentSpouse?.existingFamilyMemberId ? [currentSpouse.existingFamilyMemberId] : (currentSpouse?.id && !currentSpouse.id.startsWith('temp_') ? [currentSpouse.id] : [])}
       />
 
       {/* Image Crop Dialog */}
