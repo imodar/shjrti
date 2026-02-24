@@ -1,104 +1,110 @@
 
-# خطة: إنشاء صفحة عرض عام بنمط Stitch (`/stitch-tree`)
 
-## الفكرة
-إنشاء صفحة عامة (public) بنفس تصميم `/stitch-family-builder` لكن بوظائف `/tree` - متاحة للزوار الخارجيين عبر رابط المشاركة (share token)، مع دعم كلمة المرور والاقتراحات.
+# خطة شاملة: توحيد جميع المسارات - جعل تصميم Stitch هو الافتراضي
 
-## البنية المعمارية
+## الجزء الأول: توحيد المسارات المحمية (بعد تسجيل الدخول)
 
+### 1. `src/App.tsx` - إعادة هيكلة المسارات
+- نقل صفحات Stitch إلى المسارات الرئيسية داخل `StitchLayout`:
+  - `/dashboard` -> `StitchDashboard`
+  - `/family-builder` -> `FamilyBuilderStitchWithProvider`
+  - `/family-creator` -> `StitchFamilyCreator`
+  - `/family-tree-view` -> `StitchTreeViewWithProvider`
+  - `/profile` -> `StitchAccount`
+- الإبقاء على مسارات `stitch-*` القديمة كـ aliases (للتوافق مع أي روابط سابقة)
+- إزالة مسارات التصميم القديم المكررة
+
+### 2. `src/components/stitch/StitchLayout.tsx` - تحديث التعرف على المسارات
+تحديث شروط pathname لتتعرف على المسارات الجديدة:
 ```text
-/stitch-tree?token=xxx
-     |
-     v
-StitchPublicTreePage.tsx  (صفحة جديدة)
-     |
-     +-- يستدعي get-shared-family Edge Function (نفس الموجود)
-     +-- يتعامل مع: كلمة المرور / Token منتهي / Token خاطئ
-     |
-     v
-بعد التحقق يعرض:
-  +-- StitchHeader (variant: public) -- بدون تسجيل دخول
-  +-- StitchFamilyBar (اسم العائلة فقط)
-  +-- StitchSidebar (الأعضاء - قراءة فقط، بدون زر إضافة)
-  +-- StitchMainContent (العرض الرئيسي - readOnly)
-  +-- بدون StitchRightPanel (غير مطلوب للزوار)
+isBuilderPage = pathname === '/family-builder' || pathname === '/stitch-family-builder'
+isTreePage = pathname === '/family-tree-view' || pathname === '/stitch-tree-view'
+hideNav = pathname === '/family-creator' || pathname === '/stitch-family-creator'
+activeTab matching for '/dashboard', '/profile', etc.
 ```
 
-## التغييرات المطلوبة
-
-### 1. صفحة جديدة: `src/pages/StitchPublicTree.tsx`
-- **الوظيفة الأساسية**: نسخة مبسطة من `FamilyBuilderStitch.tsx` لكن بدون مصادقة
-- تقرأ `token` من URL query params
-- تستدعي `get-shared-family` Edge Function عبر `supabase.functions.invoke()` (نفس آلية PublicTreeView)
-- تتعامل مع حالات الخطأ: `PASSWORD_REQUIRED`, `TOKEN_EXPIRED`, `TOKEN_INVALID`, `PASSWORD_INCORRECT`
-- تعرض `PasswordModal` عند الحاجة
-- بعد التحقق الناجح، تعرض نفس layout الـ stitch-family-builder لكن بوضع `readOnly`
-- **التبويبات المتاحة**: dashboard (الرئيسية)، tree-view (الشجرة)، gallery (المعرض)، statistics (الإحصائيات)، suggestions (اقتراح تعديل)
-- **بدون**: إضافة أعضاء، تعديل، حذف، إعدادات
-
-### 2. تعديل `StitchHeader.tsx` - إضافة variant جديد: `public`
-- variant جديد `'public'` يعرض:
-  - اسم العائلة فقط
-  - تبويبات محدودة: dashboard, tree, gallery, statistics, suggestions
-  - بدون dropdown المستخدم (لا يوجد تسجيل دخول)
-  - يبقي على LanguageSwitcher
-
-### 3. تعديل `StitchSidebar.tsx`
-- إضافة prop `readOnly?: boolean`
-- عند `readOnly=true`: إخفاء زر "إضافة عضو" (الزر العلوي والسفلي)
-
-### 4. تعديل `StitchMainContent.tsx`
-- دعم عرض اقتراحات التعديل للزوار عبر `SuggestEditDialog`
-- إضافة prop `onSuggestEdit?: (memberId, memberName) => void`
-- عند وضع `readOnly`: عرض زر "اقتراح تعديل" بدل أزرار التعديل/الحذف في MemberProfile
-
-### 5. تسجيل المسار في `App.tsx`
-- إضافة route عام (بدون ProtectedRoute):
-  ```
-  <Route path="/stitch-tree" element={<StitchPublicTree />} />
-  ```
-
-### 6. التبويبات والوظائف
-
-| التبويب | المكون المستخدم | ملاحظات |
-|---------|----------------|---------|
-| dashboard | StitchMainContent (welcome + birthdays) | قراءة فقط، بدون activities |
-| tree | StitchTreeCanvas | نفس المكون الموجود |
-| gallery | StitchGalleryView | قراءة فقط (readOnly) |
-| statistics | StitchStatisticsView | نفس المكون الموجود |
-| suggestions | SuggestEditDialog | يفتح dialog اقتراح التعديل |
-
-### 7. الأمان
-- نفس آلية `/tree`: token-based access عبر `get-shared-family`
-- دعم كلمة المرور عبر `PasswordModal`
-- معدل محدود (rate limiting) مطبق بالفعل في Edge Function
-- لا يتم تمرير أي بيانات حساسة (creator_id, share_password hash) للعميل
-- وضع `readOnly` يمنع أي تعديل من الواجهة
-
-### 8. المكونات الموجودة التي سيتم إعادة استخدامها (بدون نسخ)
-- `StitchHeader` (مع variant جديد)
-- `StitchFamilyBar`
-- `StitchSidebar` (مع readOnly prop)
-- `StitchMainContent` (مع readOnly prop)
-- `StitchMemberProfile` (readOnly موجود بالفعل)
-- `StitchTreeCanvas`
-- `StitchGalleryView`
-- `StitchStatisticsView`
-- `SuggestEditDialog`
-- `PasswordModal`
-
-## التفاصيل التقنية
-
-### تدفق البيانات
+### 3. `src/components/stitch/Header.tsx` - تحديث مسارات التبويبات
+تغيير paths في `builderTabs` و `accountTabs`:
 ```text
-1. المستخدم يفتح /stitch-tree?token=xxx
-2. الصفحة تستدعي get-shared-family مع الـ token
-3. إذا PASSWORD_REQUIRED -> يظهر PasswordModal
-4. إذا نجح -> تخزين البيانات في state محلي (familyData, members, marriages)
-5. عرض الواجهة بنمط Stitch مع readOnly=true
+"/stitch-dashboard"       -> "/dashboard"
+"/stitch-family-builder"  -> "/family-builder"
+"/stitch-tree-view"       -> "/family-tree-view"
+"/stitch-account"         -> "/profile"
+```
+وتحديث شرط `handleTabClick` ليتعرف على `/family-builder` بدل `/stitch-family-builder`
+
+### 4. `src/pages/StitchDashboard.tsx` - تحديث الروابط الداخلية
+```text
+navigate('/stitch-family-creator')  -> navigate('/family-creator')
+navigate('/stitch-family-builder')  -> navigate('/family-builder')
+navigate('/stitch-account')         -> navigate('/profile')
 ```
 
-### حالات الخطأ (نفس تصميم PublicTreeView لكن بنمط Stitch)
-- Token منتهي/خاطئ: صفحة خطأ بتصميم Stitch
-- كلمة مرور خاطئة: رسالة خطأ بتصميم Stitch
-- Loading: StitchLoadingFallback
+### 5. `src/pages/StitchFamilyCreator.tsx` - تحديث الروابط
+```text
+navigate('/stitch-dashboard')       -> navigate('/dashboard')
+navigate('/stitch-family-builder')  -> navigate('/family-builder')
+```
+
+### 6. `src/pages/StitchTreeView.tsx` - تحديث الروابط
+```text
+navigate('/stitch-family-builder')  -> navigate('/family-builder')
+```
+
+### 7. `src/components/stitch/SettingsView.tsx` - تحديث الروابط
+```text
+navigate('/stitch-dashboard')       -> navigate('/dashboard')
+navigate('/stitch-family-builder')  -> navigate('/family-builder')
+```
+
+### 8. `src/pages/AcceptInvitation.tsx` - تحديث رابط التوجيه
+```text
+navigate('/stitch-family-builder')  -> navigate('/family-builder')
+```
+
+### 9. `src/constants/routes.ts` - التأكد من وجود المسارات
+التأكد من وجود `family-builder`, `family-creator`, `profile` في قائمة `PROTECTED_ROUTES` (معظمها موجود بالفعل).
+
+---
+
+## الجزء الثاني: توحيد المسارات العامة (صفحة الشجرة للزوار)
+
+### 10. `src/App.tsx` - تغيير المكون للمسارات العامة
+- تغيير `/tree` من `PublicTreeViewWithContext` إلى `StitchPublicTree`
+- تغيير `/share` من `PublicTreeViewWithContext` إلى `StitchPublicTree`
+- الإبقاء على `/stitch-tree` كـ alias
+- إزالة import لـ `PublicTreeViewWithContext` إذا لم يعد مستخدما
+
+---
+
+## ملخص جميع التغييرات
+
+| المسار | قبل (المكون) | بعد (المكون) |
+|--------|-------------|-------------|
+| `/dashboard` | Dashboard (قديم) | StitchDashboard (جديد) |
+| `/family-builder` | غير موجود / قديم | FamilyBuilderStitch (جديد) |
+| `/family-creator` | FamilyCreator (قديم) | StitchFamilyCreator (جديد) |
+| `/family-tree-view` | FamilyTreeView (قديم) | StitchTreeView (جديد) |
+| `/profile` | Profile (قديم) | StitchAccount (جديد) |
+| `/tree` | PublicTreeViewWithContext (قديم) | StitchPublicTree (جديد) |
+| `/share` | PublicTreeViewWithContext (قديم) | StitchPublicTree (جديد) |
+| `/stitch-*` | (تبقى كـ aliases) | نفس المكون الجديد |
+
+## ما لن يتأثر
+- صفحات الأدمن (`/admin/*`)
+- صفحات الدفع (`/payments`, `/plan-selection`, etc.)
+- مسار `/auth`
+- الصفحات العامة الثابتة (`/contact`, `/terms-conditions`, `/privacy-policy`)
+
+## الملفات المطلوب تعديلها (10 ملفات)
+1. `src/App.tsx`
+2. `src/components/stitch/StitchLayout.tsx`
+3. `src/components/stitch/Header.tsx`
+4. `src/pages/StitchDashboard.tsx`
+5. `src/pages/StitchFamilyCreator.tsx`
+6. `src/pages/StitchTreeView.tsx`
+7. `src/components/stitch/SettingsView.tsx`
+8. `src/pages/AcceptInvitation.tsx`
+9. `src/constants/routes.ts`
+10. أي ملفات أخرى تحتوي على روابط `stitch-*` داخلية
+
