@@ -482,9 +482,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                           </span>
                           {isDivorced 
                             ? t('profile.divorced_female', 'Divorced') 
-                            : wife.maritalStatus === 'widowed' 
-                              ? t('member.widowed', 'Widowed')
-                              : t('member.married', 'Married')}
+                            : t('member.married', 'Married')}
                         </span>
                         {isDeceased && (
                           <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase">
@@ -547,9 +545,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                           </span>
                           {isDivorced 
                             ? t('profile.divorced_male', 'Divorced') 
-                            : husband.maritalStatus === 'widowed' 
-                              ? t('member.widowed', 'Widowed')
-                              : t('member.married', 'Married')}
+                            : t('member.married', 'Married')}
                         </span>
                         {isDeceased && (
                           <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase">
@@ -585,7 +581,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                 })}
 
                 {/* Add Spouse Button */}
-                {((formData.gender === 'male' && wives.length < 4) || (formData.gender === 'female' && !husbands.some(h => h.maritalStatus !== 'divorced' && h.maritalStatus !== 'widowed' && h.isAlive !== false))) && (
+                {((formData.gender === 'male' && wives.length < 4) || (formData.gender === 'female' && !husbands.some(h => h.maritalStatus !== 'divorced' && h.isAlive !== false))) && (
                   <button
                     type="button"
                     onClick={() => handleAddSpouse(formData.gender === 'male' ? 'wife' : 'husband')}

@@ -128,13 +128,13 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
     // Gender filter
     if (spouseType === 'wife' && m.gender !== 'female') return false;
     if (spouseType === 'husband' && m.gender !== 'male') return false;
-    // Check active (non-divorced, non-widowed) marriage count
+    // Check active (non-divorced) marriage count
     const activeMarriageCount = marriages.filter(mar => {
       const isInvolved = mar.husband_id === m.id || mar.wife_id === m.id;
       if (!isInvolved) return false;
-      // Divorced or widowed marriages don't count as active
+      // Divorced marriages don't count as active
       const status = (mar as any).marital_status;
-      if (status === 'divorced' || status === 'widowed') return false;
+      if (status === 'divorced') return false;
       // Check if spouse is deceased
       const spouseId = mar.husband_id === m.id ? mar.wife_id : mar.husband_id;
       const spouse = familyMembers.find(fm => fm.id === spouseId);
@@ -312,8 +312,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                     <StyledDropdown
                       options={[
                         { value: 'married', label: t('member.married', 'Married'), icon: 'favorite' },
-                        { value: 'divorced', label: t('member.divorced', 'Divorced'), icon: 'heart_broken' },
-                        { value: 'widowed', label: t('member.widowed', 'Widowed'), icon: 'deceased' }
+                        { value: 'divorced', label: t('member.divorced', 'Divorced'), icon: 'heart_broken' }
                       ]}
                       value={currentSpouse.maritalStatus || 'married'}
                       onChange={(value) => handleInputChange('maritalStatus', value)}
@@ -393,8 +392,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                     <StyledDropdown
                       options={[
                         { value: 'married', label: t('member.married', 'Married'), icon: 'favorite' },
-                        { value: 'divorced', label: t('member.divorced', 'Divorced'), icon: 'heart_broken' },
-                        { value: 'widowed', label: t('member.widowed', 'Widowed'), icon: 'deceased' }
+                        { value: 'divorced', label: t('member.divorced', 'Divorced'), icon: 'heart_broken' }
                       ]}
                       value={currentSpouse.maritalStatus || 'married'}
                       onChange={(value) => handleInputChange('maritalStatus', value)}
