@@ -236,17 +236,18 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
             </div>
           )}
 
-          {/* Recent Activities - hidden for public/readOnly visitors */}
-          {!readOnly && (
+          {/* Recent Activities */}
           <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary">history</span>
                 {t('stitch.recent_activities', 'Recent Activities')}
               </h3>
+              {!readOnly && (
               <button className="text-xs text-primary font-bold hover:underline">
                 {t('stitch.view_all', 'View All')}
               </button>
+              )}
             </div>
             <div className="space-y-6">
               {activities.length > 0 ? activities.map((activity) => {
@@ -276,7 +277,6 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
               )}
             </div>
           </div>
-          )}
 
           {/* Upcoming Birthdays */}
           <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
