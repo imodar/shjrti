@@ -443,7 +443,10 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Existing Spouses */}
-                {formData.gender === 'male' && wives.map((wife, index) => (
+                {formData.gender === 'male' && wives.map((wife, index) => {
+                  const isDivorced = wife.maritalStatus === 'divorced';
+                  const isDeceased = wife.isAlive === false;
+                  return (
                   <div 
                     key={wife.id || index}
                     className="p-6 bg-white dark:bg-slate-900 border border-pink-100 dark:border-pink-900/30 rounded-2xl flex items-start gap-5 relative group hover:shadow-lg hover:shadow-pink-500/5 transition-all"
@@ -452,18 +455,32 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                       {wife.croppedImage ? (
                         <img src={wife.croppedImage} alt={wife.name} className="w-full h-full rounded-full object-cover" />
                       ) : (
-                        <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
+                        <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                          {isDivorced ? 'heart_broken' : 'favorite'}
+                        </span>
                       )}
                     </div>
                     <div className="flex-1">
                       <h4 className="font-bold text-slate-800 dark:text-slate-100">
                         {wife.name || `${wife.firstName} ${wife.lastName}`.trim() || t('member.unnamed', 'Unnamed')}
                       </h4>
-                      <div className="flex flex-col gap-1 mt-1">
-                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-pink-500 uppercase">
-                          <span className="w-1.5 h-1.5 rounded-full bg-pink-500" />
-                          {t('member.spouse', 'Spouse')} ({wife.maritalStatus || 'Married'})
+                      <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                        <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase ${isDivorced ? 'text-slate-400' : 'text-pink-500'}`}>
+                          <span className={`material-symbols-outlined text-xs`} style={{ fontVariationSettings: "'FILL' 1" }}>
+                            {isDivorced ? 'heart_broken' : 'favorite'}
+                          </span>
+                          {isDivorced 
+                            ? t('profile.divorced_female', 'Divorced') 
+                            : wife.maritalStatus === 'widowed' 
+                              ? t('member.widowed', 'Widowed')
+                              : t('member.married', 'Married')}
                         </span>
+                        {isDeceased && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase">
+                            <span className="material-symbols-outlined text-xs">deceased</span>
+                            {t('member.deceased', 'Deceased')}
+                          </span>
+                        )}
                       </div>
                       <div className="flex gap-2 mt-3">
                         <button 
@@ -482,13 +499,19 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                         </button>
                       </div>
                     </div>
-                    <div className="absolute top-4 end-4 text-pink-500/30">
-                      <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                    <div className="absolute top-4 end-4">
+                      <span className={`material-symbols-outlined text-lg ${isDivorced ? 'text-slate-300' : 'text-pink-500/30'}`} style={{ fontVariationSettings: "'FILL' 1" }}>
+                        {isDivorced ? 'heart_broken' : 'favorite'}
+                      </span>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
 
-                {formData.gender === 'female' && husbands.map((husband, index) => (
+                {formData.gender === 'female' && husbands.map((husband, index) => {
+                  const isDivorced = husband.maritalStatus === 'divorced';
+                  const isDeceased = husband.isAlive === false;
+                  return (
                   <div 
                     key={husband.id || index}
                     className="p-6 bg-white dark:bg-slate-900 border border-blue-100 dark:border-blue-900/30 rounded-2xl flex items-start gap-5 relative group hover:shadow-lg hover:shadow-blue-500/5 transition-all"
@@ -497,18 +520,32 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                       {husband.croppedImage ? (
                         <img src={husband.croppedImage} alt={husband.name} className="w-full h-full rounded-full object-cover" />
                       ) : (
-                        <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
+                        <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                          {isDivorced ? 'heart_broken' : 'favorite'}
+                        </span>
                       )}
                     </div>
                     <div className="flex-1">
                       <h4 className="font-bold text-slate-800 dark:text-slate-100">
                         {husband.name || `${husband.firstName} ${husband.lastName}`.trim() || t('member.unnamed', 'Unnamed')}
                       </h4>
-                      <div className="flex flex-col gap-1 mt-1">
-                        <span className="inline-flex items-center gap-1.5 text-[10px] font-bold text-blue-500 uppercase">
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                          {t('member.spouse', 'Spouse')} ({husband.maritalStatus || 'Married'})
+                      <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                        <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold uppercase ${isDivorced ? 'text-slate-400' : 'text-blue-500'}`}>
+                          <span className={`material-symbols-outlined text-xs`} style={{ fontVariationSettings: "'FILL' 1" }}>
+                            {isDivorced ? 'heart_broken' : 'favorite'}
+                          </span>
+                          {isDivorced 
+                            ? t('profile.divorced_male', 'Divorced') 
+                            : husband.maritalStatus === 'widowed' 
+                              ? t('member.widowed', 'Widowed')
+                              : t('member.married', 'Married')}
                         </span>
+                        {isDeceased && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase">
+                            <span className="material-symbols-outlined text-xs">deceased</span>
+                            {t('member.deceased', 'Deceased')}
+                          </span>
+                        )}
                       </div>
                       <div className="flex gap-2 mt-3">
                         <button 
@@ -527,11 +564,14 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                         </button>
                       </div>
                     </div>
-                    <div className="absolute top-4 end-4 text-blue-500/30">
-                      <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                    <div className="absolute top-4 end-4">
+                      <span className={`material-symbols-outlined text-lg ${isDivorced ? 'text-slate-300' : 'text-blue-500/30'}`} style={{ fontVariationSettings: "'FILL' 1" }}>
+                        {isDivorced ? 'heart_broken' : 'favorite'}
+                      </span>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
 
                 {/* Add Spouse Button */}
                 {((formData.gender === 'male' && wives.length < 4) || (formData.gender === 'female' && husbands.length === 0)) && (
