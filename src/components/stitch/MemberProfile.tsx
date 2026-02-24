@@ -25,6 +25,7 @@ interface StitchMemberProfileProps {
   onMemberClick?: (member: any) => void;
   onAddChild?: (parentMember: any, spouseId?: string) => void;
   readOnly?: boolean;
+  onSuggestEdit?: (memberId: string, memberName: string) => void;
 }
 
 export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
@@ -37,6 +38,7 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
   onMemberClick,
   onAddChild,
   readOnly = false,
+  onSuggestEdit,
 }) => {
   const { t, direction } = useLanguage();
   const { toast } = useToast();
@@ -254,6 +256,15 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
                 >
                   <span className="material-symbols-outlined text-sm">edit</span>
                   {t('profile.edit', 'Edit Profile')}
+                </button>
+              )}
+              {readOnly && onSuggestEdit && (
+                <button
+                  onClick={() => onSuggestEdit(member.id, getDisplayName())}
+                  className="px-5 py-2.5 bg-amber-500 text-white text-xs font-bold rounded-xl flex items-center gap-2 shadow-lg shadow-amber-500/20 hover:opacity-90 transition-all"
+                >
+                  <span className="material-symbols-outlined text-sm">lightbulb</span>
+                  {t('stitch.tab.suggestions', 'اقتراح تعديل')}
                 </button>
               )}
             </div>

@@ -35,6 +35,7 @@ import FamilyBuilderNewWithContext from "./pages/FamilyBuilderNew/FamilyBuilderN
 import FamilyBuilderStitch from "./pages/FamilyBuilderStitch";
 import StitchTreeView from "./pages/StitchTreeView";
 import StitchAccount from "./pages/StitchAccount";
+import StitchPublicTree from "./pages/StitchPublicTree";
 import StitchFamilyCreator from "./pages/StitchFamilyCreator";
 import StitchLoadingFallback from "./components/stitch/StitchLoadingFallback";
 import StitchLayout from "./components/stitch/StitchLayout";
@@ -290,6 +291,7 @@ const App = () => {
                   <Route path="/accept-invitation" element={<AcceptInvitation />} />
                   <Route path="/tree" element={<PublicTreeViewWithContext />} />
                   <Route path="/share" element={<PublicTreeViewWithContext />} />
+                  <Route path="/stitch-tree" element={<StitchPublicTree />} />
                   {/* Redirect old terms route to new one */}
                   <Route path="/terms" element={<TermsConditions />} />
                   {/* 404 error page - must be before custom domain route */}
