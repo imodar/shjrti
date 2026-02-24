@@ -240,7 +240,7 @@ export function HeritageDatePicker({
                     disabled={isRTL ? yearPageStart + 20 > toYear : yearPageStart <= fromYear}
                     className="h-8 w-8 rounded-full"
                   >
-                    <ChevronLeft className="h-4 w-4" />
+                    {isRTL ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
                   </Button>
                   <Button
                     variant="ghost" size="icon"
@@ -248,7 +248,7 @@ export function HeritageDatePicker({
                     disabled={isRTL ? yearPageStart <= fromYear : yearPageStart + 20 > toYear}
                     className="h-8 w-8 rounded-full"
                   >
-                    <ChevronRight className="h-4 w-4" />
+                    {isRTL ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                   </Button>
                 </div>
               </div>
@@ -263,13 +263,13 @@ export function HeritageDatePicker({
               {/* Month Nav */}
               <div className="flex items-center justify-between mb-3">
                 <Button variant="ghost" size="icon" onClick={() => navigateMonth(isRTL ? 1 : -1)} className="h-8 w-8 rounded-full">
-                  <ChevronLeft className="h-4 w-4" />
+                  {isRTL ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
                 </Button>
                 <span className="text-sm font-medium text-muted-foreground">
                   {months[displayMonth]} {displayYear}
                 </span>
                 <Button variant="ghost" size="icon" onClick={() => navigateMonth(isRTL ? -1 : 1)} className="h-8 w-8 rounded-full">
-                  <ChevronRight className="h-4 w-4" />
+                  {isRTL ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                 </Button>
               </div>
 
