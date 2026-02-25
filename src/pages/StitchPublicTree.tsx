@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
-import { StitchSidebar, StitchMainContent } from '@/components/stitch';
+import { StitchFamilyBar, StitchSidebar, StitchMainContent } from '@/components/stitch';
 import { StitchTreeCanvas } from '@/components/stitch/TreeCanvas';
 import { StitchHeader } from '@/components/stitch/Header';
 import DashboardLoader from '@/components/stitch/DashboardLoader';
@@ -414,78 +414,50 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
           </div>
         </div>
 
-        {/* Right: Language */}
+        {/* Desktop Navigation */}
+        <nav className="hidden lg:flex items-center gap-1 bg-muted p-1 rounded-xl">
+          {publicTabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => handleTabChange(tab.id)}
+              className={`relative px-4 py-2 text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                  ? 'font-bold bg-card text-primary rounded-lg shadow-sm'
+                  : 'text-muted-foreground hover:text-primary'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+
+        {/* Right: Language + Mobile menu */}
         <div className="flex items-center gap-2 md:gap-3">
           <LanguageSwitcher />
+          {/* Mobile tab selector */}
+          <div className="lg:hidden">
+            <select
+              value={activeTab}
+              onChange={(e) => handleTabChange(e.target.value)}
+              className="bg-muted border-none rounded-lg px-2 py-1.5 text-sm font-medium"
+            >
+              {publicTabs.map(tab => (
+                <option key={tab.id} value={tab.id}>{tab.label}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </header>
 
-      {/* Family Bar with integrated navigation */}
-      <div className="h-12 sm:h-14 bg-card border-b border-border flex items-center justify-between px-3 sm:px-4 lg:px-6 z-40 relative">
-        {/* Right side: Family name + root selector */}
-        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 min-w-0">
-          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-            <span className="material-symbols-outlined text-primary text-lg sm:text-xl shrink-0">account_tree</span>
-            <h2 className="family-title text-sm sm:text-base lg:text-xl font-semibold text-foreground italic truncate" style={{ fontFamily: "'Playfair Display', serif" }}>
-              {t('stitch.family_of', 'Family of')} {familyName}
-            </h2>
-          </div>
-
-          {/* Root Selector - Only shown on tree view */}
-          {showTree && rootOptions.length > 0 && (
-            <>
-              <div className="hidden sm:block h-4 w-[1px] bg-border"></div>
-              <select
-                value={selectedRootMarriage}
-                onChange={(e) => { setSelectedRootMarriage(e.target.value); setZoomLevel(1); }}
-                className="bg-muted border-none rounded-lg px-2 py-1.5 text-xs sm:text-sm font-semibold uppercase tracking-wider text-muted-foreground"
-              >
-                <option value="all">{t('tree_view.all_branches', 'All Branches')}</option>
-                {rootOptions.map(option => (
-                  <option key={option.id} value={option.id}>{option.label}</option>
-                ))}
-              </select>
-            </>
-          )}
-        </div>
-
-        {/* Left side: Tab navigation */}
-        <div className="flex items-center gap-1 sm:gap-2">
-          {/* Desktop tabs */}
-          <nav className="hidden md:flex items-center gap-0.5">
-            {publicTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => handleTabChange(tab.id)}
-                className={`relative flex items-center gap-1.5 px-3 lg:px-4 py-2 text-xs sm:text-sm font-medium rounded-lg transition-all duration-200 ${
-                  activeTab === tab.id
-                    ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20 font-bold'
-                    : 'text-muted-foreground hover:bg-accent hover:text-foreground'
-                }`}
-              >
-                <span className={`material-icons-round text-base ${activeTab === tab.id ? 'text-primary-foreground' : 'text-muted-foreground'}`}>{tab.icon}</span>
-                <span className="hidden lg:inline">{tab.label}</span>
-              </button>
-            ))}
-          </nav>
-          {/* Mobile tab selector */}
-          <div className="md:hidden flex items-center gap-0.5 bg-muted/50 p-0.5 rounded-lg">
-            {publicTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => handleTabChange(tab.id)}
-                className={`flex items-center justify-center p-2 rounded-md transition-all duration-200 ${
-                  activeTab === tab.id
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : 'text-muted-foreground'
-                }`}
-              >
-                <span className="material-icons-round text-lg">{tab.icon}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
+      {/* Family Bar */}
+      <StitchFamilyBar
+        familyName={familyName}
+        onSwitchTree={() => {}}
+        showRootSelector={showTree}
+        rootOptions={rootOptions}
+        selectedRoot={selectedRootMarriage}
+        onRootChange={(id) => { setSelectedRootMarriage(id); setZoomLevel(1); }}
+      />
 
       {/* Tree View */}
       {showTree ? (
