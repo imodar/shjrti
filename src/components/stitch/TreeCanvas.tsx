@@ -442,7 +442,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     onResetZoom();
   }, [selectedRootMarriage, onResetZoom]);
 
-  // Drag handlers
+  // Drag handlers (mouse)
   const handleMouseDown = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsDragging(true);
@@ -465,6 +465,54 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       document.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging, dragStart]);
+
+  // Touch handlers (pan + pinch-to-zoom)
+  const lastTouchRef = useRef<{ x: number; y: number } | null>(null);
+  const lastPinchDistRef = useRef<number | null>(null);
+
+  const getTouchDistance = (touches: React.TouchList | TouchList) => {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      lastTouchRef.current = { x: e.touches[0].clientX - panOffset.x, y: e.touches[0].clientY - panOffset.y };
+      lastPinchDistRef.current = null;
+    } else if (e.touches.length === 2) {
+      e.preventDefault();
+      lastPinchDistRef.current = getTouchDistance(e.touches);
+      lastTouchRef.current = null;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (e.touches.length === 2 && lastPinchDistRef.current !== null) {
+      e.preventDefault();
+      const newDist = getTouchDistance(e.touches);
+      const scale = newDist / lastPinchDistRef.current;
+      lastPinchDistRef.current = newDist;
+      // Apply zoom delta
+      const newZoom = Math.min(3, Math.max(0.25, zoomLevel * scale));
+      if (newZoom !== zoomLevel) {
+        // We call onZoomIn/onZoomOut based on direction, but for smooth pinch we need direct control
+        // Use a small trick: repeatedly call in/out
+        if (scale > 1) onZoomIn();
+        else onZoomOut();
+      }
+    } else if (e.touches.length === 1 && lastTouchRef.current) {
+      setPanOffset({
+        x: e.touches[0].clientX - lastTouchRef.current.x,
+        y: e.touches[0].clientY - lastTouchRef.current.y,
+      });
+    }
+  };
+
+  const handleTouchEnd = () => {
+    lastTouchRef.current = null;
+    lastPinchDistRef.current = null;
+  };
 
   // Render connection lines
   const renderConnections = () => {
@@ -547,8 +595,11 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       {/* Tree Container with Pan/Zoom */}
       <div
         ref={containerRef}
-        className="w-full h-full overflow-hidden cursor-grab active:cursor-grabbing select-none"
+        className="w-full h-full overflow-hidden cursor-grab active:cursor-grabbing select-none touch-none"
         onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
       >
         <div
           className="absolute"
