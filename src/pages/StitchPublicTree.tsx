@@ -464,11 +464,12 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
         <StitchTreeCanvas
           familyMembers={familyMembers}
           marriages={marriages}
-          zoomLevel={zoomLevel}
-          viewMode={viewMode}
-          onZoomIn={handleZoomIn}
-          onZoomOut={handleZoomOut}
-          onResetZoom={handleResetZoom}
+           zoomLevel={zoomLevel}
+           viewMode={viewMode}
+           onZoomIn={handleZoomIn}
+           onZoomOut={handleZoomOut}
+           onResetZoom={handleResetZoom}
+           onZoomSet={setZoomLevel}
           selectedRootMarriage={selectedRootMarriage}
         />
       ) : (
