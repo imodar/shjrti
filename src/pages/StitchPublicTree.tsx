@@ -26,6 +26,7 @@ interface StitchPublicTreeProps {
     family: any;
     members: Member[];
     marriages: Marriage[];
+    activities?: any[];
   };
 }
 
@@ -190,7 +191,33 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
   }
 
   useEffect(() => {
-    if (!preloadedData) {
+    if (preloadedData) {
+      // Map preloaded activities (from custom domain redirect)
+      if (preloadedData.activities && preloadedData.activities.length > 0) {
+        const actionTypeMap: Record<string, { type: 'edit' | 'add' | 'photo' | 'delete'; title: string }> = {
+          member_added: { type: 'add', title: t('activity.member_added', 'تمت إضافة') },
+          member_updated: { type: 'edit', title: t('activity.member_updated', 'تم تعديل') },
+          member_deleted: { type: 'delete', title: t('activity.member_deleted', 'تم حذف') },
+          photo_uploaded: { type: 'photo', title: t('activity.photo_uploaded', 'تم رفع صورة') },
+          marriage_added: { type: 'add', title: t('activity.marriage_added', 'تمت إضافة زواج') },
+          marriage_deleted: { type: 'delete', title: t('activity.marriage_deleted', 'تم حذف زواج') },
+          settings_changed: { type: 'edit', title: t('activity.settings_changed', 'تم تغيير الإعدادات') },
+        };
+        const mapped = preloadedData.activities.map((log: any) => {
+          const info = actionTypeMap[log.action_type] || { type: 'edit' as const, title: log.action_type };
+          const timeAgo = getTimeAgo(log.created_at);
+          return {
+            id: log.id,
+            type: info.type,
+            title: info.title,
+            highlight: log.target_name || '',
+            timestamp: timeAgo,
+            actorName: log.actor_name || undefined,
+          };
+        });
+        setRecentActivities(mapped);
+      }
+    } else {
       loadFamilyData();
     }
   }, [shareToken, preloadedData]);

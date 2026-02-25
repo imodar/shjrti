@@ -109,11 +109,12 @@ const CustomDomainRedirect = () => {
         return;
       }
 
-      const { family, members, marriages } = parsedData.data;
+      const { family, members, marriages, activities } = parsedData.data;
       console.log('[CustomDomainRedirect] Data loaded:', {
         familyId: family?.id,
         membersCount: members?.length || 0,
         marriagesCount: marriages?.length || 0,
+        activitiesCount: activities?.length || 0,
       });
 
       // Extract a display name for the password modal (string or JSON)
@@ -129,6 +130,7 @@ const CustomDomainRedirect = () => {
         family,
         members: members || [],
         marriages: marriages || [],
+        activities: activities || [],
       });
       setIsLoading(false);
     } catch (error) {
@@ -171,6 +173,7 @@ const CustomDomainRedirect = () => {
         family: familyData.family,
         members: familyData.members || [],
         marriages: familyData.marriages || [],
+        activities: familyData.activities || [],
       }}
     />
   );

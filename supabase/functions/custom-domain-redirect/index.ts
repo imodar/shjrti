@@ -294,6 +294,30 @@ Deno.serve(async (req) => {
       console.log(`[custom-domain-redirect] Privacy applied - Total females: ${femaleCount}, Processed: ${processedCount}`);
     }
 
+    // Step 5: Fetch recent activity logs
+    const { data: activityLogs } = await supabaseAdmin
+      .from('activity_log')
+      .select('*')
+      .eq('family_id', family.id)
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    // Enrich activity logs with user names
+    let enrichedActivities = activityLogs || [];
+    if (enrichedActivities.length > 0) {
+      const userIds = [...new Set(enrichedActivities.map((log: any) => log.user_id))];
+      const { data: profiles } = await supabaseAdmin
+        .from('profiles')
+        .select('user_id, first_name, last_name')
+        .in('user_id', userIds);
+
+      const profileMap = new Map((profiles || []).map((p: any) => [p.user_id, `${p.first_name || ''} ${p.last_name || ''}`.trim()]));
+      enrichedActivities = enrichedActivities.map((log: any) => ({
+        ...log,
+        actor_name: profileMap.get(log.user_id) || '',
+      }));
+    }
+
     // Return all family data (same structure as get-shared-family)
     return new Response(
       JSON.stringify({
@@ -302,6 +326,7 @@ Deno.serve(async (req) => {
           family,
           members: processedMembers,
           marriages: marriages || [],
+          activities: enrichedActivities,
         },
       }),
       {
