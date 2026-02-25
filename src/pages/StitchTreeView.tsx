@@ -179,6 +179,7 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
          onZoomIn={handleZoomIn}
          onZoomOut={handleZoomOut}
          onResetZoom={handleResetZoom}
+         onZoomSet={setZoomLevel}
           selectedRootMarriage={selectedRootMarriage}
        />
  

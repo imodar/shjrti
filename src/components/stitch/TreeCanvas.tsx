@@ -11,6 +11,7 @@ interface StitchTreeCanvasProps {
   onZoomIn: () => void;
   onZoomOut: () => void;
   onResetZoom: () => void;
+  onZoomSet?: (zoom: number) => void;
   selectedRootMarriage?: string;
 }
 
@@ -49,6 +50,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
   onZoomIn,
   onZoomOut,
   onResetZoom,
+  onZoomSet,
   selectedRootMarriage = 'all'
 }) => {
   const { t } = useLanguage();
@@ -493,13 +495,12 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       const newDist = getTouchDistance(e.touches);
       const scale = newDist / lastPinchDistRef.current;
       lastPinchDistRef.current = newDist;
-      // Apply zoom delta
-      const newZoom = Math.min(3, Math.max(0.25, zoomLevel * scale));
-      if (newZoom !== zoomLevel) {
-        // We call onZoomIn/onZoomOut based on direction, but for smooth pinch we need direct control
-        // Use a small trick: repeatedly call in/out
-        if (scale > 1) onZoomIn();
-        else onZoomOut();
+      if (onZoomSet) {
+        const newZoom = Math.min(3, Math.max(0.25, zoomLevel * scale));
+        onZoomSet(newZoom);
+      } else {
+        if (scale > 1.02) onZoomIn();
+        else if (scale < 0.98) onZoomOut();
       }
     } else if (e.touches.length === 1 && lastTouchRef.current) {
       setPanOffset({
