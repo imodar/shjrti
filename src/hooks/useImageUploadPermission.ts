@@ -1,24 +1,35 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useFamilyFeatures } from '@/hooks/useFamilyFeatures';
 
-export function useImageUploadPermission() {
+/**
+ * Check image upload permission.
+ * If familyId is provided, uses the tree OWNER's subscription (for collaborators).
+ * Otherwise falls back to the current user's own subscription.
+ */
+export function useImageUploadPermission(familyId?: string | null) {
   const { user } = useAuth();
-  const [isImageUploadEnabled, setIsImageUploadEnabled] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { imageUploadEnabled: ownerHasUpload, memberMemoriesEnabled: ownerHasMemories, loading: familyLoading } = useFamilyFeatures(familyId);
+  const [ownPermission, setOwnPermission] = useState(false);
+  const [ownLoading, setOwnLoading] = useState(true);
+
+  // If familyId is provided, use owner's features
+  const useFamilyBased = !!familyId;
 
   useEffect(() => {
+    // Skip own check if using family-based features
+    if (useFamilyBased) {
+      setOwnLoading(false);
+      return;
+    }
+
     const checkImageUploadPermission = async () => {
       if (!user) {
-        setIsImageUploadEnabled(false);
-        setLoading(false);
+        setOwnPermission(false);
+        setOwnLoading(false);
         return;
       }
-
-      // Clear cache to force fresh check
-      const cacheKey = `image_upload_permission_${user.id}`;
-      localStorage.removeItem(cacheKey);
-      localStorage.removeItem(`${cacheKey}_timestamp`);
 
       try {
         const { data: subscriptionData, error } = await supabase
@@ -37,33 +48,34 @@ export function useImageUploadPermission() {
 
         if (error) {
           console.error('Error fetching subscription:', error);
-          setIsImageUploadEnabled(false);
-          setLoading(false);
+          setOwnPermission(false);
+          setOwnLoading(false);
           return;
         }
 
-        // If user has an active subscription, allow if either the boolean flag or the feature toggle is enabled
         const pkg: any = subscriptionData?.packages;
         const featureFlag = pkg?.features?.member_memories;
         const memberMemoriesEnabled = featureFlag === true || featureFlag === 'true' || featureFlag === 1;
         const hasPermission = Boolean(pkg?.image_upload_enabled) || memberMemoriesEnabled;
         
-        setIsImageUploadEnabled(hasPermission);
-        
-        // Cache the result
-        localStorage.setItem(cacheKey, hasPermission.toString());
-        localStorage.setItem(`${cacheKey}_timestamp`, Date.now().toString());
-        
+        setOwnPermission(hasPermission);
       } catch (error) {
         console.error('Error checking image upload permission:', error);
-        setIsImageUploadEnabled(false);
+        setOwnPermission(false);
       } finally {
-        setLoading(false);
+        setOwnLoading(false);
       }
     };
 
     checkImageUploadPermission();
-  }, [user]);
+  }, [user, useFamilyBased]);
 
-  return { isImageUploadEnabled, loading };
+  if (useFamilyBased) {
+    return {
+      isImageUploadEnabled: ownerHasUpload || ownerHasMemories,
+      loading: familyLoading,
+    };
+  }
+
+  return { isImageUploadEnabled: ownPermission, loading: ownLoading };
 }

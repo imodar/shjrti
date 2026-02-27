@@ -42,7 +42,7 @@ export const useAddMemberForm = ({
 }: UseAddMemberFormProps) => {
   const { toast } = useToast();
   const { t } = useLanguage();
-  const { isImageUploadEnabled } = useImageUploadPermission();
+  const { isImageUploadEnabled } = useImageUploadPermission(familyId);
 
   // Form step
   const [currentStep, setCurrentStep] = useState(1);

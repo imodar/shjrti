@@ -244,10 +244,7 @@ const FamilyBuilderNew = () => {
   };
 
   // Get image upload permission state from top level
-  const {
-    isImageUploadEnabled,
-    loading: uploadLoading
-  } = useImageUploadPermission();
+  // Image upload permission is checked below after familyId is available
   const {
     toast
   } = useToast();
@@ -261,6 +258,10 @@ const FamilyBuilderNew = () => {
   // Get subscription from context
   const { subscription } = useSubscription();
   const familyId = searchParams.get('family');
+  const {
+    isImageUploadEnabled,
+    loading: uploadLoading
+  } = useImageUploadPermission(familyId);
   const treeId = searchParams.get('treeId');
   const isNew = searchParams.get('new') === 'true';
   const isEditMode = searchParams.get('edit') === 'true';

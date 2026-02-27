@@ -101,7 +101,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
 }) => {
   const { t, currentLanguage } = useLanguage();
   const navigate = useNavigate();
-  const { isImageUploadEnabled, loading: permissionLoading } = useImageUploadPermission();
+  const { isImageUploadEnabled, loading: permissionLoading } = useImageUploadPermission(familyId);
   // readOnly = can view but not upload/edit/delete; canView = show gallery content (not locked)
   const canViewGallery = readOnly || isImageUploadEnabled;
   const canEditGallery = !readOnly && isImageUploadEnabled;
