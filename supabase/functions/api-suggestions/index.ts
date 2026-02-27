@@ -74,23 +74,32 @@ async function authenticateRequest(req: Request) {
   return { user, supabase };
 }
 
-// Check family ownership
-async function checkFamilyOwnership(userId: string, familyId: string): Promise<boolean> {
+// Check family access (owner or collaborator)
+async function checkFamilyAccess(userId: string, familyId: string): Promise<boolean> {
   const supabase = createServiceClient();
-  const { data } = await supabase
+  // Check if owner
+  const { data: owned } = await supabase
     .from('families')
     .select('id')
     .eq('id', familyId)
     .eq('creator_id', userId)
     .maybeSingle();
-  return !!data;
+  if (owned) return true;
+  // Check if collaborator
+  const { data: collab } = await supabase
+    .from('family_collaborators')
+    .select('id')
+    .eq('family_id', familyId)
+    .eq('user_id', userId)
+    .maybeSingle();
+  return !!collab;
 }
 
 // GET handlers
 async function handleList(userId: string, familyId: string) {
   console.log(`[API] GET - Listing suggestions for family: ${familyId}`);
   
-  if (!await checkFamilyOwnership(userId, familyId)) {
+  if (!await checkFamilyAccess(userId, familyId)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
   }
   
@@ -141,7 +150,7 @@ async function handleGet(userId: string, suggestionId: string) {
   }
   
   // Check ownership
-  if (!await checkFamilyOwnership(userId, data.family_id)) {
+  if (!await checkFamilyAccess(userId, data.family_id)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this suggestion', 403);
   }
   
@@ -212,7 +221,7 @@ async function handleUpdate(userId: string, suggestionId: string, payload: Recor
     return errorResponse('DATABASE_ERROR', fetchError.message, 500);
   }
   
-  if (!await checkFamilyOwnership(userId, existing.family_id)) {
+  if (!await checkFamilyAccess(userId, existing.family_id)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this suggestion', 403);
   }
   
@@ -271,7 +280,7 @@ async function handleDelete(userId: string, suggestionId: string) {
     return errorResponse('DATABASE_ERROR', fetchError.message, 500);
   }
   
-  if (!await checkFamilyOwnership(userId, existing.family_id)) {
+  if (!await checkFamilyAccess(userId, existing.family_id)) {
     return errorResponse('FORBIDDEN', 'You do not have access to this suggestion', 403);
   }
   
