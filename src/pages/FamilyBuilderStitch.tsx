@@ -475,6 +475,7 @@ const FamilyBuilderStitch: React.FC = () => {
         familyName={familyData?.name || 'Al-Saeed'}
         onSwitchTree={() => navigate('/dashboard')}
         lastUpdated={recentActivities.length > 0 ? recentActivities[0].timestamp : undefined}
+        isCollaborator={isCollaborator}
         collaborators={recentActivities.length > 0 && recentActivities[0].actorName ? [{
           id: 'last-editor',
           initial: recentActivities[0].actorName.charAt(0).toUpperCase(),
