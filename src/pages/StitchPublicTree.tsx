@@ -310,21 +310,44 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
     return familyMembers.find(m => m.id === selectedMemberId);
   }, [selectedMemberId, familyMembers]);
 
-  // Tree root options
+  // Tree root options with lineage display (same as private tree view)
   const rootOptions = useMemo(() => {
     if (!marriages || marriages.length === 0) return [];
+
+    const getLineageLabel = (member: Member | undefined): string => {
+      if (!member) return t('tree_view.unknown', 'غير معروف');
+      const firstName = member.first_name || member.name?.split(' ')[0] || member.name || '';
+      const isFromFamily = isMemberFromFamily(member, familyMembers);
+
+      if (isFromFamily) {
+        // Family member: show "name ابن/بنت parent_name"
+        const fatherId = member.father_id || (member as any).fatherId;
+        const father = fatherId ? familyMembers.find(m => m.id === fatherId) : undefined;
+        if (father && !member.is_founder) {
+          const parentName = father.first_name || father.name?.split(' ')[0] || father.name || '';
+          const term = member.gender === 'female' ? 'بنت' : 'ابن';
+          return `${firstName} ${term} ${parentName}`;
+        }
+        return firstName;
+      } else {
+        // External spouse: show "name + last_name"
+        if (member.last_name) {
+          return `${firstName} ${member.last_name}`;
+        }
+        return firstName;
+      }
+    };
+
     return marriages.map(marriage => {
       const husband = familyMembers.find(m => m.id === marriage.husband_id);
       const wife = familyMembers.find(m => m.id === marriage.wife_id);
-      const getLabel = (member: Member | undefined) => {
-        if (!member) return t('tree_view.unknown', 'غير معروف');
-        return member.first_name || (member as any).name?.split(' ')[0] || (member as any).name || '';
-      };
+      const husbandLabel = getLineageLabel(husband);
+      const wifeLabel = getLineageLabel(wife);
       const isActive = (marriage as any).is_active !== false && (marriage as any).marital_status !== 'divorced';
       const heartIcon = isActive ? '❤️' : '💔';
       return {
         id: marriage.id,
-        label: `${getLabel(husband)} ${heartIcon} ${getLabel(wife)}`
+        label: `${husbandLabel} ${heartIcon} ${wifeLabel}`
       };
     });
   }, [marriages, familyMembers, t]);
