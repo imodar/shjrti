@@ -33,7 +33,7 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
   onSwitchTree,
   collaborators = [],
   additionalCount = 0,
-  lastUpdated = '2h ago',
+  lastUpdated,
   showRootSelector = false,
   rootOptions = [],
   selectedRoot = 'all',
