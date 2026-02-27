@@ -87,13 +87,23 @@ export function ProtectedFamilyRoute({ children, loadingFallback }: ProtectedFam
             .single();
 
           if (!membership) {
-            setError({
-              code: "403",
-              title: t('error.access_denied_title', 'الوصول مرفوض'),
-              message: t('error.access_denied_message', 'ليس لديك صلاحية للوصول لهذه العائلة')
-            });
-            setLoading(false);
-            return;
+            // Check if user is a collaborator
+            const { data: collaborator } = await supabase
+              .from('family_collaborators')
+              .select('id')
+              .eq('family_id', familyId)
+              .eq('user_id', user.id)
+              .single();
+
+            if (!collaborator) {
+              setError({
+                code: "403",
+                title: t('error.access_denied_title', 'الوصول مرفوض'),
+                message: t('error.access_denied_message', 'ليس لديك صلاحية للوصول لهذه العائلة')
+              });
+              setLoading(false);
+              return;
+            }
           }
         }
 
