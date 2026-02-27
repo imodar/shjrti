@@ -229,7 +229,8 @@ async function handleGet(userId: string, familyId: string, include?: string) {
       const userIds = [...new Set((data || []).map((l: any) => l.user_id).filter(Boolean))];
       let profileMap: Record<string, string> = {};
       if (userIds.length > 0) {
-        const { data: profiles } = await supabase
+        const serviceClient = createServiceClient();
+        const { data: profiles } = await serviceClient
           .from('profiles')
           .select('user_id, first_name, last_name')
           .in('user_id', userIds);
