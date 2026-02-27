@@ -515,6 +515,8 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
         {/* Sidebar - Upload & Members */}
         <aside className={cn(
           'bg-white dark:bg-slate-900 flex flex-col shrink-0',
+          // Hide sidebar entirely in readOnly mode when no memories
+          readOnly && memories.length === 0 && 'hidden',
           // Desktop
           'lg:w-80 lg:border-e lg:border-slate-200 lg:dark:border-slate-800',
           // Mobile: bottom sheet
@@ -722,7 +724,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                 <div className="rounded-3xl bg-slate-100 dark:bg-slate-800" />
               </div>
             ) : filteredMemories.length === 0 ? (
-              /* Beautiful empty state when user HAS permission but no photos */
+              /* Empty state - different for readOnly vs editable */
               <div className="flex-1 flex flex-col items-center justify-center py-12 lg:py-20">
                 <div className="relative mb-6 lg:mb-8">
                   <div className="absolute -inset-4 bg-primary/5 rounded-full blur-2xl" />
@@ -744,18 +746,22 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                   <h3 className="text-lg lg:text-2xl font-bold text-foreground">
                     {t('gallery.empty_title', 'معرض صور العائلة فارغ')}
                   </h3>
-                  <p className="text-muted-foreground text-sm lg:text-lg">
-                    {t('gallery.empty_description', 'ابدأ بتوثيق إرثك العائلي برفع أول ذكرى.')}
-                  </p>
-                  <div className="pt-4 lg:pt-6">
-                    <button
-                      onClick={() => openFilePicker()}
-                      className="bg-primary text-primary-foreground px-8 lg:px-10 py-3 lg:py-4 rounded-2xl shadow-xl shadow-primary/30 font-bold text-base lg:text-lg flex items-center gap-2 lg:gap-3 hover:scale-105 transition-all active:scale-95 mx-auto"
-                    >
-                      <span className="material-symbols-outlined text-xl lg:text-2xl">add_a_photo</span>
-                      {t('gallery.upload_first', 'ارفع أول صورة')}
-                    </button>
-                  </div>
+                  {!readOnly && (
+                    <>
+                      <p className="text-muted-foreground text-sm lg:text-lg">
+                        {t('gallery.empty_description', 'ابدأ بتوثيق إرثك العائلي برفع أول ذكرى.')}
+                      </p>
+                      <div className="pt-4 lg:pt-6">
+                        <button
+                          onClick={() => openFilePicker()}
+                          className="bg-primary text-primary-foreground px-8 lg:px-10 py-3 lg:py-4 rounded-2xl shadow-xl shadow-primary/30 font-bold text-base lg:text-lg flex items-center gap-2 lg:gap-3 hover:scale-105 transition-all active:scale-95 mx-auto"
+                        >
+                          <span className="material-symbols-outlined text-xl lg:text-2xl">add_a_photo</span>
+                          {t('gallery.upload_first', 'ارفع أول صورة')}
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             ) : (
