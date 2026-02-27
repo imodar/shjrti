@@ -480,6 +480,7 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
       <StitchFamilyBar
         familyName={familyName}
         onSwitchTree={() => {}}
+        lastUpdated={recentActivities.length > 0 ? recentActivities[0].timestamp : undefined}
         showRootSelector={showTree}
         rootOptions={rootOptions}
         selectedRoot={selectedRootMarriage}
