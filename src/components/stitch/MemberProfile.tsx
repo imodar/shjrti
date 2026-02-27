@@ -57,7 +57,7 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
   const [showAddParentsDrawer, setShowAddParentsDrawer] = useState(false);
   const { user } = useAuth();
   const addFounderParent = useAddFounderParentMutation();
-  const { isImageUploadEnabled } = useImageUploadPermission();
+  const { isImageUploadEnabled } = useImageUploadPermission(member?.family_id);
 
   const memberImageSrc = useResolvedImageUrl(member?.image_url || null);
 

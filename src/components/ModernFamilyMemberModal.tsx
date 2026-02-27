@@ -92,7 +92,7 @@ export const ModernFamilyMemberModal = ({
   const {
     isImageUploadEnabled,
     loading: permissionLoading
-  } = useImageUploadPermission();
+  } = useImageUploadPermission(familyId);
   const [step, setStep] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [showCropModal, setShowCropModal] = useState(false);

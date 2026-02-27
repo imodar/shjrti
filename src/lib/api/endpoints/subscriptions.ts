@@ -52,6 +52,16 @@ export interface SubscriptionDetails {
   ai_features_enabled: boolean;
 }
 
+export interface FamilyFeatures {
+  owner_id: string;
+  has_active_subscription: boolean;
+  image_upload_enabled: boolean;
+  custom_domains_enabled: boolean;
+  ai_features_enabled: boolean;
+  max_family_members: number;
+  member_memories_enabled: boolean;
+}
+
 export const subscriptionsApi = {
   /**
    * Get current user's subscription with package details
@@ -65,6 +75,13 @@ export const subscriptionsApi = {
    */
   getDetails: async (): Promise<SubscriptionDetails | null> => {
     return apiClient.get<SubscriptionDetails | null>(FUNCTION_NAME, { details: 'true' });
+  },
+
+  /**
+   * Get family features based on the tree owner's subscription
+   */
+  getFamilyFeatures: async (familyId: string): Promise<FamilyFeatures> => {
+    return apiClient.get<FamilyFeatures>(FUNCTION_NAME, { family_id: familyId });
   },
 };
 

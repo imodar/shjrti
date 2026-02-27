@@ -52,6 +52,7 @@ interface SpouseFormProps {
   onClose?: () => void;
   showForm: boolean;
   marriages?: Marriage[];
+  familyId?: string;
 }
 
 export const SpouseForm: React.FC<SpouseFormProps> = ({
@@ -68,10 +69,11 @@ export const SpouseForm: React.FC<SpouseFormProps> = ({
   onAdd,
   onClose,
   showForm,
-  marriages = []
+  marriages = [],
+  familyId
 }) => {
   const { toast } = useToast();
-  const { isImageUploadEnabled } = useImageUploadPermission();
+  const { isImageUploadEnabled } = useImageUploadPermission(familyId);
   
   // Track original spouse data for change detection
   const [originalSpouse, setOriginalSpouse] = useState<SpouseData | null>(null);

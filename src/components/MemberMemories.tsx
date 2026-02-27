@@ -39,12 +39,14 @@ interface MemberMemoriesProps {
   memberId: string;
   memberName: string;
   readOnly?: boolean;
+  familyId?: string;
 }
 
 export const MemberMemories: React.FC<MemberMemoriesProps> = ({ 
   memberId, 
   memberName,
-  readOnly = false
+  readOnly = false,
+  familyId
 }) => {
   const [memories, setMemories] = useState<Memory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -52,7 +54,7 @@ export const MemberMemories: React.FC<MemberMemoriesProps> = ({
   const [selectedMemory, setSelectedMemory] = useState<Memory | null>(null);
   const [showModal, setShowModal] = useState(false);
   const { toast } = useToast();
-  const { isImageUploadEnabled, loading: permissionLoading } = useImageUploadPermission();
+  const { isImageUploadEnabled, loading: permissionLoading } = useImageUploadPermission(familyId);
   const navigate = useNavigate();
   
   // API Mutations

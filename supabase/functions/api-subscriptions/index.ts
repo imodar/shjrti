@@ -71,13 +71,75 @@ async function authenticateRequest(req: Request) {
   return { user, supabase };
 }
 
+// GET handler - Get family owner's features (for collaborators)
+async function handleGetFamilyFeatures(familyId: string, requestingUserId: string) {
+  console.log(`[API] GET - Getting family features for family: ${familyId}, requested by: ${requestingUserId}`);
+  const supabase = createServiceClient();
+  
+  // Verify the requesting user has access to this family (owner or collaborator)
+  const hasAccess = await supabase.rpc('has_family_access', {
+    _user_id: requestingUserId,
+    _family_id: familyId,
+  });
+  
+  if (hasAccess.error || !hasAccess.data) {
+    return errorResponse('FORBIDDEN', 'You do not have access to this family', 403);
+  }
+  
+  // Get the family's creator_id
+  const { data: family, error: familyError } = await supabase
+    .from('families')
+    .select('creator_id')
+    .eq('id', familyId)
+    .single();
+  
+  if (familyError || !family) {
+    return errorResponse('NOT_FOUND', 'Family not found', 404);
+  }
+  
+  // Get the owner's active subscription with package features
+  const { data: subscription, error: subError } = await supabase
+    .from('user_subscriptions')
+    .select(`
+      *,
+      packages (
+        id, name, max_family_trees, max_family_members,
+        features, ai_features_enabled, custom_domains_enabled, image_upload_enabled
+      )
+    `)
+    .eq('user_id', family.creator_id)
+    .eq('status', 'active')
+    .maybeSingle();
+  
+  if (subError) {
+    return errorResponse('DATABASE_ERROR', subError.message, 500);
+  }
+  
+  // Build features response
+  const pkg = subscription?.packages as any;
+  const isExpired = subscription?.expires_at ? new Date(subscription.expires_at) <= new Date() : false;
+  
+  return successResponse({
+    owner_id: family.creator_id,
+    has_active_subscription: !!subscription && !isExpired,
+    image_upload_enabled: !isExpired && Boolean(pkg?.image_upload_enabled),
+    custom_domains_enabled: !isExpired && Boolean(pkg?.custom_domains_enabled),
+    ai_features_enabled: !isExpired && Boolean(pkg?.ai_features_enabled),
+    max_family_members: pkg?.max_family_members ?? 50,
+    member_memories_enabled: !isExpired && (
+      Boolean(pkg?.image_upload_enabled) || 
+      pkg?.features?.member_memories === true || 
+      pkg?.features?.member_memories === 'true'
+    ),
+  });
+}
+
 // GET handler - Get current user's subscription
 async function handleGet(userId: string, getDetails: boolean) {
   console.log(`[API] GET - Getting subscription for user: ${userId}, details: ${getDetails}`);
   const supabase = createServiceClient();
   
   if (getDetails) {
-    // Use RPC for detailed info
     const { data, error } = await supabase.rpc('get_user_subscription_details', {
       user_uuid: userId,
     });
@@ -90,23 +152,14 @@ async function handleGet(userId: string, getDetails: boolean) {
     return successResponse(data?.[0] || null);
   }
   
-  // Standard query with package join
   const { data, error } = await supabase
     .from('user_subscriptions')
     .select(`
       *,
       packages (
-        id,
-        name,
-        description,
-        max_family_trees,
-        max_family_members,
-        price_sar,
-        price_usd,
-        features,
-        ai_features_enabled,
-        custom_domains_enabled,
-        image_upload_enabled
+        id, name, description, max_family_trees, max_family_members,
+        price_sar, price_usd, features, ai_features_enabled,
+        custom_domains_enabled, image_upload_enabled
       )
     `)
     .eq('user_id', userId)
@@ -118,7 +171,6 @@ async function handleGet(userId: string, getDetails: boolean) {
     return errorResponse('DATABASE_ERROR', error.message, 500);
   }
   
-  // Return default free subscription if none exists
   if (!data) {
     return successResponse({
       user_id: userId,
@@ -152,12 +204,16 @@ Deno.serve(async (req) => {
     // Parse URL and query params
     const url = new URL(req.url);
     const getDetails = url.searchParams.get('details') === 'true';
+    const familyId = url.searchParams.get('family_id');
     
     console.log(`[API] ${req.method} /api-subscriptions`);
     
     // Route based on HTTP method
     switch (req.method) {
       case 'GET':
+        if (familyId) {
+          return await handleGetFamilyFeatures(familyId, user!.id);
+        }
         return await handleGet(user!.id, getDetails);
         
       default:
