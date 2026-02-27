@@ -23,7 +23,10 @@ const AcceptInvitation: React.FC = () => {
   const [accepted, setAccepted] = useState(false);
 
   // Signup form state (for new users)
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [signingUp, setSigningUp] = useState(false);
 
   // Validate token on mount
@@ -86,13 +89,23 @@ const AcceptInvitation: React.FC = () => {
     e.preventDefault();
     if (!tokenData || !password) return;
 
+    if (password !== confirmPassword) {
+      toast.error('كلمتا المرور غير متطابقتين');
+      return;
+    }
+
     setSigningUp(true);
     try {
       const { error: signupError } = await supabase.auth.signUp({
         email: tokenData.email,
         password,
         options: {
-          data: { invitation_token: token },
+          data: {
+            invitation_token: token,
+            first_name: firstName,
+            last_name: lastName,
+            full_name: `${firstName} ${lastName}`.trim(),
+          },
         },
       });
 
@@ -188,6 +201,26 @@ const AcceptInvitation: React.FC = () => {
                 <p className="text-sm text-muted-foreground text-center">
                   أنشئ حسابك للانضمام
                 </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label>الاسم الأول</Label>
+                    <Input
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="الاسم الأول"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>اسم العائلة</Label>
+                    <Input
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="اسم العائلة"
+                      required
+                    />
+                  </div>
+                </div>
                 <div className="space-y-2">
                   <Label>البريد الإلكتروني</Label>
                   <Input value={tokenData.email} disabled />
@@ -199,6 +232,17 @@ const AcceptInvitation: React.FC = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="أدخل كلمة مرور قوية"
+                    minLength={6}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>تأكيد كلمة المرور</Label>
+                  <Input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="أعد إدخال كلمة المرور"
                     minLength={6}
                     required
                   />
