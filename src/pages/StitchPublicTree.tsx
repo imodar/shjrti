@@ -526,7 +526,7 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
       ) : (
         <>
           {/* Mobile members bar */}
-          {!showGallery && !isSidebarOpen && (
+          {!showGallery && !showStatistics && !isSidebarOpen && (
             <button
               onClick={() => setIsSidebarOpen(true)}
               className="lg:hidden flex items-center justify-center gap-2 w-full py-3 px-4 bg-card border-b border-border text-foreground hover:bg-muted transition-colors"
@@ -541,7 +541,7 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
           {/* Main Layout */}
           <main className="flex h-[calc(100vh-120px)]">
             {/* Sidebar - readOnly: hide add buttons */}
-            {!showGallery && (
+            {!showGallery && !showStatistics && (
               <StitchSidebar
                 members={filteredMembers}
                 totalCount={stats.totalMembers}
