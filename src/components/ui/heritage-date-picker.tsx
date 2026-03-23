@@ -178,7 +178,7 @@ export function HeritageDatePicker({
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          className="p-0 gap-0 max-w-[min(95vw,380px)] rounded-2xl overflow-hidden border-0 shadow-2xl"
+          className="p-0 gap-0 max-w-[min(95vw,380px)] rounded-2xl overflow-hidden border-0 shadow-2xl z-[80]"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           {/* Header */}
