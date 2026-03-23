@@ -217,6 +217,8 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
             ? cn("left-0 border-r", isOpen ? "translate-x-0" : "-translate-x-full")
             : cn("right-0 border-l", isOpen ? "translate-x-0" : "translate-x-full")
         )}
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
         style={{
           boxShadow: isOpen 
             ? (isRTL ? '20px 0 60px -15px rgba(0,0,0,0.3)' : '-20px 0 60px -15px rgba(0,0,0,0.3)')
