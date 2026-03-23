@@ -219,6 +219,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
         )}
         onClick={(e) => e.stopPropagation()}
         onMouseDown={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
         style={{
           boxShadow: isOpen 
             ? (isRTL ? '20px 0 60px -15px rgba(0,0,0,0.3)' : '-20px 0 60px -15px rgba(0,0,0,0.3)')
