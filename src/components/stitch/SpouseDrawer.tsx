@@ -190,6 +190,18 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
     }
   };
 
+  const handleNameChange = (field: 'firstName' | 'lastName', value: string) => {
+    if (!currentSpouse) return;
+
+    const nextSpouse = {
+      ...currentSpouse,
+      [field]: value,
+    };
+
+    nextSpouse.name = `${nextSpouse.firstName || ''} ${nextSpouse.lastName || ''}`.trim();
+    onSpouseChange(nextSpouse);
+  };
+
   if (!currentSpouse) return null;
   // Note: Keep DOM mounted even when !isOpen so CSS transitions work
 
@@ -338,11 +350,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                       <input
                         type="text"
                         value={currentSpouse.firstName || ''}
-                        onChange={(e) => {
-                          const firstName = e.target.value;
-                          handleInputChange('firstName', firstName);
-                          handleInputChange('name', `${firstName} ${currentSpouse.lastName || ''}`.trim());
-                        }}
+                         onChange={(e) => handleNameChange('firstName', e.target.value)}
                         placeholder={t('member.first_name_placeholder', 'First name')}
                         className={`w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 ${
                           spouseType === 'husband' ? 'focus:ring-blue-500/20 focus:border-blue-500' : 'focus:ring-pink-500/20 focus:border-pink-500'
@@ -359,11 +367,7 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
                       <input
                         type="text"
                         value={currentSpouse.lastName || ''}
-                        onChange={(e) => {
-                          const lastName = e.target.value;
-                          handleInputChange('lastName', lastName);
-                          handleInputChange('name', `${currentSpouse.firstName || ''} ${lastName}`.trim());
-                        }}
+                         onChange={(e) => handleNameChange('lastName', e.target.value)}
                         placeholder={t('member.last_name_placeholder', 'Last name')}
                         className={`w-full ps-9 pe-4 py-2.5 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 ${
                           spouseType === 'husband' ? 'focus:ring-blue-500/20 focus:border-blue-500' : 'focus:ring-pink-500/20 focus:border-pink-500'
