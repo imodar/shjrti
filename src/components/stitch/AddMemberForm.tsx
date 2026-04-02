@@ -462,7 +462,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                     onCheckedChange={(checked) => setFormData(prev => ({ ...prev, motherUnknown: !checked }))}
                   />
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    {t('member.wife_known', 'هل الزوجة معروفة؟')}
+                    {t('member.wife_info_available', 'اسم الزوجة ومعلوماتها متوفرة')}
                   </label>
                 </div>
               )}
