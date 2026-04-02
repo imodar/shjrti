@@ -638,6 +638,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                   </button>
                 )}
               </div>
+              )}
             </div>
 
             {/* Footer Actions */}
