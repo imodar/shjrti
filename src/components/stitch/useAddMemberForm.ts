@@ -305,7 +305,7 @@ export const useAddMemberForm = ({
         const memberWives = memberMarriages.map(marriage => {
           const wifeMember = familyMembers.find(m => m.id === marriage.wife_id);
           return extractSpouseData(wifeMember, marriage);
-        }).filter(wife => wife.id);
+        }).filter(wife => wife.id && wife.firstName !== 'unknown_mother');
 
         setWives(memberWives);
         setOriginalWivesData([...memberWives]);
