@@ -24,6 +24,7 @@ export interface MemberFormData {
   is_twin: boolean;
   twin_group_id: string | null;
   selected_twins: string[];
+  motherUnknown: boolean;
 }
 
 export interface AddMemberFormProps {
@@ -74,7 +75,8 @@ export const defaultFormData: MemberFormData = {
   isFounder: false,
   is_twin: false,
   twin_group_id: null,
-  selected_twins: []
+  selected_twins: [],
+  motherUnknown: false
 };
 
 export const defaultSpouseData: SpouseData = {
