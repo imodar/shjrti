@@ -477,6 +477,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                 </div>
               )}
               
+              {!(formData.gender === 'male' && formData.motherUnknown) && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Existing Spouses */}
                 {formData.gender === 'male' && wives.map((wife, index) => {
