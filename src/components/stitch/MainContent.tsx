@@ -144,6 +144,23 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
     }
   ];
 
+  // Show Add Member Form (takes priority over other views)
+  if (showAddMemberForm && familyId && onCloseForm && onMemberSaved) {
+    return (
+      <AddMemberForm
+        familyId={familyId}
+        familyMembers={familyMembers}
+        marriages={marriages}
+        familyData={familyData}
+        editingMember={editingMember}
+        formMode={formMode}
+        onClose={onCloseForm}
+        onMemberSaved={onMemberSaved}
+        initialFormData={initialFormData}
+      />
+    );
+  }
+
   // Show Suggestions View
   if (showSuggestions && familyId) {
     return (
@@ -176,7 +193,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   }
 
   // Show Member Profile if a member is selected
-  if (selectedMember && !showAddMemberForm) {
+  if (selectedMember) {
     return (
       <StitchMemberProfile
         member={selectedMember}
@@ -189,23 +206,6 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
         onAddChild={onAddChild}
         readOnly={readOnly}
         onSuggestEdit={readOnly && onSuggestEdit ? onSuggestEdit : undefined}
-      />
-    );
-  }
-
-
-  if (showAddMemberForm && familyId && onCloseForm && onMemberSaved) {
-    return (
-      <AddMemberForm
-        familyId={familyId}
-        familyMembers={familyMembers}
-        marriages={marriages}
-        familyData={familyData}
-        editingMember={editingMember}
-        formMode={formMode}
-        onClose={onCloseForm}
-        onMemberSaved={onMemberSaved}
-        initialFormData={initialFormData}
       />
     );
   }
