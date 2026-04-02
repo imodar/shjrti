@@ -241,7 +241,8 @@ export const useAddMemberForm = ({
       isFounder,
       is_twin: member.is_twin || false,
       twin_group_id: member.twin_group_id || null,
-      selected_twins: []
+      selected_twins: [],
+      motherUnknown: false
     });
 
     // Lock parents if member has children or is married
