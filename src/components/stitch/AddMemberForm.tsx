@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect, useMemo } from 'react';
+import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
