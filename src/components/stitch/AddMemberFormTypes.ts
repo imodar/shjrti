@@ -24,6 +24,7 @@ export interface MemberFormData {
   is_twin: boolean;
   twin_group_id: string | null;
   selected_twins: string[];
+  motherUnknown: boolean;
 }
 
 export interface AddMemberFormProps {
