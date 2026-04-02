@@ -453,6 +453,29 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                     : t('member.wife_info', 'Wife Information')}
                 </h3>
               </div>
+
+              {/* Wife Known Switch - only for male members */}
+              {formData.gender === 'male' && (
+                <div className="flex items-center gap-3 mb-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                  <Switch
+                    checked={!formData.motherUnknown}
+                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, motherUnknown: !checked }))}
+                  />
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    {t('member.wife_known', 'هل الزوجة معروفة؟')}
+                  </label>
+                </div>
+              )}
+
+              {/* Unknown wife banner */}
+              {formData.gender === 'male' && formData.motherUnknown && (
+                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl mb-6 flex items-center gap-3">
+                  <span className="material-symbols-outlined text-amber-500">info</span>
+                  <p className="text-sm text-amber-700 dark:text-amber-300">
+                    {t('member.unknown_wife_note', 'سيتم إنشاء سجل زوجة غير معروفة تلقائياً وربط الأبناء بالأب مباشرة')}
+                  </p>
+                </div>
+              )}
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Existing Spouses */}
