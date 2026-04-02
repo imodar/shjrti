@@ -199,81 +199,85 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
    }
  
    // Render Married Couple Card
-   if (unit.type === 'married') {
-     const wife = unit.wives[0];
- 
-      // Check if husband or wife's parent has multiple spouses
-      const husbandMother = unit.husband?.mother_id 
-        ? familyMembers.find(m => m.id === unit.husband?.mother_id) 
-        : null;
-      const wifeMother = wife?.mother_id 
-        ? familyMembers.find(m => m.id === wife?.mother_id) 
-        : null;
-      
-      const showHusbandMotherBadge = unit.husband && husbandMother && hasParentMultipleSpouses(unit.husband, familyMembers);
-      const showWifeMotherBadge = wife && wifeMother && hasParentMultipleSpouses(wife, familyMembers);
+    if (unit.type === 'married') {
+      const wife = unit.wives[0];
+      const isUnknownWife = wife?.first_name === 'unknown_mother';
 
-     return (
-       <div className="family-card w-[420px] p-6 pt-10 bg-white dark:bg-slate-800 border border-primary/20 dark:border-primary/30 rounded-[24px] shadow-sm relative">
-         {/* Label */}
-         <div className="family-label absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white px-4 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 whitespace-nowrap z-10">
-           <span className="material-icons-round text-sm">groups</span>
-           {getUnitLabel()}
-         </div>
- 
-         {/* Founder Badge */}
-         {unit.isFounder && (
-           <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-amber-500 text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md">
-             <span className="material-icons-round text-sm">workspace_premium</span>
-             {t('tree_view.founder', 'Founder')}
-           </div>
-         )}
- 
-         <div className="flex items-center justify-center gap-8">
-           {/* Husband */}
-           {unit.husband && (
-             <div className="flex flex-col items-center gap-2">
-               <MemberAvatar member={unit.husband} size="md" />
-               <div className="text-center">
-                  <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers)}</p>
-                  {showHusbandMotherBadge && husbandMother && (
-                    <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
-                      <span className="material-icons-round text-[10px]">face_3</span>
-                      {t('tree_view.mother', 'Mother')}: {husbandMother.first_name || husbandMother.name}
-                    </span>
-                  )}
-               </div>
-             </div>
-           )}
- 
-            {/* Heart Icon */}
-            <div className="flex items-center justify-center">
-              {wife?.marital_status === 'divorced' ? (
-                <span className="material-icons-round text-slate-400">heart_broken</span>
-              ) : (
-                <span className="material-icons-round text-red-400 animate-pulse">favorite</span>
-              )}
+       // Check if husband or wife's parent has multiple spouses
+       const husbandMother = unit.husband?.mother_id 
+         ? familyMembers.find(m => m.id === unit.husband?.mother_id) 
+         : null;
+       const wifeMother = wife?.mother_id 
+         ? familyMembers.find(m => m.id === wife?.mother_id) 
+         : null;
+       
+       const showHusbandMotherBadge = unit.husband && husbandMother && hasParentMultipleSpouses(unit.husband, familyMembers);
+       const showWifeMotherBadge = !isUnknownWife && wife && wifeMother && hasParentMultipleSpouses(wife, familyMembers);
+
+      return (
+        <div className="family-card w-[420px] p-6 pt-10 bg-white dark:bg-slate-800 border border-primary/20 dark:border-primary/30 rounded-[24px] shadow-sm relative">
+          {/* Label */}
+          <div className="family-label absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white px-4 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 whitespace-nowrap z-10">
+            <span className="material-icons-round text-sm">groups</span>
+            {getUnitLabel()}
+          </div>
+
+          {/* Founder Badge */}
+          {unit.isFounder && (
+            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-amber-500 text-white px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow-md">
+              <span className="material-icons-round text-sm">workspace_premium</span>
+              {t('tree_view.founder', 'Founder')}
             </div>
- 
-           {/* Wife */}
-           {wife && (
-             <div className="flex flex-col items-center gap-2">
-               <MemberAvatar member={wife} size="md" />
-               <div className="text-center">
-                  <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers) || t('tree_view.unknown_wife', 'Unknown Wife')}</p>
-                  {showWifeMotherBadge && wifeMother && (
-                    <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
-                      <span className="material-icons-round text-[10px]">face_3</span>
-                      {t('tree_view.mother', 'Mother')}: {wifeMother.first_name || wifeMother.name}
-                    </span>
+          )}
+
+          <div className="flex items-center justify-center gap-8">
+            {/* Husband */}
+            {unit.husband && (
+              <div className="flex flex-col items-center gap-2">
+                <MemberAvatar member={unit.husband} size="md" />
+                <div className="text-center">
+                   <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers)}</p>
+                   {showHusbandMotherBadge && husbandMother && (
+                     <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
+                       <span className="material-icons-round text-[10px]">face_3</span>
+                       {t('tree_view.mother', 'Mother')}: {husbandMother.first_name || husbandMother.name}
+                     </span>
+                   )}
+                </div>
+              </div>
+            )}
+
+            {/* Heart Icon & Wife - hidden when unknown_mother */}
+            {!isUnknownWife && (
+              <>
+                <div className="flex items-center justify-center">
+                  {wife?.marital_status === 'divorced' ? (
+                    <span className="material-icons-round text-slate-400">heart_broken</span>
+                  ) : (
+                    <span className="material-icons-round text-red-400 animate-pulse">favorite</span>
                   )}
-               </div>
-             </div>
-           )}
-         </div>
-       </div>
-     );
-   }
+                </div>
+
+                {wife && (
+                  <div className="flex flex-col items-center gap-2">
+                    <MemberAvatar member={wife} size="md" />
+                    <div className="text-center">
+                       <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers) || t('tree_view.unknown_wife', 'Unknown Wife')}</p>
+                       {showWifeMotherBadge && wifeMother && (
+                         <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
+                           <span className="material-icons-round text-[10px]">face_3</span>
+                           {t('tree_view.mother', 'Mother')}: {wifeMother.first_name || wifeMother.name}
+                         </span>
+                       )}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      );
+    }
  
    // Render Polygamy Card (Multiple Spouses)
    if (unit.type === 'polygamy') {
