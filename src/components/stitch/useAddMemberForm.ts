@@ -671,7 +671,37 @@ export const useAddMemberForm = ({
       };
 
       // Process wives for male members
-      if (submissionData.gender === 'male' && wives.length > 0) {
+      if (submissionData.gender === 'male' && formData.motherUnknown) {
+        // Create or reuse a dummy "unknown mother" wife
+        const existingMarriages = marriages.filter(m => m.husband_id === memberData.id);
+        const existingDummy = existingMarriages.find(marriage => {
+          const wifeMember = familyMembers.find(m => m.id === marriage.wife_id);
+          return wifeMember?.first_name === 'unknown_mother';
+        });
+
+        if (!existingDummy) {
+          // Create dummy wife
+          const dummyWife = await membersApi.create({
+            name: 'زوجة غير معروفة',
+            first_name: 'unknown_mother',
+            last_name: familyData?.name || '',
+            gender: 'female',
+            is_alive: false,
+            family_id: familyId,
+            is_founder: false,
+            marital_status: 'married',
+          });
+
+          // Create marriage
+          await marriagesApi.upsert({
+            family_id: familyId,
+            husband_id: memberData.id,
+            wife_id: dummyWife.id,
+            is_active: true,
+            marital_status: 'married',
+          });
+        }
+      } else if (submissionData.gender === 'male' && wives.length > 0) {
         const savedWives = wives.filter(w => w.isSaved === true);
         for (const wife of savedWives) {
           await processSpouseMarriage(wife, 'wife');
