@@ -75,7 +75,8 @@ export const defaultFormData: MemberFormData = {
   isFounder: false,
   is_twin: false,
   twin_group_id: null,
-  selected_twins: []
+  selected_twins: [],
+  motherUnknown: false
 };
 
 export const defaultSpouseData: SpouseData = {
