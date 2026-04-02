@@ -245,6 +245,18 @@ export const useAddMemberForm = ({
       motherUnknown: false
     });
 
+    // Detect if all wives are unknown_mother dummies
+    if (member.gender === 'male') {
+      const memberMarriages = marriages.filter(m => m.husband_id === member.id);
+      const allWivesUnknown = memberMarriages.length > 0 && memberMarriages.every(marriage => {
+        const wifeMember = familyMembers.find(m => m.id === marriage.wife_id);
+        return wifeMember?.first_name === 'unknown_mother';
+      });
+      if (allWivesUnknown) {
+        setFormData(prev => ({ ...prev, motherUnknown: true }));
+      }
+    }
+
     // Lock parents if member has children or is married
     const memberId = member.id;
     const hasChildren = familyMembers.some(m => 
