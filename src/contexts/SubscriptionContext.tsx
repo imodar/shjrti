@@ -178,6 +178,29 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     }
   }, [user]); // Only depend on user, not hasInitialized
 
+  // Realtime listener for subscription changes
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('subscription-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'user_subscriptions',
+        filter: `user_id=eq.${user.id}`
+      }, () => {
+        // Invalidate cache and refetch
+        localStorage.removeItem(`subscription_${user.id}`);
+        fetchSubscriptionDetails(true);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
   // Auto-refresh removed - only check subscription on login or manual refresh
 
   const refreshSubscription = async () => {

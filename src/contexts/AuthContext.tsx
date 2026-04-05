@@ -53,9 +53,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      // Clean up auth state
+      // Clear all app caches
+      const CACHE_KEYS_TO_CLEAR = ['paymentGatewaySettings', 'translations_ar', 'translations_en', 'date_preference'];
+      CACHE_KEYS_TO_CLEAR.forEach(key => localStorage.removeItem(key));
+      
+      // Clear subscription and supabase auth caches
       Object.keys(localStorage).forEach((key) => {
-        if (key.startsWith('supabase.auth.') || key.includes('sb-')) {
+        if (key.startsWith('supabase.auth.') || key.includes('sb-') || key.startsWith('subscription_')) {
           localStorage.removeItem(key);
         }
       });
