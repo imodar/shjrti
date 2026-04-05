@@ -183,7 +183,7 @@ export const useAddMemberForm = ({
     setSelectedImage(null);
     setEditingMemberImageUrl(null);
     setImageChanged(true);
-    (window as any).__croppedImageBlob = null;
+    croppedImageBlobRef.current = null;
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
