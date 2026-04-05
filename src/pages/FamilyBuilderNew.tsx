@@ -2308,7 +2308,7 @@ const FamilyBuilderNew = () => {
           }
           
           // Upload new image FIRST before updating DB
-          const croppedBlob = (window as any).__croppedImageBlob;
+          const croppedBlob = croppedImageBlobRef.current;
           if (croppedBlob) {
             try {
               finalImageUrl = await uploadMemberImage(croppedBlob, editingMember.id);
