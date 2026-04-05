@@ -289,7 +289,11 @@ const App = () => {
                   <Route path="/terms-conditions" element={<TermsConditions />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/contact" element={<ContactUs />} />
-                  <Route path="/api-docs" element={<ApiDocs />} />
+                  <Route path="/api-docs" element={
+                    <Suspense fallback={<div className="flex items-center justify-center h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+                      <ApiDocs />
+                    </Suspense>
+                  } />
                   <Route path="/accept-invitation" element={<AcceptInvitation />} />
                   <Route path="/tree" element={<StitchPublicTree />} />
                   <Route path="/share" element={<StitchPublicTree />} />
