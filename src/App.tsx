@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -54,20 +54,22 @@ import TermsConditions from "./pages/TermsConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ContactUs from "./pages/ContactUs";
 import Store from "./pages/Store";
-import EnhancedAdminPanel from "./pages/EnhancedAdminPanel";
-import AdminBilling from "./pages/AdminBilling";
-import AdminAPISettings from "./pages/AdminAPISettings";
-import AdminSocialMedia from "./pages/AdminSocialMedia";
-import AdminSEOSettings from "./pages/AdminSEOSettings";
-import AdminNewsletterSubscriptions from "./pages/AdminNewsletterSubscriptions";
-import AdminRefunds from "./pages/AdminRefunds";
 import RenewSubscription from "./pages/RenewSubscription";
 import CustomDomainRedirect from "./pages/CustomDomainRedirect";
 import PublicTreeViewWithContext from "./pages/PublicTreeView/PublicTreeViewWithContext";
 import NotFound from "./pages/NotFound";
-import ApiDocs from "./pages/ApiDocs";
 import AcceptInvitation from "./pages/AcceptInvitation";
 import { supabase } from "@/integrations/supabase/client";
+
+// Lazy-loaded admin pages (code splitting)
+const EnhancedAdminPanel = React.lazy(() => import('./pages/EnhancedAdminPanel'));
+const AdminBilling = React.lazy(() => import('./pages/AdminBilling'));
+const AdminAPISettings = React.lazy(() => import('./pages/AdminAPISettings'));
+const AdminSocialMedia = React.lazy(() => import('./pages/AdminSocialMedia'));
+const AdminSEOSettings = React.lazy(() => import('./pages/AdminSEOSettings'));
+const AdminNewsletterSubscriptions = React.lazy(() => import('./pages/AdminNewsletterSubscriptions'));
+const AdminRefunds = React.lazy(() => import('./pages/AdminRefunds'));
+const ApiDocs = React.lazy(() => import('./pages/ApiDocs'));
 
 const queryClient = new QueryClient();
 
