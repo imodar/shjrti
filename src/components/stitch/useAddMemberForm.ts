@@ -528,7 +528,7 @@ export const useAddMemberForm = ({
           finalImageUrl = memberImagePath;
         }
       } else {
-        const croppedBlob = (window as any).__croppedImageBlob;
+        const croppedBlob = croppedImageBlobRef.current;
         if (croppedBlob) {
           const tempId = `temp_${Date.now()}`;
           finalImageUrl = await uploadMemberImage(croppedBlob, tempId);
