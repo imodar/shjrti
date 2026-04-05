@@ -103,6 +103,7 @@ const FamilyBuilderNew = () => {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const croppedImageBlobRef = useRef<Blob | null>(null);
   const createImage = (url: string): Promise<HTMLImageElement> => new Promise((resolve, reject) => {
     const image = document.createElement('img');
     image.addEventListener('load', () => resolve(image));
@@ -169,7 +170,7 @@ const FamilyBuilderNew = () => {
         setImageChanged(true);
         setShowCropDialog(false);
         // Store blob in a ref or state for later upload
-        (window as any).__croppedImageBlob = croppedBlob;
+        croppedImageBlobRef.current = croppedBlob;
       }
     }
   };
@@ -205,7 +206,7 @@ const FamilyBuilderNew = () => {
       setCroppedImage(null);
       setSelectedImage(null);
       setImageChanged(true);
-      (window as any).__croppedImageBlob = null;
+      croppedImageBlobRef.current = null;
 
       if (editingMember) {
         setEditingMember({ ...editingMember, image: null });
@@ -2138,7 +2139,7 @@ const FamilyBuilderNew = () => {
         }
         
         // Upload new image to storage
-        const croppedBlob = (window as any).__croppedImageBlob;
+        const croppedBlob = croppedImageBlobRef.current;
         if (croppedBlob) {
           imageUrl = await uploadMemberImage(croppedBlob, spouse.existingFamilyMemberId);
           console.log('✅ Spouse image uploaded to storage:', imageUrl);
@@ -2308,7 +2309,7 @@ const FamilyBuilderNew = () => {
           }
           
           // Upload new image FIRST before updating DB
-          const croppedBlob = (window as any).__croppedImageBlob;
+          const croppedBlob = croppedImageBlobRef.current;
           if (croppedBlob) {
             try {
               finalImageUrl = await uploadMemberImage(croppedBlob, editingMember.id);
@@ -2454,7 +2455,7 @@ const FamilyBuilderNew = () => {
         }
         
         // Now upload image using the real member ID
-        const croppedBlob = (window as any).__croppedImageBlob;
+        const croppedBlob = croppedImageBlobRef.current;
         if (croppedBlob && imageChanged) {
           try {
             const imageStoragePath = await uploadMemberImage(croppedBlob, memberData.id);

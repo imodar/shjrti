@@ -13,6 +13,8 @@ interface DatePreferenceContextType {
 
 const DatePreferenceContext = createContext<DatePreferenceContextType | undefined>(undefined);
 
+const CACHE_KEY = 'date_preference';
+
 export const useDatePreference = () => {
   const context = useContext(DatePreferenceContext);
   if (context === undefined) {
@@ -27,7 +29,10 @@ interface DatePreferenceProviderProps {
 
 export const DatePreferenceProvider: React.FC<DatePreferenceProviderProps> = ({ children }) => {
   const { user } = useAuth();
-  const [datePreference, setDatePreferenceState] = useState<DatePreference>('gregorian');
+  
+  // Initialize from localStorage cache immediately
+  const cachedPref = localStorage.getItem(CACHE_KEY) as DatePreference | null;
+  const [datePreference, setDatePreferenceState] = useState<DatePreference>(cachedPref || 'gregorian');
   const [loading, setLoading] = useState(true);
 
   // Load user's date preference on mount
@@ -54,7 +59,9 @@ export const DatePreferenceProvider: React.FC<DatePreferenceProviderProps> = ({ 
       }
 
       if (data?.date_preference) {
-        setDatePreferenceState(data.date_preference as DatePreference);
+        const pref = data.date_preference as DatePreference;
+        setDatePreferenceState(pref);
+        localStorage.setItem(CACHE_KEY, pref);
       }
     } catch (error) {
       console.error('Error in loadDatePreference:', error);
@@ -65,8 +72,9 @@ export const DatePreferenceProvider: React.FC<DatePreferenceProviderProps> = ({ 
 
   const setDatePreference = async (preference: DatePreference) => {
     try {
-      // Update local state immediately for responsive UI
+      // Update local state and cache immediately for responsive UI
       setDatePreferenceState(preference);
+      localStorage.setItem(CACHE_KEY, preference);
 
       if (!user?.id) return;
 

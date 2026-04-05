@@ -1,9 +1,11 @@
-import SwaggerUI from 'swagger-ui-react';
+import React, { Suspense } from 'react';
 import 'swagger-ui-react/swagger-ui.css';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, FileJson, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+const SwaggerUI = React.lazy(() => import('swagger-ui-react'));
 
 const ApiDocs = () => {
   const { direction } = useLanguage();
@@ -57,16 +59,22 @@ const ApiDocs = () => {
 
       {/* Swagger UI */}
       <main className="swagger-wrapper">
-        <SwaggerUI 
-          url="/openapi.json"
-          docExpansion="list"
-          defaultModelsExpandDepth={1}
-          displayRequestDuration={true}
-          filter={true}
-          showExtensions={true}
-          showCommonExtensions={true}
-          tryItOutEnabled={false}
-        />
+        <Suspense fallback={
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+          </div>
+        }>
+          <SwaggerUI 
+            url="/openapi.json"
+            docExpansion="list"
+            defaultModelsExpandDepth={1}
+            displayRequestDuration={true}
+            filter={true}
+            showExtensions={true}
+            showCommonExtensions={true}
+            tryItOutEnabled={false}
+          />
+        </Suspense>
       </main>
 
       {/* Custom Styles */}

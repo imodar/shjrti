@@ -40,8 +40,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       const cached = localStorage.getItem(`subscription_${userId}`);
       if (cached) {
         const cachedData = JSON.parse(cached);
-        // Check if cache is less than 1 hour old
-        if (Date.now() - cachedData.timestamp < 3600000) {
+        // Check if cache is less than 5 minutes old
+        if (Date.now() - cachedData.timestamp < 300000) {
           setSubscription(cachedData.data);
           return true;
         }
@@ -177,6 +177,29 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       });
     }
   }, [user]); // Only depend on user, not hasInitialized
+
+  // Realtime listener for subscription changes
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase
+      .channel('subscription-changes')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'user_subscriptions',
+        filter: `user_id=eq.${user.id}`
+      }, () => {
+        // Invalidate cache and refetch
+        localStorage.removeItem(`subscription_${user.id}`);
+        fetchSubscriptionDetails(true);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
 
   // Auto-refresh removed - only check subscription on login or manual refresh
 

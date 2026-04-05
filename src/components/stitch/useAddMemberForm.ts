@@ -44,6 +44,9 @@ export const useAddMemberForm = ({
   const { t } = useLanguage();
   const { isImageUploadEnabled } = useImageUploadPermission(familyId);
 
+  // Cropped image blob ref (replaces window.__croppedImageBlob)
+  const croppedImageBlobRef = useRef<Blob | null>(null);
+
   // Form step
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
@@ -165,7 +168,7 @@ export const useAddMemberForm = ({
         setCroppedImage(previewUrl);
         setImageChanged(true);
         setShowCropDialog(false);
-        (window as any).__croppedImageBlob = croppedBlob;
+        croppedImageBlobRef.current = croppedBlob;
       }
     }
   };
@@ -180,7 +183,7 @@ export const useAddMemberForm = ({
     setSelectedImage(null);
     setEditingMemberImageUrl(null);
     setImageChanged(true);
-    (window as any).__croppedImageBlob = null;
+    croppedImageBlobRef.current = null;
 
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -502,7 +505,7 @@ export const useAddMemberForm = ({
             oldImagePath = memberImagePath;
           }
           
-          const croppedBlob = (window as any).__croppedImageBlob;
+          const croppedBlob = croppedImageBlobRef.current;
           if (croppedBlob) {
             finalImageUrl = await uploadMemberImage(croppedBlob, editingMember.id);
             
@@ -525,7 +528,7 @@ export const useAddMemberForm = ({
           finalImageUrl = memberImagePath;
         }
       } else {
-        const croppedBlob = (window as any).__croppedImageBlob;
+        const croppedBlob = croppedImageBlobRef.current;
         if (croppedBlob) {
           const tempId = `temp_${Date.now()}`;
           finalImageUrl = await uploadMemberImage(croppedBlob, tempId);
@@ -717,7 +720,7 @@ export const useAddMemberForm = ({
       }
 
       // Clean up
-      (window as any).__croppedImageBlob = null;
+      croppedImageBlobRef.current = null;
       
       toast({
         title: formMode === 'edit' 
