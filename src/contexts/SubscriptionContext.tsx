@@ -40,8 +40,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       const cached = localStorage.getItem(`subscription_${userId}`);
       if (cached) {
         const cachedData = JSON.parse(cached);
-        // Check if cache is less than 1 hour old
-        if (Date.now() - cachedData.timestamp < 3600000) {
+        // Check if cache is less than 5 minutes old
+        if (Date.now() - cachedData.timestamp < 300000) {
           setSubscription(cachedData.data);
           return true;
         }
