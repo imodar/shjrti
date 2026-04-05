@@ -219,7 +219,7 @@ export default function AdminAPISettings() {
                     <br />
                     يمكنك تحديثها من:{' '}
                     <a
-                      href={`https://supabase.com/dashboard/project/xzakoccnfswabrdwvukp/settings/functions`}
+                      href={`https://supabase.com/dashboard/project/${import.meta.env.VITE_SUPABASE_PROJECT_ID}/settings/functions`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary underline font-medium"

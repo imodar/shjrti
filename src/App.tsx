@@ -157,11 +157,7 @@ const App = () => {
             <StructuredData />
             <ConsentAwareScriptInjector />
                   {gaId && <GoogleAnalytics measurementId={gaId} />}
-                  <Suspense fallback={
-                    <div className="flex items-center justify-center h-screen">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-                    </div>
-                  }>
+                  
                   <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
@@ -238,37 +234,51 @@ const App = () => {
                   } />
                   <Route path="/admin" element={
                     <ProtectedRoute requireAdmin={true}>
-                      <EnhancedAdminPanel />
+                      <Suspense fallback={<div className="flex items-center justify-center h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+                        <EnhancedAdminPanel />
+                      </Suspense>
                     </ProtectedRoute>
                   } />
                   <Route path="/admin/billing" element={
                     <ProtectedRoute requireAdmin={true}>
-                      <AdminBilling />
+                      <Suspense fallback={<div className="flex items-center justify-center h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+                        <AdminBilling />
+                      </Suspense>
                     </ProtectedRoute>
                   } />
                   <Route path="/admin-api-settings" element={
                     <ProtectedRoute requireAdmin={true}>
-                      <AdminAPISettings />
+                      <Suspense fallback={<div className="flex items-center justify-center h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+                        <AdminAPISettings />
+                      </Suspense>
                     </ProtectedRoute>
                   } />
                   <Route path="/admin/social-media" element={
                     <ProtectedRoute requireAdmin={true}>
-                      <AdminSocialMedia />
+                      <Suspense fallback={<div className="flex items-center justify-center h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+                        <AdminSocialMedia />
+                      </Suspense>
                     </ProtectedRoute>
                   } />
                   <Route path="/admin/seo" element={
                     <ProtectedRoute requireAdmin={true}>
-                      <AdminSEOSettings />
+                      <Suspense fallback={<div className="flex items-center justify-center h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+                        <AdminSEOSettings />
+                      </Suspense>
                     </ProtectedRoute>
                   } />
                   <Route path="/admin/newsletter" element={
                     <ProtectedRoute requireAdmin={true}>
-                      <AdminNewsletterSubscriptions />
+                      <Suspense fallback={<div className="flex items-center justify-center h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+                        <AdminNewsletterSubscriptions />
+                      </Suspense>
                     </ProtectedRoute>
                   } />
                   <Route path="/admin/refunds" element={
                     <ProtectedRoute requireAdmin={true}>
-                      <AdminRefunds />
+                      <Suspense fallback={<div className="flex items-center justify-center h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+                        <AdminRefunds />
+                      </Suspense>
                     </ProtectedRoute>
                   } />
                   <Route path="/renew-subscription" element={
@@ -279,7 +289,11 @@ const App = () => {
                   <Route path="/terms-conditions" element={<TermsConditions />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/contact" element={<ContactUs />} />
-                  <Route path="/api-docs" element={<ApiDocs />} />
+                  <Route path="/api-docs" element={
+                    <Suspense fallback={<div className="flex items-center justify-center h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" /></div>}>
+                      <ApiDocs />
+                    </Suspense>
+                  } />
                   <Route path="/accept-invitation" element={<AcceptInvitation />} />
                   <Route path="/tree" element={<StitchPublicTree />} />
                   <Route path="/share" element={<StitchPublicTree />} />
@@ -293,7 +307,7 @@ const App = () => {
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                   </Routes>
-                  </Suspense>
+                  
                   <CookieConsentBanner />
                 </BrowserRouter>
                 </MaintenanceModeGuard>

@@ -9,9 +9,8 @@ import { Family } from '@/lib/api/types';
 import TreeDeleteModal from '@/components/TreeDeleteModal';
 import { ShareLinkModal } from '@/pages/FamilyBuilderNew/components/TreeSettings/ShareLinkModal';
 import { CustomDomainModal } from '@/pages/FamilyBuilderNew/components/TreeSettings/CustomDomainModal';
-import DOMPurify from 'dompurify';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+
+import { Textarea } from '@/components/ui/textarea';
 import CollaboratorsTab from './CollaboratorsTab';
 
 interface StitchSettingsViewProps {
@@ -314,30 +313,17 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
 
               <div className="bg-muted rounded-xl p-6 border border-border mb-6">
                 {isEditingDescription ? (
-                  <ReactQuill
+                  <Textarea
                     value={description}
-                    onChange={(value) => setDescription(value)}
+                    onChange={(e) => setDescription(e.target.value)}
                     placeholder={t('tree_settings.description_placeholder', 'اكتب وصفاً عن عائلتك...')}
-                    theme="snow"
-                    modules={{
-                      toolbar: [
-                        [{ 'header': [1, 2, 3, false] }],
-                        ['bold', 'italic', 'underline'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'direction': 'rtl' }],
-                        [{ 'align': [] }],
-                        ['clean']
-                      ]
-                    }}
+                    rows={6}
+                    dir="rtl"
                   />
                 ) : (
-                  <p
-                    className="text-muted-foreground leading-relaxed text-sm text-start"
-                    dir="rtl"
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(description || t('tree_settings.description_placeholder', 'لم يتم إضافة وصف بعد...'))
-                    }}
-                  />
+                  <p className="text-muted-foreground leading-relaxed text-sm text-start" dir="rtl">
+                    {description || t('tree_settings.description_placeholder', 'لم يتم إضافة وصف بعد...')}
+                  </p>
                 )}
               </div>
 

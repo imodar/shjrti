@@ -65,12 +65,16 @@ export function PaymentGatewayProvider({ children }: { children: React.ReactNode
     if (cached) {
       try {
         const parsedCache = JSON.parse(cached);
-        setSettings({
-          ...parsedCache,
-          loading: true,
-        });
+        if (parsedCache.gateway && parsedCache.environment && typeof parsedCache.isActive === 'boolean') {
+          setSettings({
+            gateway: parsedCache.gateway,
+            environment: parsedCache.environment,
+            isActive: parsedCache.isActive,
+            loading: true,
+          });
+        }
       } catch (e) {
-        console.error('Error parsing cached settings:', e);
+        localStorage.removeItem('paymentGatewaySettings');
       }
     }
 
