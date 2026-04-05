@@ -21,7 +21,7 @@ import { OrganizationalChart } from "@/components/OrganizationalChart";
 import { Users, AlertCircle, Menu, ZoomIn, ZoomOut, Maximize, Minimize } from "lucide-react";
 import { MemberProfileModal } from "@/components/MemberProfileModal";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useFamilyData } from '@/contexts/FamilyDataContext';
+import { useFamilyDataSafe } from '@/hooks/useFamilyDataSafe';
 
 interface PublicTreeViewProps {
   shareToken?: string | null;
@@ -35,8 +35,9 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
   const isMobile = useIsMobile();
   const { direction, t } = useLanguage();
   
-  // Get data from context when skipDataLoading is true
-  const contextData = skipDataLoading ? useFamilyData() : null;
+  // Always call the hook unconditionally (safe version returns null if no provider)
+  const contextData = useFamilyDataSafe();
+  const useContextData = skipDataLoading && contextData !== null;
   
   // Local state for data (used when NOT skipDataLoading)
   const [localFamilyMembers, setLocalFamilyMembers] = useState<any[]>([]);
@@ -44,9 +45,9 @@ const PublicTreeView = ({ shareToken, overrideFamilyId, skipDataLoading = false 
   const [localFamilyData, setLocalFamilyData] = useState<any>(null);
   
   // Use context data when available, otherwise use local state
-  const familyMembers = skipDataLoading ? (contextData?.familyMembers || []) : localFamilyMembers;
-  const familyMarriages = skipDataLoading ? (contextData?.marriages || []) : localFamilyMarriages;
-  const familyData = skipDataLoading ? contextData?.familyData : localFamilyData;
+  const familyMembers = useContextData ? (contextData?.familyMembers || []) : localFamilyMembers;
+  const familyMarriages = useContextData ? (contextData?.marriages || []) : localFamilyMarriages;
+  const familyData = useContextData ? contextData?.familyData : localFamilyData;
   
   const [isLoading, setIsLoading] = useState(!skipDataLoading);
   
