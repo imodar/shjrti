@@ -10,8 +10,7 @@ import TreeDeleteModal from '@/components/TreeDeleteModal';
 import { ShareLinkModal } from '@/pages/FamilyBuilderNew/components/TreeSettings/ShareLinkModal';
 import { CustomDomainModal } from '@/pages/FamilyBuilderNew/components/TreeSettings/CustomDomainModal';
 import DOMPurify from 'dompurify';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import { Textarea } from '@/components/ui/textarea';
 import CollaboratorsTab from './CollaboratorsTab';
 
 interface StitchSettingsViewProps {

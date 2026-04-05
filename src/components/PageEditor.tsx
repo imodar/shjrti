@@ -401,29 +401,12 @@ export default function PageEditor() {
 
                       <div>
                         <Label>Content ({lang.name})</Label>
-                        <ReactQuill
+                        <Textarea
                           value={getFieldValue(editingPage, 'content', lang.code)}
-                          onChange={(value) => 
-                            setEditingPage(updatePageField(editingPage, 'content', value, lang.code))
+                          onChange={(e) => 
+                            setEditingPage(updatePageField(editingPage, 'content', e.target.value, lang.code))
                           }
-                          style={{ minHeight: '300px' }}
-                          modules={{
-                            toolbar: [
-                              [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                              [{ 'font': [] }],
-                              [{ 'size': ['small', false, 'large', 'huge'] }],
-                              ['bold', 'italic', 'underline', 'strike'],
-                              [{ 'color': [] }, { 'background': [] }],
-                              [{ 'script': 'sub'}, { 'script': 'super' }],
-                              [{ 'header': 1 }, { 'header': 2 }, 'blockquote', 'code-block'],
-                              [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                              [{ 'indent': '-1'}, { 'indent': '+1' }],
-                              [{ 'direction': 'rtl' }],
-                              [{ 'align': [] }],
-                              ['link', 'image', 'video'],
-                              ['clean']
-                            ]
-                          }}
+                          rows={12}
                         />
                       </div>
 
