@@ -2138,7 +2138,7 @@ const FamilyBuilderNew = () => {
         }
         
         // Upload new image to storage
-        const croppedBlob = (window as any).__croppedImageBlob;
+        const croppedBlob = croppedImageBlobRef.current;
         if (croppedBlob) {
           imageUrl = await uploadMemberImage(croppedBlob, spouse.existingFamilyMemberId);
           console.log('✅ Spouse image uploaded to storage:', imageUrl);
