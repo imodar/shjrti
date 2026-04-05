@@ -157,11 +157,7 @@ const App = () => {
             <StructuredData />
             <ConsentAwareScriptInjector />
                   {gaId && <GoogleAnalytics measurementId={gaId} />}
-                  <Suspense fallback={
-                    <div className="flex items-center justify-center h-screen">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-                    </div>
-                  }>
+                  
                   <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/auth" element={<Auth />} />
