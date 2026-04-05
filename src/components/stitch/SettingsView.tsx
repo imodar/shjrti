@@ -321,13 +321,9 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
                     dir="rtl"
                   />
                 ) : (
-                  <p
-                    className="text-muted-foreground leading-relaxed text-sm text-start"
-                    dir="rtl"
-                    dangerouslySetInnerHTML={{
-                      __html: DOMPurify.sanitize(description || t('tree_settings.description_placeholder', 'لم يتم إضافة وصف بعد...'))
-                    }}
-                  />
+                  <p className="text-muted-foreground leading-relaxed text-sm text-start" dir="rtl">
+                    {description || t('tree_settings.description_placeholder', 'لم يتم إضافة وصف بعد...')}
+                  </p>
                 )}
               </div>
 
