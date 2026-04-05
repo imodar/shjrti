@@ -168,7 +168,7 @@ export const useAddMemberForm = ({
         setCroppedImage(previewUrl);
         setImageChanged(true);
         setShowCropDialog(false);
-        (window as any).__croppedImageBlob = croppedBlob;
+        croppedImageBlobRef.current = croppedBlob;
       }
     }
   };
