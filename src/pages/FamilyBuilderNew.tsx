@@ -2454,7 +2454,7 @@ const FamilyBuilderNew = () => {
         }
         
         // Now upload image using the real member ID
-        const croppedBlob = (window as any).__croppedImageBlob;
+        const croppedBlob = croppedImageBlobRef.current;
         if (croppedBlob && imageChanged) {
           try {
             const imageStoragePath = await uploadMemberImage(croppedBlob, memberData.id);

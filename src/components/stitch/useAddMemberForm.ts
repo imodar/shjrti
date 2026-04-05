@@ -720,7 +720,7 @@ export const useAddMemberForm = ({
       }
 
       // Clean up
-      (window as any).__croppedImageBlob = null;
+      croppedImageBlobRef.current = null;
       
       toast({
         title: formMode === 'edit' 

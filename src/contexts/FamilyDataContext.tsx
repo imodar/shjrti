@@ -21,7 +21,7 @@ interface FamilyDataContextType {
   getMemberSpouses: (memberId: string) => Member[];
 }
 
-const FamilyDataContext = createContext<FamilyDataContextType | undefined>(undefined);
+export const FamilyDataContext = createContext<FamilyDataContextType | undefined>(undefined);
 
 interface FamilyDataProviderProps {
   children: ReactNode;
