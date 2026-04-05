@@ -12,8 +12,6 @@ import { Trash2, Save, Plus, Edit, Eye, Globe } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
 
 interface Page {
   id: string;
