@@ -675,14 +675,19 @@ export const useAddMemberForm = ({
 
       // Process wives for male members
       if (submissionData.gender === 'male' && formData.motherUnknown) {
-        // Create or reuse a dummy "unknown mother" wife
+        // === Scenario 1: Known wife → Unknown mother ===
         const existingMarriages = marriages.filter(m => m.husband_id === memberData.id);
         const existingDummy = existingMarriages.find(marriage => {
           const wifeMember = familyMembers.find(m => m.id === marriage.wife_id);
           return wifeMember?.first_name === 'unknown_mother';
         });
 
-        if (!existingDummy) {
+        let dummyWifeId: string;
+
+        if (existingDummy) {
+          // Dummy already exists, reuse her
+          dummyWifeId = existingDummy.wife_id;
+        } else {
           // Create dummy wife
           const dummyWife = await membersApi.create({
             name: 'زوجة غير معروفة',
@@ -694,20 +699,89 @@ export const useAddMemberForm = ({
             is_founder: false,
             marital_status: 'married',
           });
+          dummyWifeId = dummyWife.id;
 
-          // Create marriage
+          // Create marriage with dummy
           await marriagesApi.upsert({
             family_id: familyId,
             husband_id: memberData.id,
-            wife_id: dummyWife.id,
+            wife_id: dummyWifeId,
             is_active: true,
             marital_status: 'married',
           });
         }
+
+        // Migrate children from known wives to dummy wife
+        const knownWifeMarriages = existingMarriages.filter(marriage => {
+          const wifeMember = familyMembers.find(m => m.id === marriage.wife_id);
+          return wifeMember?.first_name !== 'unknown_mother';
+        });
+
+        for (const marriage of knownWifeMarriages) {
+          const oldWifeId = marriage.wife_id;
+          // Find children whose mother_id points to the old wife
+          const children = familyMembers.filter(m =>
+            m.mother_id === oldWifeId && m.father_id === memberData.id
+          );
+          // Update children's mother_id to the dummy wife
+          for (const child of children) {
+            await membersApi.update(child.id, { mother_id: dummyWifeId });
+          }
+
+          // Delete the old marriage
+          await marriagesApi.delete(marriage.id);
+
+          // Delete external wife (not a blood family member)
+          const oldWife = familyMembers.find(m => m.id === oldWifeId);
+          if (oldWife && !oldWife.father_id && !oldWife.is_founder) {
+            await membersApi.delete(oldWifeId);
+          }
+        }
       } else if (submissionData.gender === 'male' && wives.length > 0) {
-        const savedWives = wives.filter(w => w.isSaved === true);
-        for (const wife of savedWives) {
-          await processSpouseMarriage(wife, 'wife');
+        // === Scenario 2: Unknown mother → Known wife ===
+        // Check if there was a dummy wife and we now have real wives
+        const existingMarriages = marriages.filter(m => m.husband_id === memberData.id);
+        const dummyMarriage = existingMarriages.find(marriage => {
+          const wifeMember = familyMembers.find(m => m.id === marriage.wife_id);
+          return wifeMember?.first_name === 'unknown_mother';
+        });
+
+        if (dummyMarriage) {
+          const dummyWifeId = dummyMarriage.wife_id;
+          // Find children linked to the dummy wife
+          const childrenOfDummy = familyMembers.filter(m =>
+            m.mother_id === dummyWifeId && m.father_id === memberData.id
+          );
+
+          // Use the first saved real wife as the new mother
+          const savedWives = wives.filter(w => w.isSaved === true);
+          if (savedWives.length > 0) {
+            // Process real wives first to get their IDs
+            for (const wife of savedWives) {
+              await processSpouseMarriage(wife, 'wife');
+            }
+
+            // After processing, find the new wife's ID
+            const firstRealWife = savedWives[0];
+            const newMotherId = firstRealWife.id || firstRealWife.existingFamilyMemberId;
+
+            if (newMotherId) {
+              // Migrate children from dummy to real wife
+              for (const child of childrenOfDummy) {
+                await membersApi.update(child.id, { mother_id: newMotherId });
+              }
+            }
+
+            // Delete dummy marriage and dummy member
+            await marriagesApi.delete(dummyMarriage.id);
+            await membersApi.delete(dummyWifeId);
+          }
+        } else {
+          // Normal case: no dummy wife, just process wives
+          const savedWives = wives.filter(w => w.isSaved === true);
+          for (const wife of savedWives) {
+            await processSpouseMarriage(wife, 'wife');
+          }
         }
       }
 
