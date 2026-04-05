@@ -9,7 +9,7 @@ import { Family } from '@/lib/api/types';
 import TreeDeleteModal from '@/components/TreeDeleteModal';
 import { ShareLinkModal } from '@/pages/FamilyBuilderNew/components/TreeSettings/ShareLinkModal';
 import { CustomDomainModal } from '@/pages/FamilyBuilderNew/components/TreeSettings/CustomDomainModal';
-import DOMPurify from 'dompurify';
+
 import { Textarea } from '@/components/ui/textarea';
 import CollaboratorsTab from './CollaboratorsTab';
 
