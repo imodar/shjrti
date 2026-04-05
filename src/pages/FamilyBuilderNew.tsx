@@ -205,7 +205,7 @@ const FamilyBuilderNew = () => {
       setCroppedImage(null);
       setSelectedImage(null);
       setImageChanged(true);
-      (window as any).__croppedImageBlob = null;
+      croppedImageBlobRef.current = null;
 
       if (editingMember) {
         setEditingMember({ ...editingMember, image: null });
