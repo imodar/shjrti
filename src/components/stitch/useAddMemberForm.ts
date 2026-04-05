@@ -44,6 +44,9 @@ export const useAddMemberForm = ({
   const { t } = useLanguage();
   const { isImageUploadEnabled } = useImageUploadPermission(familyId);
 
+  // Cropped image blob ref (replaces window.__croppedImageBlob)
+  const croppedImageBlobRef = useRef<Blob | null>(null);
+
   // Form step
   const [currentStep, setCurrentStep] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
