@@ -301,33 +301,16 @@ export default function PageEditor() {
 
                     <div>
                       <Label>Content ({lang.name})</Label>
-                      <ReactQuill
+                      <Textarea
                         value={(newPage.content as any)[lang.code] || ''}
-                        onChange={(value) => 
+                        onChange={(e) => 
                           setNewPage({ 
                             ...newPage, 
-                            content: { ...newPage.content, [lang.code]: value }
+                            content: { ...newPage.content, [lang.code]: e.target.value }
                           })
                         }
                         placeholder={`Page content in ${lang.name}`}
-                        style={{ minHeight: '200px' }}
-                        modules={{
-                          toolbar: [
-                            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                            [{ 'font': [] }],
-                            [{ 'size': ['small', false, 'large', 'huge'] }],
-                            ['bold', 'italic', 'underline', 'strike'],
-                            [{ 'color': [] }, { 'background': [] }],
-                            [{ 'script': 'sub'}, { 'script': 'super' }],
-                            [{ 'header': 1 }, { 'header': 2 }, 'blockquote', 'code-block'],
-                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                            [{ 'indent': '-1'}, { 'indent': '+1' }],
-                            [{ 'direction': 'rtl' }],
-                            [{ 'align': [] }],
-                            ['link', 'image', 'video'],
-                            ['clean']
-                          ]
-                        }}
+                        rows={10}
                       />
                     </div>
 
