@@ -252,7 +252,7 @@ export function PaymentGatewaySettings() {
               variant="outline"
               size="sm"
               className="w-full"
-              onClick={() => window.open('https://supabase.com/dashboard/project/xzakoccnfswabrdwvukp/settings/functions', '_blank')}
+              onClick={() => window.open(`https://supabase.com/dashboard/project/${import.meta.env.VITE_SUPABASE_PROJECT_ID}/settings/functions`, '_blank')}
             >
               <ExternalLink className="h-4 w-4 ml-2" />
               إدارة Secrets في Supabase
