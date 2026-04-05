@@ -103,6 +103,7 @@ const FamilyBuilderNew = () => {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const croppedImageBlobRef = useRef<Blob | null>(null);
   const createImage = (url: string): Promise<HTMLImageElement> => new Promise((resolve, reject) => {
     const image = document.createElement('img');
     image.addEventListener('load', () => resolve(image));
