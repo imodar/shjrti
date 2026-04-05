@@ -313,21 +313,12 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
 
               <div className="bg-muted rounded-xl p-6 border border-border mb-6">
                 {isEditingDescription ? (
-                  <ReactQuill
+                  <Textarea
                     value={description}
-                    onChange={(value) => setDescription(value)}
+                    onChange={(e) => setDescription(e.target.value)}
                     placeholder={t('tree_settings.description_placeholder', 'اكتب وصفاً عن عائلتك...')}
-                    theme="snow"
-                    modules={{
-                      toolbar: [
-                        [{ 'header': [1, 2, 3, false] }],
-                        ['bold', 'italic', 'underline'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                        [{ 'direction': 'rtl' }],
-                        [{ 'align': [] }],
-                        ['clean']
-                      ]
-                    }}
+                    rows={6}
+                    dir="rtl"
                   />
                 ) : (
                   <p

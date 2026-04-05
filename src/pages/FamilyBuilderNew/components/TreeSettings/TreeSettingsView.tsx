@@ -513,25 +513,12 @@ export const TreeSettingsView: React.FC<TreeSettingsViewProps> = ({
           <CardContent className="space-y-4">
             {isEditingDescription ? (
               <div className="space-y-3">
-                <ReactQuill
+                <Textarea
                   value={description}
-                  onChange={setDescription}
+                  onChange={(e) => setDescription(e.target.value)}
                   placeholder={t('tree_settings.description_placeholder')}
-                  style={{ height: '120px', marginBottom: '50px' }}
-                  modules={{
-                    toolbar: [
-                      [{ 'header': [1, 2, 3, false] }],
-                      ['bold', 'italic', 'underline'],
-                      [{ 'color': [] }, { 'background': [] }],
-                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                      ['link'],
-                      ['clean']
-                    ]
-                  }}
-                  formats={[
-                    'header', 'bold', 'italic', 'underline',
-                    'color', 'background', 'list', 'bullet', 'link'
-                  ]}
+                  rows={6}
+                  dir="rtl"
                 />
                 <div className="flex gap-2">
                   <Button 
