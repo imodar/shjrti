@@ -169,7 +169,7 @@ const FamilyBuilderNew = () => {
         setImageChanged(true);
         setShowCropDialog(false);
         // Store blob in a ref or state for later upload
-        (window as any).__croppedImageBlob = croppedBlob;
+        croppedImageBlobRef.current = croppedBlob;
       }
     }
   };
