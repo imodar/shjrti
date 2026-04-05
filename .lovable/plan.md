@@ -1,49 +1,140 @@
 
 
-# إضافة خيار "الزوجة غير معروفة" (Switch) في فورم إضافة العضو الذكر
+# تنفيذ خطة التحسينات الشاملة — المرحلة 1
 
-## الفكرة
-عند تعديل/إضافة عضو ذكر، نضيف Switch قبل قسم الزوجات: "هل الزوجة معروفة؟"
-- **مفعّل (افتراضي)** → قسم الزوجات يظهر كالمعتاد
-- **معطّل** → يختفي قسم الزوجات، وعند الحفظ يُنشأ سجل dummy واحد فقط لكل أب
+## نظرة عامة
+تنفيذ 6 إصلاحات عاجلة (P0) + إضافات المرحلة 2 (Code Splitting + clearAllAppCache + DatePreference cache).
 
-السويتش يظهر فقط للأعضاء الذكور. الزوج دائماً معروف.
+---
 
-## التعديلات
+## المرحلة 1 — الإصلاحات العاجلة
 
-### 1. `AddMemberFormTypes.ts`
-- إضافة `motherUnknown: boolean` في `MemberFormData` (default: `false`)
-- إضافة القيمة في `defaultFormData`
+### 1. إصلاح `window.__croppedImageBlob` → `useRef`
+**الملفات:** `src/components/stitch/useAddMemberForm.ts`, `src/pages/FamilyBuilderNew.tsx`
 
-### 2. `AddMemberForm.tsx` — إضافة السويتش
-- قبل قسم الزوجات (سطر ~445)، إذا كان `gender === 'male'`:
-  - Switch مع label: `t('member.wife_known', 'هل الزوجة معروفة؟')` / `t('member.wife_known', 'Is the wife known?')`
-  - عند إيقاف السويتش (motherUnknown = true): إخفاء قسم الزوجات بالكامل + عرض بانر رمادي: "سيتم ربط الأبناء بالأب مباشرة بدون بيانات زوجة"
-  - عند تفعيل السويتش: إظهار قسم الزوجات كالمعتاد
+- في `useAddMemberForm.ts`: إضافة `const croppedImageBlobRef = useRef<Blob | null>(null)` واستبدال كل `(window as any).__croppedImageBlob` بـ `croppedImageBlobRef.current` (5 مواقع: سطر 168, 183, 505, 528, 720)
+- في `FamilyBuilderNew.tsx`: نفس الشيء — إضافة `useRef` واستبدال كل الاستخدامات (سطر 172, 208, 2141, 2311, 2457)
 
-### 3. `useAddMemberForm.ts` — منطق الحفظ (سطر ~660)
-- عند `motherUnknown === true` و `gender === 'male'`:
-  1. بعد إنشاء/تعديل العضو، نبحث عن dummy wife موجودة مرتبطة بهذا العضو عبر marriage حيث الزوجة `first_name = 'unknown_mother'`
-  2. إذا لم توجد → ننشئ عضو أنثى: `{ first_name: 'unknown_mother', name: 'زوجة غير معروفة', gender: 'female', is_alive: false, family_id }`
-  3. ننشئ marriage (upsert) بين العضو الحالي وهذه الـ dummy
-  - لا يتم إنشاء أكثر من dummy واحدة لكل أب
+### 2. إصلاح conditional hook في PublicTreeView
+**الملفات:** `src/contexts/FamilyDataContext.tsx`, `src/hooks/useFamilyDataSafe.ts` (جديد), `src/pages/PublicTreeView.tsx`
 
-### 4. `AddMemberForm.tsx` — عرض الوالدين (marriageOptions)
-- في `buildFullName` (سطر ~114): عند عرض زوجة بـ `first_name === 'unknown_mother'`، نعرض: `t('member.unknown_mother', 'زوجة غير معروفة')` بدلاً من الاسم العادي
+- في `FamilyDataContext.tsx` سطر ~28: تصدير `FamilyDataContext`:
+```typescript
+export const FamilyDataContext = createContext<FamilyDataContextType | undefined>(undefined);
+```
+- إنشاء `src/hooks/useFamilyDataSafe.ts`:
+```typescript
+import { useContext } from 'react';
+import { FamilyDataContext } from '@/contexts/FamilyDataContext';
+export const useFamilyDataSafe = () => useContext(FamilyDataContext) ?? null;
+```
+- في `PublicTreeView.tsx` سطر 24 و 39: استبدال `useFamilyData` بـ `useFamilyDataSafe` واستدعاؤه دائماً بدون شرط
 
-### 5. عرض الشجرة
-- في مكونات عرض الشجرة (`TreeCanvas.tsx`/`OrganizationalChart.tsx`): عند عرض زوجة بـ `first_name === 'unknown_mother'`، نعرض "غير معروفة" أو نخفيها حسب السياق
-- في الرابط العام: نفس المعالجة
+### 3. Swagger UI lazy load
+**الملف:** `src/pages/ApiDocs.tsx`
 
-### 6. تعديل وضع التحرير (edit mode)
-- عند فتح عضو ذكر للتعديل، نتحقق من زوجاته: إذا كانت جميعها `first_name === 'unknown_mother'`، نضبط `motherUnknown = true` والسويتش يكون معطّل
+- استبدال السطر 1-2 بـ:
+```typescript
+import React, { Suspense } from 'react';
+const SwaggerUI = React.lazy(() => import('swagger-ui-react'));
+```
+- لف `<SwaggerUI>` بـ `<Suspense>` مع loading spinner
+- نقل CSS import داخل الـ lazy component أو استيراده كـ side effect
 
-## ما لا يتأثر
-- لا حاجة لـ migration — `mother_id` nullable أصلاً، والـ dummy عضو عادي
-- API endpoints تعمل كالمعتاد
-- منطق النسب يتتبع الأب أولاً فيعمل بشكل طبيعي
+### 4. تحسين cache الاشتراك + Realtime
+**الملف:** `src/contexts/SubscriptionContext.tsx`
 
-## ملاحظات
-- الـ dummy تُميَّز بـ `first_name = 'unknown_mother'` كـ convention ثابت
-- إذا أصبحت الزوجة معروفة لاحقاً، يمكن تعديل بيانات الـ dummy مباشرة بتفعيل السويتش وتعديل البيانات
+- تغيير TTL من `3600000` إلى `300000` (5 دقائق) في سطر 44
+- إضافة Supabase Realtime listener في useEffect الرئيسي:
+```typescript
+const channel = supabase
+  .channel('subscription-changes')
+  .on('postgres_changes', {
+    event: '*',
+    schema: 'public',
+    table: 'subscriptions',
+    filter: `user_id=eq.${user.id}`
+  }, () => {
+    localStorage.removeItem(`subscription_${user.id}`);
+    fetchSubscriptionDetails(true);
+  })
+  .subscribe();
+```
+- تنظيف القناة عند unmount
+
+### 5. تنظيف localStorage عند تسجيل الخروج
+**الملف:** `src/contexts/AuthContext.tsx`
+
+- إضافة `clearAllAppCache` في دالة `signOut` (سطر 54-68):
+```typescript
+const CACHE_KEYS_TO_CLEAR = ['paymentGatewaySettings', 'translations_ar', 'translations_en'];
+CACHE_KEYS_TO_CLEAR.forEach(key => localStorage.removeItem(key));
+// + مسح subscription cache + date preference
+```
+
+### 6. تصدير FamilyDataContext
+**الملف:** `src/contexts/FamilyDataContext.tsx`
+
+- تحويل `const FamilyDataContext` إلى `export const FamilyDataContext`
+
+---
+
+## المرحلة 2 — Code Splitting + تحسينات
+
+### 7. Code Splitting لصفحات الإدارة
+**الملف:** `src/App.tsx`
+
+- استبدال static imports (سطر 57-63) بـ `React.lazy`:
+```typescript
+const EnhancedAdminPanel = React.lazy(() => import('./pages/EnhancedAdminPanel'));
+const AdminBilling = React.lazy(() => import('./pages/AdminBilling'));
+const AdminAPISettings = React.lazy(() => import('./pages/AdminAPISettings'));
+const AdminSocialMedia = React.lazy(() => import('./pages/AdminSocialMedia'));
+const AdminSEOSettings = React.lazy(() => import('./pages/AdminSEOSettings'));
+const AdminNewsletterSubscriptions = React.lazy(() => import('./pages/AdminNewsletterSubscriptions'));
+const AdminRefunds = React.lazy(() => import('./pages/AdminRefunds'));
+const ApiDocs = React.lazy(() => import('./pages/ApiDocs'));
+```
+- لف `<Routes>` بـ `<Suspense>` مع spinner
+
+### 8. manualChunks في vite.config.ts
+**الملف:** `vite.config.ts`
+
+```typescript
+build: {
+  rollupOptions: {
+    output: {
+      manualChunks: {
+        'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+        'vendor-supabase': ['@supabase/supabase-js'],
+        'vendor-query': ['@tanstack/react-query'],
+      }
+    }
+  }
+}
+```
+
+### 9. كاش DatePreference في localStorage
+**الملف:** `src/contexts/DatePreferenceContext.tsx`
+
+- عند تحميل التفضيل: قراءة من localStorage أولاً، ثم fetch من DB في الخلفية
+- عند الحفظ: تحديث localStorage فوراً
+
+---
+
+## ملخص الملفات المتأثرة
+
+| الملف | التعديل |
+|---|---|
+| `src/components/stitch/useAddMemberForm.ts` | useRef بدل window (5 مواقع) |
+| `src/pages/FamilyBuilderNew.tsx` | useRef بدل window (5 مواقع) |
+| `src/contexts/FamilyDataContext.tsx` | تصدير FamilyDataContext |
+| `src/hooks/useFamilyDataSafe.ts` | **جديد** |
+| `src/pages/PublicTreeView.tsx` | useFamilyDataSafe بدون شرط |
+| `src/pages/ApiDocs.tsx` | React.lazy + Suspense |
+| `src/contexts/SubscriptionContext.tsx` | TTL 5 دقائق + Realtime |
+| `src/contexts/AuthContext.tsx` | clearAllAppCache في signOut |
+| `src/contexts/DatePreferenceContext.tsx` | localStorage cache |
+| `src/App.tsx` | lazy imports للإدارة + Suspense |
+| `vite.config.ts` | manualChunks |
 
