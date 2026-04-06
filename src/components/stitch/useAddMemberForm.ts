@@ -602,12 +602,14 @@ export const useAddMemberForm = ({
 
           if (spouseId) {
             // Update existing spouse
-            let currentImageUrl = null;
-            try {
-              const currentSpouse = await membersApi.get(spouseId);
-              currentImageUrl = currentSpouse?.image_url || null;
-            } catch (e) {
-              console.log('Could not fetch current spouse image');
+            let currentImageUrl: string | null = null;
+            if (!spouseData.isFamilyMember && spouseData.croppedImage === undefined) {
+              try {
+                const currentSpouse = await membersApi.get(spouseId);
+                currentImageUrl = currentSpouse?.image_url || null;
+              } catch (e) {
+                console.log('Could not fetch current spouse image');
+              }
             }
 
             const imageUrl = (spouseData.croppedImage !== undefined)
@@ -778,19 +780,15 @@ export const useAddMemberForm = ({
           }
         } else {
           // Normal case: no dummy wife, just process wives
-          const savedWives = wives.filter(w => w.isSaved === true);
-          for (const wife of savedWives) {
-            await processSpouseMarriage(wife, 'wife');
-          }
+        const savedWives = wives.filter(w => w.isSaved === true);
+          await Promise.all(savedWives.map(wife => processSpouseMarriage(wife, 'wife')));
         }
       }
 
       // Process husbands for female members
       if (submissionData.gender === 'female' && husbands.length > 0) {
         const savedHusbands = husbands.filter(h => h.isSaved === true);
-        for (const husband of savedHusbands) {
-          await processSpouseMarriage(husband, 'husband');
-        }
+        await Promise.all(savedHusbands.map(husband => processSpouseMarriage(husband, 'husband')));
       }
 
       // Clean up
