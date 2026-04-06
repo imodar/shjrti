@@ -321,6 +321,7 @@ const App = () => {
               </SubscriptionProvider>
             </AdminProvider>
             </DatePreferenceProvider>
+            </CookieConsentProvider>
           </AuthProvider>
         </DirectionWrapper>
       </LanguageProvider>
