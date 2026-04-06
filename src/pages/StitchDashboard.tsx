@@ -170,24 +170,24 @@ const StitchDashboard: React.FC = () => {
       {/* Floating background icons */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
         {/* Left side icons */}
-        <span className="material-symbols-outlined absolute top-[8%] left-[5%] text-[8rem] text-primary/[0.04] rotate-[-15deg] animate-[pulse_6s_ease-in-out_infinite]">park</span>
-        <span className="material-symbols-outlined absolute top-[40%] left-[3%] text-[5rem] text-primary/[0.04] rotate-[20deg] animate-[pulse_7s_ease-in-out_infinite]">diversity_3</span>
-        <span className="material-symbols-outlined absolute top-[75%] left-[10%] text-[5rem] text-primary/[0.05] rotate-[8deg] animate-[pulse_5s_ease-in-out_infinite]">nature</span>
-        <span className="material-symbols-outlined absolute bottom-[10%] left-[25%] text-[4rem] text-primary/[0.03] rotate-[-8deg] animate-[pulse_6s_ease-in-out_infinite]">history_edu</span>
-        <span className="material-symbols-outlined absolute top-[22%] left-[12%] text-[4rem] text-primary/[0.03] rotate-[30deg] animate-[pulse_9s_ease-in-out_infinite]">groups</span>
-        <span className="material-symbols-outlined absolute top-[50%] left-[8%] text-[6rem] text-primary/[0.04] rotate-[-5deg] animate-[pulse_8s_ease-in-out_infinite]">forest</span>
-        <span className="material-symbols-outlined absolute top-[65%] left-[2%] text-[4rem] text-primary/[0.03] rotate-[18deg] animate-[pulse_10s_ease-in-out_infinite]">bookmark</span>
-        <span className="material-symbols-outlined absolute bottom-[30%] left-[18%] text-[5rem] text-primary/[0.04] rotate-[-20deg] animate-[pulse_7s_ease-in-out_infinite]">emoji_people</span>
+        <span className="material-symbols-outlined absolute top-[8%] left-[5%] text-[8rem] text-primary/[0.08] rotate-[-15deg] animate-[pulse_6s_ease-in-out_infinite]">park</span>
+        <span className="material-symbols-outlined absolute top-[40%] left-[3%] text-[5rem] text-primary/[0.08] rotate-[20deg] animate-[pulse_7s_ease-in-out_infinite]">diversity_3</span>
+        <span className="material-symbols-outlined absolute top-[75%] left-[10%] text-[5rem] text-primary/[0.09] rotate-[8deg] animate-[pulse_5s_ease-in-out_infinite]">nature</span>
+        <span className="material-symbols-outlined absolute bottom-[10%] left-[25%] text-[4rem] text-primary/[0.07] rotate-[-8deg] animate-[pulse_6s_ease-in-out_infinite]">history_edu</span>
+        <span className="material-symbols-outlined absolute top-[22%] left-[12%] text-[4rem] text-primary/[0.07] rotate-[30deg] animate-[pulse_9s_ease-in-out_infinite]">groups</span>
+        <span className="material-symbols-outlined absolute top-[50%] left-[8%] text-[6rem] text-primary/[0.08] rotate-[-5deg] animate-[pulse_8s_ease-in-out_infinite]">forest</span>
+        <span className="material-symbols-outlined absolute top-[65%] left-[2%] text-[4rem] text-primary/[0.07] rotate-[18deg] animate-[pulse_10s_ease-in-out_infinite]">bookmark</span>
+        <span className="material-symbols-outlined absolute bottom-[30%] left-[18%] text-[5rem] text-primary/[0.08] rotate-[-20deg] animate-[pulse_7s_ease-in-out_infinite]">emoji_people</span>
 
         {/* Right side icons */}
-        <span className="material-symbols-outlined absolute top-[15%] right-[8%] text-[6rem] text-primary/[0.05] rotate-[12deg] animate-[pulse_8s_ease-in-out_infinite]">family_restroom</span>
-        <span className="material-symbols-outlined absolute top-[55%] right-[4%] text-[7rem] text-primary/[0.04] rotate-[-10deg] animate-[pulse_9s_ease-in-out_infinite]">account_tree</span>
-        <span className="material-symbols-outlined absolute top-[30%] right-[15%] text-[4rem] text-primary/[0.03] rotate-[-25deg] animate-[pulse_10s_ease-in-out_infinite]">favorite</span>
-        <span className="material-symbols-outlined absolute bottom-[20%] right-[12%] text-[6rem] text-primary/[0.04] rotate-[15deg] animate-[pulse_7s_ease-in-out_infinite]">photo_library</span>
-        <span className="material-symbols-outlined absolute top-[5%] right-[20%] text-[5rem] text-primary/[0.03] rotate-[22deg] animate-[pulse_7s_ease-in-out_infinite]">eco</span>
-        <span className="material-symbols-outlined absolute top-[45%] right-[6%] text-[4rem] text-primary/[0.04] rotate-[-18deg] animate-[pulse_6s_ease-in-out_infinite]">home</span>
-        <span className="material-symbols-outlined absolute top-[70%] right-[10%] text-[5rem] text-primary/[0.03] rotate-[10deg] animate-[pulse_8s_ease-in-out_infinite]">psychology</span>
-        <span className="material-symbols-outlined absolute bottom-[5%] right-[22%] text-[4rem] text-primary/[0.04] rotate-[-12deg] animate-[pulse_9s_ease-in-out_infinite]">spa</span>
+        <span className="material-symbols-outlined absolute top-[15%] right-[8%] text-[6rem] text-primary/[0.09] rotate-[12deg] animate-[pulse_8s_ease-in-out_infinite]">family_restroom</span>
+        <span className="material-symbols-outlined absolute top-[55%] right-[4%] text-[7rem] text-primary/[0.08] rotate-[-10deg] animate-[pulse_9s_ease-in-out_infinite]">account_tree</span>
+        <span className="material-symbols-outlined absolute top-[30%] right-[15%] text-[4rem] text-primary/[0.07] rotate-[-25deg] animate-[pulse_10s_ease-in-out_infinite]">favorite</span>
+        <span className="material-symbols-outlined absolute bottom-[20%] right-[12%] text-[6rem] text-primary/[0.08] rotate-[15deg] animate-[pulse_7s_ease-in-out_infinite]">photo_library</span>
+        <span className="material-symbols-outlined absolute top-[5%] right-[20%] text-[5rem] text-primary/[0.07] rotate-[22deg] animate-[pulse_7s_ease-in-out_infinite]">eco</span>
+        <span className="material-symbols-outlined absolute top-[45%] right-[6%] text-[4rem] text-primary/[0.08] rotate-[-18deg] animate-[pulse_6s_ease-in-out_infinite]">home</span>
+        <span className="material-symbols-outlined absolute top-[70%] right-[10%] text-[5rem] text-primary/[0.07] rotate-[10deg] animate-[pulse_8s_ease-in-out_infinite]">psychology</span>
+        <span className="material-symbols-outlined absolute bottom-[5%] right-[22%] text-[4rem] text-primary/[0.08] rotate-[-12deg] animate-[pulse_9s_ease-in-out_infinite]">spa</span>
       </div>
       <main className="max-w-7xl mx-auto px-6 py-5">
         {/* Hero Section */}
