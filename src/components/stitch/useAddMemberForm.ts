@@ -602,12 +602,14 @@ export const useAddMemberForm = ({
 
           if (spouseId) {
             // Update existing spouse
-            let currentImageUrl = null;
-            try {
-              const currentSpouse = await membersApi.get(spouseId);
-              currentImageUrl = currentSpouse?.image_url || null;
-            } catch (e) {
-              console.log('Could not fetch current spouse image');
+            let currentImageUrl: string | null = null;
+            if (!spouseData.isFamilyMember && spouseData.croppedImage === undefined) {
+              try {
+                const currentSpouse = await membersApi.get(spouseId);
+                currentImageUrl = currentSpouse?.image_url || null;
+              } catch (e) {
+                console.log('Could not fetch current spouse image');
+              }
             }
 
             const imageUrl = (spouseData.croppedImage !== undefined)
