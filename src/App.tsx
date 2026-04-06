@@ -146,8 +146,10 @@ const App = () => {
       <LanguageProvider>
         <DirectionWrapper>
           <AuthProvider>
+            <DatePreferenceProvider>
             <AdminProvider>
               <SubscriptionProvider>
+                <PaymentGatewayProvider>
                 <MaintenanceModeGuard>
                 <Toaster />
                 <Sonner />
