@@ -270,7 +270,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
           )}
 
           {/* Recent Activities */}
-          <div className={`relative transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          <div className={`relative transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
             expandedCard === 'activities' 
               ? 'md:col-span-2 z-10 scale-100 opacity-100 order-1' 
               : expandedCard === 'birthdays' 
