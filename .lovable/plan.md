@@ -1,52 +1,40 @@
 
 
-# الخطة النهائية المحكمة — 3 مهام
+# إصلاح خط الاتصال أسفل بوكس الأزواج المتعددين
 
-## المهمة 1 — إصلاح تكرار Providers
+## المشكلة
+`UNIT_HEIGHT_POLYGAMY = 250` ثابت، لكن الكارد الفعلي يتغير ارتفاعه حسب عدد الزوجات (padding + gap + avatars + badges). عندما يكون الارتفاع الفعلي أكبر من 250px، الخط يخرج من خلف الكارد بدل أسفله.
 
-### `src/main.tsx`
-- حذف imports: `AuthProvider`, `SubscriptionProvider`, `PaymentGatewayProvider`, `DatePreferenceProvider`
-- إبقاء فقط: `PublicSettingsProvider` → `ThemeProvider` → `CookieConsentProvider` → `App`
+## الحل
+استبدال الثابت بدالة تحسب الارتفاع ديناميكياً حسب عدد الزوجات في الوحدة.
 
-### `src/App.tsx`
-- **إضافة imports جديدة** (غير موجودة حالياً — تم التأكد):
+## التنفيذ — ملف واحد: `src/components/stitch/TreeCanvas.tsx`
+
+### 1. تعديل دالة `getUnitHeight`
+بدل إرجاع `UNIT_HEIGHT_POLYGAMY` الثابت، تحسب الارتفاع بناءً على عدد الزوجات:
+
 ```tsx
-import { DatePreferenceProvider } from './contexts/DatePreferenceContext';
-import { PaymentGatewayProvider } from './contexts/PaymentGatewayContext';
+const getUnitHeight = (unit: FamilyUnit): number => {
+  if (unit.type === 'polygamy') {
+    // Husband section: ~80px (avatar + name + gap)
+    // Each row of wives: ~90px (avatar + name + badge)
+    // Padding + label: ~60px
+    const wivesPerRow = 3; // flex-wrap at ~3 wives per row
+    const rows = Math.ceil(unit.wives.length / wivesPerRow);
+    return 140 + rows * 90;
+  }
+  if (unit.type === 'married') return UNIT_HEIGHT_MARRIED;
+  return UNIT_HEIGHT_SINGLE;
+};
 ```
-- تعديل ترتيب الـ providers (سطور 146-149) ليصبح:
-```tsx
-<AuthProvider>
-  <DatePreferenceProvider>
-    <AdminProvider>
-      <SubscriptionProvider>
-        <PaymentGatewayProvider>
-          <MaintenanceModeGuard>
-            ...
-```
-- إغلاق الـ tags الجديدة في نهاية الـ return
 
----
+### 2. تحديث حساب `maxY` في treeDimensions
+استخدام `getUnitHeight(unit)` بدل `UNIT_HEIGHT_POLYGAMY` الثابت عند حساب أبعاد الـ SVG.
 
-## المهمة 2 — حذف `@xyflow/react`
+### 3. تحديث حساب المواضع في `computePositions`
+أي مكان يستخدم `UNIT_HEIGHT_POLYGAMY` أو `getUnitHeight` لحساب `y` للجيل التالي يجب أن يأخذ الارتفاع الفعلي للوحدة الأب.
 
-- حذف `@xyflow/react` من `package.json` (dependency ميتة — 0 imports مؤكد)
-
----
-
-## المهمة 3 — حذف `react-google-recaptcha` v2
-
-- حذف `import ReCAPTCHA from 'react-google-recaptcha';` من `src/pages/ContactUs.tsx`
-- حذف `react-google-recaptcha` و `@types/react-google-recaptcha` من `package.json`
-
----
-
-## ملخص الملفات
-
-| الملف | التعديل |
-|---|---|
-| `src/main.tsx` | حذف 4 providers + 4 imports |
-| `src/App.tsx` | إضافة 2 imports + إضافة `DatePreferenceProvider` و `PaymentGatewayProvider` في الترتيب الصحيح |
-| `src/pages/ContactUs.tsx` | حذف dead import سطر واحد |
-| `package.json` | حذف 3 packages: `@xyflow/react`, `react-google-recaptcha`, `@types/react-google-recaptcha` |
+## التأثير
+- الخط يخرج دائماً من أسفل الكارد بغض النظر عن عدد الزوجات
+- لا تغيير على الكاردات الأخرى (single/married)
 
