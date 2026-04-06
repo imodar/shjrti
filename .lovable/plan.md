@@ -1,34 +1,52 @@
 
 
-# إصلاح أيقونة الشجرة في DashboardLoader
+# الخطة النهائية المحكمة — 3 مهام
 
-## المشكلة
-الـ SVG path الحالي في `TreeIcon` ليس شكل شجرة واضح — هو path عشوائي لا يشبه شجرة.
+## المهمة 1 — إصلاح تكرار Providers
 
-## الحل
-استبدال الـ SVG path بأيقونة شجرة حقيقية (مثل أيقونة park من Material Design) كـ inline SVG صحيح.
+### `src/main.tsx`
+- حذف imports: `AuthProvider`, `SubscriptionProvider`, `PaymentGatewayProvider`, `DatePreferenceProvider`
+- إبقاء فقط: `PublicSettingsProvider` → `ThemeProvider` → `CookieConsentProvider` → `App`
 
-## التنفيذ
-
-### ملف واحد: `src/components/stitch/DashboardLoader.tsx`
-
-استبدال `TreeIcon` بـ SVG شجرة واضح — مثلاً أيقونة "park" الرسمية من Material Symbols:
-
+### `src/App.tsx`
+- **إضافة imports جديدة** (غير موجودة حالياً — تم التأكد):
 ```tsx
-const TreeIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-9 h-9 text-primary">
-    <path d="M17 12h2L12 2 5 12h2l-3 5h5v5h6v-5h5l-3-5z"/>
-  </svg>
-);
+import { DatePreferenceProvider } from './contexts/DatePreferenceContext';
+import { PaymentGatewayProvider } from './contexts/PaymentGatewayContext';
 ```
-
-أو نستخدم أيقونة `TreePine` من مكتبة Lucide الموجودة أصلاً بالمشروع — بدون أي تحميل خارجي وشكلها واضح 100%.
-
+- تعديل ترتيب الـ providers (سطور 146-149) ليصبح:
 ```tsx
-import { TreePine } from 'lucide-react';
-// واستخدامها مباشرة بدل TreeIcon
-<TreePine className="w-9 h-9 text-primary" />
+<AuthProvider>
+  <DatePreferenceProvider>
+    <AdminProvider>
+      <SubscriptionProvider>
+        <PaymentGatewayProvider>
+          <MaintenanceModeGuard>
+            ...
 ```
+- إغلاق الـ tags الجديدة في نهاية الـ return
 
-**Lucide هو الخيار الأفضل** لأنه موجود بالمشروع ولا يحتاج font خارجي.
+---
+
+## المهمة 2 — حذف `@xyflow/react`
+
+- حذف `@xyflow/react` من `package.json` (dependency ميتة — 0 imports مؤكد)
+
+---
+
+## المهمة 3 — حذف `react-google-recaptcha` v2
+
+- حذف `import ReCAPTCHA from 'react-google-recaptcha';` من `src/pages/ContactUs.tsx`
+- حذف `react-google-recaptcha` و `@types/react-google-recaptcha` من `package.json`
+
+---
+
+## ملخص الملفات
+
+| الملف | التعديل |
+|---|---|
+| `src/main.tsx` | حذف 4 providers + 4 imports |
+| `src/App.tsx` | إضافة 2 imports + إضافة `DatePreferenceProvider` و `PaymentGatewayProvider` في الترتيب الصحيح |
+| `src/pages/ContactUs.tsx` | حذف dead import سطر واحد |
+| `package.json` | حذف 3 packages: `@xyflow/react`, `react-google-recaptcha`, `@types/react-google-recaptcha` |
 
