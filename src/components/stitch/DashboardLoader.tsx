@@ -65,7 +65,7 @@ const DashboardLoader: React.FC<DashboardLoaderProps> = ({ steps, onComplete }) 
         {/* Logo / Icon */}
         <div className="flex justify-center mb-8">
           <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center animate-pulse">
-            <span className="material-symbols-outlined text-primary text-4xl">park</span>
+            <TreeIcon />
           </div>
         </div>
 
