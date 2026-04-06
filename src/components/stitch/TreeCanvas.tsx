@@ -64,9 +64,13 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
   const prevSelectedRootRef = useRef<string>(selectedRootMarriage);
   const lastCenterKeyRef = useRef<string>('');
 
-  // Get height based on unit type
+  // Get height based on unit type — dynamic for polygamy
   const getUnitHeight = (unit: FamilyUnit): number => {
-    if (unit.type === 'polygamy') return UNIT_HEIGHT_POLYGAMY;
+    if (unit.type === 'polygamy') {
+      const wivesPerRow = 3;
+      const rows = Math.ceil(unit.wives.length / wivesPerRow);
+      return 140 + rows * 90;
+    }
     if (unit.type === 'married') return UNIT_HEIGHT_MARRIED;
     return UNIT_HEIGHT_SINGLE;
   };
