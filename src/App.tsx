@@ -9,6 +9,8 @@ import { FamilyDataProvider } from "@/contexts/FamilyDataContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminProvider } from "@/contexts/AdminContext";
 import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
+import { DatePreferenceProvider } from "@/contexts/DatePreferenceContext";
+import { PaymentGatewayProvider } from "@/contexts/PaymentGatewayContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { DirectionWrapper } from "@/components/DirectionWrapper";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
