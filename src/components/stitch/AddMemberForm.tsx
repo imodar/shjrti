@@ -646,7 +646,8 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-8 py-3.5 text-slate-500 dark:text-slate-400 font-bold text-sm hover:text-slate-700 transition-colors"
+                disabled={isSaving}
+                className="px-8 py-3.5 text-slate-500 dark:text-slate-400 font-bold text-sm hover:text-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {t('common.cancel', 'Cancel')}
               </button>

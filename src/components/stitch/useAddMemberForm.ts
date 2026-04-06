@@ -778,19 +778,15 @@ export const useAddMemberForm = ({
           }
         } else {
           // Normal case: no dummy wife, just process wives
-          const savedWives = wives.filter(w => w.isSaved === true);
-          for (const wife of savedWives) {
-            await processSpouseMarriage(wife, 'wife');
-          }
+        const savedWives = wives.filter(w => w.isSaved === true);
+          await Promise.all(savedWives.map(wife => processSpouseMarriage(wife, 'wife')));
         }
       }
 
       // Process husbands for female members
       if (submissionData.gender === 'female' && husbands.length > 0) {
         const savedHusbands = husbands.filter(h => h.isSaved === true);
-        for (const husband of savedHusbands) {
-          await processSpouseMarriage(husband, 'husband');
-        }
+        await Promise.all(savedHusbands.map(husband => processSpouseMarriage(husband, 'husband')));
       }
 
       // Clean up
