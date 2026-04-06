@@ -97,7 +97,40 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
   onSuggestEdit,
 }) => {
   const { t } = useLanguage();
+  const [expandedCard, setExpandedCard] = useState<'activities' | 'birthdays' | null>(null);
+  const [visibleActivities, setVisibleActivities] = useState(10);
+  const [visibleBirthdays, setVisibleBirthdays] = useState(10);
+  const activitiesScrollRef = useRef<HTMLDivElement>(null);
+  const birthdaysScrollRef = useRef<HTMLDivElement>(null);
 
+  const INITIAL_COUNT = 3;
+  const LOAD_MORE_COUNT = 10;
+
+  const handleActivitiesScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 40) {
+      setVisibleActivities(prev => Math.min(prev + LOAD_MORE_COUNT, activities.length));
+    }
+  }, [activities.length]);
+
+  const handleBirthdaysScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const el = e.currentTarget;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 40) {
+      setVisibleBirthdays(prev => Math.min(prev + LOAD_MORE_COUNT, milestones.length));
+    }
+  }, [milestones.length]);
+
+  const handleExpand = (card: 'activities' | 'birthdays') => {
+    setExpandedCard(card);
+    if (card === 'activities') setVisibleActivities(10);
+    if (card === 'birthdays') setVisibleBirthdays(10);
+  };
+
+  const handleCollapse = () => {
+    setExpandedCard(null);
+    setVisibleActivities(10);
+    setVisibleBirthdays(10);
+  };
   const getActivityIcon = (type: Activity['type']) => {
     switch (type) {
       case 'edit':
