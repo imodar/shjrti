@@ -254,7 +254,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
         />
 
         {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-6">
           {/* Family Description */}
           {familyData?.description && (
             <div className="md:col-span-2 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
@@ -270,9 +270,9 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
           )}
 
           {/* Recent Activities */}
-          <div className={`relative transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          <div className={`relative transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
             expandedCard === 'activities' 
-              ? 'md:col-span-2 z-10 scale-100 opacity-100 order-1' 
+              ? 'md:col-span-2 md:col-start-1 md:row-start-1 z-10 scale-100 opacity-100 order-1' 
               : expandedCard === 'birthdays' 
                 ? 'md:col-span-1 scale-95 opacity-0 pointer-events-none max-h-0 overflow-hidden order-2' 
                 : 'scale-100 opacity-100 order-1'
@@ -357,9 +357,9 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
           </div>
 
           {/* Upcoming Birthdays */}
-          <div className={`relative transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          <div className={`relative transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
             expandedCard === 'birthdays' 
-              ? 'md:col-span-2 z-10 scale-100 opacity-100 order-1' 
+              ? 'md:col-span-2 md:col-start-1 md:row-start-1 z-10 scale-100 opacity-100 order-1' 
               : expandedCard === 'activities' 
                 ? 'md:col-span-1 scale-95 opacity-0 pointer-events-none max-h-0 overflow-hidden order-2' 
                 : 'scale-100 opacity-100 order-2'
