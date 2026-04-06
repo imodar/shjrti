@@ -36,9 +36,11 @@ interface Position {
 }
 
 const UNIT_WIDTH = 420;
+const UNIT_WIDTH_POLYGAMY = 520;
 const UNIT_HEIGHT_SINGLE = 120;
 const UNIT_HEIGHT_MARRIED = 150;
-const UNIT_HEIGHT_POLYGAMY = 250;
+const UNIT_HEIGHT_POLYGAMY = 280;
+const POLYGAMY_WIVES_PER_ROW = 3;
 const VERTICAL_SPACING = 100;
 const HORIZONTAL_SPACING = 40;
 
@@ -64,12 +66,15 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
   const prevSelectedRootRef = useRef<string>(selectedRootMarriage);
   const lastCenterKeyRef = useRef<string>('');
 
-  // Get height based on unit type — dynamic for polygamy
+  const getUnitWidth = (unit: FamilyUnit): number => {
+    if (unit.type === 'polygamy') return UNIT_WIDTH_POLYGAMY;
+    return UNIT_WIDTH;
+  };
+
   const getUnitHeight = (unit: FamilyUnit): number => {
     if (unit.type === 'polygamy') {
-      const wivesPerRow = 3;
-      const rows = Math.ceil(unit.wives.length / wivesPerRow);
-      return 140 + rows * 90;
+      const rows = Math.max(1, Math.ceil(unit.wives.length / POLYGAMY_WIVES_PER_ROW));
+      return UNIT_HEIGHT_POLYGAMY + (rows - 1) * 140;
     }
     if (unit.type === 'married') return UNIT_HEIGHT_MARRIED;
     return UNIT_HEIGHT_SINGLE;
@@ -311,9 +316,11 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       const unit = filteredFamilyUnits.get(unitId);
       if (!unit) return UNIT_WIDTH;
 
+      const unitWidth = getUnitWidth(unit);
+
       if (unit.childUnits.length === 0) {
-        memo.set(unitId, UNIT_WIDTH);
-        return UNIT_WIDTH;
+        memo.set(unitId, unitWidth);
+        return unitWidth;
       }
 
       let totalWidth = 0;
@@ -325,7 +332,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
         }
       });
 
-      const width = Math.max(UNIT_WIDTH, totalWidth);
+      const width = Math.max(unitWidth, totalWidth);
       memo.set(unitId, width);
       return width;
     };
@@ -339,10 +346,11 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       const unit = filteredFamilyUnits.get(unitId);
       if (!unit) return;
 
+      const unitWidth = getUnitWidth(unit);
       const y = generationYOffset.get(generation) || 0;
 
       if (unit.childUnits.length === 0) {
-        positionsMap.set(unitId, { x: startX, y, width: UNIT_WIDTH });
+        positionsMap.set(unitId, { x: startX, y, width: unitWidth });
         return;
       }
 
@@ -350,12 +358,14 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       const childCenters: number[] = [];
 
       unit.childUnits.forEach((childId) => {
-        const childWidth = subtreeWidths.get(childId) || UNIT_WIDTH;
+        const childUnit = filteredFamilyUnits.get(childId);
+        const childBaseWidth = childUnit ? getUnitWidth(childUnit) : UNIT_WIDTH;
+        const childWidth = subtreeWidths.get(childId) || childBaseWidth;
         positionUnit(childId, currentX, generation + 1);
 
         const childActualPosition = positionsMap.get(childId);
         if (childActualPosition) {
-          const childCenter = childActualPosition.x + UNIT_WIDTH / 2;
+          const childCenter = childActualPosition.x + childActualPosition.width / 2;
           childCenters.push(childCenter);
         }
 
@@ -365,20 +375,20 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       const leftmostChild = childCenters[0];
       const rightmostChild = childCenters[childCenters.length - 1];
       const childrenCenter = (leftmostChild + rightmostChild) / 2;
-      const parentX = childrenCenter - UNIT_WIDTH / 2;
+      const parentX = childrenCenter - unitWidth / 2;
 
-      positionsMap.set(unitId, { x: parentX, y, width: UNIT_WIDTH });
+      positionsMap.set(unitId, { x: parentX, y, width: unitWidth });
     };
 
     let currentRootX = 0;
     rootUnits.forEach((root) => {
       positionUnit(root.id, currentRootX, root.generation);
-      const rootWidth = subtreeWidths.get(root.id) || UNIT_WIDTH;
+      const rootWidth = subtreeWidths.get(root.id) || getUnitWidth(root);
       currentRootX += rootWidth + HORIZONTAL_SPACING * 3;
     });
 
     return positionsMap;
-  }, [familyUnits, rootUnits]);
+  }, [filteredFamilyUnits, rootUnits]);
 
   // Calculate tree dimensions
   const treeDimensions = useMemo(() => {
@@ -390,7 +400,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
     positions.forEach((pos, unitId) => {
       const unit = filteredFamilyUnits.get(unitId);
       const unitHeight = unit ? getUnitHeight(unit) : UNIT_HEIGHT_POLYGAMY;
-      maxX = Math.max(maxX, pos.x + UNIT_WIDTH + 100);
+      maxX = Math.max(maxX, pos.x + pos.width + 100);
       maxY = Math.max(maxY, pos.y + unitHeight);
     });
 
@@ -398,7 +408,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       width: maxX + HORIZONTAL_SPACING * 2,
       height: maxY + VERTICAL_SPACING * 2
     };
-  }, [positions]);
+  }, [positions, filteredFamilyUnits]);
 
   // Center on root unit (accounts for zoom)
   useEffect(() => {
@@ -424,7 +434,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
 
     const containerWidth = containerRef.current.clientWidth || 1200;
     const containerHeight = containerRef.current.clientHeight || 800;
-    const rootCenterX = rootPosition.x + UNIT_WIDTH / 2;
+    const rootCenterX = rootPosition.x + rootPosition.width / 2;
     const rootUnit = rootUnits[0];
     const rootHeight = rootUnit ? getUnitHeight(rootUnit) : UNIT_HEIGHT_MARRIED;
     const rootCenterY = rootPosition.y + rootHeight / 2;
@@ -537,7 +547,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
       if (!parentPos) return;
 
       const parentHeight = getUnitHeight(parentUnit);
-      const parentCenterX = parentPos.x + UNIT_WIDTH / 2;
+      const parentCenterX = parentPos.x + parentPos.width / 2;
       const parentBottomY = parentPos.y + parentHeight;
 
       if (children.length === 1) {
@@ -545,7 +555,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
         const childPos = positions.get(child.id);
         if (!childPos) return;
 
-        const childCenterX = childPos.x + UNIT_WIDTH / 2;
+        const childCenterX = childPos.x + childPos.width / 2;
         const childTopY = childPos.y;
 
         connections.push(
@@ -557,8 +567,8 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
         );
       } else {
         const childPositions = children.map(child => positions.get(child.id)).filter(Boolean) as Position[];
-        const leftmostX = Math.min(...childPositions.map(pos => pos.x + UNIT_WIDTH / 2));
-        const rightmostX = Math.max(...childPositions.map(pos => pos.x + UNIT_WIDTH / 2));
+        const leftmostX = Math.min(...childPositions.map(pos => pos.x + pos.width / 2));
+        const rightmostX = Math.max(...childPositions.map(pos => pos.x + pos.width / 2));
         const distributionY = parentBottomY + VERTICAL_SPACING / 2;
 
         connections.push(
@@ -568,7 +578,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
             {children.map(child => {
               const childPos = positions.get(child.id);
               if (!childPos) return null;
-              const childCenterX = childPos.x + UNIT_WIDTH / 2;
+              const childCenterX = childPos.x + childPos.width / 2;
               return (
                 <line key={`child-line-${child.id}`} x1={childCenterX} y1={distributionY} x2={childCenterX} y2={childPos.y} stroke={primaryColor} strokeWidth="3" />
               );
@@ -638,7 +648,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
                 style={{
                   left: `${position.x}px`,
                   top: `${position.y}px`,
-                  width: `${UNIT_WIDTH}px`
+                  width: `${position.width}px`
                 }}
               >
                 <StitchFamilyCard unit={unit} familyMembers={familyMembers} />
