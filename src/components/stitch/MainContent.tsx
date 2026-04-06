@@ -331,11 +331,13 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
                           <p className="text-sm font-bold">
                             {activity.title} <span className="font-bold">{activity.highlight}</span>
                           </p>
+                          {activity.actorName && (
+                            <p className="text-[11px] text-muted-foreground">
+                              {t('activity.by', 'بواسطة')} {activity.actorName}
+                            </p>
+                          )}
                           <p className="text-[11px] text-muted-foreground">
                             {activity.timestamp}
-                            {activity.actorName && (
-                              <span className="text-muted-foreground"> • {t('activity.by', 'بواسطة')} {activity.actorName}</span>
-                            )}
                           </p>
                         </div>
                       </div>
