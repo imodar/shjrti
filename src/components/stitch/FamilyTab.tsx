@@ -188,32 +188,52 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                 <div key={spouse.id} className="p-3 sm:p-4 bg-slate-50/50 dark:bg-slate-800/20 rounded-2xl border border-slate-100 dark:border-slate-800">
                   {/* Spouse header */}
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-slate-100 dark:border-slate-800">
-                    <button
-                      onClick={() => onMemberClick?.(spouse)}
-                      className="flex items-center gap-3 sm:gap-4 text-start hover:opacity-80 transition-opacity"
-                    >
-                      <div className={cn(
-                        'w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ring-2 sm:ring-4 flex-shrink-0',
-                        spouse.gender === 'female'
-                          ? 'bg-pink-50 dark:bg-pink-900/20 text-pink-500 ring-pink-50/50'
-                          : 'bg-blue-50 dark:bg-blue-900/20 text-blue-500 ring-blue-50/50'
-                      )}>
-                        <SpouseAvatar spouse={spouse} />
-                      </div>
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                          <h4 className="font-bold text-sm sm:text-base text-slate-800 dark:text-white truncate">
-                            {spouse.first_name ? `${spouse.first_name} ${spouse.last_name || ''}` : spouse.name}
-                          </h4>
-                          <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-primary/10 text-primary text-[10px] sm:text-xs font-bold rounded-md">
-                            {getSpouseLabel(spouse)}
-                          </span>
+                    {spouse.first_name === 'unknown_mother' ? (
+                      /* Unknown wife — special placeholder design */
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ring-2 sm:ring-4 flex-shrink-0 bg-slate-100 dark:bg-slate-700/40 text-slate-400 dark:text-slate-500 ring-slate-100/50 dark:ring-slate-700/30 border-2 border-dashed border-slate-300 dark:border-slate-600">
+                          <span className="material-symbols-outlined text-xl sm:text-2xl">person_off</span>
                         </div>
-                        {getSpouseSubtitle(spouse) && (
-                          <p className="text-xs sm:text-sm text-slate-500 truncate">{getSpouseSubtitle(spouse)}</p>
-                        )}
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                            <h4 className="font-bold text-sm sm:text-base text-slate-400 dark:text-slate-500 italic">
+                              {t('profile.unknown_wife', 'بيانات الزوجة غير متوفرة')}
+                            </h4>
+                          </div>
+                          <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                            {t('profile.unknown_wife_hint', 'يمكن تحديث البيانات لاحقاً من إعدادات العضو')}
+                          </p>
+                        </div>
                       </div>
-                    </button>
+                    ) : (
+                      /* Known spouse — normal display */
+                      <button
+                        onClick={() => onMemberClick?.(spouse)}
+                        className="flex items-center gap-3 sm:gap-4 text-start hover:opacity-80 transition-opacity"
+                      >
+                        <div className={cn(
+                          'w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center ring-2 sm:ring-4 flex-shrink-0',
+                          spouse.gender === 'female'
+                            ? 'bg-pink-50 dark:bg-pink-900/20 text-pink-500 ring-pink-50/50'
+                            : 'bg-blue-50 dark:bg-blue-900/20 text-blue-500 ring-blue-50/50'
+                        )}>
+                          <SpouseAvatar spouse={spouse} />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                            <h4 className="font-bold text-sm sm:text-base text-slate-800 dark:text-white truncate">
+                              {spouse.first_name ? `${spouse.first_name} ${spouse.last_name || ''}` : spouse.name}
+                            </h4>
+                            <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-primary/10 text-primary text-[10px] sm:text-xs font-bold rounded-md">
+                              {getSpouseLabel(spouse)}
+                            </span>
+                          </div>
+                          {getSpouseSubtitle(spouse) && (
+                            <p className="text-xs sm:text-sm text-slate-500 truncate">{getSpouseSubtitle(spouse)}</p>
+                          )}
+                        </div>
+                      </button>
+                    )}
                     <div className="flex gap-1.5 sm:gap-2">
                       <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-full text-[10px] sm:text-xs font-bold border border-blue-100 dark:border-blue-800 flex items-center gap-1">
                         <span className="material-symbols-outlined text-xs sm:text-sm">male</span> {sons.length} {t('son', 'Sons')}
