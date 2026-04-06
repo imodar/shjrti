@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
+const TreeIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-9 h-9 text-primary">
+    <path d="M12 2C9.5 2 7.5 4 7.5 6.5c0 1.54.77 2.9 1.94 3.72C7.55 11.18 6 13.13 6 15.5 6 18.54 8.46 21 11.5 21H12v-2h-.5C9.57 19 8 17.43 8 15.5c0-1.93 1.57-3.5 3.5-3.5H12v-2h-.5a2.5 2.5 0 0 1 0-5H12V3h.5a2.5 2.5 0 0 1 0 5H12v2h.5c1.93 0 3.5 1.57 3.5 3.5 0 1.93-1.57 3.5-3.5 3.5H12v2h.5c2.76 0 5-2.24 5-5 0-2.37-1.55-4.32-3.44-5.28A4.48 4.48 0 0 0 16.5 6.5C16.5 4 14.5 2 12 2z"/>
+  </svg>
+);
+
 interface LoadingStep {
   id: string;
   labelAr: string;
