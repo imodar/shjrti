@@ -147,6 +147,7 @@ const App = () => {
       <LanguageProvider>
         <DirectionWrapper>
           <AuthProvider>
+            <CookieConsentProvider>
             <DatePreferenceProvider>
             <AdminProvider>
               <SubscriptionProvider>
