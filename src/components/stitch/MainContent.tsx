@@ -361,7 +361,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
                   {t('stitch.upcoming_birthdays', 'Upcoming Birthdays')}
                 </h3>
                 <div className="flex items-center gap-2">
-                  {expandedCard !== 'birthdays' && milestones.length > INITIAL_COUNT && (
+                  {expandedCard !== 'birthdays' && milestones.length >= INITIAL_COUNT && (
                     <button 
                       onClick={() => handleExpand('birthdays')}
                       className="text-xs text-primary font-bold hover:underline transition-colors"
