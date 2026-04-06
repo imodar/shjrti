@@ -315,8 +315,10 @@ const App = () => {
                   <CookieConsentBanner />
                 </BrowserRouter>
                 </MaintenanceModeGuard>
+                </PaymentGatewayProvider>
               </SubscriptionProvider>
             </AdminProvider>
+            </DatePreferenceProvider>
           </AuthProvider>
         </DirectionWrapper>
       </LanguageProvider>
