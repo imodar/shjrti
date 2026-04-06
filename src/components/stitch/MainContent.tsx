@@ -359,10 +359,10 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
           {/* Upcoming Birthdays */}
           <div className={`relative transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
             expandedCard === 'birthdays' 
-              ? 'md:col-span-2 z-10 scale-100 opacity-100' 
+              ? 'md:col-span-2 z-10 scale-100 opacity-100 order-1' 
               : expandedCard === 'activities' 
-                ? 'md:col-span-1 scale-95 opacity-0 pointer-events-none max-h-0 md:max-h-none overflow-hidden' 
-                : 'scale-100 opacity-100'
+                ? 'md:col-span-1 scale-95 opacity-0 pointer-events-none max-h-0 overflow-hidden order-2' 
+                : 'scale-100 opacity-100 order-2'
           }`}>
             <div className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 transition-shadow duration-500 ${
               expandedCard === 'birthdays' ? 'shadow-lg ring-1 ring-primary/10' : 'shadow-sm hover:shadow-md'
