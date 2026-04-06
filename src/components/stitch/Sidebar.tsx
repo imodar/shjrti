@@ -162,7 +162,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
           </div>
           {!readOnly && (
             <button 
-              onClick={onAddMember}
+              onClick={() => { onAddMember(); onClose?.(); }}
               disabled={!canAddMember}
               className={cn(
                 "p-2 rounded-lg transition-colors flex items-center justify-center",
@@ -361,7 +361,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
       {!readOnly && (
         <div className="p-6 bg-slate-50 dark:bg-slate-800/50">
           <button
-            onClick={onAddMember}
+            onClick={() => { onAddMember(); onClose?.(); }}
             disabled={!canAddMember}
             className={cn(
               "w-full py-2.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2",
