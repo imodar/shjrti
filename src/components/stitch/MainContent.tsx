@@ -444,6 +444,9 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
               </div>
             </div>
           </div>
+          </div>
+
+        </div>
       </div>
     </section>
   );
