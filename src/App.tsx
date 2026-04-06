@@ -12,6 +12,7 @@ import { SubscriptionProvider } from "@/contexts/SubscriptionContext";
 import { DatePreferenceProvider } from "@/contexts/DatePreferenceContext";
 import { PaymentGatewayProvider } from "@/contexts/PaymentGatewayContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { CookieConsentProvider } from "@/contexts/CookieConsentContext";
 import { DirectionWrapper } from "@/components/DirectionWrapper";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ProtectedFamilyRoute } from "@/components/ProtectedFamilyRoute";
@@ -146,6 +147,7 @@ const App = () => {
       <LanguageProvider>
         <DirectionWrapper>
           <AuthProvider>
+            <CookieConsentProvider>
             <DatePreferenceProvider>
             <AdminProvider>
               <SubscriptionProvider>
@@ -319,6 +321,7 @@ const App = () => {
               </SubscriptionProvider>
             </AdminProvider>
             </DatePreferenceProvider>
+            </CookieConsentProvider>
           </AuthProvider>
         </DirectionWrapper>
       </LanguageProvider>
