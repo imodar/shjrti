@@ -119,6 +119,28 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
           ? t('timeline.son_born', 'وُلد لهم')
           : t('timeline.daughter_born', 'وُلدت لهم');
 
+        // If member has multiple spouses, show which spouse is the parent
+        let spouseHint = '';
+        if (spouses.length > 1) {
+          const spouseId = member?.gender === 'male' ? child.mother_id : child.father_id;
+          const spouse = spouseId ? familyMembers.find((m: any) => m.id === spouseId) : null;
+          if (spouse) {
+            if (spouse.first_name === 'unknown_mother') {
+              spouseHint = member?.gender === 'male'
+                ? t('profile.unknown_wife')
+                : t('profile.unknown_husband', 'بيانات الزوج غير متوفرة');
+            } else {
+              const spouseName = spouse.first_name
+                ? `${spouse.first_name} ${spouse.last_name || ''}`
+                : spouse.name || '';
+              const fromLabel = member?.gender === 'male'
+                ? t('timeline.from_wife', 'من')
+                : t('timeline.from_husband', 'من');
+              spouseHint = `${fromLabel} ${spouseName.trim()}`;
+            }
+          }
+        }
+
         items.push({
           type: 'children',
           date: childBirthDate,
@@ -127,7 +149,7 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
           bgColor: isMale ? 'bg-sky-50 dark:bg-sky-900/20' : 'bg-pink-50 dark:bg-pink-900/20',
           textColor: isMale ? 'text-sky-500' : 'text-pink-500',
           title: `${childVerb} ${childName.trim()}`,
-          description: '',
+          description: spouseHint,
           dateLabel: childBirthDate || '',
         });
       });
