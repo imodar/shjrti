@@ -313,23 +313,26 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
                   return (
                     <div 
                       key={activity.id} 
-                      className="flex gap-4 animate-fade-in"
+                      className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl flex items-center justify-between animate-fade-in"
                       style={{ animationDelay: expandedCard === 'activities' && index >= INITIAL_COUNT ? `${(index - INITIAL_COUNT) * 50}ms` : '0ms' }}
                     >
-                      <div className={`w-8 h-8 rounded-full ${className} flex items-center justify-center flex-shrink-0`}>
-                        <span className="material-icons-round text-sm">{icon}</span>
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-full ${className} flex items-center justify-center flex-shrink-0`}>
+                          <span className="material-icons-round text-base">{icon}</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold">
+                            {activity.title} <span className="font-bold">{activity.highlight}</span>
+                          </p>
+                          <p className="text-[11px] text-muted-foreground">
+                            {activity.timestamp}
+                            {activity.actorName && (
+                              <span className="text-muted-foreground"> • {t('activity.by', 'بواسطة')} {activity.actorName}</span>
+                            )}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium">
-                          {activity.title} <span className="font-bold">{activity.highlight}</span>
-                        </p>
-                        <p className="text-[11px] text-muted-foreground mt-0.5">
-                          {activity.timestamp}
-                          {activity.actorName && (
-                            <span className="text-muted-foreground"> • {t('activity.by', 'بواسطة')} {activity.actorName}</span>
-                          )}
-                        </p>
-                      </div>
+                      <span className={`material-symbols-outlined text-sm ${className.split(' ').pop()}`}>{icon}</span>
                     </div>
                   );
                 }) : (
