@@ -270,11 +270,16 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
           )}
 
           {/* Recent Activities */}
-          <div className={`relative transition-all duration-500 ease-in-out ${
-            expandedCard === 'activities' ? 'md:col-span-2 z-10' : 
-            expandedCard === 'birthdays' ? 'hidden md:block opacity-0 pointer-events-none h-0 overflow-hidden' : ''
+          <div className={`relative transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+            expandedCard === 'activities' 
+              ? 'md:col-span-2 z-10 scale-100 opacity-100' 
+              : expandedCard === 'birthdays' 
+                ? 'md:col-span-1 scale-95 opacity-0 pointer-events-none max-h-0 md:max-h-none overflow-hidden' 
+                : 'scale-100 opacity-100'
           }`}>
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 transition-shadow duration-300 hover:shadow-md">
+            <div className={`bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-100 dark:border-slate-800 transition-shadow duration-500 ${
+              expandedCard === 'activities' ? 'shadow-lg ring-1 ring-primary/10' : 'shadow-sm hover:shadow-md'
+            }`}>
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-bold flex items-center gap-2">
                   <span className="material-symbols-outlined text-primary">history</span>
@@ -292,7 +297,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
                   {expandedCard === 'activities' && (
                     <button 
                       onClick={handleCollapse}
-                      className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200 hover:rotate-90"
+                      className="w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-300 hover:rotate-90 hover:scale-110"
                     >
                       <span className="material-symbols-outlined text-sm text-muted-foreground">close</span>
                     </button>
@@ -302,7 +307,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
               <div 
                 ref={activitiesScrollRef}
                 onScroll={expandedCard === 'activities' ? handleActivitiesScroll : undefined}
-                className={`space-y-5 transition-all duration-500 ease-in-out custom-scrollbar ${
+                className={`space-y-5 transition-[max-height] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] custom-scrollbar ${
                   expandedCard === 'activities' ? 'max-h-[60vh] overflow-y-auto pr-2' : 'max-h-[300px] overflow-hidden'
                 }`}
               >
@@ -313,8 +318,10 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
                   return (
                     <div 
                       key={activity.id} 
-                      className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl flex items-center justify-between animate-fade-in"
-                      style={{ animationDelay: expandedCard === 'activities' && index >= INITIAL_COUNT ? `${(index - INITIAL_COUNT) * 50}ms` : '0ms' }}
+                      className={`p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl flex items-center justify-between transition-all duration-500 ease-out ${
+                        expandedCard === 'activities' && index >= INITIAL_COUNT ? 'animate-fade-in' : ''
+                      }`}
+                      style={{ animationDelay: expandedCard === 'activities' && index >= INITIAL_COUNT ? `${(index - INITIAL_COUNT) * 60}ms` : '0ms' }}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-full ${className} flex items-center justify-center flex-shrink-0`}>
