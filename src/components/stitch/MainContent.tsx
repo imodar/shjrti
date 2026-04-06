@@ -302,7 +302,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
               <div 
                 ref={activitiesScrollRef}
                 onScroll={expandedCard === 'activities' ? handleActivitiesScroll : undefined}
-                className={`space-y-6 transition-all duration-500 ease-in-out custom-scrollbar ${
+                className={`space-y-5 transition-all duration-500 ease-in-out custom-scrollbar ${
                   expandedCard === 'activities' ? 'max-h-[60vh] overflow-y-auto pr-2' : 'max-h-[300px] overflow-hidden'
                 }`}
               >
