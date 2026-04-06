@@ -197,11 +197,11 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                             <h4 className="font-bold text-sm sm:text-base text-slate-400 dark:text-slate-500 italic">
-                              {t('profile.unknown_wife', 'بيانات الزوجة غير متوفرة')}
+                              {t('profile.unknown_wife')}
                             </h4>
                           </div>
                           <p className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                            {t('profile.unknown_wife_hint', 'يمكن تحديث البيانات لاحقاً من إعدادات العضو')}
+                            {t('profile.unknown_wife_hint')}
                           </p>
                         </div>
                       </div>
