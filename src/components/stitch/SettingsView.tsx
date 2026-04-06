@@ -313,17 +313,62 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
 
               <div className="bg-muted rounded-xl p-6 border border-border mb-6">
                 {isEditingDescription ? (
-                  <Textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder={t('tree_settings.description_placeholder', 'اكتب وصفاً عن عائلتك...')}
-                    rows={6}
-                    dir="rtl"
-                  />
+                  <div className="space-y-2">
+                    {/* Simple toolbar */}
+                    <div className="flex items-center gap-1 pb-2 border-b border-border flex-wrap">
+                      <button
+                        type="button"
+                        onMouseDown={(e) => { e.preventDefault(); document.execCommand('bold'); }}
+                        className="p-1.5 rounded hover:bg-accent text-foreground font-bold text-sm"
+                        title="Bold"
+                      >B</button>
+                      <button
+                        type="button"
+                        onMouseDown={(e) => { e.preventDefault(); document.execCommand('italic'); }}
+                        className="p-1.5 rounded hover:bg-accent text-foreground italic text-sm"
+                        title="Italic"
+                      >I</button>
+                      <button
+                        type="button"
+                        onMouseDown={(e) => { e.preventDefault(); document.execCommand('underline'); }}
+                        className="p-1.5 rounded hover:bg-accent text-foreground underline text-sm"
+                        title="Underline"
+                      >U</button>
+                      <div className="w-px h-5 bg-border mx-1" />
+                      <button
+                        type="button"
+                        onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertUnorderedList'); }}
+                        className="p-1.5 rounded hover:bg-accent text-foreground text-sm"
+                        title="Bullet List"
+                      >
+                        <span className="material-icons-round text-base">format_list_bulleted</span>
+                      </button>
+                      <button
+                        type="button"
+                        onMouseDown={(e) => { e.preventDefault(); document.execCommand('insertOrderedList'); }}
+                        className="p-1.5 rounded hover:bg-accent text-foreground text-sm"
+                        title="Numbered List"
+                      >
+                        <span className="material-icons-round text-base">format_list_numbered</span>
+                      </button>
+                    </div>
+                    {/* Editable area */}
+                    <div
+                      contentEditable
+                      dir="rtl"
+                      className="min-h-[150px] max-h-[400px] overflow-y-auto bg-background rounded-lg p-4 text-sm text-foreground leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary/30 border border-input prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{ __html: description }}
+                      onBlur={(e) => setDescription(e.currentTarget.innerHTML)}
+                      onInput={(e) => setDescription(e.currentTarget.innerHTML)}
+                      suppressContentEditableWarning
+                    />
+                  </div>
                 ) : (
-                  <p className="text-muted-foreground leading-relaxed text-sm text-start" dir="rtl">
-                    {description || t('tree_settings.description_placeholder', 'لم يتم إضافة وصف بعد...')}
-                  </p>
+                  <div
+                    className="text-muted-foreground leading-relaxed text-sm text-start prose prose-sm max-w-none"
+                    dir="rtl"
+                    dangerouslySetInnerHTML={{ __html: description || t('tree_settings.description_placeholder', 'لم يتم إضافة وصف بعد...') }}
+                  />
                 )}
               </div>
 
