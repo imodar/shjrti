@@ -282,7 +282,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
    // Render Polygamy Card (Multiple Spouses)
    if (unit.type === 'polygamy') {
      return (
-       <div className="family-card w-[520px] p-5 pt-10 bg-slate-50/50 dark:bg-slate-800/50 border border-primary/20 dark:border-primary/30 rounded-[24px] shadow-sm relative">
+       <div className="family-card w-[520px] p-5 pt-10 bg-white dark:bg-slate-800 border border-primary/20 dark:border-primary/30 rounded-[24px] shadow-sm relative">
          {/* Label */}
          <div className="family-label absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white px-4 py-1 rounded-full text-[11px] font-bold flex items-center gap-1.5 whitespace-nowrap z-10">
            <span className="material-icons-round text-sm">groups</span>
