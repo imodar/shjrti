@@ -51,17 +51,17 @@ import { AddFounderParentModal } from '@/components/AddFounderParentModal';
 import { useAddFounderParentMutation } from '@/hooks/mutations/useFamilyMutations';
 
 interface MemberProfileViewProps {
-  member: any;
+  member: Member;
   onEdit?: () => void;
   onDelete?: () => void;
   onBack?: () => void;
-  familyMembers: any[];
-  marriages?: any[];
+  familyMembers: Member[];
+  marriages?: Marriage[];
   isSpouse?: boolean;
   onSpouseEditWarning?: () => void;
   onSpouseDeleteWarning?: () => void;
-  onMemberClick?: (member: any) => void;
-  onAddChild?: (parentMember: any, spouseId?: string) => void;
+  onMemberClick?: (member: Member) => void;
+  onAddChild?: (parentMember: Member, spouseId?: string) => void;
   readOnly?: boolean;
 }
 
