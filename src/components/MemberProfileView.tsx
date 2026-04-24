@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
+import type { Member, Marriage } from '@/types/family.types';
 import { DateDisplay, LifespanDisplay } from '@/components/DateDisplay';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
