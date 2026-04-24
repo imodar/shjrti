@@ -11,16 +11,7 @@ import { getParentageInfo } from '@/lib/memberDisplayUtils';
 import { StitchWelcomeCard } from './WelcomeVariants';
 import type { MemberFormData } from './AddMemberFormTypes';
 
-/**
- * Minimal shape for the family object consumed by this view.
- * (The full Family type lives in @/lib/api/types but we only read a few fields here.)
- */
-interface FamilyDataLite {
-  id?: string;
-  name?: string;
-  description?: string | null;
-  [key: string]: unknown;
-}
+import type { Family } from '@/lib/api/types';
 
 interface Activity {
   id: string;
@@ -54,7 +45,7 @@ interface StitchMainContentProps {
   familyMembers?: Member[];
   marriages?: Marriage[];
   familyId?: string;
-  familyData?: FamilyDataLite | null;
+  familyData?: Family | null;
   editingMember?: Member | null;
   formMode?: 'add' | 'edit';
   onMemberSaved?: () => void;
