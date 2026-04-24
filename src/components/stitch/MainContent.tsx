@@ -9,6 +9,18 @@ import { Member, Marriage } from '@/types/family.types';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { getParentageInfo } from '@/lib/memberDisplayUtils';
 import { StitchWelcomeCard } from './WelcomeVariants';
+import type { MemberFormData } from './AddMemberFormTypes';
+
+/**
+ * Minimal shape for the family object consumed by this view.
+ * (The full Family type lives in @/lib/api/types but we only read a few fields here.)
+ */
+interface FamilyDataLite {
+  id?: string;
+  name?: string;
+  description?: string | null;
+  [key: string]: unknown;
+}
 
 interface Activity {
   id: string;
@@ -42,18 +54,18 @@ interface StitchMainContentProps {
   familyMembers?: Member[];
   marriages?: Marriage[];
   familyId?: string;
-  familyData?: any;
-  editingMember?: any;
+  familyData?: FamilyDataLite | null;
+  editingMember?: Member | null;
   formMode?: 'add' | 'edit';
   onMemberSaved?: () => void;
-  initialFormData?: any;
+  initialFormData?: Partial<MemberFormData>;
   // Member Profile props
-  selectedMember?: any;
+  selectedMember?: Member | null;
   onEditMember?: () => void;
   onDeleteMember?: () => void;
   onBackFromProfile?: () => void;
-  onMemberClick?: (member: any) => void;
-  onAddChild?: (parentMember: any, spouseId?: string) => void;
+  onMemberClick?: (member: Member) => void;
+  onAddChild?: (parentMember: Member, spouseId?: string) => void;
   // Suggestions view
   showSuggestions?: boolean;
   // Statistics view
@@ -230,8 +242,8 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
     return (
       <StitchMemberProfile
         member={selectedMember}
-        familyMembers={familyMembers as any[]}
-        marriages={marriages as any[]}
+        familyMembers={familyMembers}
+        marriages={marriages}
         onEdit={readOnly ? undefined : onEditMember}
         onDelete={readOnly ? undefined : onDeleteMember}
         onBack={onBackFromProfile}
@@ -427,7 +439,7 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
                       <div>
                         <p className="text-sm font-bold">{milestone.title}</p>
                         {(() => {
-                          const member = familyMembers.find((m: any) => m.id === milestone.id);
+                          const member = familyMembers.find((m) => m.id === milestone.id);
                           if (member) {
                             const parentageInfo = getParentageInfo(member, familyMembers);
                             if (parentageInfo) {
