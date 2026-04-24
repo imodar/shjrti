@@ -1,5 +1,38 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
+import type { Member as DbMember, Marriage as DbMarriage } from '@/types/family.types';
+
+/**
+ * Loose member shape used inside this legacy view.
+ * The view mixes camelCase (legacy) and snake_case (DB) field names,
+ * and reads several runtime-only fields (image, bio, phone, email, *_hidden).
+ * Until the full refactor lands, we widen the type to allow both shapes.
+ */
+type LegacyMember = DbMember & {
+  // legacy camelCase aliases still used in this file
+  fatherId?: string | null;
+  motherId?: string | null;
+  spouseId?: string | null;
+  relatedPersonId?: string | null;
+  birthDate?: string | null;
+  deathDate?: string | null;
+  isFounder?: boolean;
+  // ad-hoc runtime fields
+  image?: string | null;
+  bio?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  name_hidden?: boolean;
+  image_hidden?: boolean;
+  family_founder?: boolean;
+  founder?: boolean;
+  // legacy field bag for marriage data attached to spouse-as-member objects
+  marriage_date?: string | null;
+};
+
+type LegacyMarriage = DbMarriage & {
+  marital_status?: string | null;
+};
 import { DateDisplay, LifespanDisplay } from '@/components/DateDisplay';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -51,17 +84,17 @@ import { AddFounderParentModal } from '@/components/AddFounderParentModal';
 import { useAddFounderParentMutation } from '@/hooks/mutations/useFamilyMutations';
 
 interface MemberProfileViewProps {
-  member: any;
+  member: LegacyMember;
   onEdit?: () => void;
   onDelete?: () => void;
   onBack?: () => void;
-  familyMembers: any[];
-  marriages?: any[];
+  familyMembers: LegacyMember[];
+  marriages?: LegacyMarriage[];
   isSpouse?: boolean;
   onSpouseEditWarning?: () => void;
   onSpouseDeleteWarning?: () => void;
-  onMemberClick?: (member: any) => void;
-  onAddChild?: (parentMember: any, spouseId?: string) => void;
+  onMemberClick?: (member: LegacyMember) => void;
+  onAddChild?: (parentMember: LegacyMember, spouseId?: string) => void;
   readOnly?: boolean;
 }
 
