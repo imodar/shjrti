@@ -26,12 +26,10 @@ type LegacyMember = DbMember & {
   image_hidden?: boolean;
   family_founder?: boolean;
   founder?: boolean;
-  [key: string]: unknown;
 };
 
 type LegacyMarriage = DbMarriage & {
   marital_status?: string | null;
-  [key: string]: unknown;
 };
 import { DateDisplay, LifespanDisplay } from '@/components/DateDisplay';
 import { Button } from '@/components/ui/button';
