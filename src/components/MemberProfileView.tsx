@@ -26,6 +26,8 @@ type LegacyMember = DbMember & {
   image_hidden?: boolean;
   family_founder?: boolean;
   founder?: boolean;
+  // legacy field bag for marriage data attached to spouse-as-member objects
+  marriage_date?: string | null;
 };
 
 type LegacyMarriage = DbMarriage & {
