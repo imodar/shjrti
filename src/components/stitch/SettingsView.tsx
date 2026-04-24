@@ -12,6 +12,14 @@ import { CustomDomainModal } from '@/pages/FamilyBuilderNew/components/TreeSetti
 
 import { Textarea } from '@/components/ui/textarea';
 import CollaboratorsTab from './CollaboratorsTab';
+import DOMPurify from 'dompurify';
+
+// Restrict description HTML to a safe inline-formatting subset.
+const sanitizeDescriptionHtml = (html: string): string =>
+  DOMPurify.sanitize(html ?? '', {
+    ALLOWED_TAGS: ['b', 'strong', 'i', 'em', 'u', 'p', 'br', 'ul', 'ol', 'li', 'span', 'div'],
+    ALLOWED_ATTR: [],
+  });
 
 interface StitchSettingsViewProps {
   familyId: string;
@@ -357,9 +365,9 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
                       contentEditable
                       dir="rtl"
                       className="min-h-[150px] max-h-[400px] overflow-y-auto bg-background rounded-lg p-4 text-sm text-foreground leading-relaxed focus:outline-none focus:ring-2 focus:ring-primary/30 border border-input prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{ __html: description }}
-                      onBlur={(e) => setDescription(e.currentTarget.innerHTML)}
-                      onInput={(e) => setDescription(e.currentTarget.innerHTML)}
+                      dangerouslySetInnerHTML={{ __html: sanitizeDescriptionHtml(description) }}
+                      onBlur={(e) => setDescription(sanitizeDescriptionHtml(e.currentTarget.innerHTML))}
+                      onInput={(e) => setDescription(sanitizeDescriptionHtml(e.currentTarget.innerHTML))}
                       suppressContentEditableWarning
                     />
                   </div>
@@ -367,7 +375,7 @@ export const StitchSettingsView: React.FC<StitchSettingsViewProps> = ({
                   <div
                     className="text-muted-foreground leading-relaxed text-sm text-start prose prose-sm max-w-none"
                     dir="rtl"
-                    dangerouslySetInnerHTML={{ __html: description || t('tree_settings.description_placeholder', 'لم يتم إضافة وصف بعد...') }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeDescriptionHtml(description || t('tree_settings.description_placeholder', 'لم يتم إضافة وصف بعد...')) }}
                   />
                 )}
               </div>
