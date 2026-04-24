@@ -108,17 +108,18 @@ export const StitchMainContent: React.FC<StitchMainContentProps> = ({
 
   const INITIAL_COUNT = 3;
   const LOAD_MORE_COUNT = 10;
+  const SCROLL_THRESHOLD = 40;
 
   const handleActivitiesScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     const el = e.currentTarget;
-    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 40) {
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - SCROLL_THRESHOLD) {
       setVisibleActivities(prev => Math.min(prev + LOAD_MORE_COUNT, activities.length));
     }
   }, [activities.length]);
 
   const handleBirthdaysScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
     const el = e.currentTarget;
-    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 40) {
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - SCROLL_THRESHOLD) {
       setVisibleBirthdays(prev => Math.min(prev + LOAD_MORE_COUNT, milestones.length));
     }
   }, [milestones.length]);
