@@ -134,11 +134,8 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
         {/* Parents */}
         {(father || mother) && (
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-sm">
-            <h3 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white mb-3 sm:mb-4 flex items-center justify-between">
+            <h3 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white mb-3 sm:mb-4">
               {t('profile.parents', 'Parents')}
-              <span className="text-[9px] sm:text-[10px] text-slate-400 uppercase tracking-widest font-semibold">
-                {t('profile.ascending_line', 'Ascending Line')}
-              </span>
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               {father && (
