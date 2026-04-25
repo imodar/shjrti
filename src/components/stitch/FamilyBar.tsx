@@ -95,9 +95,9 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
                               onRootChange?.('all');
                               setOpen(false);
                             }}
-                            className="text-xs cursor-pointer"
+                            className="text-base cursor-pointer"
                           >
-                            <span className="material-icons-round text-sm text-primary me-2">account_tree</span>
+                            <span className="material-icons-round text-base text-primary me-2">account_tree</span>
                             {t('tree_view.all_branches', 'All Branches')}
                           </CommandItem>
                           {rootOptions.map(option => (
@@ -108,7 +108,7 @@ export const StitchFamilyBar: React.FC<StitchFamilyBarProps> = ({
                                 onRootChange?.(option.id);
                                 setOpen(false);
                               }}
-                              className="text-xs cursor-pointer"
+                              className="text-base cursor-pointer"
                             >
                               
                               {option.label}
