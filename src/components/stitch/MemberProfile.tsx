@@ -14,6 +14,7 @@ import { AddFounderParentDrawer } from './AddFounderParentDrawer';
 import { useAddFounderParentMutation } from '@/hooks/mutations/useFamilyMutations';
 import { useAuth } from '@/contexts/AuthContext';
 import { useImageUploadPermission } from '@/hooks/useImageUploadPermission';
+import { ChevronUp, UserX, Info } from 'lucide-react';
 
 interface StitchMemberProfileProps {
   member: any;
