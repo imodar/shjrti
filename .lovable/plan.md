@@ -140,3 +140,20 @@
 ## ما الذي تريد البدء به؟
 
 أقترح البدء بـ **المرحلة 1 كاملة** (أمان حرج، تنفيذ سريع، أثر كبير). هل توافق؟ أم تفضّل ترتيباً مختلفاً؟
+
+---
+
+## ✅ تم تنفيذه
+
+- **م1**: تشديد CSP (إزالة `unsafe-eval`)، توجيه المستخدم لإضافة `.env` لـ `.gitignore` وتدوير المفاتيح
+- **م2**: `src/lib/logger.ts`، تفعيل `no-explicit-any`/`no-console` كـ warnings في ESLint
+- **م4**: إضافة `animate-fade-in` و`animate-fade-in-up` في `tailwind.config.ts`
+- **م5**: إضافة `.github/workflows/ci.yml` (lint + tsc + vitest + build)، اختبارات `dateUtils`
+- **م6**: lazy loading لـ 13 صفحة إضافية (StitchTreeView, FamilyBuilderStitch, Store, Payments...) ⇒ تقليل bundle الأولي
+
+## 🔜 التالي (متى أردت)
+
+- **م3**: تفكيك `FamilyBuilderNew.tsx` (4297 سطر) و `EnhancedAdminPanel.tsx` (2981 سطر) — يحتاج جلسة مخصصة
+- **م2.2**: تفعيل `strictNullChecks: true` تدريجياً ملف بملف
+- **م5.3**: ربط Sentry (يحتاج DSN)
+- **م6.2**: PWA — راجع التحذيرات حول إعداد iframes أولاً
