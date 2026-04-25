@@ -8,31 +8,32 @@ import { ProtectedFamilyRoute } from "@/components/ProtectedFamilyRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
-import DashboardBackup from "./pages/DashboardBackup";
 import StitchDashboard from "./pages/StitchDashboard";
-import FamilyBuilderStitch from "./pages/FamilyBuilderStitch";
-import StitchTreeView from "./pages/StitchTreeView";
-import StitchAccount from "./pages/StitchAccount";
-import StitchPublicTree from "./pages/StitchPublicTree";
-import StitchFamilyCreator from "./pages/StitchFamilyCreator";
 import StitchLoadingFallback from "./components/stitch/StitchLoadingFallback";
 import StitchLayout from "./components/stitch/StitchLayout";
-import Profile from "./pages/Profile";
-import Payments from "./pages/Payments";
-import PlanSelection from "./pages/PlanSelection";
-import PaymentSuccess from "./pages/PaymentSuccess";
-import Payment from "./pages/Payment";
-import ChangePassword from "./pages/ChangePassword";
 import TermsConditions from "./pages/TermsConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ContactUs from "./pages/ContactUs";
-import Store from "./pages/Store";
-import RenewSubscription from "./pages/RenewSubscription";
 import CustomDomainRedirect from "./pages/CustomDomainRedirect";
 import NotFound from "./pages/NotFound";
 import AcceptInvitation from "./pages/AcceptInvitation";
 
-// Lazy-loaded admin pages (code splitting)
+// Lazy-loaded heavy pages (code splitting)
+const DashboardBackup = React.lazy(() => import('./pages/DashboardBackup'));
+const FamilyBuilderStitch = React.lazy(() => import('./pages/FamilyBuilderStitch'));
+const StitchTreeView = React.lazy(() => import('./pages/StitchTreeView'));
+const StitchAccount = React.lazy(() => import('./pages/StitchAccount'));
+const StitchPublicTree = React.lazy(() => import('./pages/StitchPublicTree'));
+const StitchFamilyCreator = React.lazy(() => import('./pages/StitchFamilyCreator'));
+const Payments = React.lazy(() => import('./pages/Payments'));
+const PlanSelection = React.lazy(() => import('./pages/PlanSelection'));
+const PaymentSuccess = React.lazy(() => import('./pages/PaymentSuccess'));
+const Payment = React.lazy(() => import('./pages/Payment'));
+const ChangePassword = React.lazy(() => import('./pages/ChangePassword'));
+const Store = React.lazy(() => import('./pages/Store'));
+const RenewSubscription = React.lazy(() => import('./pages/RenewSubscription'));
+
+// Lazy-loaded admin pages
 const EnhancedAdminPanel = React.lazy(() => import('./pages/EnhancedAdminPanel'));
 const AdminBilling = React.lazy(() => import('./pages/AdminBilling'));
 const AdminAPISettings = React.lazy(() => import('./pages/AdminAPISettings'));
@@ -69,6 +70,7 @@ const StitchTreeViewWithProvider: React.FC = () => {
 };
 
 export const AppRoutes: React.FC = () => (
+  <Suspense fallback={<StitchLoadingFallback />}>
   <Routes>
     <Route path="/" element={<Index />} />
     <Route path="/auth" element={<Auth />} />
@@ -133,4 +135,5 @@ export const AppRoutes: React.FC = () => (
     <Route path="/:customDomain" element={<CustomDomainRedirect />} />
     <Route path="*" element={<NotFound />} />
   </Routes>
+  </Suspense>
 );
