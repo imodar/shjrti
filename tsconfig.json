@@ -10,7 +10,8 @@
       ]
     },
     "skipLibCheck": true,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "_comment_strict_plan": "Stage 2 of audit plan: enabling strict checks file-by-file. Flip strictNullChecks=true once null-handling sweep is complete in src/."
   },
   "files": [],
   "references": [
