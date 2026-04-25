@@ -353,6 +353,32 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
                       <StatRow label={t('profile.mother', 'Mother')} value={mother.first_name || mother.name} isText />
                     </div>
                   )}
+                  {!mother && father && (
+                    <div className={cn('pt-4', father && 'border-t border-slate-100 dark:border-slate-800')}>
+                      <div className="relative overflow-hidden rounded-2xl border border-dashed border-rose-200 dark:border-rose-900/40 bg-gradient-to-br from-rose-50/60 via-pink-50/40 to-transparent dark:from-rose-900/10 dark:via-pink-900/5 p-4">
+                        <div className="absolute -top-6 -end-6 w-20 h-20 bg-rose-100/50 dark:bg-rose-900/20 rounded-full blur-2xl pointer-events-none" />
+                        <div className="relative flex items-start gap-3">
+                          <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-rose-100 dark:border-rose-900/40 flex items-center justify-center text-rose-400 shadow-sm">
+                            <UserX size={18} strokeWidth={2} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[11px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider">
+                              {t('profile.mother_unknown_title', 'Mother Not Registered')}
+                            </p>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                              {t('profile.mother_unknown_desc', 'The mother\'s information has not been added yet. You can update it later from the profile.')}
+                            </p>
+                            <div className="flex items-center gap-1.5 mt-2 text-[10px] text-slate-400 dark:text-slate-500">
+                              <Info size={11} strokeWidth={2.2} />
+                              <span className="font-medium">
+                                {t('profile.spouse_of', 'Wife of')} <span className="text-primary font-bold">{father.first_name || father.name}</span>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -366,7 +392,7 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
                     {isFounder && (
                       <div className="p-4 border border-amber-100 dark:border-amber-900/30 bg-amber-50/50 dark:bg-amber-900/10 rounded-2xl flex flex-col gap-3">
                         <div className="flex items-center gap-2">
-                          <span className="material-symbols-outlined text-amber-500 text-lg">expand_less</span>
+                          <ChevronUp size={18} strokeWidth={2.5} className="text-amber-500" />
                           <p className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase">
                             {t('profile.parent_management', 'Parent Management')}
                           </p>
