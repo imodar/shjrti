@@ -3,7 +3,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { cn } from '@/lib/utils';
 import { getParentageInfo } from '@/lib/memberDisplayUtils';
-import { UserX, Info } from 'lucide-react';
 
 interface FamilyTabProps {
   member: any;
