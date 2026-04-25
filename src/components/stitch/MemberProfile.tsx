@@ -156,7 +156,7 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
       icon: 'calendar_today',
       iconColor: 'text-primary',
       label: t('profile.birth_date', 'Birth Date'),
-      value: birthDate ? <DateDisplay date={birthDate} /> : t('profile.not_available', 'N/A'),
+      value: birthDate ? <DateDisplay date={birthDate} /> : t('profile.not_added', 'Not added'),
     },
     {
       icon: 'favorite',
