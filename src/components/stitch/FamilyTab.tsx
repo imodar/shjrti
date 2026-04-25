@@ -125,7 +125,6 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
     if (parentageInfo) {
       return `${parentageInfo.genderTerm} ${parentageInfo.lineage}`;
     }
-    if (spouse.last_name) return spouse.last_name;
     return null;
   };
 
