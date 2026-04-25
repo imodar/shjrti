@@ -3,7 +3,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { cn } from '@/lib/utils';
 import { getParentageInfo } from '@/lib/memberDisplayUtils';
-import { UserX, Info } from 'lucide-react';
 
 interface FamilyTabProps {
   member: any;
@@ -158,7 +157,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                   </div>
                 </button>
               )}
-              {mother && (
+              {mother && mother.first_name !== 'unknown_mother' && (
                 <button
                   onClick={() => onMemberClick?.(mother)}
                   className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-pink-200 transition-colors text-start"
@@ -174,27 +173,19 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                   </div>
                 </button>
               )}
-              {!mother && father && (
-                <div className="relative overflow-hidden rounded-xl border border-dashed border-rose-200 dark:border-rose-900/40 bg-gradient-to-br from-rose-50/60 via-pink-50/40 to-transparent dark:from-rose-900/10 dark:via-pink-900/5 p-2.5 sm:p-3">
-                  <div className="absolute -top-6 -end-6 w-20 h-20 bg-rose-100/50 dark:bg-rose-900/20 rounded-full blur-2xl pointer-events-none" />
-                  <div className="relative flex items-start gap-2.5 sm:gap-3">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white dark:bg-slate-800 border border-rose-100 dark:border-rose-900/40 flex items-center justify-center text-rose-400 shadow-sm flex-shrink-0">
-                      <UserX size={16} strokeWidth={2} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-[9px] sm:text-[10px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider">
-                        {t('profile.mother_unknown_title', 'Mother Not Registered')}
-                      </p>
-                      <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug">
-                        {t('profile.mother_unknown_desc', "The mother's information has not been added yet. You can update it later from the profile.")}
-                      </p>
-                      <div className="flex items-center gap-1.5 mt-1.5 text-[10px] text-slate-400 dark:text-slate-500">
-                        <Info size={11} strokeWidth={2.2} />
-                        <span className="font-medium truncate">
-                          {t('profile.spouse_of', 'Wife of')} <span className="text-primary font-bold">{father.first_name || father.name}</span>
-                        </span>
-                      </div>
-                    </div>
+              {(!mother || mother.first_name === 'unknown_mother') && father && (
+                <div className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 bg-slate-50/50 dark:bg-slate-800/20 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-slate-100 dark:bg-slate-700/40 text-slate-400 dark:text-slate-500 border-2 border-dashed border-slate-300 dark:border-slate-600">
+                    <span className="material-symbols-outlined text-lg sm:text-xl">person_off</span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase">{t('profile.mother', 'Mother')}</p>
+                    <p className="text-sm sm:text-base font-bold text-slate-400 dark:text-slate-500 italic truncate">
+                      {t('profile.mother_unknown_title', 'Mother Not Registered')}
+                    </p>
+                    <p className="text-[10px] sm:text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+                      {t('profile.unknown_wife_hint', 'Information can be added later')}
+                    </p>
                   </div>
                 </div>
               )}
