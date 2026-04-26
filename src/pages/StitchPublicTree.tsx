@@ -453,7 +453,7 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
   const showTree = activeTab === 'tree';
 
   return (
-    <div className="min-h-screen overflow-hidden theme-stitch">
+    <div className="min-h-screen theme-stitch">
       {/* Public Header */}
       <header className="h-14 md:h-16 lg:h-20 border-b border-border bg-card/80 backdrop-blur-md flex items-center justify-between px-3 md:px-4 lg:px-6 sticky top-0 z-50">
         {/* Brand */}
