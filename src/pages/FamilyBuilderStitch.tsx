@@ -87,6 +87,16 @@ const FamilyBuilderStitch: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMemberId, setSelectedMemberId] = useState<string | undefined>();
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 1024);
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const profileLoadingTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (profileLoadingTimerRef.current) {
+        window.clearTimeout(profileLoadingTimerRef.current);
+      }
+    };
+  }, []);
   const [showAddMemberForm, setShowAddMemberForm] = useState(false);
   const [formMode, setFormMode] = useState<'add' | 'edit'>('add');
   const [editingMember, setEditingMember] = useState<any>(null);
@@ -338,6 +348,16 @@ const FamilyBuilderStitch: React.FC = () => {
       // the inner section owns the scroll).
       document.scrollingElement?.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    // Show a brief skeleton so the user feels the profile is opening,
+    // even when data is already cached locally.
+    if (profileLoadingTimerRef.current) {
+      window.clearTimeout(profileLoadingTimerRef.current);
+    }
+    setIsProfileLoading(true);
+    profileLoadingTimerRef.current = window.setTimeout(() => {
+      setIsProfileLoading(false);
+      profileLoadingTimerRef.current = null;
+    }, 350);
   };
 
   const handleEditMember = () => {
