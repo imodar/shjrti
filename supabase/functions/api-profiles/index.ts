@@ -150,7 +150,7 @@ async function handleUpdate(userId: string, payload: Record<string, unknown>) {
   
   if (result.error) {
     console.error('[API] Update profile error:', result.error);
-    return errorResponse('DATABASE_ERROR', result.(error as Error).message, 500);
+    return errorResponse('DATABASE_ERROR', result.error?.message, 500);
   }
   
   return successResponse(result.data);
