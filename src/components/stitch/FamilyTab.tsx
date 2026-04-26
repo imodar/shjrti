@@ -254,7 +254,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                             <h4 className="font-bold text-sm sm:text-base text-slate-800 dark:text-white truncate">
-                              {spouse.first_name ? `${spouse.first_name} ${spouse.last_name || ''}` : spouse.name}
+                              {generateMemberDisplayName(spouse, familyMembers, marriages) || spouse.first_name || spouse.name}
                             </h4>
                             <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 bg-primary/10 text-primary text-[10px] sm:text-xs font-bold rounded-md">
                               {getSpouseLabel(spouse)}
