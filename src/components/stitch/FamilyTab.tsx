@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { cn } from '@/lib/utils';
-import { getParentageInfo } from '@/lib/memberDisplayUtils';
+import { getParentageInfo, generateMemberDisplayName } from '@/lib/memberDisplayUtils';
 
 interface FamilyTabProps {
   member: any;
@@ -355,7 +355,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                           ? t('profile.unknown_husband', 'بيانات الزوج غير متوفرة')
                           : parent.first_name === 'unknown_mother'
                             ? t('profile.unknown_wife', 'بيانات الزوجة غير متوفرة')
-                            : `${t('family_word', 'Family')} ${parent.first_name || parent.name} ${parent.last_name || ''}`}
+                            : `${t('family_word', 'Family')} ${generateMemberDisplayName(parent, familyMembers, marriages) || parent.first_name || parent.name}`}
                       </p>
                     </button>
                     {spouse && (
@@ -367,7 +367,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                           ? t('profile.unknown_husband', 'بيانات الزوج غير متوفرة')
                           : spouse.first_name === 'unknown_mother'
                             ? t('profile.unknown_wife', 'بيانات الزوجة غير متوفرة')
-                            : `${spouse.gender === 'male' ? t('profile.the_husband', 'الزوج') : t('profile.the_wife', 'الزوجة')}: ${spouse.first_name || spouse.name} ${spouse.last_name || ''}`}
+                            : `${spouse.gender === 'male' ? t('profile.the_husband', 'الزوج') : t('profile.the_wife', 'الزوجة')}: ${generateMemberDisplayName(spouse, familyMembers, marriages) || spouse.first_name || spouse.name}`}
                       </button>
                     )}
                   </div>
