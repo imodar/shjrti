@@ -96,6 +96,12 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
     const getLineageLabel = (member: Member | undefined): string => {
       if (!member) return t('tree_view.unknown', 'غير معروف');
       const firstName = member.first_name || member.name?.split(' ')[0] || member.name || '';
+      if (firstName === 'unknown_mother') {
+        return t('tree_view.wife_info_unavailable', 'معلومات الزوجة غير متوفرة');
+      }
+      if (firstName === 'unknown_father') {
+        return t('tree_view.husband_info_unavailable', 'معلومات الزوج غير متوفرة');
+      }
       const isFromFamily = isMemberFromFamily(member, familyMembers);
       
       if (isFromFamily) {
