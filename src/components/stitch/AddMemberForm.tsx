@@ -115,6 +115,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
         const buildFullName = (member: any, isWife: boolean = false) => {
           if (!member) return t('member.unknown', 'غير معروف');
           if (member.first_name === 'unknown_mother') return t('member.unknown_wife', 'زوجة غير معروفة');
+          if (member.first_name === 'unknown_father') return t('member.unknown_husband', 'زوج غير معروف');
           const firstName = member.first_name || member.name?.split(' ')[0] || '';
           const father = familyMembers.find(m => m.id === member.father_id);
           const grandfather = father ? familyMembers.find(m => m.id === father.father_id) : null;
