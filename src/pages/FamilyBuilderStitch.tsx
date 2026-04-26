@@ -10,6 +10,7 @@ import { subscriptionsApi, suggestionsApi, familiesApi, profilesApi } from '@/li
 import { StitchFamilyBar, StitchSidebar, StitchRightPanel, StitchMainContent, StitchSettingsView } from '@/components/stitch';
 import { useStitchLayout } from '@/components/stitch/StitchLayout';
 import DashboardLoader from '@/components/stitch/DashboardLoader';
+import StitchMemberProfileSkeleton from '@/components/stitch/MemberProfileSkeleton';
 import { MemberDeleteModal } from '@/components/stitch/MemberDeleteModal';
 import { cn } from '@/lib/utils';
 import {
@@ -554,6 +555,8 @@ const FamilyBuilderStitch: React.FC = () => {
             isOwner={isOwner}
             onBack={() => handleTabChange('dashboard')}
           />
+        ) : isProfileLoading && selectedMemberId ? (
+          <StitchMemberProfileSkeleton />
         ) : (
           <StitchMainContent
             userName={userName}
