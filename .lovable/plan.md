@@ -1,57 +1,88 @@
-## الفكرة
+## سبب المشكلة
 
-حالياً ميزة "بيانات الزوجة غير متوفرة" تعمل فقط للأعضاء الذكور (تنشئ سجل dummy باسم `unknown_mother`، تربط الأبناء به، وتعرض الزوجة كـ placeholder في الواجهات). نفس الميزة بكل أبعادها ستُضاف للأعضاء الإناث، بحيث يمكن للمرأة أن يكون لها "زوج غير معروف" يُنشأ تلقائياً ويُربط به الأبناء.
+عند فحص قاعدة البيانات (`family_tree_members`) لعائلة "الشيخ سعيد"، تبيّن أن حقل `last_name` ملوّث بسلاسل متراكمة بدلاً من اسم العائلة فقط:
 
-## نطاق التطبيق
+| first_name | last_name المخزن (خاطئ) | الصحيح |
+|---|---|---|
+| محمد سعيد | `سعيد الشيخ سعيد` | `الشيخ سعيد` |
+| صلاح الدين | `الدين الشيخ سعيد` | `الشيخ سعيد` |
+| عبد اللطيف | `اللطيف اللطيف الشيخ سعيد` | `الشيخ سعيد` |
 
-سيتم استخدام sentinel جديد: `first_name === 'unknown_father'` للزوج الـ dummy، بنفس منطق `unknown_mother`.
+**عدد السجلات الملوّثة في عائلتك: 142 عضواً**.
 
-### 1) النموذج (AddMemberForm + useAddMemberForm)
+التكرار يظهر في كل المواضع لأن منطق العرض في `src/lib/memberDisplayUtils.ts` (دالة `generateMemberDisplayName`) يستخدم `member.last_name` مباشرةً قبل الرجوع لاسم المؤسس:
+```ts
+const familyName = member.last_name || getFounderLastName(familyMembers);
+```
+لذلك يظهر التكرار في: بطاقة الملف الشخصي، بطاقات شجرة العائلة، الشجرة العامة، تبويبات العائلة، وأي مكان يستخدم هذه الدالة.
 
-- **حقل جديد `fatherUnknown`** في `AddMemberFormData` (مثل `motherUnknown` تماماً) مع قيمة افتراضية `false`.
-- **في `AddMemberForm.tsx` (السطور 457-478)**: إظهار نفس Switch + banner التنبيه أيضاً عندما `formData.gender === 'female'`، مع نصوص:
-  - `member.husband_info_available` = "اسم الزوج ومعلوماته متوفرة"
-  - `member.unknown_husband_note` = "سيتم إنشاء سجل زوج غير معروف تلقائياً وربط الأبناء بالأم مباشرة"
-- **شرط إخفاء قائمة الأزواج** (السطر 480) يُحدَّث ليشمل الحالة الأنثوية أيضاً: `!((male && motherUnknown) || (female && fatherUnknown))`.
-- **في `useAddMemberForm.ts`**:
-  - في `populateFormData` (≈السطر 248-261): اكتشاف ما إذا كانت كل الأزواج dummies من نوع `unknown_father` وتعيين `fatherUnknown: true`.
-  - في `handleFormSubmit` (≈السطر 679-792): إضافة فرعين موازيين تماماً للحالة الأنثوية:
-    - **سيناريو 1 (معروف → غير معروف)**: إنشاء/إعادة استخدام dummy husband (`first_name: 'unknown_father'`, `name: 'زوج غير معروف'`, `gender: 'male'`, `is_alive: false`)، تحديث `father_id` للأبناء ليشير إلى الـ dummy، حذف الزواجات/الأزواج القدامى الخارجيين.
-    - **سيناريو 2 (غير معروف → معروف)**: ترحيل أطفال من dummy husband إلى الزوج الحقيقي الجديد، حذف dummy والـ marriage.
-  - تحديث الفلاتر التي تتجاهل dummies لتشمل `unknown_father` (مثل filter في السطر 311).
+## كيف يجب أن يُعرض الاسم (بعد الإصلاح)
 
-### 2) عرض البيانات (read-side)
+### 1. أعضاء من داخل العائلة (لهم أب داخل الشجرة)
+`{first_name} {last_name الخاص بالمؤسس}`
+- مثال: `عبد اللطيف الشيخ سعيد`
+- مثال: `محمد سعيد الشيخ سعيد`
+- اسم العائلة دائماً = `last_name` للمؤسس فقط (مصدر واحد موحّد).
 
-- **`AddMemberForm.tsx` (السطر 117)**: إضافة فحص `unknown_father` → `t('member.unknown_husband', 'زوج غير معروف')`.
-- **`MemberTimeline.tsx` (السطر 128-131)**: تحديث الشرط ليشمل كلا الـ sentinels.
-- **`FamilyTab.tsx`**: 
-  - عرض placeholder للأب عندما `father.first_name === 'unknown_father'` (مرآة منطق الأم في السطور 156-187).
-  - في قسم spouseGroups (السطر 203): إضافة فرع placeholder للزوج عندما `spouse.first_name === 'unknown_father'` بنفس تصميم الزوجة المجهولة لكن بأيقونة/ألوان مذكّر.
-- **`FamilyCard.tsx`**: إضافة `isUnknownHusband` بنفس منطق `isUnknownWife` لإخفاء الزوج المجهول من بطاقة الشجرة.
-- **`StitchPublicTree.tsx` (السطر 288)**: استثناء `unknown_father` أيضاً من فلاتر العرض العامة.
+### 2. المؤسس
+`{first_name} {last_name}` كما هو مخزّن (مثال: `سعيد الشيخ سعيد`).
 
-### 3) مفاتيح ترجمة جديدة (تُستخدم مع fallbacks مدمجة)
+### 3. الأزواج/الزوجات من خارج العائلة
+`{first_name} {last_name}` الخاص بهم (لأنهم من عائلة مختلفة)
+- مثال: `بديعة البظ`، `كوكب باشوري`.
 
-- `member.husband_info_available` — "اسم الزوج ومعلوماته متوفرة"
-- `member.unknown_husband_note` — "سيتم إنشاء سجل زوج غير معروف تلقائياً وربط الأبناء بالأم مباشرة"
-- `member.unknown_husband` — "زوج غير معروف"
-- `profile.unknown_husband` — "بيانات الزوج غير متوفرة" (موجود مسبقاً كـ fallback في MemberTimeline)
-- `profile.unknown_husband_hint` — "Information can be added later"
-- `profile.father_unknown_title` — "Father Not Registered"
-- `tree_view.unknown_husband` — "Unknown Husband"
+### 4. سلسلة النسب (lineage chain) — تبقى كما هي
+لا تستخدم `last_name` إطلاقاً — تبني السلسلة من `first_name` للأب ثم الجد (حتى 3 أجيال) وتنتهي بـ `last_name` المؤسس فقط.
 
-## ملاحظات تقنية
+## خطة التنفيذ
 
-- لا تغييرات في قاعدة البيانات أو RLS — الميزة كلها client-side تستخدم سجلات `family_tree_members` عادية مع `first_name` كـ sentinel، تماماً كما هو الحال مع `unknown_mother`.
-- التصميم/الألوان: placeholder الزوج يستخدم نفس النمط الرمادي المتقطع (slate dashed) مثل placeholder الزوجة، مع أيقونة `person_off`.
-- لا تكرار: الـ Switch + Banner يستخدمان نفس الـ container، مع توجيه الحقل (`motherUnknown` للذكر، `fatherUnknown` للأنثى) حسب جنس العضو.
+### الخطوة 1 — تنظيف بيانات قاعدة البيانات (Migration)
+تحديث `family_tree_members.last_name` لكل عضو لديه أب داخل الشجرة، ليطابق `last_name` الخاص بمؤسس عائلته:
 
-## الملفات المتأثرة
+```sql
+UPDATE public.family_tree_members AS m
+SET last_name = founder.last_name,
+    updated_at = now()
+FROM public.family_tree_members AS founder
+WHERE founder.family_id = m.family_id
+  AND founder.is_founder = true
+  AND founder.last_name IS NOT NULL
+  AND m.is_founder IS NOT TRUE
+  AND m.last_name IS DISTINCT FROM founder.last_name
+  AND m.father_id IN (
+    SELECT id FROM public.family_tree_members ftm2
+    WHERE ftm2.family_id = m.family_id
+  );
+```
 
-- `src/components/stitch/AddMemberFormTypes.ts`
-- `src/components/stitch/useAddMemberForm.ts`
-- `src/components/stitch/AddMemberForm.tsx`
-- `src/components/stitch/FamilyTab.tsx`
-- `src/components/stitch/FamilyCard.tsx`
-- `src/components/stitch/MemberTimeline.tsx`
-- `src/pages/StitchPublicTree.tsx`
+**لا يتأثر:** المؤسس، والأزواج/الزوجات من خارج العائلة (لا أب لهم في الشجرة).
+
+### الخطوة 2 — تعديل منطق العرض
+في `src/lib/memberDisplayUtils.ts` داخل `generateMemberDisplayName`، استبدال:
+```ts
+const familyName = member.last_name || getFounderLastName(familyMembers);
+```
+بـ:
+```ts
+const familyName = getFounderLastName(familyMembers);
+```
+هذا يضمن مصدر واحد لاسم العائلة (المؤسس) ويمنع عودة المشكلة مستقبلاً حتى لو أُدخلت بيانات تالفة.
+
+### الخطوة 3 — تعديل بطاقة الملف الشخصي
+في `src/components/stitch/MemberProfile.tsx` (سطر 506):
+```tsx
+familyName={member?.last_name || member?.name || ''}
+```
+استبدالها بـ:
+```tsx
+familyName={getFounderLastName(familyMembers) || ''}
+```
+
+### الخطوة 4 — منع تلوث البيانات مستقبلاً
+في نموذج إضافة/تعديل العضو (`useAddMemberForm.ts` و `familyBuilderService.ts`)، عند حفظ عضو لديه أب داخل العائلة، ضبط `last_name` تلقائياً = `last_name` المؤسس بدلاً من بناء سلسلة نسب فيه.
+
+## النتيجة المتوقعة
+- يختفي التكرار "اللطيف اللطيف الشيخ سعيد" → يصبح "عبد اللطيف الشيخ سعيد".
+- يختفي "محمد سعيد سعيد الشيخ سعيد" → يصبح "محمد سعيد الشيخ سعيد".
+- توحيد العرض في جميع الشاشات (الشجرة، الملف الشخصي، التبويبات، الشجرة العامة).
+- مصدر واحد لاسم العائلة = المؤسس، يمنع تكرار المشكلة.
