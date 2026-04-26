@@ -669,9 +669,7 @@ const FamilyBuilderStitch: React.FC = () => {
                     setShowSpouseEditWarning(false);
                     const partner = spouseWarningData.partnerMember;
                     if (partner) {
-                      setSelectedMemberId(partner.id);
-                      setShowAddMemberForm(false);
-                      setIsSidebarOpen(false);
+                      handleMemberClick(partner);
                     }
                     setSpouseWarningData(null);
                   }}
