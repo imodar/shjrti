@@ -295,7 +295,23 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
 
         {/* Tab Content */}
         {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="space-y-6">
+            {/* Biography (full width, on top) */}
+            {member?.biography && (
+              <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 shadow-sm">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-xl flex items-center justify-center">
+                    <span className="material-symbols-outlined">school</span>
+                  </div>
+                  <h3 className="font-bold text-slate-800 dark:text-white">{t('profile.biography', 'Biography')}</h3>
+                </div>
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
+                  {member.biography}
+                </p>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
               {/* Personal Information */}
               <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 shadow-sm">
@@ -314,21 +330,6 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
                   ))}
                 </div>
               </div>
-
-              {/* Biography */}
-              {member?.biography && (
-                <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-100 dark:border-slate-800 shadow-sm">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-blue-50 dark:bg-blue-900/20 text-blue-500 rounded-xl flex items-center justify-center">
-                      <span className="material-symbols-outlined">school</span>
-                    </div>
-                    <h3 className="font-bold text-slate-800 dark:text-white">{t('profile.biography', 'Biography')}</h3>
-                  </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-line">
-                    {member.biography}
-                  </p>
-                </div>
-              )}
             </div>
 
             {/* Right Column */}
@@ -424,6 +425,7 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
                   </div>
                 </div>
               )}
+            </div>
             </div>
           </div>
         )}
