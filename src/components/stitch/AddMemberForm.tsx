@@ -454,6 +454,25 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
 
             {/* Spouses Section */}
             <div className="pt-8 border-t border-slate-100 dark:border-slate-800">
+              {/* Marital Status Dropdown (Single / Married) */}
+              <div className="space-y-2 mb-6 max-w-xs">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  <span className="material-symbols-outlined text-primary text-lg">favorite</span>
+                  {t('member.marital_status', 'الحالة الاجتماعية')}
+                </label>
+                <StyledDropdown
+                  options={[
+                    { value: 'single', label: t('member.is_single', 'أعزب'), icon: 'person' },
+                    { value: 'married', label: t('member.is_married', 'متزوج'), icon: 'favorite' }
+                  ]}
+                  value={isMarried ? 'married' : 'single'}
+                  onChange={(value) => setIsMarried(value === 'married')}
+                  accentColor="primary"
+                />
+              </div>
+
+              {isMarried && (
+              <>
               <div className="flex items-center gap-3 mb-6">
                 <span className={`material-symbols-outlined text-xl ${formData.gender === 'female' ? 'text-blue-500' : 'text-pink-500'}`} style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
                 <h3 className={`text-xs font-bold uppercase tracking-widest ${formData.gender === 'female' ? 'text-blue-500' : 'text-pink-500'}`}>
@@ -463,21 +482,6 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                 </h3>
               </div>
 
-              {/* Marital Status Switch (Single / Married) */}
-              <div className="flex items-center gap-3 mb-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                <Switch
-                  checked={isMarried}
-                  onCheckedChange={setIsMarried}
-                />
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  {isMarried
-                    ? t('member.is_married', 'متزوج')
-                    : t('member.is_single', 'أعزب')}
-                </label>
-              </div>
-
-              {isMarried && (
-              <>
               {/* Spouse Known Switch */}
               <div className="flex items-center gap-3 mb-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
                 <Switch
