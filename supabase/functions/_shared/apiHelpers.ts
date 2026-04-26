@@ -99,7 +99,7 @@ export function errorResponse(
     error: {
       code,
       message,
-      ...(details && { details }),
+      ...(details ? { details } : {}),
     },
   };
   
