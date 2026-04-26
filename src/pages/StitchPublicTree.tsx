@@ -453,7 +453,7 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
   const showTree = activeTab === 'tree';
 
   return (
-    <div className="min-h-screen overflow-hidden theme-stitch">
+    <div className="min-h-screen theme-stitch">
       {/* Public Header */}
       <header className="h-14 md:h-16 lg:h-20 border-b border-border bg-card/80 backdrop-blur-md flex items-center justify-between px-3 md:px-4 lg:px-6 sticky top-0 z-50">
         {/* Brand */}
@@ -502,16 +502,18 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
         </div>
       </header>
 
-      {/* Family Bar */}
-      <StitchFamilyBar
-        familyName={familyName}
-        onSwitchTree={() => {}}
-        lastUpdated={recentActivities.length > 0 ? recentActivities[0].timestamp : undefined}
-        showRootSelector={showTree}
-        rootOptions={rootOptions}
-        selectedRoot={selectedRootMarriage}
-        onRootChange={(id) => { setSelectedRootMarriage(id); setZoomLevel(1); }}
-      />
+      {/* Family Bar - sticky below header */}
+      <div className="sticky top-14 md:top-16 lg:top-20 z-40 bg-card">
+        <StitchFamilyBar
+          familyName={familyName}
+          onSwitchTree={() => {}}
+          lastUpdated={recentActivities.length > 0 ? recentActivities[0].timestamp : undefined}
+          showRootSelector={showTree}
+          rootOptions={rootOptions}
+          selectedRoot={selectedRootMarriage}
+          onRootChange={(id) => { setSelectedRootMarriage(id); setZoomLevel(1); }}
+        />
+      </div>
 
       {/* Tree View */}
       {showTree ? (
