@@ -148,7 +148,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                   <div className="min-w-0">
                     <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase">{t('profile.father', 'Father')}</p>
                     <p className="text-sm sm:text-base font-bold text-slate-700 dark:text-slate-200 truncate">
-                      {father.first_name ? `${father.first_name} ${father.last_name || ''}` : father.name}
+                      {generateMemberDisplayName(father, familyMembers, marriages) || father.first_name || father.name}
                     </p>
                   </div>
                 </button>
@@ -180,7 +180,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                   <div className="min-w-0">
                     <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase">{t('profile.mother', 'Mother')}</p>
                     <p className="text-sm sm:text-base font-bold text-slate-700 dark:text-slate-200 truncate">
-                      {mother.first_name ? `${mother.first_name} ${mother.last_name || ''}` : mother.name}
+                      {generateMemberDisplayName(mother, familyMembers, marriages) || mother.first_name || mother.name}
                     </p>
                   </div>
                 </button>
