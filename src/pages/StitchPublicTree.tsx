@@ -285,7 +285,7 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
   // Filter members
   const filteredMembers = useMemo(() => {
     const visibleMembers = familyMembers.filter(
-      member => member.first_name !== 'unknown_mother'
+      member => member.first_name !== 'unknown_mother' && member.first_name !== 'unknown_father'
     );
     if (!searchTerm.trim()) return visibleMembers;
     const term = searchTerm.toLowerCase();
