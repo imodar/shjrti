@@ -330,6 +330,14 @@ const FamilyBuilderStitch: React.FC = () => {
     setSelectedMemberId(member.id);
     setShowAddMemberForm(false);
     setIsSidebarOpen(false);
+    // Scroll page to top so the profile opens from the top, mirroring
+    // the public tree view behavior.
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Also reset any scrollable main containers (e.g. on desktop where
+      // the inner section owns the scroll).
+      document.scrollingElement?.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const handleEditMember = () => {
