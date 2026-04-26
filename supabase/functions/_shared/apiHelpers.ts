@@ -99,7 +99,7 @@ export function errorResponse(
     error: {
       code,
       message,
-      ...(details && { details }),
+      ...(details ? { details } : {}),
     },
   };
   
@@ -253,7 +253,7 @@ export async function withErrorHandling(
   } catch (error) {
     console.error('[API] Unhandled error:', error);
     
-    const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+    const message = error instanceof Error ? (error as Error).message : 'An unexpected error occurred';
     
     return errorResponse(
       ErrorCodes.INTERNAL_ERROR,

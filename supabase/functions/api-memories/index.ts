@@ -101,7 +101,7 @@ async function handleGetMemberMemories(userId: string, memberId: string): Promis
     .order('uploaded_at', { ascending: false });
 
   if (error) {
-    return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, HttpStatus.BAD_REQUEST);
   }
 
   return successResponse(data);
@@ -123,7 +123,7 @@ async function handleGetFamilyMemories(userId: string, familyId: string): Promis
     .order('uploaded_at', { ascending: false });
 
   if (error) {
-    return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, HttpStatus.BAD_REQUEST);
   }
 
   return successResponse(data);
@@ -166,7 +166,7 @@ async function handleCreateMemberMemory(userId: string, payload: Record<string, 
     .single();
 
     if (error) {
-      return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
+      return errorResponse('DATABASE_ERROR', (error as Error).message, HttpStatus.BAD_REQUEST);
     }
 
     // Log activity (non-blocking)
@@ -214,7 +214,7 @@ async function handleCreateFamilyMemory(userId: string, payload: Record<string, 
     .single();
 
     if (error) {
-      return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
+      return errorResponse('DATABASE_ERROR', (error as Error).message, HttpStatus.BAD_REQUEST);
     }
 
     // Log activity (non-blocking)
@@ -255,7 +255,7 @@ async function handleUpdateMemberMemory(userId: string, memoryId: string, payloa
     .single();
 
   if (error) {
-    return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, HttpStatus.BAD_REQUEST);
   }
 
   return successResponse(data);
@@ -291,7 +291,7 @@ async function handleUpdateFamilyMemory(userId: string, memoryId: string, payloa
     .single();
 
   if (error) {
-    return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, HttpStatus.BAD_REQUEST);
   }
 
   return successResponse(data);
@@ -328,7 +328,7 @@ async function handleDeleteMemberMemory(userId: string, memoryId: string): Promi
     .eq('id', memoryId);
 
   if (error) {
-    return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, HttpStatus.BAD_REQUEST);
   }
 
   // Attempt to delete from storage (non-blocking)
@@ -368,7 +368,7 @@ async function handleDeleteFamilyMemory(userId: string, memoryId: string): Promi
     .eq('id', memoryId);
 
   if (error) {
-    return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, HttpStatus.BAD_REQUEST);
   }
 
   // Attempt to delete from storage (non-blocking)
@@ -402,7 +402,7 @@ async function handleGetPhotoTags(userId: string, memoryId: string): Promise<Res
     .order('created_at', { ascending: true });
 
   if (error) {
-    return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, HttpStatus.BAD_REQUEST);
   }
 
   return successResponse(data);
@@ -444,7 +444,7 @@ async function handleCreatePhotoTag(userId: string, payload: Record<string, unkn
     if (error.code === '23505') {
       return errorResponse('DUPLICATE', 'This member is already tagged in this photo', HttpStatus.BAD_REQUEST);
     }
-    return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, HttpStatus.BAD_REQUEST);
   }
 
   return successResponse(data, HttpStatus.CREATED);
@@ -482,7 +482,7 @@ async function handleDeletePhotoTag(userId: string, tagId: string): Promise<Resp
     .eq('id', tagId);
 
   if (error) {
-    return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, HttpStatus.BAD_REQUEST);
   }
 
   return successResponse({ deleted: true, id: tagId });
@@ -515,7 +515,7 @@ async function handleGetTaggedMembers(userId: string, familyId: string): Promise
     .in('memory_id', memoryIds);
 
   if (error) {
-    return errorResponse('DATABASE_ERROR', error.message, HttpStatus.BAD_REQUEST);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, HttpStatus.BAD_REQUEST);
   }
 
   // Get unique member IDs with counts
@@ -621,6 +621,6 @@ Deno.serve(async (req) => {
     }
   } catch (error) {
     console.error('API Error:', error);
-    return errorResponse('INTERNAL_ERROR', error instanceof Error ? error.message : 'Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
+    return errorResponse('INTERNAL_ERROR', error instanceof Error ? (error as Error).message : 'Internal server error', HttpStatus.INTERNAL_SERVER_ERROR);
   }
 });

@@ -100,7 +100,7 @@ async function handleGet(userId: string) {
   
   if (error) {
     console.error('[API] Get profile error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   // Return empty object if no profile exists
@@ -150,7 +150,7 @@ async function handleUpdate(userId: string, payload: Record<string, unknown>) {
   
   if (result.error) {
     console.error('[API] Update profile error:', result.error);
-    return errorResponse('DATABASE_ERROR', result.error.message, 500);
+    return errorResponse('DATABASE_ERROR', result.error?.message, 500);
   }
   
   return successResponse(result.data);
@@ -198,6 +198,6 @@ Deno.serve(async (req) => {
     }
   } catch (error) {
     console.error('[API] Unhandled error:', error);
-    return errorResponse('INTERNAL_ERROR', error.message || 'An unexpected error occurred', 500);
+    return errorResponse('INTERNAL_ERROR', (error as Error).message || 'An unexpected error occurred', 500);
   }
 });

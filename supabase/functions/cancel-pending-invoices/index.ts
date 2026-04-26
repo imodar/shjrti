@@ -107,7 +107,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error cancelling pending invoices:', error);
     return new Response(JSON.stringify({ 
-      error: error instanceof Error ? error.message : 'حدث خطأ غير متوقع'
+      error: error instanceof Error ? (error as Error).message : 'حدث خطأ غير متوقع'
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,

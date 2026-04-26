@@ -119,7 +119,7 @@ async function handleList(userId: string, familyId: string) {
   
   if (error) {
     console.error('[API] List error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse(data);
@@ -146,7 +146,7 @@ async function handleGet(userId: string, suggestionId: string) {
     if (error.code === 'PGRST116') {
       return errorResponse('NOT_FOUND', 'Suggestion not found', 404);
     }
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   // Check ownership
@@ -195,7 +195,7 @@ async function handleCreate(payload: Record<string, unknown>) {
   
   if (error) {
     console.error('[API] Create error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse(data, 201);
@@ -254,7 +254,7 @@ async function handleUpdate(userId: string, suggestionId: string, payload: Recor
   
   if (error) {
     console.error('[API] Update error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse(data);
@@ -291,7 +291,7 @@ async function handleDelete(userId: string, suggestionId: string) {
   
   if (error) {
     console.error('[API] Delete error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse({ deleted: true, id: suggestionId });
@@ -353,6 +353,6 @@ Deno.serve(async (req) => {
     }
   } catch (error) {
     console.error('[API] Unhandled error:', error);
-    return errorResponse('INTERNAL_ERROR', error.message || 'An unexpected error occurred', 500);
+    return errorResponse('INTERNAL_ERROR', (error as Error).message || 'An unexpected error occurred', 500);
   }
 });

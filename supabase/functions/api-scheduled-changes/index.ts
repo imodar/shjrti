@@ -88,7 +88,7 @@ async function handleGet(userId: string) {
   
   if (error && error.code !== 'PGRST116') {
     console.error('[API] Get scheduled change error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   if (!change) {
@@ -149,7 +149,7 @@ async function handlePost(userId: string, body: any) {
   
   if (error) {
     console.error('[API] Create scheduled change error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse(data, 201);
@@ -174,7 +174,7 @@ async function handleDelete(userId: string, changeId: string | null) {
   
   if (error) {
     console.error('[API] Delete scheduled change error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse({ deleted: true });
@@ -217,6 +217,6 @@ Deno.serve(async (req) => {
     }
   } catch (error) {
     console.error('[API] Unhandled error:', error);
-    return errorResponse('INTERNAL_ERROR', error.message || 'An unexpected error occurred', 500);
+    return errorResponse('INTERNAL_ERROR', (error as Error).message || 'An unexpected error occurred', 500);
   }
 });

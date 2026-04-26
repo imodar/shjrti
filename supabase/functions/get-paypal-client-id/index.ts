@@ -102,7 +102,7 @@ serve(async (req) => {
     console.error('Error in get-paypal-client-id:', error);
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'Internal server error' 
+        error: (error as Error).message || 'Internal server error' 
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -125,7 +125,7 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorMessage = error instanceof Error ? (error as Error).message : String(error);
     logStep("ERROR in delete-user", { message: errorMessage });
     return new Response(JSON.stringify({ error: errorMessage }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

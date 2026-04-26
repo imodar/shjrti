@@ -547,7 +547,7 @@ function buildInvoiceHTML(invoice: any, profile: any, seoSettings: any): string 
               البريد الإلكتروني
               <span class="en">Email</span>
             </div>
-            <div class="field-value">${profile?.email || user?.email || '-'}</div>
+            <div class="field-value">${profile?.email || '-'}</div>
           </div>
           ${profile?.phone ? `
           <div class="field-row">
