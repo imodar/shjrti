@@ -86,6 +86,14 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const profileLoadingTimerRef = useRef<number | null>(null);
 
+  useEffect(() => {
+    return () => {
+      if (profileLoadingTimerRef.current) {
+        window.clearTimeout(profileLoadingTimerRef.current);
+      }
+    };
+  }, []);
+
   // Suggestions dialog
   const [suggestEditOpen, setSuggestEditOpen] = useState(false);
   const [suggestEditMemberId, setSuggestEditMemberId] = useState('');
