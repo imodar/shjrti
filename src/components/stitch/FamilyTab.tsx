@@ -351,7 +351,11 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                     >
                       <span className="material-symbols-outlined text-slate-400 text-base sm:text-lg">person</span>
                       <p className="text-sm sm:text-base font-bold truncate">
-                        {t('family_word', 'Family')} {parent.first_name || parent.name} {parent.last_name || ''}
+                        {parent.first_name === 'unknown_father'
+                          ? t('profile.unknown_husband', 'بيانات الزوج غير متوفرة')
+                          : parent.first_name === 'unknown_mother'
+                            ? t('profile.unknown_wife', 'بيانات الزوجة غير متوفرة')
+                            : `${t('family_word', 'Family')} ${parent.first_name || parent.name} ${parent.last_name || ''}`}
                       </p>
                     </button>
                     {spouse && (
@@ -359,7 +363,11 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                         onClick={() => onMemberClick?.(spouse)}
                         className="text-xs sm:text-sm text-slate-400 font-medium hover:text-primary transition-colors truncate"
                       >
-                        {spouse.gender === 'male' ? t('profile.the_husband', 'الزوج') : t('profile.the_wife', 'الزوجة')}: {spouse.first_name || spouse.name} {spouse.last_name || ''}
+                        {spouse.first_name === 'unknown_father'
+                          ? t('profile.unknown_husband', 'بيانات الزوج غير متوفرة')
+                          : spouse.first_name === 'unknown_mother'
+                            ? t('profile.unknown_wife', 'بيانات الزوجة غير متوفرة')
+                            : `${spouse.gender === 'male' ? t('profile.the_husband', 'الزوج') : t('profile.the_wife', 'الزوجة')}: ${spouse.first_name || spouse.name} ${spouse.last_name || ''}`}
                       </button>
                     )}
                   </div>
