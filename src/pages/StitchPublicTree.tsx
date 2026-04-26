@@ -583,6 +583,9 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
             )}
 
             {/* Main Content */}
+            {isProfileLoading && selectedMemberId ? (
+              <StitchMemberProfileSkeleton />
+            ) : (
             <StitchMainContent
               userName={t('public_tree.visitor', 'زائر')}
               activities={recentActivities}
@@ -600,6 +603,7 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
               readOnly={true}
               onSuggestEdit={handleSuggestEdit}
             />
+            )}
           </main>
         </>
       )}
