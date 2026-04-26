@@ -86,7 +86,7 @@ serve(async (req) => {
     } catch (emailError) {
       console.error("Email error:", emailError);
       return new Response(
-        JSON.stringify({ error: "Failed to send notification email", details: emailError.message }),
+        JSON.stringify({ error: "Failed to send notification email", details: (emailError as Error).message }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
