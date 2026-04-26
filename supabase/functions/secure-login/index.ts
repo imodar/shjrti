@@ -45,8 +45,8 @@ serve(async (req) => {
       console.error('[Secure Login] Rate limit check error:', rateLimitError);
     }
 
-    if (rateLimitData && !rateLimitData.is_allowed) {
-      const resetTime = new Date(rateLimitData.reset_time);
+    if (rateLimitData && !(rateLimitData as any).is_allowed) {
+      const resetTime = new Date((rateLimitData as any).reset_time);
       const minutesRemaining = Math.ceil((resetTime.getTime() - Date.now()) / 60000);
       
       console.warn(`[Secure Login] Rate limit exceeded for ${email}`);
