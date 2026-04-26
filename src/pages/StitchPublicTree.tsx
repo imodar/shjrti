@@ -7,6 +7,7 @@ import { StitchFamilyBar, StitchSidebar, StitchMainContent } from '@/components/
 import { StitchTreeCanvas } from '@/components/stitch/TreeCanvas';
 import { StitchHeader } from '@/components/stitch/Header';
 import DashboardLoader from '@/components/stitch/DashboardLoader';
+import StitchMemberProfileSkeleton from '@/components/stitch/MemberProfileSkeleton';
 import PasswordModal from '@/components/PasswordModal';
 import { SuggestEditDialog } from '@/components/SuggestEditDialog';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
