@@ -86,6 +86,16 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
 
         const marriageDate = marriage?.marriage_date || null;
 
+        const isUnknownSpouse =
+          spouse.first_name === 'unknown_father' ||
+          spouse.first_name === 'unknown_mother';
+
+        const memberGender = (member?.gender || '').toLowerCase();
+        const unknownTitle =
+          memberGender === 'female'
+            ? t('timeline.got_married_female', 'تزوجت')
+            : t('timeline.got_married_male', 'تزوج');
+
         items.push({
           type: 'marriage',
           date: marriageDate,
@@ -93,7 +103,9 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
           borderColor: 'border-secondary',
           bgColor: 'bg-secondary/5',
           textColor: 'text-secondary',
-          title: `${t('timeline.marriage_with', 'Union with')} ${spouseName.trim()}`,
+          title: isUnknownSpouse
+            ? unknownTitle
+            : `${t('timeline.marriage_with', 'Union with')} ${spouseName.trim()}`,
           description: '',
           dateLabel: marriageDate || '',
         });
