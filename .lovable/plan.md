@@ -1,159 +1,57 @@
-## خطة شاملة لتحسين الجودة والأمان والأداء
+## الفكرة
 
-مرتّبة حسب الأولوية. كل مرحلة مستقلة وقابلة للتنفيذ بشكل تدريجي.
+حالياً ميزة "بيانات الزوجة غير متوفرة" تعمل فقط للأعضاء الذكور (تنشئ سجل dummy باسم `unknown_mother`، تربط الأبناء به، وتعرض الزوجة كـ placeholder في الواجهات). نفس الميزة بكل أبعادها ستُضاف للأعضاء الإناث، بحيث يمكن للمرأة أن يكون لها "زوج غير معروف" يُنشأ تلقائياً ويُربط به الأبناء.
 
----
+## نطاق التطبيق
 
-### 🔴 المرحلة 1 — أمان حرج (يوم واحد)
+سيتم استخدام sentinel جديد: `first_name === 'unknown_father'` للزوج الـ dummy، بنفس منطق `unknown_mother`.
 
-**1.1 تأمين `.env`**
-- إضافة `.env` إلى `.gitignore`
-- التأكيد للمستخدم بضرورة **تدوير المفاتيح** (rotate) في Supabase + Google reCAPTCHA لأن المفاتيح القديمة موجودة في تاريخ Git
-- ملاحظة: مفاتيح Supabase الـ `anon` و `VITE_*` عامة بطبيعتها لكن من الأفضل عدم رفعها
+### 1) النموذج (AddMemberForm + useAddMemberForm)
 
-**1.2 تشديد CSP في `index.html`**
-- إزالة `unsafe-eval` (غير ضروري في Vite production)
-- استبدال `unsafe-inline` للسكربتات بنظام `nonce` أو `hash` للـ inline scripts الموجودة
-- ترك `unsafe-inline` للـ styles فقط (مطلوب لـ Tailwind/shadcn)
+- **حقل جديد `fatherUnknown`** في `AddMemberFormData` (مثل `motherUnknown` تماماً) مع قيمة افتراضية `false`.
+- **في `AddMemberForm.tsx` (السطور 457-478)**: إظهار نفس Switch + banner التنبيه أيضاً عندما `formData.gender === 'female'`، مع نصوص:
+  - `member.husband_info_available` = "اسم الزوج ومعلوماته متوفرة"
+  - `member.unknown_husband_note` = "سيتم إنشاء سجل زوج غير معروف تلقائياً وربط الأبناء بالأم مباشرة"
+- **شرط إخفاء قائمة الأزواج** (السطر 480) يُحدَّث ليشمل الحالة الأنثوية أيضاً: `!((male && motherUnknown) || (female && fatherUnknown))`.
+- **في `useAddMemberForm.ts`**:
+  - في `populateFormData` (≈السطر 248-261): اكتشاف ما إذا كانت كل الأزواج dummies من نوع `unknown_father` وتعيين `fatherUnknown: true`.
+  - في `handleFormSubmit` (≈السطر 679-792): إضافة فرعين موازيين تماماً للحالة الأنثوية:
+    - **سيناريو 1 (معروف → غير معروف)**: إنشاء/إعادة استخدام dummy husband (`first_name: 'unknown_father'`, `name: 'زوج غير معروف'`, `gender: 'male'`, `is_alive: false`)، تحديث `father_id` للأبناء ليشير إلى الـ dummy، حذف الزواجات/الأزواج القدامى الخارجيين.
+    - **سيناريو 2 (غير معروف → معروف)**: ترحيل أطفال من dummy husband إلى الزوج الحقيقي الجديد، حذف dummy والـ marriage.
+  - تحديث الفلاتر التي تتجاهل dummies لتشمل `unknown_father` (مثل filter في السطر 311).
 
-**1.3 فحص `npm audit`**
-- تشغيل `npm audit` ومعالجة الثغرات HIGH (rollup, vite, إلخ)
-- ترقية الحزم الحرجة بحذر مع اختبار البناء
+### 2) عرض البيانات (read-side)
 
----
+- **`AddMemberForm.tsx` (السطر 117)**: إضافة فحص `unknown_father` → `t('member.unknown_husband', 'زوج غير معروف')`.
+- **`MemberTimeline.tsx` (السطر 128-131)**: تحديث الشرط ليشمل كلا الـ sentinels.
+- **`FamilyTab.tsx`**: 
+  - عرض placeholder للأب عندما `father.first_name === 'unknown_father'` (مرآة منطق الأم في السطور 156-187).
+  - في قسم spouseGroups (السطر 203): إضافة فرع placeholder للزوج عندما `spouse.first_name === 'unknown_father'` بنفس تصميم الزوجة المجهولة لكن بأيقونة/ألوان مذكّر.
+- **`FamilyCard.tsx`**: إضافة `isUnknownHusband` بنفس منطق `isUnknownWife` لإخفاء الزوج المجهول من بطاقة الشجرة.
+- **`StitchPublicTree.tsx` (السطر 288)**: استثناء `unknown_father` أيضاً من فلاتر العرض العامة.
 
-### 🟠 المرحلة 2 — جودة الكود (3-5 أيام)
+### 3) مفاتيح ترجمة جديدة (تُستخدم مع fallbacks مدمجة)
 
-**2.1 تنظيف console.log (339 حالة)**
-- إنشاء `src/lib/logger.ts` بسيط: `logger.debug/info/warn/error` يعمل فقط في `import.meta.env.DEV`
-- استبدال `console.log` بـ `logger.debug` آلياً عبر `rg --replace`
-- إبقاء `console.error` فقط في معالجات الأخطاء الفعلية
+- `member.husband_info_available` — "اسم الزوج ومعلوماته متوفرة"
+- `member.unknown_husband_note` — "سيتم إنشاء سجل زوج غير معروف تلقائياً وربط الأبناء بالأم مباشرة"
+- `member.unknown_husband` — "زوج غير معروف"
+- `profile.unknown_husband` — "بيانات الزوج غير متوفرة" (موجود مسبقاً كـ fallback في MemberTimeline)
+- `profile.unknown_husband_hint` — "Information can be added later"
+- `profile.father_unknown_title` — "Father Not Registered"
+- `tree_view.unknown_husband` — "Unknown Husband"
 
-**2.2 تفعيل TypeScript strict تدريجياً**
-- المرحلة A: تفعيل `strictNullChecks: true` فقط (الأكثر فائدة، الأقل ضرراً)
-- المرحلة B: تفعيل `noImplicitAny: true`
-- المرحلة C: تفعيل `strict: true` كاملاً
-- إصلاح الأخطاء ملف بملف. لا حاجة لإصلاح كل شيء دفعة واحدة
+## ملاحظات تقنية
 
-**2.3 تقليل استخدام `any` (610 حالة)**
-- بعد تفعيل strict، استبدال `any` تدريجياً بـ `unknown` + type guards أو أنواع من `database.types.ts`
-- التركيز على الملفات الحساسة أمنياً أولاً (auth, payments, edge functions calls)
+- لا تغييرات في قاعدة البيانات أو RLS — الميزة كلها client-side تستخدم سجلات `family_tree_members` عادية مع `first_name` كـ sentinel، تماماً كما هو الحال مع `unknown_mother`.
+- التصميم/الألوان: placeholder الزوج يستخدم نفس النمط الرمادي المتقطع (slate dashed) مثل placeholder الزوجة، مع أيقونة `person_off`.
+- لا تكرار: الـ Switch + Banner يستخدمان نفس الـ container، مع توجيه الحقل (`motherUnknown` للذكر، `fatherUnknown` للأنثى) حسب جنس العضو.
 
----
+## الملفات المتأثرة
 
-### 🟠 المرحلة 3 — تقسيم الملفات الضخمة (أسبوع)
-
-**3.1 تفكيك `FamilyBuilderNew.tsx` (4297 سطر / 53 useState)**
-- استخراج الحالة إلى `useReducer` أو Zustand store
-- تقسيم إلى:
-  - `useFamilyBuilderState.ts` (الحالة)
-  - `useFamilyBuilderActions.ts` (CRUD)
-  - `FamilyBuilderForm/` (مكونات النموذج)
-  - `FamilyBuilderTree/` (العرض الشجري)
-  - `FamilyBuilderModals/` (المودالات)
-
-**3.2 تفكيك `EnhancedAdminPanel.tsx` (2981 سطر)**
-- تقسيم لتبويبات منفصلة: `AdminUsers/`, `AdminPackages/`, `AdminPayments/`, `AdminSettings/`
-- استخدام lazy loading لكل تبويب
-
-**3.3 إعادة هيكلة `MainContent.tsx`**
-- إذا كان فعلاً يأخذ 27 prop: استخدام Context أو composition بدل prop-drilling
-
----
-
-### 🟡 المرحلة 4 — تنظيم البنية (3 أيام)
-
-**4.1 تنظيم `src/components/` (65 ملف flat)**
-- إعادة تجميع حسب الميزة:
-  ```
-  components/
-    family/      (FamilyHeader, FamilyOverview, FamilyMembersList...)
-    member/      (MemberCard, MemberProfileModal, MemberMemories...)
-    payment/     (PayPalButton, PaymentGatewaySettings...)
-    auth/        (PasswordModal, ProtectedRoute...)
-    layout/      (GlobalHeader, GlobalFooter, ScrollToTop...)
-    common/      (DateDisplay, LanguageSwitcher, ErrorPage...)
-    ui/          (موجود بالفعل — shadcn)
-  ```
-
-**4.2 إصلاح `tailwind.config.ts`**
-- إضافة keyframes + animation لـ `animate-fade-in` المستخدم في الكود
-
----
-
-### 🟡 المرحلة 5 — اختبارات وCI/CD (أسبوع)
-
-**5.1 توسيع تغطية الاختبارات**
-- إضافة اختبارات Vitest للوحدات الحرجة:
-  - `lib/memberDisplayUtils.ts` (منطق النسب والكنية)
-  - `lib/dateUtils.ts`
-  - `lib/security.ts` (التحقق من المدخلات)
-  - `hooks/queries/useFamilyQueries.ts`
-- هدف واقعي: 40% تغطية للمنطق الحرج
-
-**5.2 GitHub Actions CI**
-- إضافة `.github/workflows/ci.yml`:
-  - `bun install` → `bun run lint` → `bunx tsc --noEmit` → `bunx vitest run` → `bun run build`
-- يشتغل على كل PR
-
-**5.3 مراقبة الأخطاء (Sentry)**
-- إضافة `@sentry/react` مع DSN كـ env var
-- تفعيل sourcemaps في الـ production build (`vite.config.ts`)
-
----
-
-### 🟢 المرحلة 6 — تحسينات إضافية
-
-**6.1 ESLint**
-- تفعيل `no-unused-vars` و `no-console` (مع warning فقط)
-- ترقية `eslint-plugin-react-hooks` من RC إلى stable
-
-**6.2 إضافة PWA**
-- `vite-plugin-pwa` مع manifest + service worker للعمل offline
-
-**6.3 Code splitting إضافي**
-- `React.lazy` لكل route رئيسي لتقليل bundle initial
-
----
-
-## ترتيب التنفيذ المقترح
-
-| الأسبوع | المهام |
-|---|---|
-| 1 | المرحلة 1 كاملة + بداية 2.1 (logger) |
-| 2 | 2.2 (strictNullChecks) + 4.2 (tailwind fix) + 5.2 (CI) |
-| 3-4 | 3.1 (تفكيك FamilyBuilderNew) |
-| 5 | 3.2 (تفكيك AdminPanel) + 4.1 (تنظيم components) |
-| 6 | 5.1 (اختبارات) + 5.3 (Sentry) |
-| 7+ | 2.3 (تقليل any) + 6.x (تحسينات) |
-
----
-
-## ملاحظات مهمة
-
-- **لا أستطيع تنفيذ كل شيء في رسالة واحدة** — كل مرحلة تحتاج رسالة منفصلة (أو اثنتين) حتى لا تنكسر التغييرات
-- **الاختبار بعد كل مرحلة** ضروري — التغييرات الكبيرة في TS strict أو تفكيك الملفات قد تكسر سلوك موجود
-- **النقاط المرفوضة من تقييمك السابق**:
-  - XSS في SettingsView: محمي فعلاً بـ DOMPurify (لا حاجة لإصلاح)
-  - App.tsx 333 سطر + 10 Providers: App.tsx 64 سطر فقط، مفصول لـ `providers.tsx` (لا حاجة لإصلاح)
-
-## ما الذي تريد البدء به؟
-
-أقترح البدء بـ **المرحلة 1 كاملة** (أمان حرج، تنفيذ سريع، أثر كبير). هل توافق؟ أم تفضّل ترتيباً مختلفاً؟
-
----
-
-## ✅ تم تنفيذه
-
-- **م1**: تشديد CSP (إزالة `unsafe-eval`)، توجيه المستخدم لإضافة `.env` لـ `.gitignore` وتدوير المفاتيح
-- **م2**: `src/lib/logger.ts`، تفعيل `no-explicit-any`/`no-console` كـ warnings في ESLint
-- **م4**: إضافة `animate-fade-in` و`animate-fade-in-up` في `tailwind.config.ts`
-- **م5**: إضافة `.github/workflows/ci.yml` (lint + tsc + vitest + build)، اختبارات `dateUtils`
-- **م6**: lazy loading لـ 13 صفحة إضافية (StitchTreeView, FamilyBuilderStitch, Store, Payments...) ⇒ تقليل bundle الأولي
-
-## 🔜 التالي (متى أردت)
-
-- **م3**: تفكيك `FamilyBuilderNew.tsx` (4297 سطر) و `EnhancedAdminPanel.tsx` (2981 سطر) — يحتاج جلسة مخصصة
-- **م2.2**: تفعيل `strictNullChecks: true` تدريجياً ملف بملف
-- **م5.3**: ربط Sentry (يحتاج DSN)
-- **م6.2**: PWA — راجع التحذيرات حول إعداد iframes أولاً
+- `src/components/stitch/AddMemberFormTypes.ts`
+- `src/components/stitch/useAddMemberForm.ts`
+- `src/components/stitch/AddMemberForm.tsx`
+- `src/components/stitch/FamilyTab.tsx`
+- `src/components/stitch/FamilyCard.tsx`
+- `src/components/stitch/MemberTimeline.tsx`
+- `src/pages/StitchPublicTree.tsx`

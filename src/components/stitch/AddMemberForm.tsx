@@ -115,6 +115,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
         const buildFullName = (member: any, isWife: boolean = false) => {
           if (!member) return t('member.unknown', 'غير معروف');
           if (member.first_name === 'unknown_mother') return t('member.unknown_wife', 'زوجة غير معروفة');
+          if (member.first_name === 'unknown_father') return t('member.unknown_husband', 'زوج غير معروف');
           const firstName = member.first_name || member.name?.split(' ')[0] || '';
           const father = familyMembers.find(m => m.id === member.father_id);
           const grandfather = father ? familyMembers.find(m => m.id === father.father_id) : null;
@@ -454,30 +455,38 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                 </h3>
               </div>
 
-              {/* Wife Known Switch - only for male members */}
-              {formData.gender === 'male' && (
-                <div className="flex items-center gap-3 mb-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                  <Switch
-                    checked={!formData.motherUnknown}
-                    onCheckedChange={(checked) => setFormData(prev => ({ ...prev, motherUnknown: !checked }))}
-                  />
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    {t('member.wife_info_available', 'اسم الزوجة ومعلوماتها متوفرة')}
-                  </label>
-                </div>
-              )}
+              {/* Spouse Known Switch */}
+              <div className="flex items-center gap-3 mb-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                <Switch
+                  checked={formData.gender === 'male' ? !formData.motherUnknown : !formData.fatherUnknown}
+                  onCheckedChange={(checked) => setFormData(prev => (
+                    formData.gender === 'male'
+                      ? { ...prev, motherUnknown: !checked }
+                      : { ...prev, fatherUnknown: !checked }
+                  ))}
+                />
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  {formData.gender === 'male'
+                    ? t('member.wife_info_available', 'اسم الزوجة ومعلوماتها متوفرة')
+                    : t('member.husband_info_available', 'اسم الزوج ومعلوماته متوفرة')}
+                </label>
+              </div>
 
-              {/* Unknown wife banner */}
-              {formData.gender === 'male' && formData.motherUnknown && (
+              {/* Unknown spouse banner */}
+              {((formData.gender === 'male' && formData.motherUnknown) ||
+                (formData.gender === 'female' && formData.fatherUnknown)) && (
                 <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl mb-6 flex items-center gap-3">
                   <span className="material-symbols-outlined text-amber-500">info</span>
                   <p className="text-sm text-amber-700 dark:text-amber-300">
-                    {t('member.unknown_wife_note', 'سيتم إنشاء سجل زوجة غير معروفة تلقائياً وربط الأبناء بالأب مباشرة')}
+                    {formData.gender === 'male'
+                      ? t('member.unknown_wife_note', 'سيتم إنشاء سجل زوجة غير معروفة تلقائياً وربط الأبناء بالأب مباشرة')
+                      : t('member.unknown_husband_note', 'سيتم إنشاء سجل زوج غير معروف تلقائياً وربط الأبناء بالأم مباشرة')}
                   </p>
                 </div>
               )}
-              
-              {!(formData.gender === 'male' && formData.motherUnknown) && (
+
+              {!((formData.gender === 'male' && formData.motherUnknown) ||
+                 (formData.gender === 'female' && formData.fatherUnknown)) && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Existing Spouses */}
                 {formData.gender === 'male' && wives.map((wife, index) => {
