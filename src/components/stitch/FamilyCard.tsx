@@ -162,7 +162,10 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
      if (unit.type === 'polygamy') {
        return `${t('tree_view.family_of', 'Family of')} ${unit.husband?.first_name || unit.husband?.name} (${t('tree_view.multiple_spouses', 'Multiple Spouses')})`;
      }
-     return `${t('tree_view.family_of', 'Family of')} ${unit.husband?.first_name || unit.husband?.name}`;
+    // If husband is the unknown placeholder, label using the wife's name
+    const isUnknownHusbandLabel = unit.husband?.first_name === 'unknown_father';
+    const labelMember = isUnknownHusbandLabel ? unit.wives[0] : unit.husband;
+    return `${t('tree_view.family_of', 'Family of')} ${labelMember?.first_name || labelMember?.name || ''}`;
    };
  
    // Render Single Member Card
@@ -274,6 +277,22 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
                   </div>
                 )}
               </>
+            )}
+
+            {/* Husband unknown: show wife alone */}
+            {isUnknownHusband && !isUnknownWife && wife && (
+              <div className="flex flex-col items-center gap-2">
+                <MemberAvatar member={wife} size="md" />
+                <div className="text-center">
+                  <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers)}</p>
+                  {showWifeMotherBadge && wifeMother && (
+                    <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
+                      <span className="material-icons-round text-[10px]">face_3</span>
+                      {t('tree_view.mother', 'Mother')}: {wifeMother.first_name || wifeMother.name}
+                    </span>
+                  )}
+                </div>
+              </div>
             )}
           </div>
         </div>
