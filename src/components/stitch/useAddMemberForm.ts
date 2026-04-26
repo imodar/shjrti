@@ -578,6 +578,31 @@ export const useAddMemberForm = ({
         twin_group_id: formData.twin_group_id
       };
 
+      // Twin linking: if marked as twin and siblings selected, ensure shared twin_group_id
+      let twinSiblingIdsToLink: string[] = [];
+      if (formData.is_twin && formData.selected_twins && formData.selected_twins.length > 0) {
+        twinSiblingIdsToLink = formData.selected_twins.filter(Boolean);
+
+        // Find any existing twin_group_id from selected siblings or current member
+        let resolvedGroupId: string | null = formData.twin_group_id || null;
+        if (!resolvedGroupId) {
+          for (const sid of twinSiblingIdsToLink) {
+            const sib = familyMembers.find((m: any) => m.id === sid);
+            if (sib?.twin_group_id) {
+              resolvedGroupId = sib.twin_group_id;
+              break;
+            }
+          }
+        }
+        if (!resolvedGroupId) {
+          resolvedGroupId = (typeof crypto !== 'undefined' && (crypto as any).randomUUID)
+            ? (crypto as any).randomUUID()
+            : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        }
+        memberPayload.twin_group_id = resolvedGroupId;
+        memberPayload.is_twin = true;
+      }
+
       let memberData;
 
       if (formMode === 'edit' && editingMember) {
@@ -607,6 +632,18 @@ export const useAddMemberForm = ({
           family_id: familyId,
           created_by: familyData?.creator_id
         });
+      }
+
+      // Sync selected twin siblings to share the same twin_group_id
+      if (twinSiblingIdsToLink.length > 0 && memberPayload.twin_group_id) {
+        await Promise.all(
+          twinSiblingIdsToLink.map((sid) =>
+            membersApi.update(sid, {
+              is_twin: true,
+              twin_group_id: memberPayload.twin_group_id,
+            }).catch((err) => console.error('Failed to link twin sibling', sid, err))
+          )
+        );
       }
 
       // Handle spouse marriages
