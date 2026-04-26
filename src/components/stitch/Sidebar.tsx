@@ -6,7 +6,8 @@ import { StyledDropdown } from './StyledDropdown';
 import { 
   getParentageInfo, 
   getSpouseDisplayInfo, 
-  getBirthDeathDisplayInfo 
+  getBirthDeathDisplayInfo,
+  generateMemberDisplayName
 } from '@/lib/memberDisplayUtils';
 import { MemberAvatar } from './MemberAvatar';
 
@@ -60,9 +61,8 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
     if (member.first_name === 'unknown_father') {
       return t('tree_view.husband_info_unavailable', 'معلومات الزوج غير متوفرة');
     }
-    if (member.first_name && member.last_name) {
-      return `${member.first_name} ${member.last_name}`;
-    }
+    const generated = generateMemberDisplayName(member, familyMembers, marriages);
+    if (generated) return generated;
     return (member as any).name || t('common.unknown', 'Unknown');
   };
 
