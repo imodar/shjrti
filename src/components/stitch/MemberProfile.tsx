@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ImageUploadModal } from '@/components/ImageUploadModal';
 import { DateDisplay, LifespanDisplay } from '@/components/DateDisplay';
 import { cn } from '@/lib/utils';
-import { getParentageInfo, getFounderLastName } from '@/lib/memberDisplayUtils';
+import { getParentageInfo, getFounderLastName, generateMemberDisplayName } from '@/lib/memberDisplayUtils';
 import { StitchFamilyTab } from './FamilyTab';
 import { MemberTimeline } from './MemberTimeline';
 import { AddFounderParentDrawer } from './AddFounderParentDrawer';
@@ -123,6 +123,8 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
   };
 
   const getDisplayName = () => {
+    const generated = generateMemberDisplayName(member, familyMembers, marriages);
+    if (generated) return generated;
     if (member.first_name) return member.first_name;
     return member.name || t('common.unknown', 'Unknown');
   };
