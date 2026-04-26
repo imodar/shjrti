@@ -123,7 +123,7 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
   };
 
   const getDisplayName = () => {
-    if (member.first_name && member.last_name) return `${member.first_name} ${member.last_name}`;
+    if (member.first_name) return member.first_name;
     return member.name || t('common.unknown', 'Unknown');
   };
 
