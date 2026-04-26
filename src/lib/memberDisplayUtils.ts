@@ -331,8 +331,12 @@ export const generateMemberDisplayName = (
     const isDescendant = !member.is_founder && memberHasFamilyFather;
     
     if (isDescendant) {
-      // Use member's own last_name (كنية) when available, fallback to founder's last_name
-      const familyName = member.last_name || getFounderLastName(familyMembers);
+      // If father is an external spouse (not founder, no father in tree), inherit father's last_name
+      const father = familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
+      const fatherIsExternal = father && !father.is_founder && !(father.father_id || (father as any).fatherId);
+      const familyName = fatherIsExternal && father?.last_name
+        ? father.last_name
+        : (member.last_name || getFounderLastName(familyMembers));
       return familyName ? `${firstName} ${familyName}` : firstName;
     }
     return firstName;
