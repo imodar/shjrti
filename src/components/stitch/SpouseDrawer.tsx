@@ -8,7 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { Member, Marriage } from '@/types/family.types';
 import { SpouseData } from '@/components/SpouseForm';
-import { buildLineageChain } from '@/lib/memberDisplayUtils';
+import { buildLineageChain, generateMemberDisplayName } from '@/lib/memberDisplayUtils';
 import { StyledDropdown } from './StyledDropdown';
 import { HeritageDatePicker } from '@/components/ui/heritage-date-picker';
 
@@ -162,10 +162,12 @@ export const SpouseDrawer: React.FC<SpouseDrawerProps> = ({
     if (isDescendantOfFounder(member.id)) {
       return buildLineageChain(member, familyMembers);
     }
-    const firstName = member.first_name || member.name?.split(' ')[0] || member.name || '';
+    const display = generateMemberDisplayName(member, familyMembers, marriages);
+    if (display) return display;
+    const firstName = member.first_name || (member as any).name?.split(' ')[0] || (member as any).name || '';
     const lastName = member.last_name || '';
     return `${firstName} ${lastName}`.trim();
-  }, [familyMembers, isDescendantOfFounder]);
+  }, [familyMembers, marriages, isDescendantOfFounder]);
 
   // Hide toggle when editing existing spouse
   const shouldHideToggle = hideToggle || isEditing;
