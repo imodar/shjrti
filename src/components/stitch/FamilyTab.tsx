@@ -137,7 +137,7 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
               {t('profile.parents', 'Parents')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-              {father && (
+              {father && father.first_name !== 'unknown_father' && (
                 <button
                   onClick={() => onMemberClick?.(father)}
                   className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 bg-slate-50 dark:bg-slate-800/30 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-blue-200 transition-colors group text-start"
@@ -152,6 +152,22 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                     </p>
                   </div>
                 </button>
+              )}
+              {(!father || father.first_name === 'unknown_father') && mother && mother.first_name !== 'unknown_mother' && (
+                <div className="flex items-center gap-2.5 sm:gap-3 p-2.5 sm:p-3 bg-slate-50/50 dark:bg-slate-800/20 rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-slate-100 dark:bg-slate-700/40 text-slate-400 dark:text-slate-500 border-2 border-dashed border-slate-300 dark:border-slate-600">
+                    <span className="material-symbols-outlined text-lg sm:text-xl">person_off</span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase">{t('profile.father', 'Father')}</p>
+                    <p className="text-sm sm:text-base font-bold text-slate-400 dark:text-slate-500 italic truncate">
+                      {t('profile.father_unknown_title', 'Father Not Registered')}
+                    </p>
+                    <p className="text-[10px] sm:text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 truncate">
+                      {t('profile.unknown_husband_hint', 'Information can be added later')}
+                    </p>
+                  </div>
+                </div>
               )}
               {mother && mother.first_name !== 'unknown_mother' && (
                 <button
