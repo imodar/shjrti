@@ -54,6 +54,12 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
   };
 
   const getDisplayName = (member: Member) => {
+    if (member.first_name === 'unknown_mother') {
+      return t('tree_view.wife_info_unavailable', 'معلومات الزوجة غير متوفرة');
+    }
+    if (member.first_name === 'unknown_father') {
+      return t('tree_view.husband_info_unavailable', 'معلومات الزوج غير متوفرة');
+    }
     if (member.first_name && member.last_name) {
       return `${member.first_name} ${member.last_name}`;
     }
@@ -227,7 +233,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
               key={member.id}
               onClick={() => onMemberClick(member)}
               className={cn(
-                'relative p-4 rounded-xl border-2 border-dashed transition-all cursor-pointer group overflow-hidden',
+                'relative px-4 py-5 rounded-xl border-2 border-dashed transition-all cursor-pointer group overflow-hidden',
                 selectedMemberId === member.id 
                   ? 'bg-slate-50 dark:bg-slate-800/40 border-primary/30' 
                   : isFounder
