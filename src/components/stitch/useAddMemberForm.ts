@@ -332,11 +332,21 @@ export const useAddMemberForm = ({
     } else if (member.gender === 'female') {
       const memberMarriages = marriages.filter(m => m.wife_id === member.id);
       if (memberMarriages.length > 0) {
-        const marriage = memberMarriages[0];
-        const husbandMember = familyMembers.find(m => m.id === marriage.husband_id);
-        const husbandData = extractSpouseData(husbandMember, marriage);
-        setHusbands([husbandData]);
-        setOriginalHusbandData({ ...husbandData });
+        // Filter out unknown_father dummies (mirroring wives logic)
+        const realMarriages = memberMarriages.filter(marriage => {
+          const husbandMember = familyMembers.find(m => m.id === marriage.husband_id);
+          return husbandMember?.first_name !== 'unknown_father';
+        });
+        if (realMarriages.length > 0) {
+          const marriage = realMarriages[0];
+          const husbandMember = familyMembers.find(m => m.id === marriage.husband_id);
+          const husbandData = extractSpouseData(husbandMember, marriage);
+          setHusbands([husbandData]);
+          setOriginalHusbandData({ ...husbandData });
+        } else {
+          setHusbands([]);
+          setOriginalHusbandData(null);
+        }
       } else {
         setHusbands([]);
         setOriginalHusbandData(null);
