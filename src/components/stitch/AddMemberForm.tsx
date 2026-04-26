@@ -84,6 +84,14 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
     onMemberSaved
   });
 
+  // Marital toggle: default single (off). Auto-enable if member already has spouses (edit mode).
+  const [isMarried, setIsMarried] = React.useState(false);
+  useEffect(() => {
+    if (wives.length > 0 || husbands.length > 0) {
+      setIsMarried(true);
+    }
+  }, [wives.length, husbands.length]);
+
   // Populate form data when editing
   useEffect(() => {
     if (formMode === 'edit' && editingMember) {
