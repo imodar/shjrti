@@ -43,6 +43,40 @@ export const getFounderLastName = (familyMembers: Member[]): string => {
 };
 
 /**
+ * Resolve the surname through the paternal line.
+ * This preserves surnames inherited from external fathers (e.g. موسى باشا)
+ * even when descendants were stored with the main family surname.
+ */
+export const getPaternalLineageLastName = (member: Member, familyMembers: Member[]): string => {
+  const visited = new Set<string>();
+  let current: Member | undefined = member;
+
+  while (current) {
+    const fatherId = current.father_id || (current as any).fatherId;
+    const father = fatherId ? familyMembers?.find(m => m?.id === fatherId) : undefined;
+    if (!father || visited.has(father.id)) break;
+
+    visited.add(father.id);
+
+    const fatherFatherId = father.father_id || (father as any).fatherId;
+    const fatherIsFounder = father.is_founder || (father as any).isFounder;
+    const fatherLastName = father.last_name?.trim() || '';
+
+    if (fatherIsFounder) {
+      return fatherLastName || getFounderLastName(familyMembers);
+    }
+
+    if (!fatherFatherId && fatherLastName) {
+      return fatherLastName;
+    }
+
+    current = father;
+  }
+
+  return member.last_name?.trim() || getFounderLastName(familyMembers);
+};
+
+/**
  * Check if a member is from the family (has parent in tree or is founder)
  */
 export const isMemberFromFamily = (member: Member | undefined, familyMembers: Member[]): boolean => {
@@ -331,12 +365,7 @@ export const generateMemberDisplayName = (
     const isDescendant = !member.is_founder && memberHasFamilyFather;
     
     if (isDescendant) {
-      // If father is an external spouse (not founder, no father in tree), inherit father's last_name
-      const father = familyMembers?.find(m => m?.id === (member.father_id || (member as any).fatherId));
-      const fatherIsExternal = father && !father.is_founder && !(father.father_id || (father as any).fatherId);
-      const familyName = fatherIsExternal && father?.last_name
-        ? father.last_name
-        : (member.last_name || getFounderLastName(familyMembers));
+      const familyName = getPaternalLineageLastName(member, familyMembers);
       return familyName ? `${firstName} ${familyName}` : firstName;
     }
     return firstName;
