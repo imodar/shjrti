@@ -138,7 +138,7 @@ async function handleList(userId: string, includeStats: boolean = false) {
       .select(selectQuery)
       .in('id', familyIds)
       .order('created_at', { ascending: false });
-    collaborated = (collabFamilies || []).map(f => ({ ...f, _role: 'editor' }));
+    collaborated = (collabFamilies || []).map((f: any) => ({ ...(f as Record<string, unknown>), _role: 'editor' }));
   }
 
   let allFamilies = [...(owned || []), ...collaborated];
