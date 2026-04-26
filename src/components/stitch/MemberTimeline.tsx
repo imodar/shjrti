@@ -125,7 +125,7 @@ export const MemberTimeline: React.FC<MemberTimelineProps> = ({
           const spouseId = member?.gender === 'male' ? child.mother_id : child.father_id;
           const spouse = spouseId ? familyMembers.find((m: any) => m.id === spouseId) : null;
           if (spouse) {
-            if (spouse.first_name === 'unknown_mother') {
+            if (spouse.first_name === 'unknown_mother' || spouse.first_name === 'unknown_father') {
               spouseHint = member?.gender === 'male'
                 ? t('profile.unknown_wife')
                 : t('profile.unknown_husband', 'بيانات الزوج غير متوفرة');
