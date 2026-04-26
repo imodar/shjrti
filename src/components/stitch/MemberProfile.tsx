@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ImageUploadModal } from '@/components/ImageUploadModal';
 import { DateDisplay, LifespanDisplay } from '@/components/DateDisplay';
 import { cn } from '@/lib/utils';
-import { getParentageInfo, getFounderLastName, generateMemberDisplayName } from '@/lib/memberDisplayUtils';
+import { getParentageInfo, getFounderLastName, generateMemberDisplayName, getSpouseDisplayInfo } from '@/lib/memberDisplayUtils';
 import { StitchFamilyTab } from './FamilyTab';
 import { MemberTimeline } from './MemberTimeline';
 import { AddFounderParentDrawer } from './AddFounderParentDrawer';
@@ -222,6 +222,14 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
                     return (
                       <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-medium text-center md:text-start" dir={direction}>
                         {parentageInfo.genderTerm} {parentageInfo.lineage}
+                      </p>
+                    );
+                  }
+                  const spouseInfo = getSpouseDisplayInfo(member, familyMembers, marriages);
+                  if (spouseInfo && spouseInfo.label) {
+                    return (
+                      <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm font-medium text-center md:text-start" dir={direction}>
+                        {spouseInfo.label} {spouseInfo.info}
                       </p>
                     );
                   }
