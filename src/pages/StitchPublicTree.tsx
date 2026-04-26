@@ -502,16 +502,18 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
         </div>
       </header>
 
-      {/* Family Bar */}
-      <StitchFamilyBar
-        familyName={familyName}
-        onSwitchTree={() => {}}
-        lastUpdated={recentActivities.length > 0 ? recentActivities[0].timestamp : undefined}
-        showRootSelector={showTree}
-        rootOptions={rootOptions}
-        selectedRoot={selectedRootMarriage}
-        onRootChange={(id) => { setSelectedRootMarriage(id); setZoomLevel(1); }}
-      />
+      {/* Family Bar - sticky below header */}
+      <div className="sticky top-14 md:top-16 lg:top-20 z-40 bg-card">
+        <StitchFamilyBar
+          familyName={familyName}
+          onSwitchTree={() => {}}
+          lastUpdated={recentActivities.length > 0 ? recentActivities[0].timestamp : undefined}
+          showRootSelector={showTree}
+          rootOptions={rootOptions}
+          selectedRoot={selectedRootMarriage}
+          onRootChange={(id) => { setSelectedRootMarriage(id); setZoomLevel(1); }}
+        />
+      </div>
 
       {/* Tree View */}
       {showTree ? (
