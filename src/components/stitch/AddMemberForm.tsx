@@ -454,57 +454,59 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
 
             {/* Spouses Section */}
             <div className="pt-8 border-t border-slate-100 dark:border-slate-800">
-              {/* Marital Status Dropdown (Single / Married) */}
-              <div className="space-y-2 mb-6 max-w-xs">
-                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                  <span className="material-symbols-outlined text-primary text-lg">favorite</span>
-                  {t('member.marital_status', 'الحالة الاجتماعية')}
-                </label>
-                <StyledDropdown
-                  options={[
-                    { value: 'single', label: t('member.is_single', 'أعزب'), icon: 'person' },
-                    { value: 'married', label: t('member.is_married', 'متزوج'), icon: 'favorite' }
-                  ]}
-                  value={isMarried ? 'married' : 'single'}
-                  onChange={(value) => setIsMarried(value === 'married')}
-                  accentColor="primary"
-                />
+              {/* Marital Status + Spouse Availability (same row) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 max-w-2xl">
+                <div className="space-y-2">
+                  <label className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <span className="material-symbols-outlined text-primary text-lg">favorite</span>
+                    {t('member.marital_status', 'الحالة الاجتماعية')}
+                  </label>
+                  <StyledDropdown
+                    options={[
+                      { value: 'single', label: t('member.is_single', 'أعزب'), icon: 'person' },
+                      { value: 'married', label: t('member.is_married', 'متزوج'), icon: 'favorite' }
+                    ]}
+                    value={isMarried ? 'married' : 'single'}
+                    onChange={(value) => setIsMarried(value === 'married')}
+                    accentColor="primary"
+                  />
+                </div>
+
+                {isMarried && (() => {
+                  const isKnown = formData.gender === 'male' ? !formData.motherUnknown : !formData.fatherUnknown;
+                  const accent = formData.gender === 'female' ? 'blue' : 'pink';
+                  return (
+                    <div className="space-y-2">
+                      <label className={`flex items-center gap-2 text-xs font-bold uppercase tracking-wider ${formData.gender === 'female' ? 'text-blue-500' : 'text-pink-500'}`}>
+                        <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
+                        {formData.gender === 'male'
+                          ? t('member.wife_info_availability', 'معلومات الزوجة')
+                          : t('member.husband_info_availability', 'معلومات الزوج')}
+                      </label>
+                      <StyledDropdown
+                        options={[
+                          { value: 'known', label: formData.gender === 'male'
+                            ? t('member.wife_info_available', 'اسم الزوجة ومعلوماتها متوفرة')
+                            : t('member.husband_info_available', 'اسم الزوج ومعلوماته متوفرة'), icon: 'check_circle' },
+                          { value: 'unknown', label: formData.gender === 'male'
+                            ? t('member.wife_info_unavailable', 'اسم الزوجة غير معروف')
+                            : t('member.husband_info_unavailable', 'اسم الزوج غير معروف'), icon: 'help' }
+                        ]}
+                        value={isKnown ? 'known' : 'unknown'}
+                        onChange={(value) => setFormData(prev => (
+                          formData.gender === 'male'
+                            ? { ...prev, motherUnknown: value !== 'known' }
+                            : { ...prev, fatherUnknown: value !== 'known' }
+                        ))}
+                        accentColor={accent as 'pink' | 'blue'}
+                      />
+                    </div>
+                  );
+                })()}
               </div>
 
               {isMarried && (
               <>
-              {/* Spouse Info Availability Dropdown */}
-              {(() => {
-                const isKnown = formData.gender === 'male' ? !formData.motherUnknown : !formData.fatherUnknown;
-                const accent = formData.gender === 'female' ? 'blue' : 'pink';
-                return (
-                  <div className="space-y-2 mb-6 max-w-xs">
-                    <label className={`flex items-center gap-2 text-xs font-bold uppercase tracking-wider ${formData.gender === 'female' ? 'text-blue-500' : 'text-pink-500'}`}>
-                      <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
-                      {formData.gender === 'male'
-                        ? t('member.wife_info_availability', 'معلومات الزوجة')
-                        : t('member.husband_info_availability', 'معلومات الزوج')}
-                    </label>
-                    <StyledDropdown
-                      options={[
-                        { value: 'known', label: formData.gender === 'male'
-                          ? t('member.wife_info_available', 'اسم الزوجة ومعلوماتها متوفرة')
-                          : t('member.husband_info_available', 'اسم الزوج ومعلوماته متوفرة'), icon: 'check_circle' },
-                        { value: 'unknown', label: formData.gender === 'male'
-                          ? t('member.wife_info_unavailable', 'اسم الزوجة غير معروف')
-                          : t('member.husband_info_unavailable', 'اسم الزوج غير معروف'), icon: 'help' }
-                      ]}
-                      value={isKnown ? 'known' : 'unknown'}
-                      onChange={(value) => setFormData(prev => (
-                        formData.gender === 'male'
-                          ? { ...prev, motherUnknown: value !== 'known' }
-                          : { ...prev, fatherUnknown: value !== 'known' }
-                      ))}
-                      accentColor={accent as 'pink' | 'blue'}
-                    />
-                  </div>
-                );
-              })()}
 
               {/* Spouse Information Title - only when info is known */}
               {!((formData.gender === 'male' && formData.motherUnknown) ||
