@@ -809,9 +809,99 @@ export const useAddMemberForm = ({
       }
 
       // Process husbands for female members
-      if (submissionData.gender === 'female' && husbands.length > 0) {
-        const savedHusbands = husbands.filter(h => h.isSaved === true);
-        await Promise.all(savedHusbands.map(husband => processSpouseMarriage(husband, 'husband')));
+      if (submissionData.gender === 'female' && formData.fatherUnknown) {
+        // === Scenario 1: Known husband → Unknown father ===
+        const existingMarriages = marriages.filter(m => m.wife_id === memberData.id);
+        const existingDummy = existingMarriages.find(marriage => {
+          const husbandMember = familyMembers.find(m => m.id === marriage.husband_id);
+          return husbandMember?.first_name === 'unknown_father';
+        });
+
+        let dummyHusbandId: string;
+
+        if (existingDummy) {
+          dummyHusbandId = existingDummy.husband_id;
+        } else {
+          const dummyHusband = await membersApi.create({
+            name: 'زوج غير معروف',
+            first_name: 'unknown_father',
+            last_name: familyData?.name || '',
+            gender: 'male',
+            is_alive: false,
+            family_id: familyId,
+            is_founder: false,
+            marital_status: 'married',
+          });
+          dummyHusbandId = dummyHusband.id;
+
+          await marriagesApi.upsert({
+            family_id: familyId,
+            husband_id: dummyHusbandId,
+            wife_id: memberData.id,
+            is_active: true,
+            marital_status: 'married',
+          });
+        }
+
+        // Migrate children from known husbands to dummy husband
+        const knownHusbandMarriages = existingMarriages.filter(marriage => {
+          const husbandMember = familyMembers.find(m => m.id === marriage.husband_id);
+          return husbandMember?.first_name !== 'unknown_father';
+        });
+
+        for (const marriage of knownHusbandMarriages) {
+          const oldHusbandId = marriage.husband_id;
+          const children = familyMembers.filter(m =>
+            m.father_id === oldHusbandId && m.mother_id === memberData.id
+          );
+          for (const child of children) {
+            await membersApi.update(child.id, { father_id: dummyHusbandId });
+          }
+
+          await marriagesApi.delete(marriage.id);
+
+          // Delete external husband (not a blood family member)
+          const oldHusband = familyMembers.find(m => m.id === oldHusbandId);
+          if (oldHusband && !oldHusband.father_id && !oldHusband.is_founder) {
+            await membersApi.delete(oldHusbandId);
+          }
+        }
+      } else if (submissionData.gender === 'female' && husbands.length > 0) {
+        // === Scenario 2: Unknown father → Known husband ===
+        const existingMarriages = marriages.filter(m => m.wife_id === memberData.id);
+        const dummyMarriage = existingMarriages.find(marriage => {
+          const husbandMember = familyMembers.find(m => m.id === marriage.husband_id);
+          return husbandMember?.first_name === 'unknown_father';
+        });
+
+        if (dummyMarriage) {
+          const dummyHusbandId = dummyMarriage.husband_id;
+          const childrenOfDummy = familyMembers.filter(m =>
+            m.father_id === dummyHusbandId && m.mother_id === memberData.id
+          );
+
+          const savedHusbands = husbands.filter(h => h.isSaved === true);
+          if (savedHusbands.length > 0) {
+            for (const husband of savedHusbands) {
+              await processSpouseMarriage(husband, 'husband');
+            }
+
+            const firstRealHusband = savedHusbands[0];
+            const newFatherId = firstRealHusband.id || firstRealHusband.existingFamilyMemberId;
+
+            if (newFatherId) {
+              for (const child of childrenOfDummy) {
+                await membersApi.update(child.id, { father_id: newFatherId });
+              }
+            }
+
+            await marriagesApi.delete(dummyMarriage.id);
+            await membersApi.delete(dummyHusbandId);
+          }
+        } else {
+          const savedHusbands = husbands.filter(h => h.isSaved === true);
+          await Promise.all(savedHusbands.map(husband => processSpouseMarriage(husband, 'husband')));
+        }
       }
 
       // Clean up
