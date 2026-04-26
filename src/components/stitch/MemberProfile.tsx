@@ -7,7 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ImageUploadModal } from '@/components/ImageUploadModal';
 import { DateDisplay, LifespanDisplay } from '@/components/DateDisplay';
 import { cn } from '@/lib/utils';
-import { getParentageInfo } from '@/lib/memberDisplayUtils';
+import { getParentageInfo, getFounderLastName } from '@/lib/memberDisplayUtils';
 import { StitchFamilyTab } from './FamilyTab';
 import { MemberTimeline } from './MemberTimeline';
 import { AddFounderParentDrawer } from './AddFounderParentDrawer';
@@ -503,7 +503,7 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
         isOpen={showAddParentsDrawer}
         onClose={() => setShowAddParentsDrawer(false)}
         currentFounder={member}
-        familyName={member?.last_name || member?.name || ''}
+        familyName={getFounderLastName(familyMembers) || member?.last_name || ''}
         onConfirm={async (data) => {
           await addFounderParent.mutateAsync({
             familyId: member.family_id,
