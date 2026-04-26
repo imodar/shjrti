@@ -228,7 +228,7 @@ async function handleInvite(userId: string, body: Record<string, unknown>) {
     .single();
   
   if (error) {
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
 
   // Send invitation email via send-templated-email
@@ -451,7 +451,7 @@ async function handleLeave(userId: string, familyId: string) {
     .eq('user_id', userId);
   
   if (error) {
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
 
   return successResponse({ left: true });
@@ -539,6 +539,6 @@ Deno.serve(async (req) => {
     }
   } catch (error) {
     console.error('[API] Unhandled error:', error);
-    return errorResponse('INTERNAL_ERROR', error.message || 'An unexpected error occurred', 500);
+    return errorResponse('INTERNAL_ERROR', (error as Error).message || 'An unexpected error occurred', 500);
   }
 });

@@ -93,7 +93,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('[Welcome Email] Error:', error);
     return new Response(
-      JSON.stringify({ error: error.message || 'Failed to send welcome email' }),
+      JSON.stringify({ error: (error as Error).message || 'Failed to send welcome email' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

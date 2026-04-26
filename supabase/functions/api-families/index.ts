@@ -121,7 +121,7 @@ async function handleList(userId: string, includeStats: boolean = false) {
   
   if (error) {
     console.error('[API] List error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
 
   // Get collaborated families
@@ -195,7 +195,7 @@ async function handleGet(userId: string, familyId: string, include?: string) {
         .order('created_at', { ascending: true });
       
       if (error) {
-        return errorResponse('DATABASE_ERROR', error.message, 500);
+        return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
       }
       return successResponse(data);
     }
@@ -207,7 +207,7 @@ async function handleGet(userId: string, familyId: string, include?: string) {
         .eq('family_id', familyId);
       
       if (error) {
-        return errorResponse('DATABASE_ERROR', error.message, 500);
+        return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
       }
       return successResponse(data);
     }
@@ -222,7 +222,7 @@ async function handleGet(userId: string, familyId: string, include?: string) {
         .limit(limit);
       
       if (error) {
-        return errorResponse('DATABASE_ERROR', error.message, 500);
+        return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
       }
 
       // Fetch actor names from profiles
@@ -260,7 +260,7 @@ async function handleGet(userId: string, familyId: string, include?: string) {
     if (error.code === 'PGRST116') {
       return errorResponse('NOT_FOUND', 'Family not found', 404);
     }
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse(data);
@@ -289,7 +289,7 @@ async function handleCreate(userId: string, payload: Record<string, unknown>) {
   
   if (error) {
     console.error('[API] Create error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse(data, 201);
@@ -330,7 +330,7 @@ async function handleUpdate(userId: string, familyId: string, payload: Record<st
   
   if (error) {
     console.error('[API] Update error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse(data);
@@ -353,7 +353,7 @@ async function handleDelete(userId: string, familyId: string) {
   
   if (error) {
     console.error('[API] Delete error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse({ deleted: true, id: familyId });
@@ -375,7 +375,7 @@ async function handleRegenerateShareToken(userId: string, familyId: string, expi
   
   if (error) {
     console.error('[API] Regenerate token error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse(data?.[0] || data);
@@ -439,6 +439,6 @@ Deno.serve(async (req) => {
     }
   } catch (error) {
     console.error('[API] Unhandled error:', error);
-    return errorResponse('INTERNAL_ERROR', error.message || 'An unexpected error occurred', 500);
+    return errorResponse('INTERNAL_ERROR', (error as Error).message || 'An unexpected error occurred', 500);
   }
 });

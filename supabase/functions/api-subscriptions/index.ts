@@ -146,7 +146,7 @@ async function handleGet(userId: string, getDetails: boolean) {
     
     if (error) {
       console.error('[API] Get subscription details error:', error);
-      return errorResponse('DATABASE_ERROR', error.message, 500);
+      return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
     }
     
     return successResponse(data?.[0] || null);
@@ -168,7 +168,7 @@ async function handleGet(userId: string, getDetails: boolean) {
   
   if (error) {
     console.error('[API] Get subscription error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   if (!data) {
@@ -221,6 +221,6 @@ Deno.serve(async (req) => {
     }
   } catch (error) {
     console.error('[API] Unhandled error:', error);
-    return errorResponse('INTERNAL_ERROR', error.message || 'An unexpected error occurred', 500);
+    return errorResponse('INTERNAL_ERROR', (error as Error).message || 'An unexpected error occurred', 500);
   }
 });

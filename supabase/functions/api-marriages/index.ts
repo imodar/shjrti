@@ -131,7 +131,7 @@ async function handleGet(userId: string, marriageId: string) {
     .single();
   
   if (error) {
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse(data);
@@ -188,7 +188,7 @@ async function handleCreate(userId: string, payload: Record<string, unknown>) {
   
     if (error) {
       console.error('[API] Create error:', error);
-      return errorResponse('DATABASE_ERROR', error.message, 500);
+      return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
     }
     
     // Update spouse_id on both members
@@ -246,7 +246,7 @@ async function handleUpsert(userId: string, payload: Record<string, unknown>): P
   
   if (error) {
     console.error('[API] Upsert error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse(data);
@@ -278,7 +278,7 @@ async function handleUpdate(userId: string, marriageId: string, payload: Record<
   
   if (error) {
     console.error('[API] Update error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse(data);
@@ -325,7 +325,7 @@ async function handleUpdateBySpouse(
   
   if (error) {
     console.error('[API] Update by spouse error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse(data);
@@ -373,7 +373,7 @@ async function handleDelete(userId: string, marriageId: string) {
   
   if (error) {
     console.error('[API] Delete error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse({ deleted: true, id: marriageId });
@@ -406,7 +406,7 @@ async function handleBatchDelete(userId: string, ids: string[]): Promise<Respons
   
   if (error) {
     console.error('[API] Batch delete error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse({ deleted: true, count: ids.length });
@@ -441,7 +441,7 @@ async function handleDeleteBySpouses(userId: string, husbandId: string, wifeId: 
   
   if (error) {
     console.error('[API] Delete by spouses error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse({ deleted: true, id: marriage.id });
@@ -514,6 +514,6 @@ Deno.serve(async (req) => {
     }
   } catch (error) {
     console.error('[API] Unhandled error:', error);
-    return errorResponse('INTERNAL_ERROR', error.message || 'An unexpected error occurred', 500);
+    return errorResponse('INTERNAL_ERROR', (error as Error).message || 'An unexpected error occurred', 500);
   }
 });

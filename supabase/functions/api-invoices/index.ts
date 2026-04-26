@@ -102,7 +102,7 @@ async function handleGet(
     
     if (error) {
       console.error('[API] Get invoice error:', error);
-      return errorResponse('DATABASE_ERROR', error.message, 500);
+      return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
     }
     
     if (!data) {
@@ -131,7 +131,7 @@ async function handleGet(
     
     if (error) {
       console.error('[API] Get latest invoice error:', error);
-      return errorResponse('DATABASE_ERROR', error.message, 500);
+      return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
     }
     
     return successResponse(data);
@@ -158,7 +158,7 @@ async function handleGet(
   
   if (error) {
     console.error('[API] List invoices error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse(data || []);
@@ -184,7 +184,7 @@ async function handlePost(userId: string, body: any) {
     
     if (error) {
       console.error('[API] Complete free upgrade error:', error);
-      return errorResponse('DATABASE_ERROR', error.message, 500);
+      return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
     }
     
     return successResponse({ success: data === true });
@@ -209,7 +209,7 @@ async function handlePost(userId: string, body: any) {
   
   if (error) {
     console.error('[API] Create invoice error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse({ invoice_id: data }, 201);
@@ -251,6 +251,6 @@ Deno.serve(async (req) => {
     }
   } catch (error) {
     console.error('[API] Unhandled error:', error);
-    return errorResponse('INTERNAL_ERROR', error.message || 'An unexpected error occurred', 500);
+    return errorResponse('INTERNAL_ERROR', (error as Error).message || 'An unexpected error occurred', 500);
   }
 });

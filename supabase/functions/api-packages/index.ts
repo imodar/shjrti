@@ -57,7 +57,7 @@ async function handleGet(packageId: string | null) {
     
     if (error) {
       console.error('[API] Get package error:', error);
-      return errorResponse('DATABASE_ERROR', error.message, 500);
+      return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
     }
     
     if (!data) {
@@ -76,7 +76,7 @@ async function handleGet(packageId: string | null) {
   
   if (error) {
     console.error('[API] List packages error:', error);
-    return errorResponse('DATABASE_ERROR', error.message, 500);
+    return errorResponse('DATABASE_ERROR', (error as Error).message, 500);
   }
   
   return successResponse(data || []);
@@ -106,6 +106,6 @@ Deno.serve(async (req) => {
     }
   } catch (error) {
     console.error('[API] Unhandled error:', error);
-    return errorResponse('INTERNAL_ERROR', error.message || 'An unexpected error occurred', 500);
+    return errorResponse('INTERNAL_ERROR', (error as Error).message || 'An unexpected error occurred', 500);
   }
 });
