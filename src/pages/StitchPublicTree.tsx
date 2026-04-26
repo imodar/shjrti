@@ -249,6 +249,11 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
   const handleMemberClick = (member: any) => {
     setSelectedMemberId(member.id);
     setIsSidebarOpen(false);
+    // Scroll page to top so the profile opens from the top.
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.scrollingElement?.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     // Show a brief skeleton so the user feels the profile is opening,
     // even when data is already cached locally.
     if (profileLoadingTimerRef.current) {
