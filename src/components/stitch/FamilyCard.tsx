@@ -202,6 +202,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
     if (unit.type === 'married') {
       const wife = unit.wives[0];
       const isUnknownWife = wife?.first_name === 'unknown_mother';
+      const isUnknownHusband = unit.husband?.first_name === 'unknown_father';
 
        // Check if husband or wife's parent has multiple spouses
        const husbandMother = unit.husband?.mother_id 
@@ -232,7 +233,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
 
           <div className="flex items-center justify-center gap-8">
             {/* Husband */}
-            {unit.husband && (
+            {unit.husband && !isUnknownHusband && (
               <div className="flex flex-col items-center gap-2">
                 <MemberAvatar member={unit.husband} size="md" />
                 <div className="text-center">
@@ -248,7 +249,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
             )}
 
             {/* Heart Icon & Wife - hidden when unknown_mother */}
-            {!isUnknownWife && (
+            {!isUnknownWife && !isUnknownHusband && (
               <>
                 <div className="flex items-center justify-center">
                   {wife?.marital_status === 'divorced' ? (
