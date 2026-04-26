@@ -7,6 +7,7 @@ import { StitchFamilyBar, StitchSidebar, StitchMainContent } from '@/components/
 import { StitchTreeCanvas } from '@/components/stitch/TreeCanvas';
 import { StitchHeader } from '@/components/stitch/Header';
 import DashboardLoader from '@/components/stitch/DashboardLoader';
+import StitchMemberProfileSkeleton from '@/components/stitch/MemberProfileSkeleton';
 import PasswordModal from '@/components/PasswordModal';
 import { SuggestEditDialog } from '@/components/SuggestEditDialog';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -82,6 +83,16 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMemberId, setSelectedMemberId] = useState<string | undefined>();
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => window.innerWidth >= 1024);
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const profileLoadingTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (profileLoadingTimerRef.current) {
+        window.clearTimeout(profileLoadingTimerRef.current);
+      }
+    };
+  }, []);
 
   // Suggestions dialog
   const [suggestEditOpen, setSuggestEditOpen] = useState(false);
@@ -238,10 +249,25 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
   const handleMemberClick = (member: any) => {
     setSelectedMemberId(member.id);
     setIsSidebarOpen(false);
+    // Show a brief skeleton so the user feels the profile is opening,
+    // even when data is already cached locally.
+    if (profileLoadingTimerRef.current) {
+      window.clearTimeout(profileLoadingTimerRef.current);
+    }
+    setIsProfileLoading(true);
+    profileLoadingTimerRef.current = window.setTimeout(() => {
+      setIsProfileLoading(false);
+      profileLoadingTimerRef.current = null;
+    }, 350);
   };
 
   const handleBackFromProfile = () => {
     setSelectedMemberId(undefined);
+    if (profileLoadingTimerRef.current) {
+      window.clearTimeout(profileLoadingTimerRef.current);
+      profileLoadingTimerRef.current = null;
+    }
+    setIsProfileLoading(false);
   };
 
   // Suggest edit handler
@@ -566,6 +592,9 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
             )}
 
             {/* Main Content */}
+            {isProfileLoading && selectedMemberId ? (
+              <StitchMemberProfileSkeleton />
+            ) : (
             <StitchMainContent
               userName={t('public_tree.visitor', 'زائر')}
               activities={recentActivities}
@@ -583,6 +612,7 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
               readOnly={true}
               onSuggestEdit={handleSuggestEdit}
             />
+            )}
           </main>
         </>
       )}
