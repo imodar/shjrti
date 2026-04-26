@@ -319,40 +319,55 @@ async function handleDelete(userId: string, memberId: string) {
   }
   
   const supabase = createServiceClient();
-  
-  // First, clear references to this member
+
+  // Recursively collect all descendants (children, grandchildren, ...)
+  const allIdsToDelete = new Set<string>([memberId]);
+  let frontier: string[] = [memberId];
+  while (frontier.length > 0) {
+    const { data: children, error: childErr } = await supabase
+      .from('family_tree_members')
+      .select('id')
+      .or(`father_id.in.(${frontier.join(',')}),mother_id.in.(${frontier.join(',')})`);
+    if (childErr) {
+      console.error('[API] Fetch descendants error:', childErr);
+      return errorResponse('DATABASE_ERROR', (childErr as Error).message, 500);
+    }
+    const next: string[] = [];
+    for (const c of children || []) {
+      if (!allIdsToDelete.has(c.id)) {
+        allIdsToDelete.add(c.id);
+        next.push(c.id);
+      }
+    }
+    frontier = next;
+  }
+
+  const idsArray = Array.from(allIdsToDelete);
+  console.log(`[API] DELETE - Cascading delete of ${idsArray.length} members (including descendants)`);
+
+  // Clear spouse references pointing into the deleted set from outside
   await supabase
     .from('family_tree_members')
     .update({ spouse_id: null })
-    .eq('spouse_id', memberId);
-  
-  await supabase
-    .from('family_tree_members')
-    .update({ father_id: null })
-    .eq('father_id', memberId);
-  
-  await supabase
-    .from('family_tree_members')
-    .update({ mother_id: null })
-    .eq('mother_id', memberId);
-  
-  // Delete related marriages
+    .in('spouse_id', idsArray);
+
+  // Delete related marriages for all members
   await supabase
     .from('marriages')
     .delete()
-    .or(`husband_id.eq.${memberId},wife_id.eq.${memberId}`);
-  
-  // Delete member memories
+    .or(`husband_id.in.(${idsArray.join(',')}),wife_id.in.(${idsArray.join(',')})`);
+
+  // Delete member memories for all members
   await supabase
     .from('member_memories')
     .delete()
-    .eq('member_id', memberId);
-  
-  // Delete the member
+    .in('member_id', idsArray);
+
+  // Delete the members (cascade)
   const { error } = await supabase
     .from('family_tree_members')
     .delete()
-    .eq('id', memberId);
+    .in('id', idsArray);
   
     if (error) {
       console.error('[API] Delete error:', error);
@@ -365,10 +380,10 @@ async function handleDelete(userId: string, memberId: string) {
       userId,
       actionType: 'member_deleted',
       targetName: '',
-      metadata: { member_id: memberId },
+      metadata: { member_id: memberId, deleted_count: idsArray.length },
     });
     
-    return successResponse({ deleted: true, id: memberId });
+    return successResponse({ deleted: true, id: memberId, deleted_count: idsArray.length });
 }
 
 // DELETE handler - Batch
