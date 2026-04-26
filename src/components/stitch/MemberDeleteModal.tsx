@@ -34,13 +34,28 @@ export const MemberDeleteModal: React.FC<MemberDeleteModalProps> = ({
       m => m.husband_id === member.id || m.wife_id === member.id
     );
 
-    const childrenCount = familyMembers.filter(
-      m => m.father_id === member.id || m.mother_id === member.id
-    ).length;
+    // Recursively count all descendants (children, grandchildren, ...)
+    const descendants = new Set<string>();
+    let frontier: string[] = [member.id];
+    while (frontier.length > 0) {
+      const next: string[] = [];
+      for (const m of familyMembers) {
+        if (
+          (m.father_id && frontier.includes(m.father_id)) ||
+          (m.mother_id && frontier.includes(m.mother_id))
+        ) {
+          if (!descendants.has(m.id)) {
+            descendants.add(m.id);
+            next.push(m.id);
+          }
+        }
+      }
+      frontier = next;
+    }
 
     return {
       spouses: memberMarriages.length,
-      children: childrenCount,
+      children: descendants.size,
       marriages: memberMarriages.length,
     };
   }, [member, familyMembers, marriages]);
