@@ -344,18 +344,38 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
                   <StatRow label={t('profile.children', 'Children')} value={children.length} />
                   <StatRow label={t('profile.spouses', 'Spouses')} value={spouses.length} />
                   <StatRow label={t('profile.grandchildren', 'Grandchildren')} value={grandchildren.length} />
-                  {father && (
+                  {father && father.first_name !== 'unknown_father' && (
                     <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
                       <StatRow label={t('profile.father', 'Father')} value={father.first_name || father.name} isText />
                     </div>
                   )}
-                  {mother && (
-                    <div className={cn(!father && 'pt-4 border-t border-slate-100 dark:border-slate-800')}>
+                  {father && father.first_name === 'unknown_father' && (
+                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+                      <div className="relative overflow-hidden rounded-2xl border border-dashed border-blue-200 dark:border-blue-900/40 bg-gradient-to-br from-blue-50/60 via-sky-50/40 to-transparent dark:from-blue-900/10 dark:via-sky-900/5 p-4">
+                        <div className="absolute -top-6 -end-6 w-20 h-20 bg-blue-100/50 dark:bg-blue-900/20 rounded-full blur-2xl pointer-events-none" />
+                        <div className="relative flex items-start gap-3">
+                          <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-blue-100 dark:border-blue-900/40 flex items-center justify-center text-blue-400 shadow-sm">
+                            <UserX size={18} strokeWidth={2} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+                              {t('profile.father_unknown_title', 'Father Not Registered')}
+                            </p>
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                              {t('profile.father_unknown_desc', 'The father\'s information has not been added yet. You can update it later from the profile.')}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {mother && mother.first_name !== 'unknown_mother' && (
+                    <div className={cn((!father || father.first_name === 'unknown_father') && 'pt-4 border-t border-slate-100 dark:border-slate-800')}>
                       <StatRow label={t('profile.mother', 'Mother')} value={mother.first_name || mother.name} isText />
                     </div>
                   )}
-                  {!mother && father && (
-                    <div className={cn('pt-4', father && 'border-t border-slate-100 dark:border-slate-800')}>
+                  {(!mother || mother.first_name === 'unknown_mother') && father && (
+                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
                       <div className="relative overflow-hidden rounded-2xl border border-dashed border-rose-200 dark:border-rose-900/40 bg-gradient-to-br from-rose-50/60 via-pink-50/40 to-transparent dark:from-rose-900/10 dark:via-pink-900/5 p-4">
                         <div className="absolute -top-6 -end-6 w-20 h-20 bg-rose-100/50 dark:bg-rose-900/20 rounded-full blur-2xl pointer-events-none" />
                         <div className="relative flex items-start gap-3">
