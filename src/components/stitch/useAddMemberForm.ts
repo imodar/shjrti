@@ -245,7 +245,8 @@ export const useAddMemberForm = ({
       is_twin: member.is_twin || false,
       twin_group_id: member.twin_group_id || null,
       selected_twins: [],
-      motherUnknown: false
+      motherUnknown: false,
+      fatherUnknown: false
     });
 
     // Detect if all wives are unknown_mother dummies
@@ -257,6 +258,18 @@ export const useAddMemberForm = ({
       });
       if (allWivesUnknown) {
         setFormData(prev => ({ ...prev, motherUnknown: true }));
+      }
+    }
+
+    // Detect if all husbands are unknown_father dummies
+    if (member.gender === 'female') {
+      const memberMarriages = marriages.filter(m => m.wife_id === member.id);
+      const allHusbandsUnknown = memberMarriages.length > 0 && memberMarriages.every(marriage => {
+        const husbandMember = familyMembers.find(m => m.id === marriage.husband_id);
+        return husbandMember?.first_name === 'unknown_father';
+      });
+      if (allHusbandsUnknown) {
+        setFormData(prev => ({ ...prev, fatherUnknown: true }));
       }
     }
 
