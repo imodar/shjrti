@@ -52,11 +52,11 @@ serve(async (req) => {
     const { error: treeMembersError } = await supabaseAdmin
       .from('family_tree_members')
       .delete()
-      .in('family_id', 
-        supabaseAdmin
+      .in('family_id',
+        (supabaseAdmin
           .from('families')
           .select('id')
-          .eq('creator_id', userId)
+          .eq('creator_id', userId) as any)
       );
 
     if (treeMembersError) {
@@ -69,10 +69,10 @@ serve(async (req) => {
       .from('marriages')
       .delete()
       .in('family_id',
-        supabaseAdmin
+        (supabaseAdmin
           .from('families')
           .select('id')
-          .eq('creator_id', userId)
+          .eq('creator_id', userId) as any)
       );
 
     if (marriagesError) {
