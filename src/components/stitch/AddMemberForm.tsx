@@ -84,6 +84,14 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
     onMemberSaved
   });
 
+  // Marital toggle: default single (off). Auto-enable if member already has spouses (edit mode).
+  const [isMarried, setIsMarried] = React.useState(false);
+  useEffect(() => {
+    if (wives.length > 0 || husbands.length > 0) {
+      setIsMarried(true);
+    }
+  }, [wives.length, husbands.length]);
+
   // Populate form data when editing
   useEffect(() => {
     if (formMode === 'edit' && editingMember) {
@@ -455,6 +463,21 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                 </h3>
               </div>
 
+              {/* Marital Status Switch (Single / Married) */}
+              <div className="flex items-center gap-3 mb-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                <Switch
+                  checked={isMarried}
+                  onCheckedChange={setIsMarried}
+                />
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  {isMarried
+                    ? t('member.is_married', 'متزوج')
+                    : t('member.is_single', 'أعزب')}
+                </label>
+              </div>
+
+              {isMarried && (
+              <>
               {/* Spouse Known Switch */}
               <div className="flex items-center gap-3 mb-6 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
                 <Switch
@@ -647,6 +670,8 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                   </button>
                 )}
               </div>
+              )}
+              </>
               )}
             </div>
 
