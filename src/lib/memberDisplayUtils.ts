@@ -331,8 +331,8 @@ export const generateMemberDisplayName = (
     const isDescendant = !member.is_founder && memberHasFamilyFather;
     
     if (isDescendant) {
-      // Show first name with family name (if available)
-      const familyName = member.last_name || getFounderLastName(familyMembers);
+      // ALWAYS use founder's last_name (member.last_name may contain corrupted concatenated lineage)
+      const familyName = getFounderLastName(familyMembers);
       return familyName ? `${firstName} ${familyName}` : firstName;
     }
     return firstName;
