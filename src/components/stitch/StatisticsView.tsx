@@ -105,7 +105,7 @@ export const StitchStatisticsView: React.FC<StatisticsViewProps> = ({
     const minSurnameCount = topSurnames.length > 0 ? topSurnames[topSurnames.length - 1][1] : 1;
 
     // --- Common first names (exclude placeholder names like زوجة/زوج) ---
-    const placeholderNames = new Set(['زوجة', 'زوج', 'wife', 'husband', 'spouse']);
+    const placeholderNames = new Set(['زوجة', 'زوج', 'wife', 'husband', 'spouse', 'unknown_mother', 'unknown_father']);
     const firstNameCount = new Map<string, number>();
     familyMembers.forEach(m => {
       const firstName = (m.first_name || m.name?.split(' ')[0])?.trim();
