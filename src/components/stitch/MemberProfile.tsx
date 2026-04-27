@@ -184,9 +184,8 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
           {t('profile.deceased', 'Deceased')}
           {deathDate && (
             <>
-              {' ('}
+              {' - '}
               <DateDisplay date={deathDate} />
-              {')'}
             </>
           )}
         </span>
