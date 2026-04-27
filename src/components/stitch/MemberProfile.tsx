@@ -177,7 +177,20 @@ export const StitchMemberProfile: React.FC<StitchMemberProfileProps> = ({
       icon: 'event_busy',
       iconColor: 'text-amber-500',
       label: t('profile.status', 'Status'),
-      value: isAlive ? t('profile.alive', 'Alive') : `${t('profile.deceased', 'Deceased')}${deathDate ? ` (${deathYear})` : ''}`,
+      value: isAlive ? (
+        t('profile.alive', 'Alive')
+      ) : (
+        <span className="inline-flex items-center gap-1">
+          {t('profile.deceased', 'Deceased')}
+          {deathDate && (
+            <>
+              {' ('}
+              <DateDisplay date={deathDate} />
+              {')'}
+            </>
+          )}
+        </span>
+      ),
     },
   ];
 
