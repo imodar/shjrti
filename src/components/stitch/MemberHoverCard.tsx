@@ -273,11 +273,11 @@ export const MemberHoverCard: React.FC<MemberHoverCardProps> = ({
           {isDeceased && (
             <StatBlock
               icon="local_florist"
-              value={deathYear || '—'}
+              value={deathDateRaw || '—'}
               label={deceasedLabel}
               iconClass="text-slate-500"
               divider
-              valueClass="text-sm"
+              valueClass="text-[11px] whitespace-nowrap"
             />
           )}
         </div>
