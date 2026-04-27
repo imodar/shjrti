@@ -106,12 +106,12 @@ export const MemberHoverCard: React.FC<MemberHoverCardProps> = ({
   );
   const spousesCount = memberMarriages.length;
 
-  const children = (familyMembers || []).filter(
+  const childMembers = (familyMembers || []).filter(
     (m) => m.father_id === member.id || m.mother_id === member.id
   );
-  const childrenCount = children.length;
+  const childrenCount = childMembers.length;
 
-  const childIds = new Set(children.map((c) => c.id));
+  const childIds = new Set(childMembers.map((c) => c.id));
   const grandchildrenCount = (familyMembers || []).filter(
     (m) =>
       (m.father_id && childIds.has(m.father_id)) ||
