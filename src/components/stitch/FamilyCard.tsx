@@ -1,9 +1,10 @@
  import React from 'react';
  import { cn } from '@/lib/utils';
- import { Member } from '@/types/family.types';
+import { Member, Marriage } from '@/types/family.types';
  import { useLanguage } from '@/contexts/LanguageContext';
  import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { isMemberFromFamily, getFounderLastName } from '@/lib/memberDisplayUtils';
+import { MemberHoverCard } from './MemberHoverCard';
 
 // Helper to check if member is a descendant of the founder through paternal line (recursive check)
 // In patrilineal systems, descent is traced through the father
@@ -53,6 +54,7 @@ const hasParentMultipleSpouses = (member: Member, familyMembers: Member[]): bool
  interface StitchFamilyCardProps {
    unit: FamilyUnit;
    familyMembers: Member[];
+   marriages?: Marriage[];
    onMemberClick?: (member: Member) => void;
  }
  
@@ -149,6 +151,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
  export const StitchFamilyCard: React.FC<StitchFamilyCardProps> = ({
    unit,
    familyMembers,
+   marriages = [],
    onMemberClick
  }) => {
    const { t } = useLanguage();
@@ -184,7 +187,9 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
      return (
        <div className="family-card w-[420px] p-5 bg-white dark:bg-slate-800 border border-primary/20 dark:border-primary/30 rounded-[24px] shadow-sm relative">
          <div className="flex flex-col items-center gap-4">
-           <MemberAvatar member={member} size="md" />
+            <MemberHoverCard member={member} familyMembers={familyMembers} marriages={marriages}>
+              <div className="cursor-pointer"><MemberAvatar member={member} size="md" /></div>
+            </MemberHoverCard>
            <div className="text-center">
               <h4 className="font-bold text-sm">{getMemberDisplayName(member, familyMembers)}</h4>
               {showMotherBadge && (
@@ -238,7 +243,9 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
             {/* Husband */}
             {unit.husband && !isUnknownHusband && (
               <div className="flex flex-col items-center gap-2">
-                <MemberAvatar member={unit.husband} size="md" />
+                <MemberHoverCard member={unit.husband} familyMembers={familyMembers} marriages={marriages}>
+                  <div className="cursor-pointer"><MemberAvatar member={unit.husband} size="md" /></div>
+                </MemberHoverCard>
                 <div className="text-center">
                    <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers)}</p>
                    {showHusbandMotherBadge && husbandMother && (
@@ -264,7 +271,9 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
 
                 {wife && (
                   <div className="flex flex-col items-center gap-2">
-                    <MemberAvatar member={wife} size="md" />
+                    <MemberHoverCard member={wife} familyMembers={familyMembers} marriages={marriages}>
+                      <div className="cursor-pointer"><MemberAvatar member={wife} size="md" /></div>
+                    </MemberHoverCard>
                     <div className="text-center">
                        <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers) || t('tree_view.unknown_wife', 'Unknown Wife')}</p>
                        {showWifeMotherBadge && wifeMother && (
@@ -282,7 +291,9 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
             {/* Husband unknown: show wife alone */}
             {isUnknownHusband && !isUnknownWife && wife && (
               <div className="flex flex-col items-center gap-2">
-                <MemberAvatar member={wife} size="md" />
+                <MemberHoverCard member={wife} familyMembers={familyMembers} marriages={marriages}>
+                  <div className="cursor-pointer"><MemberAvatar member={wife} size="md" /></div>
+                </MemberHoverCard>
                 <div className="text-center">
                   <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers)}</p>
                   {showWifeMotherBadge && wifeMother && (
@@ -313,7 +324,9 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
            {/* Primary Member (Husband) */}
            {unit.husband && (
              <div className="flex flex-col items-center gap-2">
-               <MemberAvatar member={unit.husband} size="md" className="shadow-sm" />
+               <MemberHoverCard member={unit.husband} familyMembers={familyMembers} marriages={marriages}>
+                 <div className="cursor-pointer"><MemberAvatar member={unit.husband} size="md" className="shadow-sm" /></div>
+               </MemberHoverCard>
                 <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers)}</p>
              </div>
            )}
@@ -322,7 +335,9 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
            <div className="flex items-start justify-center gap-10 flex-wrap">
              {unit.wives.map((wife, index) => (
                <div key={wife.id} className="flex flex-col items-center gap-2">
-                 <MemberAvatar member={wife} size="md" />
+                 <MemberHoverCard member={wife} familyMembers={familyMembers} marriages={marriages}>
+                   <div className="cursor-pointer"><MemberAvatar member={wife} size="md" /></div>
+                 </MemberHoverCard>
                   <p className="font-bold text-[11px]">{getMemberDisplayName(wife, familyMembers)}</p>
                   <RoleBadge role={wife.marital_status === 'divorced' ? 'ex-wife' : 'wife'} />
                </div>

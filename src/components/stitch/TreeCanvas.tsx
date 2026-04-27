@@ -651,7 +651,7 @@ export const StitchTreeCanvas: React.FC<StitchTreeCanvasProps> = ({
                   width: `${position.width}px`
                 }}
               >
-                <StitchFamilyCard unit={unit} familyMembers={familyMembers} />
+                <StitchFamilyCard unit={unit} familyMembers={familyMembers} marriages={marriages} />
               </div>
             );
           })}
