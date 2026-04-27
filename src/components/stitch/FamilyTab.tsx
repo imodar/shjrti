@@ -372,9 +372,21 @@ export const StitchFamilyTab: React.FC<FamilyTabProps> = ({
                     )}
                   </div>
                   <div className="p-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {grandkids.map(gc => (
-                      <ChildChip key={gc.id} child={gc} onClick={() => onMemberClick?.(gc)} compact />
-                    ))}
+                    {groupChildrenWithTwins(grandkids).map((item, idx) => {
+                      if (item.type === 'twin') {
+                        return (
+                          <div key={`gc-twin-${idx}`} className="col-span-2 md:col-span-2 grid grid-cols-2 gap-3 p-3 bg-amber-50/30 dark:bg-amber-900/10 border-2 border-amber-200/50 dark:border-amber-700/30 rounded-xl relative">
+                            <span className="absolute -top-2 left-3 px-2 bg-amber-200 dark:bg-amber-700 text-amber-800 dark:text-amber-200 text-[9px] font-black uppercase rounded shadow-sm">
+                              {t('profile.twins', 'Twins')}
+                            </span>
+                            {item.children.map(twin => (
+                              <ChildChip key={twin.id} child={twin} onClick={() => onMemberClick?.(twin)} compact />
+                            ))}
+                          </div>
+                        );
+                      }
+                      return <ChildChip key={item.child.id} child={item.child} onClick={() => onMemberClick?.(item.child)} compact />;
+                    })}
                   </div>
                 </div>
               ))}
