@@ -216,6 +216,7 @@ export const StitchSidebar: React.FC<StitchSidebarProps> = ({
       {/* Members List */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
         {members.filter((member) => {
+          if (member.first_name === 'unknown_mother' || member.first_name === 'unknown_father') return false;
           if (filter === 'male') return member.gender === 'male';
           if (filter === 'female') return member.gender === 'female';
           if (filter === 'alive') return member.is_alive !== false && !(member as any).death_date;
