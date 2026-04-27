@@ -121,6 +121,13 @@ export const MemberHoverCard: React.FC<MemberHoverCardProps> = ({
   ).length;
 
   const isFemale = member.gender === 'female';
+  const deathDateRaw = (member as any).death_date || (member as any).deathDate;
+  const isDeceased =
+    !!deathDateRaw || (member as any).is_alive === false;
+  const deathYear = deathDateRaw ? String(deathDateRaw).split('-')[0] : null;
+  const deceasedLabel = isFemale
+    ? t('member.deceased_female', 'متوفية')
+    : t('member.deceased', 'متوفى');
   const spousesLabel = isFemale
     ? t('profile.husbands', 'الأزواج')
     : t('profile.wives', 'الزوجات');
@@ -237,7 +244,12 @@ export const MemberHoverCard: React.FC<MemberHoverCardProps> = ({
         </div>
 
         {/* Stats footer */}
-        <div className="grid grid-cols-3 bg-muted/30 dark:bg-muted/20 border-t border-border/60">
+        <div
+          className={cn(
+            'grid bg-muted/30 dark:bg-muted/20 border-t border-border/60',
+            isDeceased ? 'grid-cols-4' : 'grid-cols-3'
+          )}
+        >
           <StatBlock
             icon="favorite"
             value={spousesCount}
@@ -258,6 +270,16 @@ export const MemberHoverCard: React.FC<MemberHoverCardProps> = ({
             iconClass="text-amber-500"
             divider
           />
+          {isDeceased && (
+            <StatBlock
+              icon="local_florist"
+              value={deathYear || '—'}
+              label={deceasedLabel}
+              iconClass="text-slate-500"
+              divider
+              valueClass="text-sm"
+            />
+          )}
         </div>
       </HoverCardContent>
     </HoverCard>
@@ -266,11 +288,12 @@ export const MemberHoverCard: React.FC<MemberHoverCardProps> = ({
 
 const StatBlock: React.FC<{
   icon: string;
-  value: number;
+  value: number | string;
   label: string;
   iconClass?: string;
   divider?: boolean;
-}> = ({ icon, value, label, iconClass, divider }) => (
+  valueClass?: string;
+}> = ({ icon, value, label, iconClass, divider, valueClass }) => (
   <div
     className={cn(
       'flex flex-col items-center justify-center py-2.5 px-1 text-center transition-colors hover:bg-background/60',
@@ -280,7 +303,7 @@ const StatBlock: React.FC<{
     <span className={cn('material-icons-round text-[16px] leading-none', iconClass || 'text-primary/70')}>
       {icon}
     </span>
-    <span className="text-base font-extrabold text-foreground leading-none mt-1 tabular-nums">
+    <span className={cn('font-extrabold text-foreground leading-none mt-1 tabular-nums', valueClass || 'text-base')}>
       {value}
     </span>
     <span className="text-[9px] text-muted-foreground font-semibold leading-tight mt-0.5 truncate w-full">
