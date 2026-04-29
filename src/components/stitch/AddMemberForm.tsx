@@ -35,6 +35,9 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
   const { t, direction } = useLanguage();
   const isRTL = direction === 'rtl';
 
+  // Pending parent change confirmation (only triggered when editing an existing member)
+  const [pendingParentChange, setPendingParentChange] = useState<string | null>(null);
+
   const {
     formData,
     setFormData,
