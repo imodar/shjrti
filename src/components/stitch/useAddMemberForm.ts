@@ -338,11 +338,12 @@ export const useAddMemberForm = ({
           return husbandMember?.first_name !== 'unknown_father';
         });
         if (realMarriages.length > 0) {
-          const marriage = realMarriages[0];
-          const husbandMember = familyMembers.find(m => m.id === marriage.husband_id);
-          const husbandData = extractSpouseData(husbandMember, marriage);
-          setHusbands([husbandData]);
-          setOriginalHusbandData({ ...husbandData });
+          const memberHusbands = realMarriages.map(marriage => {
+            const husbandMember = familyMembers.find(m => m.id === marriage.husband_id);
+            return extractSpouseData(husbandMember, marriage);
+          }).filter(h => h.id);
+          setHusbands(memberHusbands);
+          setOriginalHusbandData(memberHusbands.length > 0 ? { ...memberHusbands[0] } : null);
         } else {
           setHusbands([]);
           setOriginalHusbandData(null);
