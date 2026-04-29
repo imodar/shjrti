@@ -228,12 +228,19 @@ export const useAddMemberForm = ({
     const relatedPersonId = member.related_person_id || member.relatedPersonId || null;
     const biography = member.biography || member.bio || '';
 
+    // Find the marriage that matches this member's parents
+    const memberFatherId = member.father_id || member.fatherId || null;
+    const memberMotherId = member.mother_id || member.motherId || null;
+    const matchingMarriage = (memberFatherId && memberMotherId)
+      ? marriages.find(m => m.husband_id === memberFatherId && m.wife_id === memberMotherId)
+      : null;
+
     setFormData({
       name: member.name || '',
       first_name: member.first_name || member.firstName || '',
       relation: '',
       relatedPersonId,
-      selectedParent: null,
+      selectedParent: matchingMarriage?.id || null,
       gender: member.gender || 'male',
       birthDate: birthDate ? new Date(birthDate) : null,
       isAlive: isAlive !== false,

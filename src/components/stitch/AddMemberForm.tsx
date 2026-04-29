@@ -3,12 +3,13 @@
  * Single-step form matching the new design with 3-column layout
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import Cropper from 'react-easy-crop';
@@ -33,6 +34,9 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
 }) => {
   const { t, direction } = useLanguage();
   const isRTL = direction === 'rtl';
+
+  // Pending parent change confirmation (only triggered when editing an existing member)
+  const [pendingParentChange, setPendingParentChange] = useState<string | null>(null);
 
   const {
     formData,
@@ -256,15 +260,20 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                     icon: 'info'
                   }]}
                   value={formData.selectedParent || ''}
-                  onChange={(value) => setFormData(prev => ({ 
-                    ...prev, 
-                    selectedParent: value === 'none' || value === 'no-data' ? null : value,
-                    isFounder: !value || value === 'none' || value === 'no-data'
-                  }))}
-                  disabled={parentsLocked}
-                  placeholder={parentsLocked 
-                    ? t('member.parents_locked', 'تم اختيار الوالدين تلقائياً')
-                    : t('member.select_parents', 'اختر الوالدين')}
+                  onChange={(value) => {
+                    const newValue = value === 'none' || value === 'no-data' ? null : value;
+                    // In edit mode, if changing an already-set parent, ask for confirmation
+                    if (formMode === 'edit' && formData.selectedParent && newValue !== formData.selectedParent) {
+                      setPendingParentChange(newValue);
+                      return;
+                    }
+                    setFormData(prev => ({
+                      ...prev,
+                      selectedParent: newValue,
+                      isFounder: !newValue
+                    }));
+                  }}
+                  placeholder={t('member.select_parents', 'اختر الوالدين')}
                   searchable={true}
                   searchPlaceholder={t('member.search_parents', 'ابحث عن الوالدين...')}
                   accentColor="primary"
@@ -810,6 +819,34 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Confirm parent change in edit mode */}
+      <AlertDialog open={pendingParentChange !== null} onOpenChange={(open) => !open && setPendingParentChange(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('member.confirm_parent_change_title', 'تأكيد تغيير العائلة')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('member.confirm_parent_change_desc', 'سيتم نقل هذا العضو إلى عائلة جديدة، مما قد يؤثر على ترتيب الشجرة وعلاقات الأبناء. هل تريد المتابعة؟')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel', 'إلغاء')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                const newValue = pendingParentChange;
+                setFormData(prev => ({
+                  ...prev,
+                  selectedParent: newValue,
+                  isFounder: !newValue
+                }));
+                setPendingParentChange(null);
+              }}
+            >
+              {t('common.confirm', 'تأكيد')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 };
