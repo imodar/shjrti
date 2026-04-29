@@ -260,15 +260,20 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                     icon: 'info'
                   }]}
                   value={formData.selectedParent || ''}
-                  onChange={(value) => setFormData(prev => ({ 
-                    ...prev, 
-                    selectedParent: value === 'none' || value === 'no-data' ? null : value,
-                    isFounder: !value || value === 'none' || value === 'no-data'
-                  }))}
-                  disabled={parentsLocked}
-                  placeholder={parentsLocked 
-                    ? t('member.parents_locked', 'تم اختيار الوالدين تلقائياً')
-                    : t('member.select_parents', 'اختر الوالدين')}
+                  onChange={(value) => {
+                    const newValue = value === 'none' || value === 'no-data' ? null : value;
+                    // In edit mode, if changing an already-set parent, ask for confirmation
+                    if (formMode === 'edit' && formData.selectedParent && newValue !== formData.selectedParent) {
+                      setPendingParentChange(newValue);
+                      return;
+                    }
+                    setFormData(prev => ({
+                      ...prev,
+                      selectedParent: newValue,
+                      isFounder: !newValue
+                    }));
+                  }}
+                  placeholder={t('member.select_parents', 'اختر الوالدين')}
                   searchable={true}
                   searchPlaceholder={t('member.search_parents', 'ابحث عن الوالدين...')}
                   accentColor="primary"
