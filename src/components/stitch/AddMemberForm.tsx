@@ -470,8 +470,12 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
                   </label>
                   <StyledDropdown
                     options={[
-                      { value: 'single', label: t('member.is_single', 'أعزب'), icon: 'person' },
-                      { value: 'married', label: t('member.is_married', 'متزوج'), icon: 'favorite' }
+                      { value: 'single', label: formData.gender === 'female'
+                          ? t('member.is_single_female', 'غير متزوجة')
+                          : t('member.is_single_male', 'غير متزوج'), icon: 'person' },
+                      { value: 'married', label: formData.gender === 'female'
+                          ? t('member.is_married_female', 'متزوجة')
+                          : t('member.is_married_male', 'متزوج'), icon: 'favorite' }
                     ]}
                     value={isMarried ? 'married' : 'single'}
                     onChange={(value) => setIsMarried(value === 'married')}
