@@ -819,6 +819,34 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Confirm parent change in edit mode */}
+      <AlertDialog open={pendingParentChange !== null} onOpenChange={(open) => !open && setPendingParentChange(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('member.confirm_parent_change_title', 'تأكيد تغيير العائلة')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('member.confirm_parent_change_desc', 'سيتم نقل هذا العضو إلى عائلة جديدة، مما قد يؤثر على ترتيب الشجرة وعلاقات الأبناء. هل تريد المتابعة؟')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel', 'إلغاء')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                const newValue = pendingParentChange;
+                setFormData(prev => ({
+                  ...prev,
+                  selectedParent: newValue,
+                  isFounder: !newValue
+                }));
+                setPendingParentChange(null);
+              }}
+            >
+              {t('common.confirm', 'تأكيد')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   );
 };
