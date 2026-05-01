@@ -69,27 +69,27 @@ export const GlobalFooterSimplified = () => {
 
       <div className="relative z-10">
         {/* Simplified Footer Content */}
-        <div className="container mx-auto px-4 py-6 md:py-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8">
+        <div className="container mx-auto px-4 py-3 md:py-8">
+          <div className="flex flex-row md:flex-row items-center justify-between gap-2 md:gap-8 flex-wrap">
             
             {/* Brand Section */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur-lg opacity-50"></div>
-                <PageIcon className="relative h-6 w-6 md:h-8 md:w-8 text-emerald-400" />
+                <PageIcon className="relative h-5 w-5 md:h-8 md:w-8 text-emerald-400" />
               </div>
-              <span className="text-lg md:text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+              <span className="text-sm md:text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
                 {t('footer_brand_name', 'شجرة العائلة')}
               </span>
               <div className="flex items-center gap-2 text-emerald-400">
-                <Crown className="h-4 w-4" />
+                <Crown className="h-3 w-3 md:h-4 md:w-4" />
                 <span className="text-xs font-medium hidden sm:block">{t('footer_brand_badge', 'الأفضل في المنطقة')}</span>
               </div>
             </div>
             
             {/* Trust Badges & Copyright */}
-            <div className="flex flex-col md:flex-row items-center gap-3 md:gap-6 text-center md:text-right">
-              <div className="flex items-center gap-4 text-gray-300 text-xs md:text-sm">
+            <div className="flex flex-row md:flex-row items-center gap-2 md:gap-6 text-center md:text-right">
+              <div className="hidden md:flex items-center gap-4 text-gray-300 text-xs md:text-sm">
                 <div className="flex items-center gap-1">
                   <Shield className="h-3 w-3 text-emerald-400" />
                   <span className="hidden sm:block">{t('footer_trust_data', 'حماية البيانات معتمدة')}</span>
@@ -100,7 +100,7 @@ export const GlobalFooterSimplified = () => {
                 </div>
               </div>
               
-              <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-gray-400 text-xs md:text-sm">
+              <div className="flex flex-row md:flex-row items-center gap-2 md:gap-4 text-gray-400 text-[10px] md:text-sm">
                 <p>{t('footer_copyright', '© ٢٠٢٤ شجرة العائلة. جميع الحقوق محفوظة.')}</p>
                 <span className="flex items-center gap-1">
                   <Gem className="h-3 w-3 text-emerald-400" />
