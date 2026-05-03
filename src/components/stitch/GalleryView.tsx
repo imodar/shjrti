@@ -906,6 +906,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                 imageAlt={selectedMemory.caption || selectedMemory.original_filename}
                 familyMembers={familyMembers}
                 tags={selectedMemoryTags}
+                readOnly={readOnly}
                 onTagsChange={() => {
                   loadMemoryTags(selectedMemory.id);
                   loadAllTags();
