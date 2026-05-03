@@ -995,7 +995,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                                 <span className="text-[10px] font-bold text-slate-400">{(member.name || '?')[0]}</span>
                               )}
                             </div>
-                            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{member.name}</span>
+                            <div className="flex flex-col leading-tight">
+                              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{member.name}</span>
+                              {getMemberSubtitle(member, familyMembers) && (
+                                <span className="text-[10px] text-slate-500 dark:text-slate-400">{getMemberSubtitle(member, familyMembers)}</span>
+                              )}
+                            </div>
                           </div>
                         );
                       })}
@@ -1012,7 +1017,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                                 <span className="text-[10px] font-bold text-slate-400">{(member.name || '?')[0]}</span>
                               )}
                             </div>
-                            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{member.name}</span>
+                            <div className="flex flex-col leading-tight">
+                              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{member.name}</span>
+                              {getMemberSubtitle(member, familyMembers) && (
+                                <span className="text-[10px] text-slate-500 dark:text-slate-400">{getMemberSubtitle(member, familyMembers)}</span>
+                              )}
+                            </div>
                           </div>
                         );
                       })()}
