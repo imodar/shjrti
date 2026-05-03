@@ -11,6 +11,14 @@ import type { PhotoMemberTag } from '@/lib/api/endpoints/memories';
 import { Member } from '@/types/family.types';
 import { toast as sonnerToast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import { getParentageInfo } from '@/lib/memberDisplayUtils';
+
+const getMemberSubtitle = (member: Member | undefined, familyMembers: Member[]): string => {
+  if (!member) return '';
+  const info = getParentageInfo(member, familyMembers);
+  if (!info || !info.lineage) return '';
+  return `${info.genderTerm} ${info.lineage}`;
+};
 
 interface PhotoTaggerProps {
   memoryId: string;
@@ -150,7 +158,12 @@ export const PhotoTagger: React.FC<PhotoTaggerProps> = ({
                 {member.image_url && (
                   <img src={member.image_url} alt="" className="w-4 h-4 rounded-full object-cover" />
                 )}
-                {member.name}
+                <div className="flex flex-col leading-tight">
+                  <span>{member.name}</span>
+                  {getMemberSubtitle(member, familyMembers) && (
+                    <span className="text-[9px] font-normal text-slate-300">{getMemberSubtitle(member, familyMembers)}</span>
+                  )}
+                </div>
                 {!readOnly && (
                   <button
                     onClick={(e) => handleDeleteTag(tag.id, e)}
@@ -227,9 +240,16 @@ export const PhotoTagger: React.FC<PhotoTaggerProps> = ({
                           <span className="text-slate-400 font-bold text-[10px]">{(member.name || '?')[0]}</span>
                         )}
                       </div>
-                      <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate">
-                        {member.name}
-                      </span>
+                      <div className="flex flex-col min-w-0 flex-1 leading-tight">
+                        <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate">
+                          {member.name}
+                        </span>
+                        {getMemberSubtitle(member, familyMembers) && (
+                          <span className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                            {getMemberSubtitle(member, familyMembers)}
+                          </span>
+                        )}
+                      </div>
                     </button>
                   ))
                 )}
