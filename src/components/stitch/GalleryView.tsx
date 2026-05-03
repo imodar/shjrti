@@ -15,6 +15,15 @@ import { ar } from 'date-fns/locale';
 import { useImageUploadPermission } from '@/hooks/useImageUploadPermission';
 import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { PhotoTagger } from './PhotoTagger';
+import { getParentageInfo } from '@/lib/memberDisplayUtils';
+
+// Build short "ابن/ابنة فلان" subtitle for a member based on lineage
+const getMemberSubtitle = (member: Member | undefined, familyMembers: Member[]): string => {
+  if (!member) return '';
+  const info = getParentageInfo(member, familyMembers);
+  if (!info || !info.lineage) return '';
+  return `${info.genderTerm} ${info.lineage}`;
+};
 
 // Small helper to resolve member avatar in sidebar (hooks can't be called inside .map)
 const SidebarMemberAvatar: React.FC<{ imageUrl?: string | null; name: string }> = ({ imageUrl, name }) => {
@@ -691,6 +700,11 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-xs font-bold truncate">{member.name}</h4>
+                    {getMemberSubtitle(member, familyMembers) && (
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                        {getMemberSubtitle(member, familyMembers)}
+                      </p>
+                    )}
                     <p className="text-[9px] text-slate-500 uppercase font-bold">{member.memoryCount} {t('gallery.memories', 'Memories')}</p>
                   </div>
                 </button>
@@ -981,7 +995,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                                 <span className="text-[10px] font-bold text-slate-400">{(member.name || '?')[0]}</span>
                               )}
                             </div>
-                            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{member.name}</span>
+                            <div className="flex flex-col leading-tight">
+                              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{member.name}</span>
+                              {getMemberSubtitle(member, familyMembers) && (
+                                <span className="text-[10px] text-slate-500 dark:text-slate-400">{getMemberSubtitle(member, familyMembers)}</span>
+                              )}
+                            </div>
                           </div>
                         );
                       })}
@@ -998,7 +1017,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                                 <span className="text-[10px] font-bold text-slate-400">{(member.name || '?')[0]}</span>
                               )}
                             </div>
-                            <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{member.name}</span>
+                            <div className="flex flex-col leading-tight">
+                              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{member.name}</span>
+                              {getMemberSubtitle(member, familyMembers) && (
+                                <span className="text-[10px] text-slate-500 dark:text-slate-400">{getMemberSubtitle(member, familyMembers)}</span>
+                              )}
+                            </div>
                           </div>
                         );
                       })()}
@@ -1166,7 +1190,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                                     <span className="text-muted-foreground font-bold text-[10px]">{(member.name || '?')[0]}</span>
                                   )}
                                 </div>
-                                <span className="text-xs font-semibold text-foreground truncate">{member.name}</span>
+                                <div className="flex flex-col min-w-0 flex-1 leading-tight">
+                                  <span className="text-xs font-semibold text-foreground truncate">{member.name}</span>
+                                  {getMemberSubtitle(member, familyMembers) && (
+                                    <span className="text-[10px] text-muted-foreground truncate">{getMemberSubtitle(member, familyMembers)}</span>
+                                  )}
+                                </div>
                               </button>
                             ))}
                           {familyMembers.filter(m => !reviewPopup.linkedMemberIds.includes(m.id) && (reviewPendingSearch.trim() === '' || m.name.toLowerCase().includes(reviewPendingSearch.toLowerCase()))).length === 0 && (
@@ -1252,7 +1281,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                                 <span className="text-[9px] font-bold text-muted-foreground">{(member.name || '?')[0]}</span>
                               )}
                             </div>
-                            <span className="text-xs font-medium text-foreground">{member.name}</span>
+                            <div className="flex flex-col min-w-0 flex-1 leading-tight">
+                              <span className="text-xs font-medium text-foreground truncate">{member.name}</span>
+                              {getMemberSubtitle(member, familyMembers) && (
+                                <span className="text-[10px] text-muted-foreground truncate">{getMemberSubtitle(member, familyMembers)}</span>
+                              )}
+                            </div>
                           </button>
                         ))}
                       {familyMembers.filter(m => !reviewPopup.linkedMemberIds.includes(m.id) && m.name.toLowerCase().includes(reviewTagSearch.toLowerCase())).length === 0 && (
@@ -1280,7 +1314,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                                   <span className="text-[9px] font-bold text-muted-foreground">{(member.name || '?')[0]}</span>
                                 )}
                               </div>
-                              <span className="text-[11px] font-semibold text-foreground truncate flex-1">{member.name}</span>
+                              <div className="flex flex-col min-w-0 flex-1 leading-tight">
+                                <span className="text-[11px] font-semibold text-foreground truncate">{member.name}</span>
+                                {getMemberSubtitle(member, familyMembers) && (
+                                  <span className="text-[9px] text-muted-foreground truncate">{getMemberSubtitle(member, familyMembers)}</span>
+                                )}
+                              </div>
                               <button
                                 type="button"
                                 onClick={() => setReviewPopup(prev => ({ ...prev, linkedMemberIds: prev.linkedMemberIds.filter(id => id !== memberId) }))}
