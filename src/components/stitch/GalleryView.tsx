@@ -700,6 +700,11 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-xs font-bold truncate">{member.name}</h4>
+                    {getMemberSubtitle(member, familyMembers) && (
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                        {getMemberSubtitle(member, familyMembers)}
+                      </p>
+                    )}
                     <p className="text-[9px] text-slate-500 uppercase font-bold">{member.memoryCount} {t('gallery.memories', 'Memories')}</p>
                   </div>
                 </button>
