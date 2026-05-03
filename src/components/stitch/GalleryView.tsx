@@ -1190,7 +1190,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                                     <span className="text-muted-foreground font-bold text-[10px]">{(member.name || '?')[0]}</span>
                                   )}
                                 </div>
-                                <span className="text-xs font-semibold text-foreground truncate">{member.name}</span>
+                                <div className="flex flex-col min-w-0 flex-1 leading-tight">
+                                  <span className="text-xs font-semibold text-foreground truncate">{member.name}</span>
+                                  {getMemberSubtitle(member, familyMembers) && (
+                                    <span className="text-[10px] text-muted-foreground truncate">{getMemberSubtitle(member, familyMembers)}</span>
+                                  )}
+                                </div>
                               </button>
                             ))}
                           {familyMembers.filter(m => !reviewPopup.linkedMemberIds.includes(m.id) && (reviewPendingSearch.trim() === '' || m.name.toLowerCase().includes(reviewPendingSearch.toLowerCase()))).length === 0 && (
@@ -1276,7 +1281,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                                 <span className="text-[9px] font-bold text-muted-foreground">{(member.name || '?')[0]}</span>
                               )}
                             </div>
-                            <span className="text-xs font-medium text-foreground">{member.name}</span>
+                            <div className="flex flex-col min-w-0 flex-1 leading-tight">
+                              <span className="text-xs font-medium text-foreground truncate">{member.name}</span>
+                              {getMemberSubtitle(member, familyMembers) && (
+                                <span className="text-[10px] text-muted-foreground truncate">{getMemberSubtitle(member, familyMembers)}</span>
+                              )}
+                            </div>
                           </button>
                         ))}
                       {familyMembers.filter(m => !reviewPopup.linkedMemberIds.includes(m.id) && m.name.toLowerCase().includes(reviewTagSearch.toLowerCase())).length === 0 && (
@@ -1304,7 +1314,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                                   <span className="text-[9px] font-bold text-muted-foreground">{(member.name || '?')[0]}</span>
                                 )}
                               </div>
-                              <span className="text-[11px] font-semibold text-foreground truncate flex-1">{member.name}</span>
+                              <div className="flex flex-col min-w-0 flex-1 leading-tight">
+                                <span className="text-[11px] font-semibold text-foreground truncate">{member.name}</span>
+                                {getMemberSubtitle(member, familyMembers) && (
+                                  <span className="text-[9px] text-muted-foreground truncate">{getMemberSubtitle(member, familyMembers)}</span>
+                                )}
+                              </div>
                               <button
                                 type="button"
                                 onClick={() => setReviewPopup(prev => ({ ...prev, linkedMemberIds: prev.linkedMemberIds.filter(id => id !== memberId) }))}
