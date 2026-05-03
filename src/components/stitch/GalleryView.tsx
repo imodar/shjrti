@@ -213,16 +213,29 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
     const loadAllMemoryTags = async () => {
       try {
         const newMap: Record<string, string[]> = {};
-        await Promise.all(
-          currentMemories.map(async (m) => {
-            try {
-              const tags = await memoriesApi.getPhotoTags(m.id);
-              if (tags.length > 0) {
-                newMap[m.id] = tags.map(t => t.member_id);
-              }
-            } catch { /* skip */ }
-          })
-        );
+        if (readOnly) {
+          // Public/shared view: single batched query via RLS
+          const memIds = currentMemories.map(m => m.id);
+          const { data: tags } = await supabase
+            .from('photo_member_tags')
+            .select('memory_id, member_id')
+            .in('memory_id', memIds);
+          (tags || []).forEach((t: any) => {
+            if (!newMap[t.memory_id]) newMap[t.memory_id] = [];
+            newMap[t.memory_id].push(t.member_id);
+          });
+        } else {
+          await Promise.all(
+            currentMemories.map(async (m) => {
+              try {
+                const tags = await memoriesApi.getPhotoTags(m.id);
+                if (tags.length > 0) {
+                  newMap[m.id] = tags.map(t => t.member_id);
+                }
+              } catch { /* skip */ }
+            })
+          );
+        }
         if (!cancelled) {
           console.log('[Gallery] Loaded all memory tags:', Object.keys(newMap).length, 'memories with tags, map:', JSON.stringify(newMap));
           setMemoryTagsMap(newMap);
@@ -233,7 +246,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
     };
     loadAllMemoryTags();
     return () => { cancelled = true; };
-  }, [familyId, memories.length]);
+  }, [familyId, memories.length, readOnly]);
 
   // Load tags when selecting a memory
   const loadMemoryTags = useCallback(async (memoryId: string) => {
