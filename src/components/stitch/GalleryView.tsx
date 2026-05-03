@@ -141,7 +141,19 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   const loadMemories = useCallback(async () => {
     if (!familyId) return;
     try {
-      const data = await memoriesApi.getFamilyMemories(familyId);
+      let data: FamilyMemory[];
+      if (readOnly) {
+        // Public/shared view: bypass authenticated edge function and rely on RLS public-read policy
+        const { data: rows, error } = await supabase
+          .from('family_memories')
+          .select('*')
+          .eq('family_id', familyId)
+          .order('uploaded_at', { ascending: false });
+        if (error) throw error;
+        data = (rows || []) as FamilyMemory[];
+      } else {
+        data = await memoriesApi.getFamilyMemories(familyId);
+      }
       const withUrls: MemoryWithUrl[] = (data || []).map(m => ({
         ...m,
         imageUrl: getImageUrl(m.file_path),
@@ -153,7 +165,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [familyId, t]);
+  }, [familyId, t, readOnly]);
 
   useEffect(() => {
     loadMemories();
@@ -163,14 +175,31 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   const loadAllTags = useCallback(async () => {
     if (!familyId) return;
     try {
-      const taggedMembers = await memoriesApi.getTaggedMembers(familyId);
       const counts: Record<string, number> = {};
-      taggedMembers.forEach(tm => { counts[tm.member_id] = tm.count; });
+      if (readOnly) {
+        const { data: mems } = await supabase
+          .from('family_memories')
+          .select('id')
+          .eq('family_id', familyId);
+        const memIds = (mems || []).map((m: any) => m.id);
+        if (memIds.length > 0) {
+          const { data: tags } = await supabase
+            .from('photo_member_tags')
+            .select('member_id')
+            .in('memory_id', memIds);
+          (tags || []).forEach((t: any) => {
+            counts[t.member_id] = (counts[t.member_id] || 0) + 1;
+          });
+        }
+      } else {
+        const taggedMembers = await memoriesApi.getTaggedMembers(familyId);
+        taggedMembers.forEach(tm => { counts[tm.member_id] = tm.count; });
+      }
       setTaggedMemberCounts(counts);
     } catch (error) {
       console.error('Error loading tagged members:', error);
     }
-  }, [familyId]);
+  }, [familyId, readOnly]);
 
   useEffect(() => {
     loadAllTags();
