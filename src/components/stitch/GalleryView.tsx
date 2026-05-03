@@ -15,6 +15,15 @@ import { ar } from 'date-fns/locale';
 import { useImageUploadPermission } from '@/hooks/useImageUploadPermission';
 import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
 import { PhotoTagger } from './PhotoTagger';
+import { getParentageInfo } from '@/lib/memberDisplayUtils';
+
+// Build short "ابن/ابنة فلان" subtitle for a member based on lineage
+const getMemberSubtitle = (member: Member | undefined, familyMembers: Member[]): string => {
+  if (!member) return '';
+  const info = getParentageInfo(member, familyMembers);
+  if (!info || !info.lineage) return '';
+  return `${info.genderTerm} ${info.lineage}`;
+};
 
 // Small helper to resolve member avatar in sidebar (hooks can't be called inside .map)
 const SidebarMemberAvatar: React.FC<{ imageUrl?: string | null; name: string }> = ({ imageUrl, name }) => {
