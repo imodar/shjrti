@@ -409,16 +409,20 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
               await memoriesApi.deletePhotoTag(tag.id);
             }
           }
-          // Create new tags
-          for (const memberId of desiredMemberIds) {
-            if (!existingMemberIds.includes(memberId)) {
-              await memoriesApi.createPhotoTag({
-                memory_id: memoryId,
-                member_id: memberId,
-                x_percent: 50,
-                y_percent: 50,
-              });
-            }
+          // Create new tags — distribute horizontally so they don't all stack
+          // at the same point (otherwise only the top one is visible).
+          const newMemberIds = desiredMemberIds.filter(id => !existingMemberIds.includes(id));
+          const totalNew = newMemberIds.length;
+          for (let i = 0; i < totalNew; i++) {
+            const memberId = newMemberIds[i];
+            // Spread across the image: equally spaced between 20% and 80%
+            const x = totalNew === 1 ? 50 : 20 + (60 * i) / (totalNew - 1);
+            await memoriesApi.createPhotoTag({
+              memory_id: memoryId,
+              member_id: memberId,
+              x_percent: Math.round(x * 100) / 100,
+              y_percent: 85,
+            });
           }
         } catch (tagError) {
           console.error('Error syncing tags:', tagError);
