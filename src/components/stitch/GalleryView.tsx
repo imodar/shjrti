@@ -147,6 +147,8 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   const reviewImageRef = useRef<HTMLDivElement>(null);
   const [reviewPendingTag, setReviewPendingTag] = useState<{ x: number; y: number } | null>(null);
   const [reviewPendingSearch, setReviewPendingSearch] = useState('');
+  // Coordinates per pending member tag chosen via click on image (memberId -> {x,y})
+  const [reviewTagPositions, setReviewTagPositions] = useState<Record<string, { x: number; y: number }>>({});
   const loadMemories = useCallback(async () => {
     if (!familyId) return;
     try {
@@ -409,19 +411,31 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
               await memoriesApi.deletePhotoTag(tag.id);
             }
           }
-          // Create new tags — distribute horizontally so they don't all stack
-          // at the same point (otherwise only the top one is visible).
+          // Create new tags using the exact click position chosen by the user.
+          // Members added without a click position fall back to a horizontal
+          // distribution so they remain visually distinct.
           const newMemberIds = desiredMemberIds.filter(id => !existingMemberIds.includes(id));
-          const totalNew = newMemberIds.length;
-          for (let i = 0; i < totalNew; i++) {
+          const withoutPos = newMemberIds.filter(id => !reviewTagPositions[id]);
+          for (let i = 0; i < newMemberIds.length; i++) {
             const memberId = newMemberIds[i];
-            // Spread across the image: equally spaced between 20% and 80%
-            const x = totalNew === 1 ? 50 : 20 + (60 * i) / (totalNew - 1);
+            const pos = reviewTagPositions[memberId];
+            let x: number;
+            let y: number;
+            if (pos) {
+              x = pos.x;
+              y = pos.y;
+            } else {
+              // Fallback for members added via the side list (no click position)
+              const idx = withoutPos.indexOf(memberId);
+              const total = withoutPos.length;
+              x = total === 1 ? 50 : 20 + (60 * idx) / (total - 1);
+              y = 85;
+            }
             await memoriesApi.createPhotoTag({
               memory_id: memoryId,
               member_id: memberId,
               x_percent: Math.round(x * 100) / 100,
-              y_percent: 85,
+              y_percent: Math.round(y * 100) / 100,
             });
           }
         } catch (tagError) {
@@ -431,6 +445,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
       }
 
       setReviewPopup(prev => ({ ...prev, open: false }));
+      setReviewTagPositions({});
       loadMemories();
     } catch (error) {
       console.error('Review save error:', error);
@@ -447,6 +462,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
       await supabase.storage.from('family-memories').remove([reviewPopup.filePath]);
     }
     setReviewPopup(prev => ({ ...prev, open: false }));
+    setReviewTagPositions({});
   };
 
   // Open edit popup for an existing memory
@@ -475,6 +491,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
       linkedMemberIds: existingTagMemberIds,
     });
     setReviewTagSearch('');
+    setReviewTagPositions({});
   };
 
   const { getRootProps, getInputProps, isDragActive, open: openFilePicker } = useDropzone({
@@ -1126,12 +1143,27 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                   className="w-full aspect-[16/10] object-contain bg-black/5 dark:bg-black/20 rounded-2xl"
                   src={reviewPopup.imageUrl}
                 />
-                {/* Existing tag dots on image */}
-                {reviewPopup.linkedMemberIds.map((memberId, idx) => {
+                {/* Existing tag dots on image (only members positioned via click) */}
+                {reviewPopup.linkedMemberIds.map((memberId) => {
                   const member = familyMembers.find(m => m.id === memberId);
-                  if (!member) return null;
-                  // For tags without position, don't show dot
-                  return null;
+                  const pos = reviewTagPositions[memberId];
+                  if (!member || !pos) return null;
+                  return (
+                    <div
+                      key={memberId}
+                      className="absolute z-20 transform -translate-x-1/2 -translate-y-1/2 group/tag"
+                      style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
+                    >
+                      <div className="w-6 h-6 rounded-full bg-primary border-2 border-white shadow-lg flex items-center justify-center">
+                        <span className="text-white text-[8px] font-bold">{(member.name || '?')[0]}</span>
+                      </div>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover/tag:opacity-100 transition-opacity pointer-events-none">
+                        <div className="bg-foreground/90 text-background text-[10px] font-bold px-2 py-1 rounded whitespace-nowrap">
+                          {member.name}
+                        </div>
+                      </div>
+                    </div>
+                  );
                 })}
 
                 {/* Pending tag marker + dropdown */}
@@ -1176,6 +1208,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                                 type="button"
                                 onClick={() => {
                                   setReviewPopup(prev => ({ ...prev, linkedMemberIds: [...prev.linkedMemberIds, member.id] }));
+                                  if (reviewPendingTag) {
+                                    setReviewTagPositions(prev => ({
+                                      ...prev,
+                                      [member.id]: { x: reviewPendingTag.x, y: reviewPendingTag.y },
+                                    }));
+                                  }
                                   setReviewPendingTag(null);
                                 }}
                                 className="w-full px-3 py-2 flex items-center gap-2.5 hover:bg-accent transition-colors text-start"
@@ -1307,7 +1345,14 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                               </div>
                               <button
                                 type="button"
-                                onClick={() => setReviewPopup(prev => ({ ...prev, linkedMemberIds: prev.linkedMemberIds.filter(id => id !== memberId) }))}
+                                onClick={() => {
+                                  setReviewPopup(prev => ({ ...prev, linkedMemberIds: prev.linkedMemberIds.filter(id => id !== memberId) }));
+                                  setReviewTagPositions(prev => {
+                                    const next = { ...prev };
+                                    delete next[memberId];
+                                    return next;
+                                  });
+                                }}
                                 className="w-5 h-5 rounded-full sm:opacity-0 group-hover/tag:opacity-100 hover:bg-destructive/10 text-muted-foreground hover:text-destructive flex items-center justify-center transition-all shrink-0"
                               >
                                 <span className="material-symbols-outlined text-xs">close</span>
