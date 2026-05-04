@@ -44,36 +44,21 @@ export const getFounderLastName = (familyMembers: Member[]): string => {
 
 /**
  * Resolve the surname through the paternal line.
- * This preserves surnames inherited from external fathers (e.g. موسى باشا)
- * even when descendants were stored with the main family surname.
+ * Rule: a member's surname is exactly their direct father's last_name
+ * (regardless of whether the father is from the family or external).
+ * Falls back to the member's own last_name, then to the founder's last_name.
  */
 export const getPaternalLineageLastName = (member: Member, familyMembers: Member[]): string => {
-  const visited = new Set<string>();
-  let current: Member | undefined = member;
+  const fatherId = member.father_id || (member as any).fatherId;
+  const father = fatherId ? familyMembers?.find(m => m?.id === fatherId) : undefined;
 
-  while (current) {
-    const fatherId = current.father_id || (current as any).fatherId;
-    const father = fatherId ? familyMembers?.find(m => m?.id === fatherId) : undefined;
-    if (!father || visited.has(father.id)) break;
+  const fatherLastName = father?.last_name?.trim();
+  if (fatherLastName) return fatherLastName;
 
-    visited.add(father.id);
+  const ownLastName = member.last_name?.trim();
+  if (ownLastName) return ownLastName;
 
-    const fatherFatherId = father.father_id || (father as any).fatherId;
-    const fatherIsFounder = father.is_founder || (father as any).isFounder;
-    const fatherLastName = father.last_name?.trim() || '';
-
-    if (fatherIsFounder) {
-      return fatherLastName || getFounderLastName(familyMembers);
-    }
-
-    if (!fatherFatherId && fatherLastName) {
-      return fatherLastName;
-    }
-
-    current = father;
-  }
-
-  return member.last_name?.trim() || getFounderLastName(familyMembers);
+  return getFounderLastName(familyMembers);
 };
 
 /**
