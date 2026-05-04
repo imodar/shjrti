@@ -188,7 +188,7 @@ const getMemberDisplayName = (
               <div className="cursor-pointer"><MemberAvatar member={member} size="md" /></div>
             </MemberHoverCard>
            <div className="text-center">
-              <h4 className="font-bold text-sm">{getMemberDisplayName(member, familyMembers)}</h4>
+              <h4 className="font-bold text-sm">{getMemberDisplayName(member, familyMembers, marriages)}</h4>
               {showMotherBadge && (
                 <div className="mt-2 flex flex-wrap justify-center gap-2">
                  <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1">
@@ -244,7 +244,7 @@ const getMemberDisplayName = (
                   <div className="cursor-pointer"><MemberAvatar member={unit.husband} size="md" /></div>
                 </MemberHoverCard>
                 <div className="text-center">
-                   <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers)}</p>
+                   <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers, marriages)}</p>
                    {showHusbandMotherBadge && husbandMother && (
                      <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
                        <span className="material-icons-round text-[10px]">face_3</span>
@@ -272,7 +272,7 @@ const getMemberDisplayName = (
                       <div className="cursor-pointer"><MemberAvatar member={wife} size="md" /></div>
                     </MemberHoverCard>
                     <div className="text-center">
-                       <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers) || t('tree_view.unknown_wife', 'Unknown Wife')}</p>
+                       <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers, marriages) || t('tree_view.unknown_wife', 'Unknown Wife')}</p>
                        {showWifeMotherBadge && wifeMother && (
                          <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
                            <span className="material-icons-round text-[10px]">face_3</span>
@@ -292,7 +292,7 @@ const getMemberDisplayName = (
                   <div className="cursor-pointer"><MemberAvatar member={wife} size="md" /></div>
                 </MemberHoverCard>
                 <div className="text-center">
-                  <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers)}</p>
+                  <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers, marriages)}</p>
                   {showWifeMotherBadge && wifeMother && (
                     <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
                       <span className="material-icons-round text-[10px]">face_3</span>
@@ -324,7 +324,7 @@ const getMemberDisplayName = (
                <MemberHoverCard member={unit.husband} familyMembers={familyMembers} marriages={marriages}>
                  <div className="cursor-pointer"><MemberAvatar member={unit.husband} size="md" className="shadow-sm" /></div>
                </MemberHoverCard>
-                <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers)}</p>
+                <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers, marriages)}</p>
              </div>
            )}
  
@@ -335,7 +335,7 @@ const getMemberDisplayName = (
                  <MemberHoverCard member={wife} familyMembers={familyMembers} marriages={marriages}>
                    <div className="cursor-pointer"><MemberAvatar member={wife} size="md" /></div>
                  </MemberHoverCard>
-                  <p className="font-bold text-[11px]">{getMemberDisplayName(wife, familyMembers)}</p>
+                  <p className="font-bold text-[11px]">{getMemberDisplayName(wife, familyMembers, marriages)}</p>
                   <RoleBadge role={wife.marital_status === 'divorced' ? 'ex-wife' : 'wife'} />
                </div>
              ))}
