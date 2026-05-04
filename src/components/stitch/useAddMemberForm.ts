@@ -737,9 +737,17 @@ export const useAddMemberForm = ({
 
             marriageResults.successful++;
           }
+
+          // Persist resolved real ID back onto the spouse object so callers
+          // (e.g. dummy-wife migration) can reference the correct UUID.
+          if (spouseId) {
+            (spouseData as any).id = spouseId;
+          }
+          return spouseId;
         } catch (error) {
           console.error(`Error processing ${spouseType}:`, error);
           marriageResults.failed++;
+          return null;
         }
       };
 
