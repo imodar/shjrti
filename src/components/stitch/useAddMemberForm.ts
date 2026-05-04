@@ -737,9 +737,17 @@ export const useAddMemberForm = ({
 
             marriageResults.successful++;
           }
+
+          // Persist resolved real ID back onto the spouse object so callers
+          // (e.g. dummy-wife migration) can reference the correct UUID.
+          if (spouseId) {
+            (spouseData as any).id = spouseId;
+          }
+          return spouseId;
         } catch (error) {
           console.error(`Error processing ${spouseType}:`, error);
           marriageResults.failed++;
+          return null;
         }
       };
 
@@ -826,14 +834,15 @@ export const useAddMemberForm = ({
           // Use the first saved real wife as the new mother
           const savedWives = wives.filter(w => w.isSaved === true);
           if (savedWives.length > 0) {
-            // Process real wives first to get their IDs
+            // Process real wives first to get their real (DB) IDs
+            const resolvedIds: (string | null)[] = [];
             for (const wife of savedWives) {
-              await processSpouseMarriage(wife, 'wife');
+              const resolvedId = await processSpouseMarriage(wife, 'wife');
+              resolvedIds.push(resolvedId);
             }
 
-            // After processing, find the new wife's ID
-            const firstRealWife = savedWives[0];
-            const newMotherId = firstRealWife.id || firstRealWife.existingFamilyMemberId;
+            // Pick the first successfully resolved wife as the new mother
+            const newMotherId = resolvedIds.find(Boolean) || null;
 
             if (newMotherId) {
               // Migrate children from dummy to real wife
