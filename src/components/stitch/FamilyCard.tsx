@@ -3,7 +3,7 @@
 import { Member, Marriage } from '@/types/family.types';
  import { useLanguage } from '@/contexts/LanguageContext';
  import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
-import { isMemberFromFamily, getFounderLastName, getPaternalLineageLastName } from '@/lib/memberDisplayUtils';
+import { isMemberFromFamily, getFounderLastName, generateMemberDisplayName } from '@/lib/memberDisplayUtils';
 import { MemberHoverCard } from './MemberHoverCard';
 
 // Helper to check if member is a descendant of the founder through paternal line (recursive check)
@@ -58,19 +58,14 @@ const hasParentMultipleSpouses = (member: Member, familyMembers: Member[]): bool
    onMemberClick?: (member: Member) => void;
  }
  
-// Helper to get display name - shows full name for non-descendants (external spouses or their children)
-const getMemberDisplayName = (member: Member, familyMembers: Member[]): string => {
-  const isFromFamily = isDescendantOfFounder(member, familyMembers);
+// Use the shared display name logic so naming is consistent across the app
+const getMemberDisplayName = (
+  member: Member,
+  familyMembers: Member[],
+  marriages: Marriage[]
+): string => {
   const firstName = member.first_name || member.name?.split(' ')[0] || member.name || '';
-
-  // If not a descendant of the founder (external spouse, etc.), show their own last_name
-  if (!isFromFamily && member.last_name) {
-    return `${firstName} ${member.last_name}`;
-  }
-
-  // Descendant: derive surname from direct father's last_name (paternal line)
-  const paternalLast = getPaternalLineageLastName(member, familyMembers);
-  return paternalLast ? `${firstName} ${paternalLast}` : firstName;
+  return generateMemberDisplayName(member, familyMembers, marriages) || firstName;
 };
 
  // Member Avatar Component
@@ -193,7 +188,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
               <div className="cursor-pointer"><MemberAvatar member={member} size="md" /></div>
             </MemberHoverCard>
            <div className="text-center">
-              <h4 className="font-bold text-sm">{getMemberDisplayName(member, familyMembers)}</h4>
+              <h4 className="font-bold text-sm">{getMemberDisplayName(member, familyMembers, marriages)}</h4>
               {showMotherBadge && (
                 <div className="mt-2 flex flex-wrap justify-center gap-2">
                  <span className="bg-primary/10 text-primary text-[10px] font-bold px-2 py-1 rounded flex items-center gap-1">
@@ -249,7 +244,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
                   <div className="cursor-pointer"><MemberAvatar member={unit.husband} size="md" /></div>
                 </MemberHoverCard>
                 <div className="text-center">
-                   <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers)}</p>
+                   <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers, marriages)}</p>
                    {showHusbandMotherBadge && husbandMother && (
                      <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
                        <span className="material-icons-round text-[10px]">face_3</span>
@@ -277,7 +272,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
                       <div className="cursor-pointer"><MemberAvatar member={wife} size="md" /></div>
                     </MemberHoverCard>
                     <div className="text-center">
-                       <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers) || t('tree_view.unknown_wife', 'Unknown Wife')}</p>
+                       <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers, marriages) || t('tree_view.unknown_wife', 'Unknown Wife')}</p>
                        {showWifeMotherBadge && wifeMother && (
                          <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
                            <span className="material-icons-round text-[10px]">face_3</span>
@@ -297,7 +292,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
                   <div className="cursor-pointer"><MemberAvatar member={wife} size="md" /></div>
                 </MemberHoverCard>
                 <div className="text-center">
-                  <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers)}</p>
+                  <p className="font-bold text-sm">{getMemberDisplayName(wife, familyMembers, marriages)}</p>
                   {showWifeMotherBadge && wifeMother && (
                     <span className="mt-1 bg-primary/10 text-primary text-[9px] font-bold px-2 py-0.5 rounded flex items-center gap-1">
                       <span className="material-icons-round text-[10px]">face_3</span>
@@ -329,7 +324,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
                <MemberHoverCard member={unit.husband} familyMembers={familyMembers} marriages={marriages}>
                  <div className="cursor-pointer"><MemberAvatar member={unit.husband} size="md" className="shadow-sm" /></div>
                </MemberHoverCard>
-                <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers)}</p>
+                <p className="font-bold text-sm">{getMemberDisplayName(unit.husband, familyMembers, marriages)}</p>
              </div>
            )}
  
@@ -340,7 +335,7 @@ const getMemberDisplayName = (member: Member, familyMembers: Member[]): string =
                  <MemberHoverCard member={wife} familyMembers={familyMembers} marriages={marriages}>
                    <div className="cursor-pointer"><MemberAvatar member={wife} size="md" /></div>
                  </MemberHoverCard>
-                  <p className="font-bold text-[11px]">{getMemberDisplayName(wife, familyMembers)}</p>
+                  <p className="font-bold text-[11px]">{getMemberDisplayName(wife, familyMembers, marriages)}</p>
                   <RoleBadge role={wife.marital_status === 'divorced' ? 'ex-wife' : 'wife'} />
                </div>
              ))}
