@@ -147,6 +147,8 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
   const reviewImageRef = useRef<HTMLDivElement>(null);
   const [reviewPendingTag, setReviewPendingTag] = useState<{ x: number; y: number } | null>(null);
   const [reviewPendingSearch, setReviewPendingSearch] = useState('');
+  // Coordinates per pending member tag chosen via click on image (memberId -> {x,y})
+  const [reviewTagPositions, setReviewTagPositions] = useState<Record<string, { x: number; y: number }>>({});
   const loadMemories = useCallback(async () => {
     if (!familyId) return;
     try {
