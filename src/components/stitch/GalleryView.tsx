@@ -489,6 +489,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
       linkedMemberIds: existingTagMemberIds,
     });
     setReviewTagSearch('');
+    setReviewTagPositions({});
   };
 
   const { getRootProps, getInputProps, isDragActive, open: openFilePicker } = useDropzone({
