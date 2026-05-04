@@ -405,16 +405,24 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
           const existingMemberIds = existingTags.map(t => t.member_id);
           const desiredMemberIds = reviewPopup.linkedMemberIds;
 
-          // Delete removed tags
+          // Delete removed tags. Also delete tags whose member has a NEW click
+          // position chosen in this session, so we can recreate them at the
+          // updated coordinates instead of leaving the old marker in place.
+          const repositionedMemberIds = new Set<string>();
           for (const tag of existingTags) {
-            if (!desiredMemberIds.includes(tag.member_id)) {
+            const removed = !desiredMemberIds.includes(tag.member_id);
+            const repositioned = !!reviewTagPositions[tag.member_id];
+            if (removed || repositioned) {
               await memoriesApi.deletePhotoTag(tag.id);
+              if (repositioned) repositionedMemberIds.add(tag.member_id);
             }
           }
           // Create new tags using the exact click position chosen by the user.
           // Members added without a click position fall back to a horizontal
           // distribution so they remain visually distinct.
-          const newMemberIds = desiredMemberIds.filter(id => !existingMemberIds.includes(id));
+          const newMemberIds = desiredMemberIds.filter(
+            id => !existingMemberIds.includes(id) || repositionedMemberIds.has(id)
+          );
           const withoutPos = newMemberIds.filter(id => !reviewTagPositions[id]);
           for (let i = 0; i < newMemberIds.length; i++) {
             const memberId = newMemberIds[i];
