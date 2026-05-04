@@ -411,19 +411,31 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
               await memoriesApi.deletePhotoTag(tag.id);
             }
           }
-          // Create new tags — distribute horizontally so they don't all stack
-          // at the same point (otherwise only the top one is visible).
+          // Create new tags using the exact click position chosen by the user.
+          // Members added without a click position fall back to a horizontal
+          // distribution so they remain visually distinct.
           const newMemberIds = desiredMemberIds.filter(id => !existingMemberIds.includes(id));
-          const totalNew = newMemberIds.length;
-          for (let i = 0; i < totalNew; i++) {
+          const withoutPos = newMemberIds.filter(id => !reviewTagPositions[id]);
+          for (let i = 0; i < newMemberIds.length; i++) {
             const memberId = newMemberIds[i];
-            // Spread across the image: equally spaced between 20% and 80%
-            const x = totalNew === 1 ? 50 : 20 + (60 * i) / (totalNew - 1);
+            const pos = reviewTagPositions[memberId];
+            let x: number;
+            let y: number;
+            if (pos) {
+              x = pos.x;
+              y = pos.y;
+            } else {
+              // Fallback for members added via the side list (no click position)
+              const idx = withoutPos.indexOf(memberId);
+              const total = withoutPos.length;
+              x = total === 1 ? 50 : 20 + (60 * idx) / (total - 1);
+              y = 85;
+            }
             await memoriesApi.createPhotoTag({
               memory_id: memoryId,
               member_id: memberId,
               x_percent: Math.round(x * 100) / 100,
-              y_percent: 85,
+              y_percent: Math.round(y * 100) / 100,
             });
           }
         } catch (tagError) {
