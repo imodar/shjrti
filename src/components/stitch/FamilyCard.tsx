@@ -3,7 +3,7 @@
 import { Member, Marriage } from '@/types/family.types';
  import { useLanguage } from '@/contexts/LanguageContext';
  import { useResolvedImageUrl } from '@/utils/useResolvedImageUrl';
-import { isMemberFromFamily, getFounderLastName } from '@/lib/memberDisplayUtils';
+import { isMemberFromFamily, getFounderLastName, getPaternalLineageLastName } from '@/lib/memberDisplayUtils';
 import { MemberHoverCard } from './MemberHoverCard';
 
 // Helper to check if member is a descendant of the founder through paternal line (recursive check)
@@ -62,13 +62,15 @@ const hasParentMultipleSpouses = (member: Member, familyMembers: Member[]): bool
 const getMemberDisplayName = (member: Member, familyMembers: Member[]): string => {
   const isFromFamily = isDescendantOfFounder(member, familyMembers);
   const firstName = member.first_name || member.name?.split(' ')[0] || member.name || '';
-  
-  // If not a descendant of the founder, show full name with their family name
+
+  // If not a descendant of the founder (external spouse, etc.), show their own last_name
   if (!isFromFamily && member.last_name) {
     return `${firstName} ${member.last_name}`;
   }
-  
-  return firstName;
+
+  // Descendant: derive surname from direct father's last_name (paternal line)
+  const paternalLast = getPaternalLineageLastName(member, familyMembers);
+  return paternalLast ? `${firstName} ${paternalLast}` : firstName;
 };
 
  // Member Avatar Component
