@@ -445,6 +445,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
       }
 
       setReviewPopup(prev => ({ ...prev, open: false }));
+      setReviewTagPositions({});
       loadMemories();
     } catch (error) {
       console.error('Review save error:', error);
@@ -461,6 +462,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
       await supabase.storage.from('family-memories').remove([reviewPopup.filePath]);
     }
     setReviewPopup(prev => ({ ...prev, open: false }));
+    setReviewTagPositions({});
   };
 
   // Open edit popup for an existing memory
