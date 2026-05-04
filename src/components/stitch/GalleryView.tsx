@@ -1140,12 +1140,27 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                   className="w-full aspect-[16/10] object-contain bg-black/5 dark:bg-black/20 rounded-2xl"
                   src={reviewPopup.imageUrl}
                 />
-                {/* Existing tag dots on image */}
-                {reviewPopup.linkedMemberIds.map((memberId, idx) => {
+                {/* Existing tag dots on image (only members positioned via click) */}
+                {reviewPopup.linkedMemberIds.map((memberId) => {
                   const member = familyMembers.find(m => m.id === memberId);
-                  if (!member) return null;
-                  // For tags without position, don't show dot
-                  return null;
+                  const pos = reviewTagPositions[memberId];
+                  if (!member || !pos) return null;
+                  return (
+                    <div
+                      key={memberId}
+                      className="absolute z-20 transform -translate-x-1/2 -translate-y-1/2 group/tag"
+                      style={{ left: `${pos.x}%`, top: `${pos.y}%` }}
+                    >
+                      <div className="w-6 h-6 rounded-full bg-primary border-2 border-white shadow-lg flex items-center justify-center">
+                        <span className="text-white text-[8px] font-bold">{(member.name || '?')[0]}</span>
+                      </div>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 opacity-0 group-hover/tag:opacity-100 transition-opacity pointer-events-none">
+                        <div className="bg-foreground/90 text-background text-[10px] font-bold px-2 py-1 rounded whitespace-nowrap">
+                          {member.name}
+                        </div>
+                      </div>
+                    </div>
+                  );
                 })}
 
                 {/* Pending tag marker + dropdown */}
