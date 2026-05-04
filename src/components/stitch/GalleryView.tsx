@@ -1342,7 +1342,14 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                               </div>
                               <button
                                 type="button"
-                                onClick={() => setReviewPopup(prev => ({ ...prev, linkedMemberIds: prev.linkedMemberIds.filter(id => id !== memberId) }))}
+                                onClick={() => {
+                                  setReviewPopup(prev => ({ ...prev, linkedMemberIds: prev.linkedMemberIds.filter(id => id !== memberId) }));
+                                  setReviewTagPositions(prev => {
+                                    const next = { ...prev };
+                                    delete next[memberId];
+                                    return next;
+                                  });
+                                }}
                                 className="w-5 h-5 rounded-full sm:opacity-0 group-hover/tag:opacity-100 hover:bg-destructive/10 text-muted-foreground hover:text-destructive flex items-center justify-center transition-all shrink-0"
                               >
                                 <span className="material-symbols-outlined text-xs">close</span>
