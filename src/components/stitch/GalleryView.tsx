@@ -1205,6 +1205,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                                 type="button"
                                 onClick={() => {
                                   setReviewPopup(prev => ({ ...prev, linkedMemberIds: [...prev.linkedMemberIds, member.id] }));
+                                  if (reviewPendingTag) {
+                                    setReviewTagPositions(prev => ({
+                                      ...prev,
+                                      [member.id]: { x: reviewPendingTag.x, y: reviewPendingTag.y },
+                                    }));
+                                  }
                                   setReviewPendingTag(null);
                                 }}
                                 className="w-full px-3 py-2 flex items-center gap-2.5 hover:bg-accent transition-colors text-start"
