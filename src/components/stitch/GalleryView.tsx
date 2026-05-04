@@ -990,11 +990,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                         return (
                           <div key={tag.id} className="flex items-center gap-2 bg-primary/5 dark:bg-primary/10 pe-3 ps-1 py-1 rounded-full border border-primary/20">
                             <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center">
-                              {member.image_url ? (
-                                <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
-                              ) : (
-                                <span className="text-[10px] font-bold text-slate-400">{(member.name || '?')[0]}</span>
-                              )}
+                              <SidebarMemberAvatar imageUrl={member.image_url} name={member.name} />
                             </div>
                             <div className="flex flex-col leading-tight">
                               <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{member.name}</span>
@@ -1012,11 +1008,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                         return (
                           <div className="flex items-center gap-2 bg-slate-50 dark:bg-slate-800/50 pe-3 ps-1 py-1 rounded-full border border-slate-100 dark:border-slate-800">
                             <div className="w-6 h-6 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex items-center justify-center">
-                              {member.image_url ? (
-                                <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
-                              ) : (
-                                <span className="text-[10px] font-bold text-slate-400">{(member.name || '?')[0]}</span>
-                              )}
+                              <SidebarMemberAvatar imageUrl={member.image_url} name={member.name} />
                             </div>
                             <div className="flex flex-col leading-tight">
                               <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{member.name}</span>
@@ -1185,11 +1177,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                                 className="w-full px-3 py-2 flex items-center gap-2.5 hover:bg-accent transition-colors text-start"
                               >
                                 <div className="w-7 h-7 rounded-full bg-muted overflow-hidden flex items-center justify-center shrink-0">
-                                  {member.image_url ? (
-                                    <img src={member.image_url} alt="" className="w-full h-full object-cover" />
-                                  ) : (
-                                    <span className="text-muted-foreground font-bold text-[10px]">{(member.name || '?')[0]}</span>
-                                  )}
+                                  <SidebarMemberAvatar imageUrl={member.image_url} name={member.name} />
                                 </div>
                                 <div className="flex flex-col min-w-0 flex-1 leading-tight">
                                   <span className="text-xs font-semibold text-foreground truncate">{member.name}</span>
@@ -1276,11 +1264,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                             }}
                           >
                             <div className="w-5 h-5 rounded-full bg-muted overflow-hidden flex items-center justify-center shrink-0">
-                              {member.image_url ? (
-                                <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
-                              ) : (
-                                <span className="text-[9px] font-bold text-muted-foreground">{(member.name || '?')[0]}</span>
-                              )}
+                              <SidebarMemberAvatar imageUrl={member.image_url} name={member.name} />
                             </div>
                             <div className="flex flex-col min-w-0 flex-1 leading-tight">
                               <span className="text-xs font-medium text-foreground truncate">{member.name}</span>
@@ -1309,11 +1293,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
                           return (
                             <div key={memberId} className="flex items-center gap-2 bg-card ps-1.5 pe-1 py-1 rounded-lg border border-border group/tag">
                               <div className="w-5 h-5 rounded-full bg-muted overflow-hidden flex items-center justify-center shrink-0">
-                                {member.image_url ? (
-                                  <img src={member.image_url} alt={member.name} className="w-full h-full object-cover" />
-                                ) : (
-                                  <span className="text-[9px] font-bold text-muted-foreground">{(member.name || '?')[0]}</span>
-                                )}
+                                <SidebarMemberAvatar imageUrl={member.image_url} name={member.name} />
                               </div>
                               <div className="flex flex-col min-w-0 flex-1 leading-tight">
                                 <span className="text-[11px] font-semibold text-foreground truncate">{member.name}</span>
