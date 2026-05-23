@@ -61,9 +61,24 @@ interface MemoryWithUrl extends FamilyMemory {
   imageUrl: string;
 }
 
-const getImageUrl = (filePath: string): string => {
-  const { data } = supabase.storage.from('family-memories').getPublicUrl(filePath);
-  return data.publicUrl;
+import { hasPublicShareContext } from '@/utils/publicShareContext';
+import { resolveSharedImageUrl } from '@/utils/sharedImageResolver';
+
+const getImageUrl = async (filePath: string): Promise<string> => {
+  try {
+    if (hasPublicShareContext()) {
+      const signed = await resolveSharedImageUrl('family-memories', filePath);
+      return signed || '';
+    }
+    const { data, error } = await supabase.storage
+      .from('family-memories')
+      .createSignedUrl(filePath, 3600);
+    if (error) throw error;
+    return data?.signedUrl || '';
+  } catch (e) {
+    console.error('[StitchGalleryView] getImageUrl failed', e);
+    return '';
+  }
 };
 
 // Assign metro grid styles based on index for visual variety
@@ -165,10 +180,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
       } else {
         data = await memoriesApi.getFamilyMemories(familyId);
       }
-      const withUrls: MemoryWithUrl[] = (data || []).map(m => ({
-        ...m,
-        imageUrl: getImageUrl(m.file_path),
-      }));
+      const withUrls: MemoryWithUrl[] = await Promise.all(
+        (data || []).map(async (m) => ({
+          ...m,
+          imageUrl: await getImageUrl(m.file_path),
+        }))
+      );
       setMemories(withUrls);
     } catch (error) {
       console.error('Error loading gallery:', error);
@@ -349,7 +366,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
 
       if (uploadError) throw uploadError;
 
-      const imageUrl = getImageUrl(filePath);
+      const imageUrl = await getImageUrl(filePath);
 
       // Open review popup instead of creating immediately
       setReviewPopup({
