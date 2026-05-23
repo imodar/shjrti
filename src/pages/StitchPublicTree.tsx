@@ -15,6 +15,7 @@ import { GlobalFooterSimplified } from '@/components/GlobalFooterSimplified';
 import { cn } from '@/lib/utils';
 import { isMemberFromFamily } from '@/lib/memberDisplayUtils';
 import type { Member, Marriage } from '@/types/family.types';
+import { setPublicShareContext } from '@/utils/publicShareContext';
 
 /**
  * StitchPublicTree - Public family tree view with Stitch theme
@@ -36,6 +37,17 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
   const { currentTheme, setCurrentTheme } = useTheme();
   const { t, direction } = useLanguage();
   const shareToken = searchParams.get('token');
+
+  // Publish public-share context so image hooks can fetch signed URLs.
+  useEffect(() => {
+    if (!shareToken) return;
+    setPublicShareContext({
+      shareToken,
+      familyId: preloadedData?.family?.id,
+      password: enteredPassword || undefined,
+    });
+    return () => setPublicShareContext(null);
+  }, [shareToken, preloadedData?.family?.id, enteredPassword]);
 
   // Theme management
   const previousThemeRef = useRef(currentTheme);
