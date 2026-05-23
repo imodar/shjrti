@@ -46,7 +46,7 @@ Deno.serve(async (req) => {
     // Resolve family by token or custom domain
     let familyQuery = admin
       .from('families')
-      .select('id, share_token, share_token_expires_at, share_password_hash, custom_domain')
+      .select('id, share_token, share_token_expires_at, share_password, custom_domain')
       .limit(1);
 
     if (share_token) {
@@ -65,11 +65,11 @@ Deno.serve(async (req) => {
     }
 
     // Password gate (if family has one)
-    if (family.share_password_hash) {
+    if (family.share_password) {
       if (!password) return json(403, { error: 'PASSWORD_REQUIRED' });
       const { data: ok, error: pwErr } = await admin.rpc('verify_share_password', {
         plain_password: password,
-        hashed_password: family.share_password_hash,
+        hashed_password: family.share_password,
       });
       if (pwErr || !ok) return json(403, { error: 'PASSWORD_INCORRECT' });
     }
