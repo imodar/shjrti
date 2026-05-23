@@ -6,6 +6,8 @@ import { Image, Calendar, X, Upload, FileText, LayoutGrid, List, Clock } from "l
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
+import { hasPublicShareContext } from '@/utils/publicShareContext';
+import { resolveSharedImageUrl } from '@/utils/sharedImageResolver';
 
 type ViewMode = 'grid' | 'list' | 'timeline';
 
@@ -70,11 +72,15 @@ export const FamilyGalleryView: React.FC<FamilyGalleryViewProps> = ({
 
   const getImageUrl = async (filePath: string): Promise<string> => {
     try {
-      const { data } = supabase.storage
+      if (hasPublicShareContext()) {
+        const signed = await resolveSharedImageUrl('family-memories', filePath);
+        return signed || '';
+      }
+      const { data, error } = await supabase.storage
         .from('family-memories')
-        .getPublicUrl(filePath);
-      
-      return data.publicUrl;
+        .createSignedUrl(filePath, 3600);
+      if (error) throw error;
+      return data?.signedUrl || '';
     } catch (error) {
       console.error('Error getting image URL:', error);
       return '';

@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getMemberImageUrl } from './imageUpload';
+import { hasPublicShareContext } from './publicShareContext';
+import { resolveSharedImageUrl } from './sharedImageResolver';
 
 // In-memory cache for signed URLs (1 hour expiration)
 const urlCache = new Map<string, { url: string; expiresAt: number }>();
@@ -74,9 +76,14 @@ export const useResolvedImageUrl = (
         return;
       }
 
-      // It's a storage path, fetch signed URL
+      // It's a storage path, fetch signed URL.
+      // In public-share contexts (share token or custom domain) the
+      // anonymous user has no RLS access to storage, so route through the
+      // get-shared-image edge function instead.
       try {
-        const signedUrl = await getMemberImageUrl(normalizedPath);
+        const signedUrl = hasPublicShareContext()
+          ? await resolveSharedImageUrl('member-memories', normalizedPath)
+          : await getMemberImageUrl(normalizedPath);
         if (signedUrl) {
           // Cache for 1 hour (3600000ms)
           urlCache.set(normalizedPath, {

@@ -6,6 +6,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { PROTECTED_ROUTES } from '@/constants/routes';
 import PasswordModal from '@/components/PasswordModal';
+import { setPublicShareContext } from '@/utils/publicShareContext';
 
 const CustomDomainRedirect = () => {
   const { customDomain } = useParams();
@@ -17,6 +18,18 @@ const CustomDomainRedirect = () => {
   const [familyName, setFamilyName] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [enteredPassword, setEnteredPassword] = useState<string | undefined>();
+
+  // Publish public-share context for image resolution.
+  useEffect(() => {
+    if (!customDomain) return;
+    setPublicShareContext({
+      customDomain: customDomain.toLowerCase(),
+      familyId: familyData?.family?.id,
+      password: enteredPassword,
+    });
+    return () => setPublicShareContext(null);
+  }, [customDomain, familyData?.family?.id, enteredPassword]);
 
   useEffect(() => {
     if (!customDomain) {
@@ -150,6 +163,7 @@ const CustomDomainRedirect = () => {
           navigate('/404', { replace: true });
         }}
         onSubmit={async (password) => {
+          setEnteredPassword(password);
           await loadFamilyData(password);
         }}
       />
