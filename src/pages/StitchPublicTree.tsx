@@ -38,17 +38,6 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
   const { t, direction } = useLanguage();
   const shareToken = searchParams.get('token');
 
-  // Publish public-share context so image hooks can fetch signed URLs.
-  useEffect(() => {
-    if (!shareToken) return;
-    setPublicShareContext({
-      shareToken,
-      familyId: preloadedData?.family?.id,
-      password: enteredPassword || undefined,
-    });
-    return () => setPublicShareContext(null);
-  }, [shareToken, preloadedData?.family?.id, enteredPassword]);
-
   // Theme management
   const previousThemeRef = useRef(currentTheme);
   useEffect(() => {
@@ -89,6 +78,17 @@ const StitchPublicTree: React.FC<StitchPublicTreeProps> = ({ preloadedData }) =>
   const [passwordError, setPasswordError] = useState(false);
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [enteredPassword, setEnteredPassword] = useState('');
+
+  // Publish public-share context so image hooks can fetch signed URLs.
+  useEffect(() => {
+    if (!shareToken) return;
+    setPublicShareContext({
+      shareToken,
+      familyId: preloadedData?.family?.id,
+      password: enteredPassword || undefined,
+    });
+    return () => setPublicShareContext(null);
+  }, [shareToken, preloadedData?.family?.id, enteredPassword]);
 
   // Navigation state
   const [activeTab, setActiveTab] = useState('dashboard');
