@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { hasPublicShareContext } from '@/utils/publicShareContext';
+import { resolveSharedImageUrl } from '@/utils/sharedImageResolver';
 
 export const useLazyImageUrl = (filePath: string | undefined, enabled: boolean = true) => {
   const [url, setUrl] = useState<string | null>(null);
@@ -9,23 +11,32 @@ export const useLazyImageUrl = (filePath: string | undefined, enabled: boolean =
   useEffect(() => {
     if (!filePath || !enabled) return;
 
-    const loadUrl = () => {
+    let cancelled = false;
+    const loadUrl = async () => {
       setIsLoading(true);
       try {
-        const { data } = supabase.storage
-          .from('family-memories')
-          .getPublicUrl(filePath);
-
-        setUrl(data.publicUrl);
+        if (hasPublicShareContext()) {
+          const signed = await resolveSharedImageUrl('family-memories', filePath);
+          if (!cancelled) setUrl(signed);
+        } else {
+          const { data, error: signError } = await supabase.storage
+            .from('family-memories')
+            .createSignedUrl(filePath, 3600);
+          if (signError) throw signError;
+          if (!cancelled) setUrl(data?.signedUrl ?? null);
+        }
       } catch (err) {
-        setError(err as Error);
+        if (!cancelled) setError(err as Error);
         console.error('Error loading image URL:', err);
       } finally {
-        setIsLoading(false);
+        if (!cancelled) setIsLoading(false);
       }
     };
 
     loadUrl();
+    return () => {
+      cancelled = true;
+    };
   }, [filePath, enabled]);
 
   return { url, isLoading, error };
