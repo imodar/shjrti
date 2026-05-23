@@ -180,10 +180,12 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
       } else {
         data = await memoriesApi.getFamilyMemories(familyId);
       }
-      const withUrls: MemoryWithUrl[] = (data || []).map(m => ({
-        ...m,
-        imageUrl: getImageUrl(m.file_path),
-      }));
+      const withUrls: MemoryWithUrl[] = await Promise.all(
+        (data || []).map(async (m) => ({
+          ...m,
+          imageUrl: await getImageUrl(m.file_path),
+        }))
+      );
       setMemories(withUrls);
     } catch (error) {
       console.error('Error loading gallery:', error);
@@ -364,7 +366,7 @@ export const StitchGalleryView: React.FC<StitchGalleryViewProps> = ({
 
       if (uploadError) throw uploadError;
 
-      const imageUrl = getImageUrl(filePath);
+      const imageUrl = await getImageUrl(filePath);
 
       // Open review popup instead of creating immediately
       setReviewPopup({
