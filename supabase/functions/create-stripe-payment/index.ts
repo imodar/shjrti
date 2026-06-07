@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const stripe = new Stripe(stripeKey, { apiVersion: '2024-06-20' });
+    const stripe = new Stripe(stripeKey!, { apiVersion: '2024-06-20' });
     const origin = req.headers.get('origin') || 'https://shjrti.com';
 
     const session = await stripe.checkout.sessions.create({
