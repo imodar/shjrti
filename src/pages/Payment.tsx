@@ -122,7 +122,7 @@ const Payment = () => {
         return;
       }
 
-      // @ts-ignore - Temporary fix for JSONB type mismatch after migration
+      // @ts-expect-error - Temporary fix for JSONB type mismatch after migration
       setPackage(packageData);
       setInvoice(invoiceData);
 
