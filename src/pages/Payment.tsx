@@ -11,6 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, CreditCard, Receipt, Clock, CheckCircle, Sparkles, Heart, Users, Star, Shield, Crown, Gem } from 'lucide-react';
 import familyTreeLogo from '@/assets/family-tree-logo.png';
 import { PayPalButton } from '@/components/PayPalButton';
+import { StripeButton } from '@/components/StripeButton';
 
 interface Package {
   id: string;
@@ -40,6 +41,8 @@ const Payment = () => {
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const [paypalActive, setPaypalActive] = useState(false);
+  const [stripeActive, setStripeActive] = useState(false);
 
   const { planId, invoiceId, amount, currency } = location.state || {};
 
@@ -56,6 +59,18 @@ const Payment = () => {
 
     fetchPackageAndInvoice();
   }, [user, planId, invoiceId]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from('payment_gateway_settings')
+        .select('gateway_name, is_active');
+      if (data) {
+        setPaypalActive(!!data.find(d => d.gateway_name === 'paypal')?.is_active);
+        setStripeActive(!!data.find(d => d.gateway_name === 'stripe')?.is_active);
+      }
+    })();
+  }, []);
 
   const fetchPackageAndInvoice = async () => {
     try {
@@ -319,30 +334,57 @@ const Payment = () => {
                 {/* Right Side - PayPal Payment */}
                 <div className="space-y-4">
                   <div className="bg-gradient-to-br from-blue-50/50 via-white/50 to-indigo-50/50 dark:from-blue-950/20 dark:via-gray-800/50 dark:to-indigo-950/20 rounded-xl p-6 border border-blue-200/30 dark:border-blue-700/30">
-                    <h3 className="font-semibold text-base mb-4 flex items-center gap-2 text-center justify-center">
-                      <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">PP</span>
-                      </div>
-                      {currentLanguage === 'ar' ? 'الدفع عبر PayPal' : 'Pay with PayPal'}
+                    <h3 className="font-semibold text-base mb-4 text-center">
+                      {currentLanguage === 'ar' ? 'اختر طريقة الدفع' : 'Choose Payment Method'}
                     </h3>
-                    
-                    {invoice && (
-                      <PayPalButton
-                        invoiceId={invoice.id}
-                        packageId={invoice.package_id}
-                        amount={invoice.amount}
-                        currency={invoice.currency}
-                        onSuccess={handlePaymentSuccess}
-                        onError={handlePaymentError}
-                        onCancel={handlePaymentCancel}
-                      />
-                    )}
-                    
+
+                    <div className="space-y-3">
+                      {paypalActive && invoice && (
+                        <PayPalButton
+                          invoiceId={invoice.id}
+                          packageId={invoice.package_id}
+                          amount={invoice.amount}
+                          currency={invoice.currency}
+                          onSuccess={handlePaymentSuccess}
+                          onError={handlePaymentError}
+                          onCancel={handlePaymentCancel}
+                        />
+                      )}
+
+                      {stripeActive && invoice && (
+                        <>
+                          {paypalActive && (
+                            <div className="flex items-center gap-2 my-2">
+                              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                              <span className="text-xs text-muted-foreground">
+                                {currentLanguage === 'ar' ? 'أو' : 'OR'}
+                              </span>
+                              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+                            </div>
+                          )}
+                          <StripeButton
+                            invoiceId={invoice.id}
+                            packageId={invoice.package_id}
+                            amount={invoice.amount}
+                            currency={invoice.currency}
+                            onError={handlePaymentError}
+                          />
+                        </>
+                      )}
+
+                      {!paypalActive && !stripeActive && (
+                        <div className="text-center text-sm text-muted-foreground py-4">
+                          {currentLanguage === 'ar'
+                            ? 'لا توجد بوابة دفع مفعّلة حالياً. يرجى التواصل مع الإدارة.'
+                            : 'No payment gateway is currently active. Please contact support.'}
+                        </div>
+                      )}
+                    </div>
+
                     <div className="mt-4 text-xs text-center text-gray-500 dark:text-gray-400">
-                      {currentLanguage === 'ar' 
-                        ? 'الدفع آمن ومحمي عبر PayPal'
-                        : 'Secure payment powered by PayPal'
-                      }
+                      {currentLanguage === 'ar'
+                        ? 'جميع المدفوعات آمنة ومشفّرة'
+                        : 'All payments are secure and encrypted'}
                     </div>
                   </div>
                 </div>
