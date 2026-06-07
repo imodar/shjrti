@@ -166,7 +166,6 @@ const Payment = () => {
 
         if (createdInvoiceError) throw createdInvoiceError;
         invoiceData = createdInvoice;
-        // @ts-expect-error - Temporary fix for JSONB type mismatch after migration
         packageData = defaultPackage;
       }
 
@@ -188,7 +187,6 @@ const Payment = () => {
           return;
         }
 
-        // @ts-expect-error - Temporary fix for JSONB type mismatch after migration
         packageData = data;
       }
 
