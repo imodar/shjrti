@@ -6,6 +6,19 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const validateStripeSecretKey = (key: string | undefined, environment?: string) => {
+  const trimmed = key?.trim() || '';
+
+  if (!trimmed) return 'Stripe secret key is not configured';
+  if (trimmed.startsWith('pk_')) return 'Stripe secret key is incorrect: you entered a publishable key (pk_). Use the secret key that starts with sk_.';
+  if (trimmed.startsWith('rk_')) return 'Stripe secret key is restricted (rk_). Use the full secret key that starts with sk_.';
+  if (!trimmed.startsWith('sk_test_') && !trimmed.startsWith('sk_live_')) return 'Stripe secret key format is invalid. It must start with sk_test_ or sk_live_.';
+  if (environment === 'live' && !trimmed.startsWith('sk_live_')) return 'Stripe is set to live, but STRIPE_SECRET_KEY is not a live key. Use a key that starts with sk_live_ or switch Stripe to sandbox.';
+  if (environment === 'sandbox' && !trimmed.startsWith('sk_test_')) return 'Stripe is set to sandbox, but STRIPE_SECRET_KEY is not a test key. Use a key that starts with sk_test_ or switch Stripe to live.';
+
+  return null;
+};
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -67,10 +80,17 @@ Deno.serve(async (req) => {
       }
     }
 
+    const { data: stripeSettings } = await supabaseAdmin
+      .from('payment_gateway_settings')
+      .select('environment, is_active')
+      .eq('gateway_name', 'stripe')
+      .maybeSingle();
+
     const stripeKey = Deno.env.get('STRIPE_SECRET_KEY');
-    if (!stripeKey) {
+    const stripeKeyError = validateStripeSecretKey(stripeKey, stripeSettings?.environment);
+    if (stripeKeyError || stripeSettings?.is_active === false) {
       return new Response(
-        JSON.stringify({ error: 'Stripe not configured' }),
+        JSON.stringify({ error: stripeSettings?.is_active === false ? 'Stripe payment gateway is disabled' : stripeKeyError }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
