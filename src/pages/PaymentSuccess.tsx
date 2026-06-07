@@ -24,15 +24,17 @@ export default function PaymentSuccess() {
 
   const invoiceId = searchParams.get('invoice_id');
   const orderId = searchParams.get('order_id');
+  const sessionId = searchParams.get('session_id');
+  const gateway = searchParams.get('gateway');
 
   useEffect(() => {
-    if (!invoiceId && !orderId) {
+    if (!invoiceId && !orderId && !sessionId) {
       navigate('/payments');
       return;
     }
 
     verifyPayment();
-  }, [invoiceId, orderId]);
+  }, [invoiceId, orderId, sessionId]);
 
   // Google Ads Conversion Tracking - fires when payment is successful
   useEffect(() => {
@@ -47,7 +49,34 @@ export default function PaymentSuccess() {
 
   const verifyPayment = async () => {
     try {
-      if (orderId) {
+      if (gateway === 'stripe' && sessionId) {
+        const { data, error } = await supabase.functions.invoke('verify-stripe-payment', {
+          body: { sessionId, invoiceId },
+        });
+        if (error) throw new Error(error.message);
+        if (data?.success) {
+          setPaymentStatus('success');
+          if (invoiceId) {
+            const { data: invoice } = await supabase
+              .from('invoices')
+              .select('*, packages(name)')
+              .eq('id', invoiceId)
+              .single();
+            if (invoice) setPaymentDetails({ invoice });
+          }
+          clearSubscriptionCache();
+          await refreshSubscription();
+          toast({
+            title: currentLanguage === 'ar' ? 'تم الدفع بنجاح! 🎉' : 'Payment Successful! 🎉',
+            description: currentLanguage === 'ar'
+              ? 'تم تفعيل اشتراكك وترقية حسابك بنجاح'
+              : 'Your subscription has been activated successfully',
+            duration: 5000,
+          });
+        } else {
+          setPaymentStatus('failed');
+        }
+      } else if (orderId) {
         // If orderId starts with "I-", it's a PayPal Subscription ID
         if (orderId.startsWith('I-')) {
           const { data, error } = await supabase.functions.invoke('verify-paypal-subscription', {
