@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
     const paymentIntent = await stripe.paymentIntents.create({
       amount: Math.round(Number(amount) * 100),
       currency: (currency || 'USD').toLowerCase(),
-      automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
+      payment_method_types: ['card'],
       receipt_email: user.email,
       description: `${pkgName} - Invoice ${invoice.invoice_number || invoiceId}`,
       metadata: { invoice_id: invoiceId, user_id: user.id, package_id: packageId || '' },
