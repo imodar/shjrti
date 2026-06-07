@@ -26,6 +26,7 @@ interface Invoice {
   payment_status: string | null;
   payment_gateway: string | null;
   paypal_capture_id: string | null;
+  stripe_payment_intent_id: string | null;
   created_at: string;
   packages?: {
     name: Json;
@@ -64,7 +65,6 @@ export default function AdminRefunds() {
   const loadInvoices = async () => {
     setLoading(true);
     try {
-      // Get invoices with packages
       const { data: invoicesData, error } = await supabase
         .from('invoices')
         .select(`
@@ -72,7 +72,7 @@ export default function AdminRefunds() {
           packages (name)
         `)
         .eq('payment_status', 'paid')
-        .not('paypal_capture_id', 'is', null)
+        .or('paypal_capture_id.not.is.null,stripe_payment_intent_id.not.is.null')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -120,7 +120,11 @@ export default function AdminRefunds() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('Not authenticated');
 
-      const response = await supabase.functions.invoke('admin-refund-payment', {
+      const fn = selectedInvoice.payment_gateway === 'stripe'
+        ? 'admin-stripe-refund'
+        : 'admin-refund-payment';
+
+      const response = await supabase.functions.invoke(fn, {
         body: {
           invoiceId: selectedInvoice.id,
           reason: refundReason || undefined,
