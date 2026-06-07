@@ -18,6 +18,20 @@ export function StripeButton({ invoiceId, packageId, amount, currency, locale = 
   const { toast } = useToast();
   const isArabic = locale === 'ar';
 
+  const getStripeErrorMessage = async (err: any, data?: any) => {
+    const response = err?.context;
+    if (response && typeof response.json === 'function') {
+      try {
+        const body = await response.json();
+        if (body?.error) return body.error;
+      } catch {
+        // Ignore malformed error payloads and fall back below.
+      }
+    }
+
+    return data?.error || err?.message || (isArabic ? 'فشل بدء الدفع بالبطاقة' : 'Failed to initiate card payment');
+  };
+
   const handleClick = async () => {
     if (loading) return;
     setLoading(true);
@@ -25,13 +39,13 @@ export function StripeButton({ invoiceId, packageId, amount, currency, locale = 
       const { data, error } = await supabase.functions.invoke('create-stripe-payment', {
         body: { invoiceId, packageId, amount, currency },
       });
-      if (error) throw error;
-      if (!data?.url) throw new Error('No checkout URL returned');
+      if (error || data?.error) throw error || new Error(data.error);
+      if (!data?.url) throw new Error(isArabic ? 'لم يتم إنشاء رابط الدفع' : 'No checkout URL returned');
       window.location.href = data.url;
     } catch (err: any) {
       console.error('Stripe checkout error:', err);
-      const msg = err?.message || 'Failed to initiate Stripe payment';
-      toast({ variant: 'destructive', title: 'خطأ في الدفع', description: msg });
+      const msg = await getStripeErrorMessage(err);
+      toast({ variant: 'destructive', title: isArabic ? 'خطأ في الدفع' : 'Payment Error', description: msg });
       onError?.(msg);
       setLoading(false);
     }
