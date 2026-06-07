@@ -45,16 +45,19 @@ const Payment = () => {
   const [stripeActive, setStripeActive] = useState(false);
   const [gatewaysLoaded, setGatewaysLoaded] = useState(false);
 
-  const { planId, invoiceId, amount, currency } = location.state || {};
+  const locationState = (location.state || {}) as {
+    planId?: string;
+    invoiceId?: string;
+    amount?: number;
+    currency?: string;
+  };
+  const queryInvoiceId = new URLSearchParams(location.search).get('invoice_id') || undefined;
+  const planId = locationState.planId;
+  const invoiceId = locationState.invoiceId || queryInvoiceId;
 
   useEffect(() => {
     if (!user) {
       navigate('/auth');
-      return;
-    }
-
-    if (!planId || !invoiceId) {
-      navigate('/plan-selection');
       return;
     }
 
@@ -64,15 +67,27 @@ const Payment = () => {
   useEffect(() => {
     (async () => {
       try {
-        const { data, error } = await supabase
-          .from('payment_gateway_settings')
-          .select('gateway_name, is_active')
-          .eq('is_active', true);
+        const [gatewayResult, stripeConfigResult] = await Promise.allSettled([
+          supabase
+            .from('payment_gateway_settings')
+            .select('gateway_name, is_active')
+            .eq('is_active', true),
+          supabase.functions.invoke('get-stripe-publishable-key'),
+        ]);
 
-        if (error) throw error;
+        if (gatewayResult.status === 'rejected' || gatewayResult.value.error) {
+          throw gatewayResult.status === 'rejected' ? gatewayResult.reason : gatewayResult.value.error;
+        }
 
-        setPaypalActive(!!data?.some(d => d.gateway_name === 'paypal'));
-        setStripeActive(!!data?.some(d => d.gateway_name === 'stripe'));
+        const activeGateways = gatewayResult.value.data || [];
+        const stripeConfig = stripeConfigResult.status === 'fulfilled' && !stripeConfigResult.value.error
+          ? stripeConfigResult.value.data
+          : null;
+
+        setPaypalActive(!!activeGateways.some(d => d.gateway_name === 'paypal'));
+        setStripeActive(
+          !!activeGateways.some(d => d.gateway_name === 'stripe') || stripeConfig?.isActive === true
+        );
       } catch (error) {
         console.error('Error fetching active payment gateways:', error);
         setPaypalActive(true);
@@ -87,11 +102,43 @@ const Payment = () => {
     try {
       setLoading(true);
 
+      let invoiceData: Invoice | null = null;
+
+      if (invoiceId) {
+        const { data, error } = await supabase
+          .from('invoices')
+          .select('*')
+          .eq('id', invoiceId)
+          .eq('user_id', user.id)
+          .single();
+
+        if (error) throw error;
+        invoiceData = data;
+      } else {
+        const { data, error } = await supabase
+          .from('invoices')
+          .select('*')
+          .eq('user_id', user.id)
+          .neq('payment_status', 'paid')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (error) throw error;
+        invoiceData = data;
+      }
+
+      if (!invoiceData) {
+        setPackage(null);
+        setInvoice(null);
+        return;
+      }
+
       // Fetch package details
       const { data: packageData, error: packageError } = await supabase
         .from('packages')
         .select('*')
-        .eq('id', planId)
+        .eq('id', planId || invoiceData.package_id)
         .single();
 
       if (packageError) {
@@ -99,24 +146,6 @@ const Payment = () => {
         toast({
           title: currentLanguage === 'ar' ? "خطأ" : "Error",
           description: currentLanguage === 'ar' ? "خطأ في جلب بيانات الخطة" : "Error fetching package data",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Fetch invoice details
-      const { data: invoiceData, error: invoiceError } = await supabase
-        .from('invoices')
-        .select('*')
-        .eq('id', invoiceId)
-        .eq('user_id', user.id)
-        .single();
-
-      if (invoiceError) {
-        console.error('Error fetching invoice:', invoiceError);
-        toast({
-          title: currentLanguage === 'ar' ? "خطأ" : "Error",
-          description: currentLanguage === 'ar' ? "خطأ في جلب بيانات الفاتورة" : "Error fetching invoice data",
           variant: "destructive",
         });
         return;
