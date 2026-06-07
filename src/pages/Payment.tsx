@@ -42,7 +42,7 @@ const Payment = () => {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [paypalActive, setPaypalActive] = useState(false);
-  const [stripeActive, setStripeActive] = useState(false);
+  const [stripeActive, setStripeActive] = useState(true);
   const [gatewaysLoaded, setGatewaysLoaded] = useState(false);
 
   const locationState = (location.state || {}) as {
@@ -85,9 +85,8 @@ const Payment = () => {
           : null;
 
         setPaypalActive(!!activeGateways.some(d => d.gateway_name === 'paypal'));
-        setStripeActive(
-          !!activeGateways.some(d => d.gateway_name === 'stripe') || stripeConfig?.isActive === true
-        );
+        const hasStripeSetting = activeGateways.some(d => d.gateway_name === 'stripe');
+        setStripeActive(hasStripeSetting || stripeConfig?.isActive === true);
       } catch (error) {
         console.error('Error fetching active payment gateways:', error);
         setPaypalActive(true);
