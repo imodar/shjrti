@@ -378,6 +378,7 @@ const Payment = () => {
                             packageId={invoice.package_id}
                             amount={invoice.amount}
                             currency={invoice.currency}
+                            locale={currentLanguage}
                             onError={handlePaymentError}
                           />
                         </>
