@@ -333,6 +333,9 @@ export default function AdminRefunds() {
                       </TableCell>
                       <TableCell>{getStatusBadge(invoice.payment_status)}</TableCell>
                       <TableCell>
+                        <Badge variant="outline" className="me-2">
+                          {invoice.payment_gateway === 'stripe' ? 'Stripe' : 'PayPal'}
+                        </Badge>
                         <Button
                           size="sm"
                           variant="destructive"
