@@ -12,10 +12,10 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { sessionId, invoiceId } = await req.json();
-    if (!sessionId) {
+    const { sessionId, paymentIntentId: paymentIntentIdInput, invoiceId } = await req.json();
+    if (!sessionId && !paymentIntentIdInput) {
       return new Response(
-        JSON.stringify({ error: 'Missing sessionId' }),
+        JSON.stringify({ error: 'Missing sessionId or paymentIntentId' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -29,15 +29,32 @@ Deno.serve(async (req) => {
     }
 
     const stripe = new Stripe(stripeKey, { apiVersion: '2024-06-20' });
-    const session = await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ['payment_intent'],
-    });
 
-    if (session.payment_status !== 'paid') {
-      return new Response(
-        JSON.stringify({ success: false, status: session.payment_status }),
-        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    let metadataInvoiceId: string | undefined;
+    let paymentIntentId: string | undefined;
+    let paid = false;
+
+    if (paymentIntentIdInput) {
+      const pi = await stripe.paymentIntents.retrieve(paymentIntentIdInput);
+      paid = pi.status === 'succeeded';
+      paymentIntentId = pi.id;
+      metadataInvoiceId = pi.metadata?.invoice_id;
+      if (!paid) {
+        return new Response(
+          JSON.stringify({ success: false, status: pi.status }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    } else {
+      const session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ['payment_intent'] });
+      if (session.payment_status !== 'paid') {
+        return new Response(
+          JSON.stringify({ success: false, status: session.payment_status }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      metadataInvoiceId = session.metadata?.invoice_id;
+      paymentIntentId = typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id;
     }
 
     const supabaseAdmin = createClient(
@@ -45,17 +62,13 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const targetInvoiceId = invoiceId || session.metadata?.invoice_id;
+    const targetInvoiceId = invoiceId || metadataInvoiceId;
     if (!targetInvoiceId) {
       return new Response(
         JSON.stringify({ error: 'No invoice associated' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
-
-    const paymentIntentId = typeof session.payment_intent === 'string'
-      ? session.payment_intent
-      : session.payment_intent?.id;
 
     // Store payment_intent id and upgrade subscription
     await supabaseAdmin

@@ -11,7 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, CreditCard, Receipt, Clock, CheckCircle, Sparkles, Heart, Users, Star, Shield, Crown, Gem } from 'lucide-react';
 import familyTreeLogo from '@/assets/family-tree-logo.png';
 import { PayPalButton } from '@/components/PayPalButton';
-import { StripeButton } from '@/components/StripeButton';
+import { StripeCardForm } from '@/components/StripeCardForm';
 
 interface Package {
   id: string;
@@ -440,12 +440,13 @@ const Payment = () => {
                               <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
                             </div>
                           )}
-                          <StripeButton
+                          <StripeCardForm
                             invoiceId={invoice.id}
                             packageId={invoice.package_id}
                             amount={invoice.amount}
                             currency={invoice.currency}
                             locale={currentLanguage}
+                            onSuccess={handlePaymentSuccess}
                             onError={handlePaymentError}
                           />
                         </>
