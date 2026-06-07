@@ -9,12 +9,14 @@ interface StripeButtonProps {
   packageId: string;
   amount: number;
   currency: string;
+  locale?: 'ar' | 'en' | string;
   onError?: (msg: string) => void;
 }
 
-export function StripeButton({ invoiceId, packageId, amount, currency, onError }: StripeButtonProps) {
+export function StripeButton({ invoiceId, packageId, amount, currency, locale = 'ar', onError }: StripeButtonProps) {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const isArabic = locale === 'ar';
 
   const handleClick = async () => {
     if (loading) return;
@@ -46,7 +48,7 @@ export function StripeButton({ invoiceId, packageId, amount, currency, onError }
       ) : (
         <>
           <CreditCard className="h-5 w-5 me-2" />
-          الدفع بالبطاقة عبر Stripe
+          {isArabic ? 'الدفع ببطاقة بنكية' : 'Pay by bank card'}
         </>
       )}
     </Button>

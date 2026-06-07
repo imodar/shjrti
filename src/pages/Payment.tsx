@@ -43,6 +43,7 @@ const Payment = () => {
   const [processing, setProcessing] = useState(false);
   const [paypalActive, setPaypalActive] = useState(false);
   const [stripeActive, setStripeActive] = useState(false);
+  const [gatewaysLoaded, setGatewaysLoaded] = useState(false);
 
   const { planId, invoiceId, amount, currency } = location.state || {};
 
@@ -62,12 +63,22 @@ const Payment = () => {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from('payment_gateway_settings')
-        .select('gateway_name, is_active');
-      if (data) {
-        setPaypalActive(!!data.find(d => d.gateway_name === 'paypal')?.is_active);
-        setStripeActive(!!data.find(d => d.gateway_name === 'stripe')?.is_active);
+      try {
+        const { data, error } = await supabase
+          .from('payment_gateway_settings')
+          .select('gateway_name, is_active')
+          .eq('is_active', true);
+
+        if (error) throw error;
+
+        setPaypalActive(!!data?.some(d => d.gateway_name === 'paypal'));
+        setStripeActive(!!data?.some(d => d.gateway_name === 'stripe'));
+      } catch (error) {
+        console.error('Error fetching active payment gateways:', error);
+        setPaypalActive(true);
+        setStripeActive(true);
+      } finally {
+        setGatewaysLoaded(true);
       }
     })();
   }, []);
@@ -111,7 +122,7 @@ const Payment = () => {
         return;
       }
 
-      // @ts-ignore - Temporary fix for JSONB type mismatch after migration
+      // @ts-expect-error - Temporary fix for JSONB type mismatch after migration
       setPackage(packageData);
       setInvoice(invoiceData);
 
@@ -367,12 +378,20 @@ const Payment = () => {
                             packageId={invoice.package_id}
                             amount={invoice.amount}
                             currency={invoice.currency}
+                            locale={currentLanguage}
                             onError={handlePaymentError}
                           />
                         </>
                       )}
 
-                      {!paypalActive && !stripeActive && (
+                      {!gatewaysLoaded && (
+                        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground py-4">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          {currentLanguage === 'ar' ? 'جاري تحميل طرق الدفع...' : 'Loading payment methods...'}
+                        </div>
+                      )}
+
+                      {gatewaysLoaded && !paypalActive && !stripeActive && (
                         <div className="text-center text-sm text-muted-foreground py-4">
                           {currentLanguage === 'ar'
                             ? 'لا توجد بوابة دفع مفعّلة حالياً. يرجى التواصل مع الإدارة.'
