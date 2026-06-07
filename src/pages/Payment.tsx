@@ -390,7 +390,7 @@ const Payment = () => {
                         />
                       )}
 
-                      {stripeActive && invoice && (
+                      {invoice && (stripeActive || gatewaysLoaded) && (
                         <>
                           {paypalActive && (
                             <div className="flex items-center gap-2 my-2">
@@ -419,7 +419,7 @@ const Payment = () => {
                         </div>
                       )}
 
-                      {gatewaysLoaded && !paypalActive && !stripeActive && (
+                      {gatewaysLoaded && !paypalActive && !stripeActive && !invoice && (
                         <div className="text-center text-sm text-muted-foreground py-4">
                           {currentLanguage === 'ar'
                             ? 'لا توجد بوابة دفع مفعّلة حالياً. يرجى التواصل مع الإدارة.'
