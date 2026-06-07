@@ -103,6 +103,8 @@ const Payment = () => {
 
       let invoiceData: Invoice | null = null;
 
+      let packageData: Package | null = null;
+
       if (invoiceId) {
         const { data, error } = await supabase
           .from('invoices')
@@ -118,7 +120,7 @@ const Payment = () => {
           .from('invoices')
           .select('*')
           .eq('user_id', user.id)
-          .neq('payment_status', 'paid')
+          .eq('payment_status', 'pending')
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle();
@@ -128,29 +130,66 @@ const Payment = () => {
       }
 
       if (!invoiceData) {
-        setPackage(null);
-        setInvoice(null);
-        return;
+        const { data: defaultPackage, error: defaultPackageError } = await supabase
+          .from('packages')
+          .select('*')
+          .eq('is_active', true)
+          .gt('price_usd', 0)
+          .order('price_usd', { ascending: true })
+          .limit(1)
+          .maybeSingle();
+
+        if (defaultPackageError) throw defaultPackageError;
+        if (!defaultPackage) {
+          setPackage(null);
+          setInvoice(null);
+          return;
+        }
+
+        const packageAmount = Number(defaultPackage.price_usd || defaultPackage.price_sar || 0);
+        const { data: createdInvoiceId, error: createInvoiceError } = await supabase.rpc('create_invoice', {
+          p_user_id: user.id,
+          p_package_id: defaultPackage.id,
+          p_amount: packageAmount,
+          p_currency: 'USD',
+          p_family_id: null,
+        });
+
+        if (createInvoiceError || !createdInvoiceId) throw createInvoiceError || new Error('Invoice was not created');
+
+        const { data: createdInvoice, error: createdInvoiceError } = await supabase
+          .from('invoices')
+          .select('*')
+          .eq('id', createdInvoiceId)
+          .eq('user_id', user.id)
+          .single();
+
+        if (createdInvoiceError) throw createdInvoiceError;
+        invoiceData = createdInvoice;
+        packageData = defaultPackage as unknown as Package;
       }
 
       // Fetch package details
-      const { data: packageData, error: packageError } = await supabase
-        .from('packages')
-        .select('*')
-        .eq('id', planId || invoiceData.package_id)
-        .single();
+      if (!packageData) {
+        const { data, error: packageError } = await supabase
+          .from('packages')
+          .select('*')
+          .eq('id', planId || invoiceData.package_id)
+          .single();
 
-      if (packageError) {
-        console.error('Error fetching package:', packageError);
-        toast({
-          title: currentLanguage === 'ar' ? "خطأ" : "Error",
-          description: currentLanguage === 'ar' ? "خطأ في جلب بيانات الخطة" : "Error fetching package data",
-          variant: "destructive",
-        });
-        return;
+        if (packageError) {
+          console.error('Error fetching package:', packageError);
+          toast({
+            title: currentLanguage === 'ar' ? "خطأ" : "Error",
+            description: currentLanguage === 'ar' ? "خطأ في جلب بيانات الخطة" : "Error fetching package data",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        packageData = data as unknown as Package;
       }
 
-      // @ts-expect-error - Temporary fix for JSONB type mismatch after migration
       setPackage(packageData);
       setInvoice(invoiceData);
 
