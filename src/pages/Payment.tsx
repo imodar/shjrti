@@ -166,7 +166,7 @@ const Payment = () => {
 
         if (createdInvoiceError) throw createdInvoiceError;
         invoiceData = createdInvoice;
-        packageData = defaultPackage;
+        packageData = defaultPackage as unknown as Package;
       }
 
       // Fetch package details
@@ -187,10 +187,9 @@ const Payment = () => {
           return;
         }
 
-        packageData = data;
+        packageData = data as unknown as Package;
       }
 
-      // @ts-expect-error - Temporary fix for JSONB type mismatch after migration
       setPackage(packageData);
       setInvoice(invoiceData);
 
