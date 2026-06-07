@@ -24,6 +24,7 @@ interface Invoice {
   payment_status: string | null;
   payment_gateway: string | null;
   paypal_capture_id: string | null;
+  stripe_payment_intent_id: string | null;
   created_at: string;
   packages?: {
     name: Json;
@@ -61,7 +62,7 @@ export default function AdminRefundsContent() {
           packages (name)
         `)
         .eq('payment_status', 'paid')
-        .not('paypal_capture_id', 'is', null)
+        .or('paypal_capture_id.not.is.null,stripe_payment_intent_id.not.is.null')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -107,7 +108,11 @@ export default function AdminRefundsContent() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) throw new Error('Not authenticated');
 
-      const response = await supabase.functions.invoke('admin-refund-payment', {
+      const fn = selectedInvoice.payment_gateway === 'stripe'
+        ? 'admin-stripe-refund'
+        : 'admin-refund-payment';
+
+      const response = await supabase.functions.invoke(fn, {
         body: {
           invoiceId: selectedInvoice.id,
           reason: refundReason || undefined,
@@ -306,6 +311,9 @@ export default function AdminRefundsContent() {
                     </TableCell>
                     <TableCell>{getStatusBadge(invoice.payment_status)}</TableCell>
                     <TableCell>
+                      <Badge variant="outline" className="me-2">
+                        {invoice.payment_gateway === 'stripe' ? 'Stripe' : 'PayPal'}
+                      </Badge>
                       <Button
                         size="sm"
                         variant="destructive"

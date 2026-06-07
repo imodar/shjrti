@@ -136,3 +136,18 @@ verify_jwt = false
 
 [functions.generate-invoice-pdf]
 verify_jwt = false
+
+[functions.create-stripe-payment]
+verify_jwt = true
+
+[functions.verify-stripe-payment]
+verify_jwt = false
+
+[functions.get-stripe-publishable-key]
+verify_jwt = false
+
+[functions.admin-stripe-refund]
+verify_jwt = true
+
+[functions.stripe-webhook]
+verify_jwt = false

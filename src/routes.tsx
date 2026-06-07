@@ -41,6 +41,7 @@ const AdminSocialMedia = React.lazy(() => import('./pages/AdminSocialMedia'));
 const AdminSEOSettings = React.lazy(() => import('./pages/AdminSEOSettings'));
 const AdminNewsletterSubscriptions = React.lazy(() => import('./pages/AdminNewsletterSubscriptions'));
 const AdminRefunds = React.lazy(() => import('./pages/AdminRefunds'));
+const AdminStoreOrders = React.lazy(() => import('./pages/AdminStoreOrders'));
 const ApiDocs = React.lazy(() => import('./pages/ApiDocs'));
 
 const LazySpinner = (
@@ -120,6 +121,7 @@ export const AppRoutes: React.FC = () => (
     <Route path="/admin/seo" element={<ProtectedRoute requireAdmin={true}><Suspense fallback={LazySpinner}><AdminSEOSettings /></Suspense></ProtectedRoute>} />
     <Route path="/admin/newsletter" element={<ProtectedRoute requireAdmin={true}><Suspense fallback={LazySpinner}><AdminNewsletterSubscriptions /></Suspense></ProtectedRoute>} />
     <Route path="/admin/refunds" element={<ProtectedRoute requireAdmin={true}><Suspense fallback={LazySpinner}><AdminRefunds /></Suspense></ProtectedRoute>} />
+    <Route path="/admin/store-orders" element={<ProtectedRoute requireAdmin={true}><Suspense fallback={LazySpinner}><AdminStoreOrders /></Suspense></ProtectedRoute>} />
 
     <Route path="/renew-subscription" element={<ProtectedRoute><RenewSubscription /></ProtectedRoute>} />
     <Route path="/terms-conditions" element={<TermsConditions />} />

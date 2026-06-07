@@ -18,7 +18,14 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-export function PaymentGatewaySettings() {
+interface GatewayCardProps {
+  gatewayName: 'paypal' | 'stripe';
+  title: string;
+  description: string;
+  secretsList: string[];
+}
+
+function GatewayCard({ gatewayName, title, description, secretsList }: GatewayCardProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -38,16 +45,14 @@ export function PaymentGatewaySettings() {
       const { data, error } = await supabase
         .from('payment_gateway_settings')
         .select('*')
-        .eq('gateway_name', 'paypal')
-        .single();
+        .eq('gateway_name', gatewayName)
+        .maybeSingle();
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          // No settings found, create default
-          await createDefaultSettings();
-        } else {
-          throw error;
-        }
+        throw error;
+      }
+      if (!data) {
+        await createDefaultSettings();
       } else {
         setSettings(data);
         setEnvironment(data.environment as 'sandbox' | 'live');
@@ -71,8 +76,8 @@ export function PaymentGatewaySettings() {
         .from('payment_gateway_settings')
         .insert([
           {
-            gateway_name: 'paypal',
-            is_active: true,
+            gateway_name: gatewayName,
+            is_active: gatewayName === 'paypal',
             environment: 'sandbox',
           },
         ])
@@ -83,7 +88,7 @@ export function PaymentGatewaySettings() {
 
       setSettings(data);
       setEnvironment('sandbox');
-      setIsActive(true);
+      setIsActive(gatewayName === 'paypal');
     } catch (error: any) {
       console.error('Error creating default settings:', error);
     }
@@ -114,7 +119,7 @@ export function PaymentGatewaySettings() {
           is_active: newIsActive,
           updated_at: new Date().toISOString(),
         })
-        .eq('gateway_name', 'paypal');
+        .eq('gateway_name', gatewayName);
 
       if (error) throw error;
 
@@ -158,10 +163,10 @@ export function PaymentGatewaySettings() {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="h-5 w-5" />
-                إعدادات بوابة الدفع PayPal
+                {title}
               </CardTitle>
               <CardDescription>
-                إدارة إعدادات PayPal والتبديل بين البيئة التجريبية والحقيقية
+                {description}
               </CardDescription>
             </div>
             <Badge
@@ -240,13 +245,10 @@ export function PaymentGatewaySettings() {
               <h4 className="font-semibold">بيانات الاعتماد</h4>
             </div>
             <p className="text-sm text-muted-foreground">
-              يتم تخزين بيانات اعتماد PayPal بشكل آمن في Supabase Secrets:
+              يتم تخزين بيانات الاعتماد بشكل آمن في Supabase Secrets:
             </p>
             <ul className="text-sm space-y-1 mr-4 list-disc text-muted-foreground">
-              <li>PAYPAL_CLIENT_ID_SANDBOX</li>
-              <li>PAYPAL_CLIENT_SECRET_SANDBOX</li>
-              <li>PAYPAL_CLIENT_ID_LIVE</li>
-              <li>PAYPAL_CLIENT_SECRET_LIVE</li>
+              {secretsList.map((s) => <li key={s}>{s}</li>)}
             </ul>
             <Button
               variant="outline"
@@ -256,26 +258,6 @@ export function PaymentGatewaySettings() {
             >
               <ExternalLink className="h-4 w-4 ml-2" />
               إدارة Secrets في Supabase
-            </Button>
-          </div>
-
-          {/* Testing Info */}
-          <div className="space-y-3 p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              <h4 className="font-semibold">معلومات الاختبار</h4>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              في البيئة التجريبية، يمكنك استخدام حسابات PayPal التجريبية للاختبار.
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full"
-              onClick={() => window.open('https://developer.paypal.com/dashboard/accounts', '_blank')}
-            >
-              <ExternalLink className="h-4 w-4 ml-2" />
-              إنشاء حسابات تجريبية في PayPal
             </Button>
           </div>
 
@@ -295,7 +277,7 @@ export function PaymentGatewaySettings() {
             <AlertDialogTitle>تأكيد التبديل للوضع المباشر</AlertDialogTitle>
             <AlertDialogDescription>
               أنت على وشك التبديل إلى الوضع المباشر. سيتم معالجة المدفوعات الحقيقية.
-              تأكد من أن لديك بيانات اعتماد PayPal الصحيحة للوضع المباشر.
+              تأكد من أن لديك بيانات الاعتماد الصحيحة للوضع المباشر.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -310,5 +292,29 @@ export function PaymentGatewaySettings() {
         </AlertDialogContent>
       </AlertDialog>
     </>
+  );
+}
+
+export function PaymentGatewaySettings() {
+  return (
+    <div className="space-y-6">
+      <GatewayCard
+        gatewayName="paypal"
+        title="إعدادات بوابة الدفع PayPal"
+        description="إدارة إعدادات PayPal والتبديل بين البيئة التجريبية والحقيقية"
+        secretsList={[
+          'PAYPAL_CLIENT_ID_SANDBOX',
+          'PAYPAL_CLIENT_SECRET_SANDBOX',
+          'PAYPAL_CLIENT_ID_LIVE',
+          'PAYPAL_CLIENT_SECRET_LIVE',
+        ]}
+      />
+      <GatewayCard
+        gatewayName="stripe"
+        title="إعدادات بوابة الدفع Stripe"
+        description="إدارة Stripe (الدفع بالبطاقة Visa / Mastercard / Mada)"
+        secretsList={['STRIPE_SECRET_KEY', 'STRIPE_PUBLISHABLE_KEY', 'STRIPE_WEBHOOK_SECRET']}
+      />
+    </div>
   );
 }

@@ -1301,6 +1301,17 @@ export default function EnhancedAdminPanel() {
                   <span className="hidden lg:inline text-xs">{direction === 'rtl' ? 'API' : 'API'}</span>
                 </div>
               </TabsTrigger>
+
+              <TabsTrigger
+                value="store-orders"
+                className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-teal-500 opacity-0 data-[state=active]:opacity-100 transition-opacity duration-300"></div>
+                <div className="relative flex items-center justify-center gap-2 data-[state=active]:text-white data-[state=inactive]:text-gray-700 dark:data-[state=inactive]:text-gray-300 font-semibold">
+                  <Package className="h-5 w-5 transition-transform group-hover:scale-110 group-data-[state=active]:animate-pulse" />
+                  <span className="hidden lg:inline text-xs">{direction === 'rtl' ? 'الطلبات' : 'Orders'}</span>
+                </div>
+              </TabsTrigger>
             </TabsList>
           </div>
 
@@ -2417,6 +2428,28 @@ export default function EnhancedAdminPanel() {
 
           <TabsContent value="api-settings" className="space-y-6">
             <AdminAPISettingsContent />
+          </TabsContent>
+
+          <TabsContent value="store-orders" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>{direction === 'rtl' ? 'طلبات المتجر' : 'Store Orders'}</CardTitle>
+                <CardDescription>
+                  {direction === 'rtl'
+                    ? 'عرض وإدارة جميع طلبات المتجر مع التفاصيل والحالة'
+                    : 'View and manage all store orders with details and status'}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Button
+                  onClick={() => navigate('/admin/store-orders')}
+                  className="bg-gradient-to-r from-emerald-500 to-teal-500"
+                >
+                  <Package className="h-4 w-4 me-2" />
+                  {direction === 'rtl' ? 'فتح صفحة الطلبات' : 'Open Orders Page'}
+                </Button>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
         
