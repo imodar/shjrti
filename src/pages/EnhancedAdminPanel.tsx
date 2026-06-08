@@ -150,6 +150,8 @@ interface UserSubscription {
 export default function EnhancedAdminPanel() {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentTab = searchParams.get("tab") || "packages";
   const { currentLanguage, direction } = useLanguage();
   const { currentTheme, setCurrentTheme } = useTheme();
   const [packages, setPackages] = useState<PackageType[]>([]);
