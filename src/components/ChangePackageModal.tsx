@@ -243,6 +243,30 @@ export function ChangePackageModal({ isOpen, onClose, user, onSuccess }: ChangeP
             </RadioGroup>
           </div>
 
+          {/* Custom Price Input (paid only) */}
+          {changeType === 'paid' && selectedPackage && (
+            <div className="space-y-2">
+              <Label htmlFor="custom-amount" className="text-base font-medium">
+                سعر الفاتورة (لمرة واحدة)
+              </Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="custom-amount"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  placeholder={`السعر الافتراضي: ${getCurrentPrice(selectedPackage)}`}
+                  value={customAmount}
+                  onChange={(e) => setCustomAmount(e.target.value)}
+                />
+                <span className="text-sm text-muted-foreground">{getCurrency()}</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                اتركه فارغاً لاستخدام سعر الباقة الافتراضي. هذا التعديل يطبَّق على هذه الفاتورة فقط ولا يغيّر سعر الباقة.
+              </p>
+            </div>
+          )}
+
           {/* Warning Message */}
           <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
             <h4 className="font-semibold text-yellow-800 mb-2">تنبيه مهم:</h4>
