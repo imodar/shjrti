@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Outlet, useLocation, useSearchParams, Link } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AdminSidebar } from "./AdminSidebar";
@@ -44,11 +45,24 @@ const TAB_TITLES: Record<string, string> = {
   "store-orders": "طلبات المتجر",
 };
 
+const SIDEBAR_STORAGE_KEY = "admin:sidebar:open";
+
 export default function AdminLayout() {
   const { direction } = useLanguage();
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
   const tab = searchParams.get("tab");
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
+    if (typeof window === "undefined") return true;
+    const stored = window.localStorage.getItem(SIDEBAR_STORAGE_KEY);
+    return stored === null ? true : stored === "true";
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(sidebarOpen));
+    } catch {}
+  }, [sidebarOpen]);
 
   const pageTitle =
     pathname === "/admin" && tab
@@ -56,7 +70,7 @@ export default function AdminLayout() {
       : ROUTE_TITLES[pathname] ?? "لوحة الإدارة";
 
   return (
-    <SidebarProvider>
+    <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
       <div className="min-h-screen flex w-full bg-background" dir={direction}>
         <AdminSidebar />
 
