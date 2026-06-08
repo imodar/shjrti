@@ -71,13 +71,16 @@ export default function AdminLayout() {
 
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
-      <div className="min-h-screen flex w-full bg-background" dir={direction}>
+      <div
+        className="min-h-screen flex w-full bg-background overflow-x-hidden"
+        dir={direction}
+      >
         <AdminSidebar />
 
-        <div className="flex-1 flex flex-col min-w-0">
-          <header className="sticky top-0 z-30 h-14 flex items-center gap-3 border-b bg-background/95 backdrop-blur px-3 sm:px-4">
+        <div className="flex-1 flex flex-col min-w-0 max-w-full">
+          <header className="sticky top-0 z-30 h-14 flex items-center gap-2 sm:gap-3 border-b bg-background/95 backdrop-blur px-2 sm:px-4">
             <SidebarTrigger />
-            <Breadcrumb>
+            <Breadcrumb className="min-w-0 overflow-hidden">
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
@@ -85,14 +88,16 @@ export default function AdminLayout() {
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{pageTitle}</BreadcrumbPage>
+                <BreadcrumbItem className="min-w-0">
+                  <BreadcrumbPage className="truncate max-w-[55vw] sm:max-w-none">
+                    {pageTitle}
+                  </BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </header>
 
-          <main className="flex-1 min-w-0">
+          <main className="flex-1 min-w-0 max-w-full admin-main-mobile">
             <Outlet />
           </main>
         </div>
