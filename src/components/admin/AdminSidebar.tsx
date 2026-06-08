@@ -20,6 +20,7 @@ import {
   Key,
   ShoppingBag,
   Settings,
+  LayoutDashboard,
 } from "lucide-react";
 
 import {
@@ -51,6 +52,12 @@ type Group = {
 };
 
 const GROUPS: Group[] = [
+  {
+    label: "الرئيسية",
+    items: [
+      { title: "نظرة عامة", icon: LayoutDashboard, to: "/admin" },
+    ],
+  },
   {
     label: "المحتوى",
     items: [
@@ -104,11 +111,14 @@ export function AdminSidebar() {
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
   const { direction } = useLanguage();
-  const currentTab = searchParams.get("tab") || "packages";
+  const currentTab = searchParams.get("tab");
   const [query, setQuery] = useState("");
 
   const isItemActive = (item: Item) => {
-    if (item.to) return pathname === item.to;
+    if (item.to) {
+      if (item.to === "/admin") return pathname === "/admin" && !searchParams.has("tab");
+      return pathname === item.to;
+    }
     if (item.tab) return pathname === "/admin" && currentTab === item.tab;
     return false;
   };
