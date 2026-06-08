@@ -46,6 +46,10 @@ const ApiDocs = React.lazy(() => import('./pages/ApiDocs'));
 const AdminLayout = React.lazy(() => import('./components/admin/AdminLayout'));
 const AdminNotFound = React.lazy(() => import('./pages/admin/AdminNotFound'));
 const AdminSkeleton = React.lazy(() => import('./components/admin/AdminSkeleton'));
+const AdminPaymentAnalytics = React.lazy(() => import('./pages/AdminPaymentAnalytics'));
+const AdminUserStatistics = React.lazy(() => import('./pages/AdminUserStatistics'));
+const AdminEmailLogs = React.lazy(() => import('./pages/AdminEmailLogs'));
+const AdminEmailTemplates = React.lazy(() => import('./pages/AdminEmailTemplates'));
 
 const LazySpinner = (
   <div className="flex items-center justify-center h-screen">
@@ -132,6 +136,10 @@ export const AppRoutes: React.FC = () => (
       <Route path="/admin/newsletter" element={<Suspense fallback={AdminFallback}><AdminNewsletterSubscriptions /></Suspense>} />
       <Route path="/admin/refunds" element={<Suspense fallback={AdminFallback}><AdminRefunds /></Suspense>} />
       <Route path="/admin/store-orders" element={<Suspense fallback={AdminFallback}><AdminStoreOrders /></Suspense>} />
+      <Route path="/admin/analytics" element={<Suspense fallback={AdminFallback}><AdminPaymentAnalytics /></Suspense>} />
+      <Route path="/admin/user-statistics" element={<Suspense fallback={AdminFallback}><AdminUserStatistics /></Suspense>} />
+      <Route path="/admin/email-logs" element={<Suspense fallback={AdminFallback}><AdminEmailLogs /></Suspense>} />
+      <Route path="/admin/email-templates" element={<Suspense fallback={AdminFallback}><AdminEmailTemplates /></Suspense>} />
       <Route path="/admin/*" element={<Suspense fallback={AdminFallback}><AdminNotFound /></Suspense>} />
     </Route>
 
