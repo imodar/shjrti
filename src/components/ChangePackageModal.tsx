@@ -6,6 +6,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -45,6 +46,7 @@ export function ChangePackageModal({ isOpen, onClose, user, onSuccess }: ChangeP
   const [packages, setPackages] = useState<Package[]>([]);
   const [selectedPackageId, setSelectedPackageId] = useState<string>("");
   const [changeType, setChangeType] = useState<"paid" | "free">("paid");
+  const [customAmount, setCustomAmount] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [loadingPackages, setLoadingPackages] = useState(true);
 
@@ -99,10 +101,18 @@ export function ChangePackageModal({ isOpen, onClose, user, onSuccess }: ChangeP
 
     setLoading(true);
     try {
+      const parsedAmount = customAmount.trim() === "" ? null : Number(customAmount);
+      if (changeType === 'paid' && parsedAmount !== null && (isNaN(parsedAmount) || parsedAmount < 0)) {
+        toast({ title: "خطأ", description: "قيمة السعر غير صالحة", variant: "destructive" });
+        setLoading(false);
+        return;
+      }
+
       const { error } = await supabase.rpc('admin_change_user_package' as any, {
         target_user_id: user.id,
         new_package_id: selectedPackageId,
-        change_type: changeType
+        change_type: changeType,
+        custom_amount: changeType === 'paid' ? parsedAmount : null,
       });
 
       if (error) throw error;
@@ -129,6 +139,10 @@ export function ChangePackageModal({ isOpen, onClose, user, onSuccess }: ChangeP
   };
 
   const selectedPackage = packages.find(pkg => pkg.id === selectedPackageId);
+
+  useEffect(() => {
+    setCustomAmount("");
+  }, [selectedPackageId, changeType]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
