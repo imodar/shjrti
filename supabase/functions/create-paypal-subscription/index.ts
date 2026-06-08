@@ -60,11 +60,13 @@ Deno.serve(async (req) => {
 
     const packageName = packageData?.name?.en || 'Subscription';
     
-    // PayPal requires USD for most sandbox/live accounts
-    // Convert SAR to USD if needed
-    const paypalAmount = currency === 'SAR' && packageData?.price_usd 
-      ? packageData.price_usd 
-      : amount;
+    // PayPal requires USD. Honor the invoice's actual amount (which may be
+    // a custom admin-set price) instead of falling back to the package base price.
+    // If the invoice currency is SAR, convert to USD at a fixed peg (3.75).
+    const SAR_TO_USD = 3.75;
+    const paypalAmount = currency === 'SAR'
+      ? Number((amount / SAR_TO_USD).toFixed(2))
+      : Number(amount);
     const paypalCurrency = 'USD';
 
     // Get gateway settings
