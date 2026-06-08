@@ -376,15 +376,23 @@ const Payment = () => {
                           <span className="font-semibold">{currentLanguage === 'ar' ? 'المجموع' : 'Total'}</span>
                           <div className="text-right">
                             <div className="font-bold text-lg bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                              ${invoice.amount}
+                              {invoice.currency === 'SAR'
+                                ? `${invoice.amount} ${currentLanguage === 'ar' ? 'ر.س' : 'SAR'}`
+                                : `$${invoice.amount}`}
                             </div>
-                            <div className="text-[10px] text-gray-500 dark:text-gray-400">
-                              (تقريباً {Math.round(invoice.amount * 3.75)} ريال)
-                            </div>
+                            {invoice.currency === 'SAR' ? (
+                              <div className="text-[10px] text-gray-500 dark:text-gray-400">
+                                (تقريباً ${(invoice.amount / 3.75).toFixed(2)})
+                              </div>
+                            ) : (
+                              <div className="text-[10px] text-gray-500 dark:text-gray-400">
+                                (تقريباً {Math.round(invoice.amount * 3.75)} ريال)
+                              </div>
+                            )}
                           </div>
                         </div>
                         <p className="text-[9px] text-gray-500 dark:text-gray-500 mt-1 text-center">
-                          *المبلغ النهائي يحسب من PayPal
+                          *المبلغ النهائي يحسب من بوابة الدفع
                         </p>
                       </div>
                       
