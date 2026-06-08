@@ -126,11 +126,11 @@ export function AdminSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-2 px-2 py-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shrink-0">
-            <Settings className="h-4 w-4 text-white" />
+          <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0">
+            <Settings className="h-4 w-4" />
           </div>
           {!collapsed && (
-            <span className="font-semibold text-sm">لوحة الإدارة</span>
+            <span className="font-semibold text-sm text-sidebar-foreground">لوحة الإدارة</span>
           )}
         </div>
         {!collapsed && (
