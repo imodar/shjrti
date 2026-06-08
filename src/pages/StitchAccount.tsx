@@ -750,7 +750,9 @@ const StitchAccount: React.FC = () => {
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div className="flex items-center gap-6">
                       <div className="text-center md:pr-6 md:border-r border-border">
-                        <p className="text-2xl font-bold text-slate-900 dark:text-white">${invoice.amount}</p>
+                        <p className="text-2xl font-bold text-slate-900 dark:text-white">
+                          {invoice.currency === 'SAR' ? `${invoice.amount}` : `$${invoice.amount}`}
+                        </p>
                         <p className="text-[10px] font-bold text-muted-foreground uppercase">{invoice.currency || 'USD'}</p>
                       </div>
                       <div className="space-y-1">
