@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { NavLink, useLocation, useSearchParams } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Package,
   CircleUserRound,
