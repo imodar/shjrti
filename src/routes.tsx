@@ -52,6 +52,12 @@ const AdminEmailLogs = React.lazy(() => import('./pages/AdminEmailLogs'));
 const AdminEmailTemplates = React.lazy(() => import('./pages/AdminEmailTemplates'));
 const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard'));
 
+const AdminIndex: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const hasTab = searchParams.has('tab');
+  return hasTab ? <EnhancedAdminPanel /> : <AdminDashboard />;
+};
+
 const LazySpinner = (
   <div className="flex items-center justify-center h-screen">
     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
