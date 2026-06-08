@@ -64,14 +64,14 @@ const GROUPS: Group[] = [
     label: "المستخدمون",
     items: [
       { title: "المستخدمين", icon: CircleUserRound, tab: "users" },
-      { title: "إحصائيات المستخدمين", icon: BarChart3, tab: "user-statistics" },
+      { title: "إحصائيات المستخدمين", icon: BarChart3, to: "/admin/user-statistics" },
     ],
   },
   {
     label: "التسويق والتواصل",
     items: [
-      { title: "قوالب الإيميل", icon: MailOpen, tab: "email-templates" },
-      { title: "سجل الإيميلات", icon: Mail, tab: "email-logs" },
+      { title: "قوالب الإيميل", icon: MailOpen, to: "/admin/email-templates" },
+      { title: "سجل الإيميلات", icon: Mail, to: "/admin/email-logs" },
       { title: "الرسائل", icon: Mail, tab: "contact" },
       { title: "النشرة البريدية", icon: Mail, to: "/admin/newsletter" },
       { title: "السوشيال ميديا", icon: Share2, to: "/admin/social-media" },
@@ -82,7 +82,7 @@ const GROUPS: Group[] = [
     label: "المالية",
     items: [
       { title: "المدفوعات", icon: CreditCard, tab: "payments" },
-      { title: "تحليلات المدفوعات", icon: TrendingUp, tab: "analytics" },
+      { title: "تحليلات المدفوعات", icon: TrendingUp, to: "/admin/analytics" },
       { title: "الفواتير", icon: DollarSign, to: "/admin/billing" },
       { title: "الاستردادات", icon: DollarSign, to: "/admin/refunds" },
       { title: "طلبات المتجر", icon: ShoppingBag, to: "/admin/store-orders" },
