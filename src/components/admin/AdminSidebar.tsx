@@ -115,7 +115,10 @@ export function AdminSidebar() {
   const [query, setQuery] = useState("");
 
   const isItemActive = (item: Item) => {
-    if (item.to) return pathname === item.to;
+    if (item.to) {
+      if (item.to === "/admin") return pathname === "/admin" && !searchParams.has("tab");
+      return pathname === item.to;
+    }
     if (item.tab) return pathname === "/admin" && currentTab === item.tab;
     return false;
   };
