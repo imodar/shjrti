@@ -111,7 +111,7 @@ export function AdminSidebar() {
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
   const { direction } = useLanguage();
-  const currentTab = searchParams.get("tab") || "packages";
+  const currentTab = searchParams.get("tab");
   const [query, setQuery] = useState("");
 
   const isItemActive = (item: Item) => {
