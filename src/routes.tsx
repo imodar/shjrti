@@ -44,11 +44,19 @@ const AdminRefunds = React.lazy(() => import('./pages/AdminRefunds'));
 const AdminStoreOrders = React.lazy(() => import('./pages/AdminStoreOrders'));
 const ApiDocs = React.lazy(() => import('./pages/ApiDocs'));
 const AdminLayout = React.lazy(() => import('./components/admin/AdminLayout'));
+const AdminNotFound = React.lazy(() => import('./pages/admin/AdminNotFound'));
+const AdminSkeleton = React.lazy(() => import('./components/admin/AdminSkeleton'));
 
 const LazySpinner = (
   <div className="flex items-center justify-center h-screen">
     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
   </div>
+);
+
+const AdminFallback = (
+  <Suspense fallback={null}>
+    <AdminSkeleton />
+  </Suspense>
 );
 
 const FamilyBuilderStitchWithProvider: React.FC = () => {
@@ -116,14 +124,15 @@ export const AppRoutes: React.FC = () => (
     <Route path="/store" element={<ProtectedRoute><Store /></ProtectedRoute>} />
 
     <Route element={<ProtectedRoute requireAdmin={true}><Suspense fallback={LazySpinner}><AdminLayout /></Suspense></ProtectedRoute>}>
-      <Route path="/admin" element={<Suspense fallback={LazySpinner}><EnhancedAdminPanel /></Suspense>} />
-      <Route path="/admin/billing" element={<Suspense fallback={LazySpinner}><AdminBilling /></Suspense>} />
-      <Route path="/admin-api-settings" element={<Suspense fallback={LazySpinner}><AdminAPISettings /></Suspense>} />
-      <Route path="/admin/social-media" element={<Suspense fallback={LazySpinner}><AdminSocialMedia /></Suspense>} />
-      <Route path="/admin/seo" element={<Suspense fallback={LazySpinner}><AdminSEOSettings /></Suspense>} />
-      <Route path="/admin/newsletter" element={<Suspense fallback={LazySpinner}><AdminNewsletterSubscriptions /></Suspense>} />
-      <Route path="/admin/refunds" element={<Suspense fallback={LazySpinner}><AdminRefunds /></Suspense>} />
-      <Route path="/admin/store-orders" element={<Suspense fallback={LazySpinner}><AdminStoreOrders /></Suspense>} />
+      <Route path="/admin" element={<Suspense fallback={AdminFallback}><EnhancedAdminPanel /></Suspense>} />
+      <Route path="/admin/billing" element={<Suspense fallback={AdminFallback}><AdminBilling /></Suspense>} />
+      <Route path="/admin-api-settings" element={<Suspense fallback={AdminFallback}><AdminAPISettings /></Suspense>} />
+      <Route path="/admin/social-media" element={<Suspense fallback={AdminFallback}><AdminSocialMedia /></Suspense>} />
+      <Route path="/admin/seo" element={<Suspense fallback={AdminFallback}><AdminSEOSettings /></Suspense>} />
+      <Route path="/admin/newsletter" element={<Suspense fallback={AdminFallback}><AdminNewsletterSubscriptions /></Suspense>} />
+      <Route path="/admin/refunds" element={<Suspense fallback={AdminFallback}><AdminRefunds /></Suspense>} />
+      <Route path="/admin/store-orders" element={<Suspense fallback={AdminFallback}><AdminStoreOrders /></Suspense>} />
+      <Route path="/admin/*" element={<Suspense fallback={AdminFallback}><AdminNotFound /></Suspense>} />
     </Route>
 
     <Route path="/renew-subscription" element={<ProtectedRoute><RenewSubscription /></ProtectedRoute>} />
