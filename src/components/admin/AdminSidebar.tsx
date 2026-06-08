@@ -125,7 +125,7 @@ export function AdminSidebar() {
   }, [query]);
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar side={direction === "rtl" ? "right" : "left"} collapsible="icon">
       <SidebarHeader className="border-b border-sidebar-border">
         <div className="flex items-center gap-2 px-2 py-2">
           <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0">
