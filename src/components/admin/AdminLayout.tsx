@@ -21,6 +21,10 @@ const ROUTE_TITLES: Record<string, string> = {
   "/admin/social-media": "السوشيال ميديا",
   "/admin/store-orders": "طلبات المتجر",
   "/admin-api-settings": "إعدادات API",
+  "/admin/analytics": "تحليلات المدفوعات",
+  "/admin/user-statistics": "إحصائيات المستخدمين",
+  "/admin/email-logs": "سجل الإيميلات",
+  "/admin/email-templates": "قوالب الإيميل",
 };
 
 const TAB_TITLES: Record<string, string> = {
