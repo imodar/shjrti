@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -89,6 +90,8 @@ interface BillingStats {
 }
 
 export default function AdminBilling() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const subTab = searchParams.get("view") || "invoices";
   const { toast } = useToast();
   const { direction } = useLanguage();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -480,7 +483,17 @@ export default function AdminBilling() {
         </div>
 
         {/* Main Content Tabs */}
-        <Tabs defaultValue="invoices" className="space-y-6">
+        <Tabs
+          value={subTab}
+          onValueChange={(v) =>
+            setSearchParams((prev) => {
+              const next = new URLSearchParams(prev);
+              next.set("view", v);
+              return next;
+            })
+          }
+          className="space-y-6"
+        >
           <TabsList className="grid w-full grid-cols-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-xl">
             <TabsTrigger value="invoices" className="flex items-center gap-2">
               <Receipt className="h-4 w-4" />
