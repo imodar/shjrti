@@ -32,8 +32,6 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { GlobalHeader } from "@/components/GlobalHeader";
-import { GlobalFooter } from "@/components/GlobalFooter";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface Invoice {
@@ -385,23 +383,19 @@ export default function AdminBilling() {
 
   if (loading) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
-      <GlobalHeader />
-        <div className="container mx-auto px-6 pt-24 pb-12">
+    <div dir={direction}>
+        <div className="container mx-auto px-4 sm:px-6 py-8">
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
           </div>
         </div>
-        <GlobalFooter />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
-      <GlobalHeader />
-      
-      <div className="container mx-auto px-6 pt-24 pb-12" dir={direction}>
+    <div dir={direction}>
+      <div className="container mx-auto px-4 sm:px-6 py-6" dir={direction}>
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
