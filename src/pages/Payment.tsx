@@ -218,7 +218,9 @@ const Payment = () => {
   };
 
   const handlePaymentSuccess = (orderId: string) => {
-    navigate(`/payment-success?invoice_id=${invoice?.id}&order_id=${orderId}`);
+    const isStripe = typeof orderId === 'string' && orderId.startsWith('pi_');
+    const gatewayParam = isStripe ? '&gateway=stripe' : '';
+    navigate(`/payment-success?invoice_id=${invoice?.id}&order_id=${orderId}${gatewayParam}`);
   };
 
   const handlePaymentError = (error: string) => {

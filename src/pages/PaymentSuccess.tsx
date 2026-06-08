@@ -77,8 +77,53 @@ export default function PaymentSuccess() {
           setPaymentStatus('failed');
         }
       } else if (orderId) {
+        // Stripe PaymentIntent ID — payment was already verified & subscription
+        // upgraded inline from StripeCardForm. Just confirm via invoice status.
+        if (orderId.startsWith('pi_') || gateway === 'stripe') {
+          const { data: invoice, error } = await supabase
+            .from('invoices')
+            .select('*, packages(name)')
+            .eq('id', invoiceId)
+            .single();
+          if (error) throw new Error(error.message);
+
+          if (invoice?.payment_status === 'paid') {
+            setPaymentStatus('success');
+            setPaymentDetails({ invoice });
+            clearSubscriptionCache();
+            await refreshSubscription();
+            const { data: subscriptionData } = await supabase
+              .from('user_subscriptions')
+              .select('expires_at')
+              .eq('user_id', invoice.user_id)
+              .eq('status', 'active')
+              .single();
+            if (subscriptionData?.expires_at) setNextRenewalDate(subscriptionData.expires_at);
+            toast({
+              title: currentLanguage === 'ar' ? 'تم الدفع بنجاح! 🎉' : 'Payment Successful! 🎉',
+              description: currentLanguage === 'ar'
+                ? 'تم تفعيل اشتراكك وترقية حسابك بنجاح'
+                : 'Your subscription has been activated successfully',
+              duration: 5000,
+            });
+          } else {
+            // Fall back to server verification if invoice not yet marked paid
+            const { data, error: vErr } = await supabase.functions.invoke('verify-stripe-payment', {
+              body: { paymentIntentId: orderId, invoiceId },
+            });
+            if (vErr) throw new Error(vErr.message);
+            if (data?.success) {
+              setPaymentStatus('success');
+              setPaymentDetails({ invoice });
+              clearSubscriptionCache();
+              await refreshSubscription();
+            } else {
+              setPaymentStatus('failed');
+            }
+          }
+        }
         // If orderId starts with "I-", it's a PayPal Subscription ID
-        if (orderId.startsWith('I-')) {
+        else if (orderId.startsWith('I-')) {
           const { data, error } = await supabase.functions.invoke('verify-paypal-subscription', {
             body: {
               subscriptionId: orderId,
