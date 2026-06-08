@@ -90,6 +90,8 @@ interface BillingStats {
 }
 
 export default function AdminBilling() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const subTab = searchParams.get("view") || "invoices";
   const { toast } = useToast();
   const { direction } = useLanguage();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
