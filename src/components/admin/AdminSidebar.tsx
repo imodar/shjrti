@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { NavLink, useLocation, useSearchParams } from "react-router-dom";
 import {
   Package,
@@ -32,6 +33,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Input } from "@/components/ui/input";
 
 type Item = {
   title: string;
@@ -101,12 +103,24 @@ export function AdminSidebar() {
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
   const currentTab = searchParams.get("tab") || "packages";
+  const [query, setQuery] = useState("");
 
   const isItemActive = (item: Item) => {
     if (item.to) return pathname === item.to;
     if (item.tab) return pathname === "/admin" && currentTab === item.tab;
     return false;
   };
+
+  const filteredGroups = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return GROUPS;
+    return GROUPS
+      .map((g) => ({
+        ...g,
+        items: g.items.filter((it) => it.title.toLowerCase().includes(q)),
+      }))
+      .filter((g) => g.items.length > 0);
+  }, [query]);
 
   return (
     <Sidebar collapsible="icon">
@@ -119,10 +133,28 @@ export function AdminSidebar() {
             <span className="font-semibold text-sm">لوحة الإدارة</span>
           )}
         </div>
+        {!collapsed && (
+          <div className="px-2 pb-2">
+            <div className="relative">
+              <Search className="absolute top-1/2 -translate-y-1/2 ltr:left-2 rtl:right-2 h-3.5 w-3.5 text-muted-foreground" />
+              <Input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="بحث..."
+                className="h-8 ltr:pl-7 rtl:pr-7 text-xs bg-sidebar-accent/40 border-sidebar-border"
+              />
+            </div>
+          </div>
+        )}
       </SidebarHeader>
 
       <SidebarContent>
-        {GROUPS.map((group) => (
+        {filteredGroups.length === 0 && !collapsed && (
+          <div className="px-4 py-6 text-xs text-muted-foreground text-center">
+            لا توجد نتائج
+          </div>
+        )}
+        {filteredGroups.map((group) => (
           <SidebarGroup key={group.label}>
             <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
             <SidebarGroupContent>
