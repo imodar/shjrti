@@ -497,3 +497,50 @@
 [dir="rtl"] .data-\[state\=checked\]\:translate-x-5[data-state="checked"] {
   --tw-translate-x: -1.25rem;
 }
+/* =========================================
+   Admin Panel — Mobile Safety
+   Scope: .admin-main-mobile (set by AdminLayout)
+   ========================================= */
+.admin-main-mobile {
+  /* Prevent inner content from forcing horizontal scroll on small screens */
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  /* Compact outer paddings inside admin pages */
+  .admin-main-mobile .container,
+  .admin-main-mobile [class*="container"] {
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  /* Make any horizontal TabsList scrollable instead of squishing */
+  .admin-main-mobile [role="tablist"] {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .admin-main-mobile [role="tablist"]::-webkit-scrollbar {
+    display: none;
+  }
+  .admin-main-mobile [role="tablist"] [role="tab"] {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  /* Dialogs: near full-width on mobile */
+  .admin-main-mobile ~ * [role="dialog"],
+  [data-radix-portal] [role="dialog"] {
+    max-width: calc(100vw - 1.5rem);
+  }
+
+  /* Cards: lighter outer paddings */
+  .admin-main-mobile .p-6 { padding: 1rem !important; }
+  .admin-main-mobile .p-8 { padding: 1.25rem !important; }
+
+  /* Tables: ensure they always scroll horizontally inside their wrapper */
+  .admin-main-mobile table {
+    min-width: max-content;
+  }
+}
