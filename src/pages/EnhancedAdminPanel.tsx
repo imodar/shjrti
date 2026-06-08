@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -62,8 +62,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
-import { GlobalHeader } from "@/components/GlobalHeader";
-import { GlobalFooter } from "@/components/GlobalFooter";
 
 interface PackageType {
   id: string;
@@ -152,6 +150,8 @@ interface UserSubscription {
 export default function EnhancedAdminPanel() {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentTab = searchParams.get("tab") || "packages";
   const { currentLanguage, direction } = useLanguage();
   const { currentTheme, setCurrentTheme } = useTheme();
   const [packages, setPackages] = useState<PackageType[]>([]);
@@ -1047,26 +1047,23 @@ export default function EnhancedAdminPanel() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
-        <GlobalHeader />
-        <div className="container mx-auto px-6 pt-24 pb-12">
+      <div dir={direction}>
+        <div className="container mx-auto px-4 sm:px-6 py-8">
           <div className="flex items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
           </div>
         </div>
-        <GlobalFooter />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-emerald-50 to-teal-50 dark:from-amber-950 dark:via-emerald-950 dark:to-teal-950" dir={direction}>
-      <GlobalHeader />
+    <div dir={direction}>
       <Toaster />
       
-      <div className="container mx-auto px-6 pt-24 pb-12" dir={direction}>
+      <div className="container mx-auto px-4 sm:px-6 py-6" dir={direction}>
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 hidden sm:block">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center">
@@ -1100,10 +1097,10 @@ export default function EnhancedAdminPanel() {
           </div>
         </div>
 
-        <Tabs defaultValue="packages" className="space-y-8">
+        <Tabs value={currentTab} onValueChange={(v) => setSearchParams({ tab: v })} className="space-y-8">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-emerald-500/10 blur-3xl -z-10 rounded-3xl"></div>
-            <TabsList dir={direction} className="grid w-full grid-cols-9 gap-2 bg-gradient-to-br from-white/80 via-emerald-50/30 to-teal-50/30 dark:from-gray-900/80 dark:via-emerald-950/30 dark:to-teal-950/30 backdrop-blur-2xl border-2 border-emerald-200/50 dark:border-emerald-700/50 rounded-2xl p-3 shadow-xl shadow-emerald-500/10">
+            <TabsList dir={direction} className="hidden">
               <TabsTrigger 
                 value="packages" 
                 className="group relative overflow-hidden rounded-xl transition-all duration-300 hover:scale-105 data-[state=active]:scale-105 data-[state=active]:shadow-lg data-[state=active]:shadow-emerald-500/30 data-[state=inactive]:hover:bg-emerald-50/50 dark:data-[state=inactive]:hover:bg-emerald-950/30"
@@ -3008,7 +3005,6 @@ export default function EnhancedAdminPanel() {
           }}
         />
       </div>
-      <GlobalFooter />
     </div>
   );
 }

@@ -9,7 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { Key, Save, Eye, EyeOff, Shield, Globe } from 'lucide-react';
-import { GlobalHeader } from '@/components/GlobalHeader';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function AdminAPISettings() {
@@ -109,7 +108,6 @@ export default function AdminAPISettings() {
 
   return (
     <div className="min-h-screen bg-background">
-      <GlobalHeader />
       
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="mb-8">

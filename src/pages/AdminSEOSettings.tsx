@@ -9,8 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2, Save, Globe, FileCode, Search, Settings } from 'lucide-react';
-import { GlobalHeader } from '@/components/GlobalHeader';
-import { GlobalFooter } from '@/components/GlobalFooter';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SEOSettings {
@@ -211,7 +209,6 @@ export default function AdminSEOSettings() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <GlobalHeader />
       
       <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
         <div className="mb-8">
@@ -536,7 +533,6 @@ export default function AdminSEOSettings() {
         </Tabs>
       </main>
 
-      <GlobalFooter />
     </div>
   );
 }

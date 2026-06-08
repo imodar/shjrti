@@ -43,6 +43,7 @@ const AdminNewsletterSubscriptions = React.lazy(() => import('./pages/AdminNewsl
 const AdminRefunds = React.lazy(() => import('./pages/AdminRefunds'));
 const AdminStoreOrders = React.lazy(() => import('./pages/AdminStoreOrders'));
 const ApiDocs = React.lazy(() => import('./pages/ApiDocs'));
+const AdminLayout = React.lazy(() => import('./components/admin/AdminLayout'));
 
 const LazySpinner = (
   <div className="flex items-center justify-center h-screen">
@@ -114,14 +115,16 @@ export const AppRoutes: React.FC = () => (
     <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
     <Route path="/store" element={<ProtectedRoute><Store /></ProtectedRoute>} />
 
-    <Route path="/admin" element={<ProtectedRoute requireAdmin={true}><Suspense fallback={LazySpinner}><EnhancedAdminPanel /></Suspense></ProtectedRoute>} />
-    <Route path="/admin/billing" element={<ProtectedRoute requireAdmin={true}><Suspense fallback={LazySpinner}><AdminBilling /></Suspense></ProtectedRoute>} />
-    <Route path="/admin-api-settings" element={<ProtectedRoute requireAdmin={true}><Suspense fallback={LazySpinner}><AdminAPISettings /></Suspense></ProtectedRoute>} />
-    <Route path="/admin/social-media" element={<ProtectedRoute requireAdmin={true}><Suspense fallback={LazySpinner}><AdminSocialMedia /></Suspense></ProtectedRoute>} />
-    <Route path="/admin/seo" element={<ProtectedRoute requireAdmin={true}><Suspense fallback={LazySpinner}><AdminSEOSettings /></Suspense></ProtectedRoute>} />
-    <Route path="/admin/newsletter" element={<ProtectedRoute requireAdmin={true}><Suspense fallback={LazySpinner}><AdminNewsletterSubscriptions /></Suspense></ProtectedRoute>} />
-    <Route path="/admin/refunds" element={<ProtectedRoute requireAdmin={true}><Suspense fallback={LazySpinner}><AdminRefunds /></Suspense></ProtectedRoute>} />
-    <Route path="/admin/store-orders" element={<ProtectedRoute requireAdmin={true}><Suspense fallback={LazySpinner}><AdminStoreOrders /></Suspense></ProtectedRoute>} />
+    <Route element={<ProtectedRoute requireAdmin={true}><Suspense fallback={LazySpinner}><AdminLayout /></Suspense></ProtectedRoute>}>
+      <Route path="/admin" element={<Suspense fallback={LazySpinner}><EnhancedAdminPanel /></Suspense>} />
+      <Route path="/admin/billing" element={<Suspense fallback={LazySpinner}><AdminBilling /></Suspense>} />
+      <Route path="/admin-api-settings" element={<Suspense fallback={LazySpinner}><AdminAPISettings /></Suspense>} />
+      <Route path="/admin/social-media" element={<Suspense fallback={LazySpinner}><AdminSocialMedia /></Suspense>} />
+      <Route path="/admin/seo" element={<Suspense fallback={LazySpinner}><AdminSEOSettings /></Suspense>} />
+      <Route path="/admin/newsletter" element={<Suspense fallback={LazySpinner}><AdminNewsletterSubscriptions /></Suspense>} />
+      <Route path="/admin/refunds" element={<Suspense fallback={LazySpinner}><AdminRefunds /></Suspense>} />
+      <Route path="/admin/store-orders" element={<Suspense fallback={LazySpinner}><AdminStoreOrders /></Suspense>} />
+    </Route>
 
     <Route path="/renew-subscription" element={<ProtectedRoute><RenewSubscription /></ProtectedRoute>} />
     <Route path="/terms-conditions" element={<TermsConditions />} />
