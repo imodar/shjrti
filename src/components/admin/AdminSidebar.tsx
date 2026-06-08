@@ -20,6 +20,7 @@ import {
   Key,
   ShoppingBag,
   Settings,
+  LayoutDashboard,
 } from "lucide-react";
 
 import {
@@ -51,6 +52,12 @@ type Group = {
 };
 
 const GROUPS: Group[] = [
+  {
+    label: "الرئيسية",
+    items: [
+      { title: "نظرة عامة", icon: LayoutDashboard, to: "/admin" },
+    ],
+  },
   {
     label: "المحتوى",
     items: [
