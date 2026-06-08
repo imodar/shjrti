@@ -855,8 +855,6 @@ export default function AdminBilling() {
           </DialogContent>
         </Dialog>
       </div>
-      
-      <GlobalFooter />
     </div>
   );
 }
