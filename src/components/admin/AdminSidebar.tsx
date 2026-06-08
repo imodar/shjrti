@@ -103,6 +103,7 @@ export function AdminSidebar() {
   const collapsed = state === "collapsed";
   const { pathname } = useLocation();
   const [searchParams] = useSearchParams();
+  const { direction } = useLanguage();
   const currentTab = searchParams.get("tab") || "packages";
   const [query, setQuery] = useState("");
 
