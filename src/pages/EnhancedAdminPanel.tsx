@@ -3005,7 +3005,6 @@ export default function EnhancedAdminPanel() {
           }}
         />
       </div>
-      <GlobalFooter />
     </div>
   );
 }
