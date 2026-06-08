@@ -7,8 +7,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Save, ArrowRight, Share2, Upload, X } from "lucide-react";
-import { GlobalHeader } from "@/components/GlobalHeader";
-import { GlobalFooter } from "@/components/GlobalFooter";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -202,7 +200,6 @@ export default function AdminSocialMedia() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <GlobalHeader />
       
       <main className="flex-1 container mx-auto px-4 py-8">
         <div className="mb-6 flex items-center justify-between">
@@ -395,7 +392,6 @@ export default function AdminSocialMedia() {
         </div>
       </main>
 
-      <GlobalFooter />
     </div>
   );
 }
