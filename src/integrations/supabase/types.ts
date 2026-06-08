@@ -1844,14 +1844,24 @@ export type Database = {
         Args: { p_family_id: string; p_parent_data: Json; p_user_id: string }
         Returns: string
       }
-      admin_change_user_package: {
-        Args: {
-          change_type?: string
-          new_package_id: string
-          target_user_id: string
-        }
-        Returns: boolean
-      }
+      admin_change_user_package:
+        | {
+            Args: {
+              change_type?: string
+              new_package_id: string
+              target_user_id: string
+            }
+            Returns: boolean
+          }
+        | {
+            Args: {
+              change_type?: string
+              custom_amount?: number
+              new_package_id: string
+              target_user_id: string
+            }
+            Returns: boolean
+          }
       admin_extend_subscription: {
         Args: { new_expiry_date: string; target_user_id: string }
         Returns: boolean
